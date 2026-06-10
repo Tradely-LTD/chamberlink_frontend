@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from '@shared/hooks/useAppDispatch';
 import { logout } from '@features/auth/authSlice';
 import { tokenStorage } from '@shared/utils/tokenStorage';
 import { useLogoutUserMutation } from '@features/auth/authApi';
+import { useGetMyTenantQuery } from '@features/white-label';
 import type { Role } from '@entities/user/types';
 
 interface NavItem {
@@ -41,6 +42,7 @@ const staffNavItems: NavItem[] = [
   { label: 'Dashboard',           to: '/dashboard',                     icon: 'dashboard',   end: true },
   { label: 'eCO Queue',           to: '/dashboard/eco',                 icon: 'task_alt' },
   { label: 'Members',             to: '/dashboard/admin',               icon: 'group' },
+  { label: 'Member Management',   to: '/dashboard/members',             icon: 'manage_accounts' },
   { label: 'Trade Fair',          to: '/dashboard/trade-fair',          icon: 'storefront' },
   { label: 'Academy',             to: '/dashboard/academy',             icon: 'school' },
   { label: 'Exporter Visibility', to: '/dashboard/exporter-visibility', icon: 'visibility' },
@@ -52,6 +54,7 @@ const staffNavItems: NavItem[] = [
 const chamberAdminNavItems: NavItem[] = [
   { label: 'Dashboard',           to: '/dashboard',                     icon: 'dashboard',   end: true },
   { label: 'Members',             to: '/dashboard/admin',               icon: 'group' },
+  { label: 'Member Management',   to: '/dashboard/members',             icon: 'manage_accounts' },
   { label: 'eCO Queue',           to: '/dashboard/eco',                 icon: 'task_alt' },
   { label: 'Analytics',           to: '/dashboard/analytics',           icon: 'bar_chart' },
   { label: 'Trade Fair',          to: '/dashboard/trade-fair',          icon: 'storefront' },
@@ -76,6 +79,7 @@ const executiveNavItems: NavItem[] = [
 const superAdminNavItems: NavItem[] = [
   { label: 'Dashboard',           to: '/dashboard',                     icon: 'dashboard',   end: true },
   { label: 'Members',             to: '/dashboard/admin',               icon: 'group' },
+  { label: 'Member Management',   to: '/dashboard/members',             icon: 'manage_accounts' },
   { label: 'eCO Queue',           to: '/dashboard/eco',                 icon: 'task_alt' },
   { label: 'Analytics',           to: '/dashboard/analytics',           icon: 'bar_chart' },
   { label: 'Trade Fair',          to: '/dashboard/trade-fair',          icon: 'storefront' },
@@ -123,6 +127,11 @@ export function Sidebar() {
   const role = useAppSelector((s) => s.auth.role);
   const [logoutUser] = useLogoutUserMutation();
 
+  const isTenantAdmin = role === 'chamber_admin' || role === 'staff_operator' || role === 'kaccima_executive';
+  const { data: myTenant } = useGetMyTenantQuery(undefined, { skip: !isTenantAdmin });
+
+  const orgName = role === 'super_admin' ? 'TradelyX' : (myTenant?.name ?? 'KACCIMA');
+
   const visibleItems = getNavItems(role);
 
   const handleLogout = () => {
@@ -153,7 +162,7 @@ export function Sidebar() {
     <aside className="flex h-full w-60 flex-col" style={{ background: '#002046' }}>
       {/* Logo */}
       <div className="px-5 pt-6 pb-5 border-b border-white/10">
-        <p className="text-white font-bold text-lg tracking-tight leading-none">KACCIMA</p>
+        <p className="text-white font-bold text-lg tracking-tight leading-none">{orgName}</p>
         <p className="text-white/50 text-xs mt-1 font-medium">
           {role ? (portalLabel[role] ?? 'Portal') : 'Digital Gateway'}
         </p>

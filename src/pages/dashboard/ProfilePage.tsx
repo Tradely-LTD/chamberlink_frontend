@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { useAppSelector } from '@shared/hooks/useAppDispatch';
 import { useGetMemberProfileQuery } from '@features/dashboard/dashboardApi';
 import { useGetMembershipStatusQuery } from '@features/membership/membershipApi';
+import { useGetMyTenantQuery, useUpdateMyTenantMutation } from '@features/white-label';
 import { SkeletonCard } from '@shared/ui/SkeletonCard';
 import { ErrorBanner } from '@shared/ui/ErrorBanner';
 import { Button } from '@shared/ui/Button';
@@ -122,6 +123,8 @@ export function ProfilePage() {
   if (isError && user?.role === 'member') return <div className="p-6"><ErrorBanner message="Failed to load profile." /></div>;
 
   const isMember = user?.role === 'member';
+  const isSuperAdmin = user?.role === 'super_admin';
+  const isTenantAdmin = user?.role === 'chamber_admin' || user?.role === 'staff_operator' || user?.role === 'kaccima_executive';
   const logoUrl = profile?.logoUrl;
 
   const ROLE_LABELS: Record<string, string> = {
@@ -130,6 +133,38 @@ export function ProfilePage() {
     kaccima_executive: 'KACCIMA Executive',
     super_admin: 'Super Admin (Tradely)',
     institutional_subscriber: 'Institutional Subscriber',
+  };
+
+  // ── Tenant org profile (for chamber_admin / staff / executive) ──
+  const { data: myTenant, refetch: refetchTenant } = useGetMyTenantQuery(undefined, { skip: !isTenantAdmin });
+  const [updateMyTenant, { isLoading: isTenantSaving }] = useUpdateMyTenantMutation();
+  const [editingOrg, setEditingOrg] = useState(false);
+  const [orgForm, setOrgForm] = useState({ address: '', phone: '', email: '', website: '' });
+  const [orgError, setOrgError] = useState<string | null>(null);
+
+  const startOrgEdit = () => {
+    setOrgForm({
+      address: myTenant?.address ?? '',
+      phone: myTenant?.phone ?? '',
+      email: myTenant?.email ?? '',
+      website: myTenant?.website ?? '',
+    });
+    setEditingOrg(true);
+    setOrgError(null);
+  };
+
+  const handleOrgSave = async () => {
+    setOrgError(null);
+    try {
+      const updates: Record<string, string> = {};
+      Object.entries(orgForm).forEach(([k, v]) => { if (v.trim()) updates[k] = v.trim(); });
+      await updateMyTenant(updates).unwrap();
+      setEditingOrg(false);
+      setSaved(true);
+      refetchTenant();
+    } catch {
+      setOrgError('Failed to update organisation details. Please try again.');
+    }
   };
 
   // Admin/staff see a completely different, organisation-focused profile
@@ -145,24 +180,86 @@ export function ProfilePage() {
           </div>
         )}
 
-        {/* Organisation card */}
-        <div className="bg-white rounded-xl border border-[#bec9bf]/40 overflow-hidden mb-6">
-          <div className="px-6 py-4 border-b border-[#bec9bf]/40">
-            <h2 className="font-medium text-[#221a0f]">Organisation</h2>
+        {/* Platform identity card — super_admin shows Tradely context, others show their chamber */}
+        {isSuperAdmin ? (
+          <div className="bg-white rounded-xl border border-[#bec9bf]/40 overflow-hidden mb-6">
+            <div className="px-6 py-4 border-b border-[#bec9bf]/40">
+              <h2 className="font-medium text-[#221a0f]">Platform Identity</h2>
+            </div>
+            <dl className="divide-y divide-[#bec9bf]/30">
+              {[
+                { label: 'Platform', value: 'TradelyX — Multi-Tenant ERP Platform' },
+                { label: 'Operator', value: 'Tradely LTD.' },
+                { label: 'Your Role', value: ROLE_LABELS[user?.role ?? ''] ?? user?.role ?? '—' },
+              ].map((row) => (
+                <div key={row.label} className="grid grid-cols-3 gap-4 px-6 py-4">
+                  <dt className="text-sm font-medium text-[#8A7E6E]">{row.label}</dt>
+                  <dd className="col-span-2 text-sm text-[#221a0f]">{row.value}</dd>
+                </div>
+              ))}
+            </dl>
           </div>
-          <dl className="divide-y divide-[#bec9bf]/30">
-            {[
-              { label: 'Organisation', value: 'Kano Chamber of Commerce, Industry, Mines & Agriculture (KACCIMA)' },
-              { label: 'Platform', value: 'TradelyX — KACCIMA Digital Portal' },
-              { label: 'Your Role', value: ROLE_LABELS[user?.role ?? ''] ?? user?.role ?? '—' },
-            ].map((row) => (
-              <div key={row.label} className="grid grid-cols-3 gap-4 px-6 py-4">
-                <dt className="text-sm font-medium text-[#8A7E6E]">{row.label}</dt>
-                <dd className="col-span-2 text-sm text-[#221a0f]">{row.value}</dd>
+        ) : (
+          <div className="bg-white rounded-xl border border-[#bec9bf]/40 overflow-hidden mb-6">
+            <div className="px-6 py-4 border-b border-[#bec9bf]/40 flex items-center justify-between">
+              <h2 className="font-medium text-[#221a0f]">Organisation</h2>
+              {user?.role === 'chamber_admin' && !editingOrg && (
+                <Button variant="outline" onClick={startOrgEdit}>Edit</Button>
+              )}
+            </div>
+            {editingOrg ? (
+              <div className="px-6 py-5 space-y-4">
+                {orgError && <ErrorBanner message={orgError} />}
+                <Input
+                  label="Address"
+                  placeholder="e.g. 1 Chamber Road, Kano"
+                  value={orgForm.address}
+                  onChange={(e) => setOrgForm((f) => ({ ...f, address: e.target.value }))}
+                />
+                <Input
+                  label="Phone"
+                  placeholder="e.g. +234 700 000 0000"
+                  value={orgForm.phone}
+                  onChange={(e) => setOrgForm((f) => ({ ...f, phone: e.target.value }))}
+                />
+                <Input
+                  label="Public Email"
+                  placeholder="e.g. info@chamber.ng"
+                  value={orgForm.email}
+                  onChange={(e) => setOrgForm((f) => ({ ...f, email: e.target.value }))}
+                />
+                <Input
+                  label="Website"
+                  placeholder="https://chamber.ng"
+                  value={orgForm.website}
+                  onChange={(e) => setOrgForm((f) => ({ ...f, website: e.target.value }))}
+                />
+                <div className="flex gap-3 pt-2">
+                  <Button loading={isTenantSaving} onClick={handleOrgSave}>Save Changes</Button>
+                  <Button variant="outline" onClick={() => setEditingOrg(false)}>Cancel</Button>
+                </div>
               </div>
-            ))}
-          </dl>
-        </div>
+            ) : (
+              <dl className="divide-y divide-[#bec9bf]/30">
+                {[
+                  { label: 'Organisation', value: myTenant?.name ?? '—' },
+                  { label: 'Region', value: myTenant?.region ?? '—' },
+                  { label: 'City', value: myTenant?.city ?? '—' },
+                  { label: 'Address', value: myTenant?.address ?? '—' },
+                  { label: 'Phone', value: myTenant?.phone ?? '—' },
+                  { label: 'Public Email', value: myTenant?.email ?? '—' },
+                  { label: 'Website', value: myTenant?.website ?? '—' },
+                  { label: 'Your Role', value: ROLE_LABELS[user?.role ?? ''] ?? user?.role ?? '—' },
+                ].map((row) => (
+                  <div key={row.label} className="grid grid-cols-3 gap-4 px-6 py-4">
+                    <dt className="text-sm font-medium text-[#8A7E6E]">{row.label}</dt>
+                    <dd className="col-span-2 text-sm text-[#221a0f]">{row.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            )}
+          </div>
+        )}
 
         {/* Account card */}
         <div className="bg-white rounded-xl border border-[#bec9bf]/40 overflow-hidden mb-6">

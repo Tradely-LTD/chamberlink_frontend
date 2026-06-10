@@ -20,6 +20,7 @@ const pageTitles: Record<string, string> = {
   '/dashboard/export-documents': 'Export Documents',
   '/dashboard/bank-verification': 'Bank & FI Verification',
   '/dashboard/trade-data-api': 'Trade Data API',
+  '/dashboard/members': 'Member Management',
   '/dashboard/white-label': 'White-Label Console',
 };
 

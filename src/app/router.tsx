@@ -27,6 +27,7 @@ import { ExportDocumentsPage } from '@pages/dashboard/ExportDocumentsPage';
 import { ExportDocGeneratorPage } from '@pages/dashboard/ExportDocGeneratorPage';
 import { TradeDataApiPage } from '@pages/dashboard/TradeDataApiPage';
 import { WhiteLabelPage } from '@pages/dashboard/WhiteLabelPage';
+import { MemberManagementPage } from '@pages/dashboard/MemberManagementPage';
 
 export const router = createBrowserRouter([
   { path: '/login', element: <LoginPage /> },
@@ -147,6 +148,14 @@ export const router = createBrowserRouter([
             element: (
               <ProtectedRoute allowedRoles={['chamber_admin', 'kaccima_executive', 'super_admin', 'staff_operator']}>
                 <AdminPage />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: '/dashboard/members',
+            element: (
+              <ProtectedRoute allowedRoles={['chamber_admin', 'staff_operator', 'super_admin']}>
+                <MemberManagementPage />
               </ProtectedRoute>
             ),
           },
