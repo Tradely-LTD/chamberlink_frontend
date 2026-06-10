@@ -627,7 +627,7 @@ function ModuleConfigPanel({ tenant, onClose }: { tenant: Tenant; onClose: () =>
 
 function WhiteLabelView() {
   const [updateTenant] = useUpdateTenantMutation();
-  const { data: tenantsData, isLoading } = useGetTenantsQuery({});
+  const { data: tenantsData, isLoading, isError, error, refetch } = useGetTenantsQuery({});
   const [showCreate, setShowCreate] = useState(false);
   const [modulesTenant, setModulesTenant] = useState<Tenant | null>(null);
   const [editTenant, setEditTenant] = useState<Tenant | null>(null);
@@ -654,7 +654,7 @@ function WhiteLabelView() {
             Multi-Tenant White-Label Console
           </h2>
           <p className="text-sm text-[#74777f] mt-0.5">
-            Manage TradelyX platform tenants, branding, and module access.
+            Manage KACCIMA ERP tenants, branding, and module access.
           </p>
         </div>
         <button
@@ -722,7 +722,20 @@ function WhiteLabelView() {
 
       {/* Tenant list */}
       {isLoading ? (
-        <SkeletonCard />
+        <SkeletonCard className="h-64" />
+      ) : isError ? (
+        <div className="rounded-xl border border-red-200 bg-red-50 p-6">
+          <p className="text-sm font-semibold text-red-700 mb-1">Failed to load tenants</p>
+          <p className="text-xs text-red-600 mb-4">
+            {(error as { data?: { message?: string } })?.data?.message ?? 'Could not reach /white-label/tenants — check the API and your network.'}
+          </p>
+          <button
+            onClick={() => refetch()}
+            className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-red-300 text-red-700 hover:bg-red-100 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
       ) : tenants.length === 0 ? (
         <div className="text-center py-16 text-gray-400">
           No tenants yet. Create the first chamber above.

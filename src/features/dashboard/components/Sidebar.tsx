@@ -41,8 +41,8 @@ const institutionalNavItems: NavItem[] = [
 const staffNavItems: NavItem[] = [
   { label: 'Dashboard',           to: '/dashboard',                     icon: 'dashboard',   end: true },
   { label: 'eCO Queue',           to: '/dashboard/eco',                 icon: 'task_alt' },
-  { label: 'Members',             to: '/dashboard/admin',               icon: 'group' },
   { label: 'Member Management',   to: '/dashboard/members',             icon: 'manage_accounts' },
+  { label: 'Audit Log',           to: '/dashboard/admin',               icon: 'history' },
   { label: 'Trade Fair',          to: '/dashboard/trade-fair',          icon: 'storefront' },
   { label: 'Academy',             to: '/dashboard/academy',             icon: 'school' },
   { label: 'Exporter Visibility', to: '/dashboard/exporter-visibility', icon: 'visibility' },
@@ -53,8 +53,8 @@ const staffNavItems: NavItem[] = [
 // chamber_admin: full chamber management — all staff items + analytics + academy
 const chamberAdminNavItems: NavItem[] = [
   { label: 'Dashboard',           to: '/dashboard',                     icon: 'dashboard',   end: true },
-  { label: 'Members',             to: '/dashboard/admin',               icon: 'group' },
   { label: 'Member Management',   to: '/dashboard/members',             icon: 'manage_accounts' },
+  { label: 'Audit Log',           to: '/dashboard/admin',               icon: 'history' },
   { label: 'eCO Queue',           to: '/dashboard/eco',                 icon: 'task_alt' },
   { label: 'Analytics',           to: '/dashboard/analytics',           icon: 'bar_chart' },
   { label: 'Trade Fair',          to: '/dashboard/trade-fair',          icon: 'storefront' },
@@ -67,19 +67,20 @@ const chamberAdminNavItems: NavItem[] = [
 
 // kaccima_executive: read-only analytics view — no write actions
 const executiveNavItems: NavItem[] = [
-  { label: 'Overview',      to: '/dashboard',              icon: 'dashboard',   end: true },
-  { label: 'Analytics',     to: '/dashboard/analytics',    icon: 'bar_chart' },
-  { label: 'Members',       to: '/dashboard/admin',        icon: 'group' },
-  { label: 'eCO Queue',     to: '/dashboard/eco',          icon: 'task_alt' },
-  { label: 'Trade Fair',    to: '/dashboard/trade-fair',   icon: 'storefront' },
-  { label: 'My Profile',    to: '/dashboard/profile',      icon: 'manage_accounts' },
+  { label: 'Overview',         to: '/dashboard',              icon: 'dashboard',   end: true },
+  { label: 'Analytics',        to: '/dashboard/analytics',    icon: 'bar_chart' },
+  { label: 'Member Management',to: '/dashboard/members',      icon: 'manage_accounts' },
+  { label: 'Audit Log',        to: '/dashboard/admin',        icon: 'history' },
+  { label: 'eCO Queue',        to: '/dashboard/eco',          icon: 'task_alt' },
+  { label: 'Trade Fair',       to: '/dashboard/trade-fair',   icon: 'storefront' },
+  { label: 'My Profile',       to: '/dashboard/profile',      icon: 'manage_accounts' },
 ];
 
 // super_admin: everything including white-label settings
 const superAdminNavItems: NavItem[] = [
   { label: 'Dashboard',           to: '/dashboard',                     icon: 'dashboard',   end: true },
-  { label: 'Members',             to: '/dashboard/admin',               icon: 'group' },
   { label: 'Member Management',   to: '/dashboard/members',             icon: 'manage_accounts' },
+  { label: 'Audit Log',           to: '/dashboard/admin',               icon: 'history' },
   { label: 'eCO Queue',           to: '/dashboard/eco',                 icon: 'task_alt' },
   { label: 'Analytics',           to: '/dashboard/analytics',           icon: 'bar_chart' },
   { label: 'Trade Fair',          to: '/dashboard/trade-fair',          icon: 'storefront' },
@@ -130,7 +131,7 @@ export function Sidebar() {
   const isTenantAdmin = role === 'chamber_admin' || role === 'staff_operator' || role === 'kaccima_executive';
   const { data: myTenant } = useGetMyTenantQuery(undefined, { skip: !isTenantAdmin });
 
-  const orgName = role === 'super_admin' ? 'TradelyX' : (myTenant?.name ?? 'KACCIMA');
+  const orgName = role === 'super_admin' ? 'KACCIMA ERP' : (myTenant?.name ?? 'KACCIMA');
 
   const visibleItems = getNavItems(role);
 

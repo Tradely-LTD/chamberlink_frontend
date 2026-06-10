@@ -173,8 +173,9 @@ function MarkReadyModal({ docId, onClose }: MarkReadyModalProps) {
     try {
       await markReady({ id: docId, document: file, notes: notes || undefined }).unwrap();
       onClose();
-    } catch {
-      setError('Failed to upload document. Please try again.');
+    } catch (err: unknown) {
+      const msg = (err as { data?: { message?: string } })?.data?.message;
+      setError(msg ?? 'Failed to upload document. Please try again.');
     }
   };
 

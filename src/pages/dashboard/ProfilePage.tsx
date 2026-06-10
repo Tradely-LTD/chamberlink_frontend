@@ -3,7 +3,7 @@ import { useAppSelector } from '@shared/hooks/useAppDispatch';
 import { useGetMemberProfileQuery } from '@features/dashboard/dashboardApi';
 import { useGetMembershipStatusQuery } from '@features/membership/membershipApi';
 import { useGetMyTenantQuery, useUpdateMyTenantMutation } from '@features/white-label';
-import { SkeletonCard } from '@shared/ui/SkeletonCard';
+import { PageLoader } from '@shared/ui/PageLoader';
 import { ErrorBanner } from '@shared/ui/ErrorBanner';
 import { Button } from '@shared/ui/Button';
 import { Input } from '@shared/ui/Input';
@@ -39,13 +39,31 @@ const membershipStatusColors: Record<string, string> = {
   suspended: 'bg-gray-100 text-gray-700',
 };
 
+const ROLE_LABELS: Record<string, string> = {
+  chamber_admin: 'Chamber Admin',
+  staff_operator: 'Staff Operator',
+  kaccima_executive: 'KACCIMA Executive',
+  super_admin: 'Super Admin',
+  institutional_subscriber: 'Institutional Subscriber',
+};
+
 export function ProfilePage() {
   const user = useAppSelector((s) => s.auth.user);
+  const role = user?.role;
+
+  // Role flags — computed before any hooks that depend on them
+  const isMember = role === 'member';
+  const isSuperAdmin = role === 'super_admin';
+  const isTenantAdmin = role === 'chamber_admin' || role === 'staff_operator' || role === 'kaccima_executive';
+
+  // ALL hooks must be declared unconditionally, before any early returns
   const { data: profile, isLoading, isError, refetch } = useGetMemberProfileQuery();
   const { data: membership } = useGetMembershipStatusQuery();
   const [updateProfile, { isLoading: isSaving }] = useUpdateProfileMutation();
   const [patchProfile, { isLoading: isPatchSaving }] = usePatchProfileMutation();
   const [uploadLogo, { isLoading: isUploadingLogo }] = useUploadLogoMutation();
+  const { data: myTenant, refetch: refetchTenant } = useGetMyTenantQuery(undefined, { skip: !isTenantAdmin });
+  const [updateMyTenant, { isLoading: isTenantSaving }] = useUpdateMyTenantMutation();
 
   const [editing, setEditing] = useState(false);
   const [editingBusiness, setEditingBusiness] = useState(false);
@@ -53,6 +71,9 @@ export function ProfilePage() {
   const [bizForm, setBizForm] = useState({ registrationNumber: '', industry: '', address: '', city: '', state: '', website: '' });
   const [saved, setSaved] = useState(false);
   const [logoError, setLogoError] = useState<string | null>(null);
+  const [editingOrg, setEditingOrg] = useState(false);
+  const [orgForm, setOrgForm] = useState({ address: '', phone: '', email: '', website: '' });
+  const [orgError, setOrgError] = useState<string | null>(null);
   const logoInputRef = useRef<HTMLInputElement>(null);
 
   const startEdit = () => {
@@ -115,32 +136,8 @@ export function ProfilePage() {
     } catch (err: unknown) {
       setLogoError((err as { data?: { message?: string } })?.data?.message ?? 'Logo upload failed. Please try again.');
     }
-    // Reset input so same file can be re-selected
     e.target.value = '';
   };
-
-  if (isLoading) return <div className="p-6"><SkeletonCard /></div>;
-  if (isError && user?.role === 'member') return <div className="p-6"><ErrorBanner message="Failed to load profile." /></div>;
-
-  const isMember = user?.role === 'member';
-  const isSuperAdmin = user?.role === 'super_admin';
-  const isTenantAdmin = user?.role === 'chamber_admin' || user?.role === 'staff_operator' || user?.role === 'kaccima_executive';
-  const logoUrl = profile?.logoUrl;
-
-  const ROLE_LABELS: Record<string, string> = {
-    chamber_admin: 'Chamber Admin',
-    staff_operator: 'Staff Operator',
-    kaccima_executive: 'KACCIMA Executive',
-    super_admin: 'Super Admin (Tradely)',
-    institutional_subscriber: 'Institutional Subscriber',
-  };
-
-  // ── Tenant org profile (for chamber_admin / staff / executive) ──
-  const { data: myTenant, refetch: refetchTenant } = useGetMyTenantQuery(undefined, { skip: !isTenantAdmin });
-  const [updateMyTenant, { isLoading: isTenantSaving }] = useUpdateMyTenantMutation();
-  const [editingOrg, setEditingOrg] = useState(false);
-  const [orgForm, setOrgForm] = useState({ address: '', phone: '', email: '', website: '' });
-  const [orgError, setOrgError] = useState<string | null>(null);
 
   const startOrgEdit = () => {
     setOrgForm({
@@ -167,7 +164,13 @@ export function ProfilePage() {
     }
   };
 
-  // Admin/staff see a completely different, organisation-focused profile
+  // Early returns — all hooks are already declared above
+  if (isLoading) return <PageLoader />;
+  if (isError && isMember) return <div className="p-6"><ErrorBanner message="Failed to load profile." /></div>;
+
+  const logoUrl = profile?.logoUrl;
+
+  // Admin/staff see an organisation-focused profile
   if (!isMember) {
     return (
       <div className="p-6 max-w-2xl">
@@ -180,7 +183,7 @@ export function ProfilePage() {
           </div>
         )}
 
-        {/* Platform identity card — super_admin shows Tradely context, others show their chamber */}
+        {/* Platform identity card — super_admin only */}
         {isSuperAdmin ? (
           <div className="bg-white rounded-xl border border-[#bec9bf]/40 overflow-hidden mb-6">
             <div className="px-6 py-4 border-b border-[#bec9bf]/40">
@@ -188,8 +191,8 @@ export function ProfilePage() {
             </div>
             <dl className="divide-y divide-[#bec9bf]/30">
               {[
-                { label: 'Platform', value: 'TradelyX — Multi-Tenant ERP Platform' },
-                { label: 'Operator', value: 'Tradely LTD.' },
+                { label: 'Platform', value: 'KACCIMA ERP — Chamber Digital Portal' },
+                { label: 'Operated by', value: 'Tradely LTD.' },
                 { label: 'Your Role', value: ROLE_LABELS[user?.role ?? ''] ?? user?.role ?? '—' },
               ].map((row) => (
                 <div key={row.label} className="grid grid-cols-3 gap-4 px-6 py-4">
@@ -326,6 +329,7 @@ export function ProfilePage() {
     );
   }
 
+  // Member profile view
   return (
     <div className="p-6 max-w-2xl">
       <h1 className="text-2xl font-semibold text-[#221a0f] mb-1">My Profile</h1>
@@ -337,8 +341,8 @@ export function ProfilePage() {
         </div>
       )}
 
-      {/* Logo card — members only */}
-      {isMember && <div className="mb-6 bg-white rounded-xl border border-[#bec9bf]/40 px-6 py-5 flex items-center gap-5">
+      {/* Logo card */}
+      <div className="mb-6 bg-white rounded-xl border border-[#bec9bf]/40 px-6 py-5 flex items-center gap-5">
         <div className="relative flex-shrink-0">
           {isUploadingLogo ? (
             <div className="w-20 h-20 rounded-xl bg-[#f7f9f7] border border-[#bec9bf]/40 flex items-center justify-center">
@@ -370,7 +374,7 @@ export function ProfilePage() {
             {logoUrl ? 'Replace Logo' : 'Upload Logo'}
           </button>
         </div>
-      </div>}
+      </div>
 
       {/* Personal Information */}
       <div className="bg-white rounded-xl border border-[#bec9bf]/40 overflow-hidden mb-6">
@@ -410,8 +414,8 @@ export function ProfilePage() {
         )}
       </div>
 
-      {/* Business Information — members only */}
-      {isMember && <div className="bg-white rounded-xl border border-[#bec9bf]/40 overflow-hidden mb-6">
+      {/* Business Information */}
+      <div className="bg-white rounded-xl border border-[#bec9bf]/40 overflow-hidden mb-6">
         <div className="px-6 py-4 border-b border-[#bec9bf]/40 flex items-center justify-between">
           <h2 className="font-medium text-[#221a0f]">Business Information</h2>
           {!editingBusiness && <Button variant="outline" onClick={startBizEdit}>Edit</Button>}
@@ -467,11 +471,11 @@ export function ProfilePage() {
             ))}
           </dl>
         )}
-      </div>}
+      </div>
 
-      {/* Membership Plan — members only */}
-      {isMember && membership && (
-        <div className="mt-0 bg-white rounded-xl border border-[#bec9bf]/40 overflow-hidden mb-6">
+      {/* Membership Plan */}
+      {membership && (
+        <div className="bg-white rounded-xl border border-[#bec9bf]/40 overflow-hidden mb-6">
           <div className="px-6 py-4 border-b border-[#bec9bf]/40 flex items-center justify-between">
             <h2 className="font-medium text-[#221a0f]">Membership Plan</h2>
             {membership.status && (

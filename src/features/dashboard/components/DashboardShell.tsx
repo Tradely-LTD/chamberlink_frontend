@@ -14,7 +14,7 @@ const pageTitles: Record<string, string> = {
   '/dashboard/trade-fair/booths': 'My Booths',
   '/dashboard/academy': 'Academy',
   '/dashboard/analytics': 'Analytics',
-  '/dashboard/admin': 'Admin Console',
+  '/dashboard/admin': 'Audit Log',
   '/dashboard/trade-corridors': 'Trade Corridors',
   '/dashboard/exporter-visibility': 'Exporter Visibility',
   '/dashboard/export-documents': 'Export Documents',
