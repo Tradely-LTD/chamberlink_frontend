@@ -60,6 +60,18 @@ export const authApi = emptyApi.injectEndpoints({
       query: () => '/auth/me',
       transformResponse: (res: ApiResponse<AuthUser>) => res.data,
     }),
+    enableMfa: builder.mutation<{ message: string }, void>({
+      query: () => ({ url: '/auth/mfa/enable', method: 'POST' }),
+      transformResponse: (res: ApiResponse<{ message: string }>) => res.data,
+    }),
+    requestMfaDisable: builder.mutation<{ message: string }, void>({
+      query: () => ({ url: '/auth/mfa/disable-request', method: 'POST' }),
+      transformResponse: (res: ApiResponse<{ message: string }>) => res.data,
+    }),
+    disableMfa: builder.mutation<{ message: string }, { code: string }>({
+      query: (body) => ({ url: '/auth/mfa/disable', method: 'POST', body }),
+      transformResponse: (res: ApiResponse<{ message: string }>) => res.data,
+    }),
   }),
 });
 
@@ -73,4 +85,7 @@ export const {
   useLogoutUserMutation,
   useGetMeQuery,
   useLazyGetMeQuery,
+  useEnableMfaMutation,
+  useRequestMfaDisableMutation,
+  useDisableMfaMutation,
 } = authApi;

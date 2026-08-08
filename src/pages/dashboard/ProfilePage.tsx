@@ -1,13 +1,121 @@
 import { useRef, useState } from 'react';
-import { useAppSelector } from '@shared/hooks/useAppDispatch';
+import { useAppDispatch, useAppSelector } from '@shared/hooks/useAppDispatch';
 import { useGetMemberProfileQuery } from '@features/dashboard/dashboardApi';
 import { useGetMembershipStatusQuery } from '@features/membership/membershipApi';
 import { useGetMyTenantQuery, useUpdateMyTenantMutation } from '@features/white-label';
+import {
+  useEnableMfaMutation,
+  useRequestMfaDisableMutation,
+  useDisableMfaMutation,
+} from '@features/auth/authApi';
+import { updateUser } from '@features/auth/authSlice';
 import { PageLoader } from '@shared/ui/PageLoader';
 import { ErrorBanner } from '@shared/ui/ErrorBanner';
 import { Button } from '@shared/ui/Button';
 import { Input } from '@shared/ui/Input';
 import { emptyApi } from '@shared/api/emptyApi';
+
+function errorMessage(err: unknown, fallback: string): string {
+  return (err as { data?: { message?: string } })?.data?.message ?? fallback;
+}
+
+/** Settings → Security row: lets the signed-in user turn MFA on/off for their own account. */
+function MfaSecurityRow() {
+  const dispatch = useAppDispatch();
+  const user = useAppSelector((s) => s.auth.user);
+  const [enableMfa, { isLoading: isEnabling }] = useEnableMfaMutation();
+  const [requestMfaDisable, { isLoading: isRequesting }] = useRequestMfaDisableMutation();
+  const [disableMfa, { isLoading: isConfirming }] = useDisableMfaMutation();
+  const [stage, setStage] = useState<'idle' | 'confirm-disable'>('idle');
+  const [code, setCode] = useState('');
+  const [error, setError] = useState('');
+
+  const handleEnable = async () => {
+    setError('');
+    try {
+      await enableMfa().unwrap();
+      dispatch(updateUser({ isMfaEnabled: true }));
+    } catch (err) {
+      setError(errorMessage(err, 'Could not enable MFA. Please try again.'));
+    }
+  };
+
+  const handleRequestDisable = async () => {
+    setError('');
+    try {
+      await requestMfaDisable().unwrap();
+      setStage('confirm-disable');
+    } catch (err) {
+      setError(errorMessage(err, 'Could not send a verification code. Please try again.'));
+    }
+  };
+
+  const handleConfirmDisable = async () => {
+    setError('');
+    try {
+      await disableMfa({ code }).unwrap();
+      dispatch(updateUser({ isMfaEnabled: false }));
+      setStage('idle');
+      setCode('');
+    } catch (err) {
+      setError(errorMessage(err, 'Invalid or expired code.'));
+    }
+  };
+
+  return (
+    <div>
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-sm font-medium text-[#221a0f]">Multi-Factor Authentication</p>
+          <p className="text-xs text-[#8A7E6E]">
+            {user?.isMfaEnabled
+              ? 'A verification code is required at login'
+              : 'No verification code is required at login'}
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <span
+            className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${user?.isMfaEnabled ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'}`}
+          >
+            {user?.isMfaEnabled ? 'Enabled' : 'Disabled'}
+          </span>
+          {stage === 'idle' &&
+            (user?.isMfaEnabled ? (
+              <Button variant="outline" loading={isRequesting} onClick={handleRequestDisable}>
+                Turn Off
+              </Button>
+            ) : (
+              <Button variant="outline" loading={isEnabling} onClick={handleEnable}>
+                Turn On
+              </Button>
+            ))}
+        </div>
+      </div>
+      {stage === 'confirm-disable' && (
+        <div className="mt-3 flex items-end gap-3 rounded-lg bg-[#f7f9f7] border border-[#bec9bf]/40 px-4 py-3">
+          <Input
+            label="Enter the code we emailed you"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            maxLength={6}
+          />
+          <Button loading={isConfirming} onClick={handleConfirmDisable}>Confirm</Button>
+          <Button
+            variant="outline"
+            onClick={() => {
+              setStage('idle');
+              setCode('');
+              setError('');
+            }}
+          >
+            Cancel
+          </Button>
+        </div>
+      )}
+      {error && <p className="mt-2 text-xs text-red-600">{error}</p>}
+    </div>
+  );
+}
 
 interface ApiResponse<T> { success: boolean; data: T; }
 
@@ -312,17 +420,7 @@ export function ProfilePage() {
                 {user?.isEmailVerified ? 'Verified' : 'Pending'}
               </span>
             </div>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-[#221a0f]">Multi-Factor Authentication</p>
-                <p className="text-xs text-[#8A7E6E]">
-                  {user?.isMfaEnabled ? 'MFA is active on this account' : 'MFA is required for admin accounts — please enable it'}
-                </p>
-              </div>
-              <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${user?.isMfaEnabled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-700'}`}>
-                {user?.isMfaEnabled ? 'Enabled' : 'Not Enabled'}
-              </span>
-            </div>
+            <MfaSecurityRow />
           </div>
         </div>
       </div>
@@ -524,15 +622,7 @@ export function ProfilePage() {
               {user?.isEmailVerified ? 'Verified' : 'Pending'}
             </span>
           </div>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-[#221a0f]">Multi-Factor Authentication</p>
-              <p className="text-xs text-[#8A7E6E]">{user?.isMfaEnabled ? 'MFA is enabled on your account' : 'MFA is not enabled'}</p>
-            </div>
-            <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${user?.isMfaEnabled ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'}`}>
-              {user?.isMfaEnabled ? 'Enabled' : 'Disabled'}
-            </span>
-          </div>
+          <MfaSecurityRow />
         </div>
       </div>
     </div>

@@ -44,10 +44,15 @@ const authSlice = createSlice({
     setPendingVerify: (state, action: PayloadAction<{ userId: string }>) => {
       state.pendingVerifyUserId = action.payload.userId;
     },
+    updateUser: (state, action: PayloadAction<Partial<AuthUser>>) => {
+      if (state.user) {
+        state.user = { ...state.user, ...action.payload };
+      }
+    },
     logout: () => initialState,
   },
 });
 
-export const { setCredentials, setPendingMfa, setPendingVerify, logout } =
+export const { setCredentials, setPendingMfa, setPendingVerify, updateUser, logout } =
   authSlice.actions;
 export default authSlice.reducer;
