@@ -21,7 +21,7 @@ import type { Course, Enrollment, CourseSection } from '@features/academy/academ
 
 // ── Constants ─────────────────────────────────────────────────────────────
 
-const ADMIN_ROLES = ['chamber_admin', 'kaccima_executive', 'super_admin', 'staff_operator'];
+const ADMIN_ROLES = ['chamber_admin', 'chamber_executive', 'super_admin', 'staff_operator'];
 
 const levelColor: Record<Course['level'], { bg: string; text: string }> = {
   beginner:     { bg: '#a0f4ca', text: '#005137' },
@@ -138,7 +138,7 @@ function CourseFormModal({
             </div>
             <div>
               <label className="block text-xs font-semibold text-[#44474e] mb-1">Instructor</label>
-              <input value={form.instructorName} onChange={set('instructorName')} placeholder="e.g. KACCIMA Trade Desk" className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none" />
+              <input value={form.instructorName} onChange={set('instructorName')} placeholder="e.g. NACCIMA Trade Desk" className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none" />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -1037,7 +1037,7 @@ function MemberAcademyView() {
       )}
 
       <div className="mb-6">
-        <h2 className="text-xl font-semibold text-[#191c1e]">KACCIMA Academy</h2>
+        <h2 className="text-xl font-semibold text-[#191c1e]">NACCIMA Academy</h2>
         <p className="text-sm text-[#74777f] mt-0.5">Training and capacity building for chamber members.</p>
       </div>
 

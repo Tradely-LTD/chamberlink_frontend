@@ -654,7 +654,7 @@ function WhiteLabelView() {
             Multi-Tenant White-Label Console
           </h2>
           <p className="text-sm text-[#74777f] mt-0.5">
-            Manage KACCIMA ERP tenants, branding, and module access.
+            Manage Chamberlink ERP tenants, branding, and module access.
           </p>
         </div>
         <button

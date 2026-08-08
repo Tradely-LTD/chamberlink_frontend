@@ -13,7 +13,7 @@ export interface TradeFairEvent {
   boothsAvailable: number;
   registrationDeadline?: string;
   imageUrl?: string | null;
-  kaccimaSharePct?: number;
+  hostSharePct?: number;
   tradelySharePct?: number;
 }
 
@@ -84,8 +84,8 @@ interface PaginatedResponse<T> {
 
 export const tradeFairApi = emptyApi.injectEndpoints({
   endpoints: (builder) => ({
-    getTradeFairEvents: builder.query<TradeFairEvent[], void>({
-      query: () => '/trade-fair/events',
+    getTradeFairEvents: builder.query<TradeFairEvent[], string>({
+      query: (tenantId) => ({ url: '/trade-fair/events', params: { tenantId } }),
       transformResponse: (res: ApiResponse<TradeFairEvent[]>) => res.data,
       providesTags: ['TradeFairEvents'],
     }),
@@ -156,13 +156,13 @@ export const tradeFairApi = emptyApi.injectEndpoints({
       providesTags: ['TradeFairBooths'],
     }),
 
-    createEvent: builder.mutation<TradeFairEvent, { title: string; venue: string; startDate: string; endDate: string; kaccimaSharePct: number; tradelySharePct: number; description?: string; registrationDeadline?: string }>({
+    createEvent: builder.mutation<TradeFairEvent, { title: string; venue: string; startDate: string; endDate: string; hostSharePct: number; tradelySharePct: number; description?: string; registrationDeadline?: string }>({
       query: (body) => ({ url: '/trade-fair/admin/events', method: 'POST', body }),
       transformResponse: (res: ApiResponse<TradeFairEvent>) => res.data,
       invalidatesTags: ['TradeFairEvents'],
     }),
 
-    updateEvent: builder.mutation<TradeFairEvent, { eventId: string } & Partial<{ title: string; venue: string; startDate: string; endDate: string; kaccimaSharePct: number; tradelySharePct: number; description: string; registrationDeadline: string; status: string }>>({
+    updateEvent: builder.mutation<TradeFairEvent, { eventId: string } & Partial<{ title: string; venue: string; startDate: string; endDate: string; hostSharePct: number; tradelySharePct: number; description: string; registrationDeadline: string; status: string }>>({
       query: ({ eventId, ...body }) => ({ url: `/trade-fair/admin/events/${eventId}`, method: 'PATCH', body }),
       transformResponse: (res: ApiResponse<TradeFairEvent>) => res.data,
       invalidatesTags: ['TradeFairEvents'],

@@ -1,4 +1,4 @@
-const KEY = 'kaccima_refresh_token';
+const KEY = 'chamberlink_refresh_token';
 
 export const tokenStorage = {
   get: (): string | null => localStorage.getItem(KEY),

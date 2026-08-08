@@ -543,7 +543,7 @@ export function MemberManagementPage() {
       const a = document.createElement('a');
       const dateStr = new Date().toISOString().slice(0, 10);
       a.href = url;
-      a.download = `kaccima-members-${dateStr}.csv`;
+      a.download = `naccima-members-${dateStr}.csv`;
       a.click();
       URL.revokeObjectURL(url);
     } finally {

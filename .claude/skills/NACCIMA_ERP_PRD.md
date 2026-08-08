@@ -1,13 +1,16 @@
 # Product Requirements Document (PRD)
-## KACCIMA Digital Transformation — ERP & Digital Portal
+## Chamberlink — Chamber of Commerce Digital Platform & ERP
 
-**Project Codename:** KACCIMA ERP  
-**Document Version:** 1.2  
-**Date:** January 2026  
-**Prepared by:** Tradely LTD.  
-**Prepared for:** The President and Executive Council, Kano Chamber of Commerce, Industry, Mines, and Agriculture (KACCIMA)  
-**Document Owner:** Abubakar Kabiru Abubakar, CEO — Tradely LTD.  
-**Contact:** ceo@tradelyx.com | +234 806 950 6695
+**Project Codename:** Chamberlink
+**Document Version:** 1.3
+**Date:** January 2026 (corrected 2026-08-03)
+**Prepared by:** Tradely LTD.
+**Status:** Reference / template PRD. **No chamber partner agreement has been
+signed.** All chamber-specific content in this document (obligations, KPIs,
+transfer terms, sign-off roles) is illustrative of the intended commercial
+model, not a record of an executed agreement. Chamberlink is a standalone
+Tradely LTD. product with no dependency on, or involvement with, any other
+Tradely LTD. product or platform.
 
 ---
 
@@ -44,12 +47,18 @@
 |---------|------|---------|
 | 1.0 | Jan 25, 2026 | Initial PRD — all five modules, full functional and non-functional requirements |
 | 1.2 | Jan 2026 | Added: digital-first engineering guardrails, split-settlement architecture, expanded RBAC roles, CCPI branding, HS code fields in eCO, SVG booth map + QR scanning spec, document versioning, TLS 1.3 + ISO 27001 + NDPA compliance, auto-scaling NFR, Remita + Twilio integrations, expanded 3-tier KPI framework |
+| 1.3 | 2026-08-03 | **Correction pass:** generalized all chamber-specific naming and signed-agreement framing (no chamber partner agreement is executed); removed all references to "TradelyX" as a delivery platform or integration dependency (Chamberlink is standalone); removed personal contact details (name, phone, email) from the document header and sign-off section |
 
 ---
 
 ## 1. Document Purpose & Scope
 
-This Product Requirements Document (PRD) defines the functional and non-functional requirements for the **KACCIMA ERP and Digital Portal**, a comprehensive enterprise-grade platform to be built, operated, and eventually transferred to KACCIMA by Tradely LTD.
+This Product Requirements Document (PRD) defines the functional and
+non-functional requirements for **Chamberlink**, a comprehensive
+enterprise-grade platform to be built and operated by Tradely LTD., with
+transfer terms to be negotiated with a chamber partner under a prospective
+Build-Operate-Transfer (BOT)-style commercial model. **No agreement is signed
+as of this writing.**
 
 The document serves as the single source of truth for:
 - Product scope and module definitions
@@ -59,15 +68,19 @@ The document serves as the single source of truth for:
 - Revenue and commercial framework
 - Risk registry
 
-**Scope:** All five modules of the KACCIMA ERP — Revenue & Governance Core, Trade Facilitation & Finance, Business Intelligence & Data Monetization, Trade Promotion & Market Access, and Capacity Building & Platform Replication — delivered via the TradelyX platform infrastructure.
+**Scope:** All five modules — Revenue & Governance Core, Trade Facilitation &
+Finance, Business Intelligence & Data Monetization, Trade Promotion & Market
+Access, and Capacity Building & Platform Replication.
 
 ---
 
 ## 2. Background & Problem Statement
 
-### 2.1 About KACCIMA
+### 2.1 About the Target Chambers
 
-The Kano Chamber of Commerce, Industry, Mines, and Agriculture (KACCIMA) is one of Nigeria's most prominent and historically significant chambers of commerce, representing thousands of businesses across the Kano commercial ecosystem — the trade hub of Northern Nigeria.
+Chamberlink targets chambers of commerce — membership-based trade bodies that
+represent large numbers of local businesses and serve as a hub for commercial
+activity, trade documentation, and business advocacy within their region.
 
 ### 2.2 Current Challenges
 
@@ -76,53 +89,80 @@ The Kano Chamber of Commerce, Industry, Mines, and Agriculture (KACCIMA) is one 
 | Manual membership registration and renewal processes | Revenue leakage, poor record-keeping, administrative bottlenecks |
 | Paper-based Certificate of Origin issuance | Slow turnaround, forgery risk, inability to verify at scale |
 | Fragmented event and trade fair management | Missed revenue opportunities, poor exhibitor experience |
-| No centralized member data or trade intelligence | Inability to leverage KACCIMA's data asset for revenue or policy |
+| No centralized member data or trade intelligence | Inability to leverage a chamber's data asset for revenue or policy |
 | No digital payment rails for member services | Cash handling risk, untracked transactions, audit gaps |
 | Disconnected trade documentation processes | Exporters face delays; banks lack verification tools |
-| No structured platform for SME finance enablement | Reduced access to trade finance for KACCIMA members |
+| No structured platform for SME finance enablement | Reduced access to trade finance for chamber members |
 
 ### 2.3 Opportunity
 
-KACCIMA sits at the center of Northern Nigeria's trade ecosystem. A fit-for-purpose ERP platform would:
+A chamber sitting at the center of its region's trade ecosystem could use a
+fit-for-purpose ERP platform to:
 - Formalize and accelerate revenue collection from existing service lines
 - Create entirely new digital revenue streams (data, APIs, trade finance)
-- Position KACCIMA as the definitive digital gateway for trade in Northern Nigeria
+- Position itself as a definitive digital gateway for trade in its market
 - Provide a replicable model for other chambers across Nigeria and Africa
 
 ---
 
 ## 3. Partnership & Commercial Model
 
+> **Status note:** everything in this section describes the *proposed*
+> commercial structure Tradely LTD. intends to use with chamber partners.
+> **No such agreement has been executed with any chamber as of this
+> writing** — treat all obligations, terms, and KPIs below as prospective,
+> not contractual.
+
 ### 3.1 Build-Operate-Transfer (BOT) Model
 
-The platform is delivered under a **zero upfront cost** BOT agreement. Tradely LTD. bears all development, hosting, maintenance, and security costs. Revenue recovery is via transaction fees only.
+The platform is designed to be delivered under a **zero upfront cost** BOT
+agreement. Tradely LTD. would bear all development, hosting, maintenance, and
+security costs. Revenue recovery would be via transaction fees only.
 
-### 3.2 Tradely LTD. Obligations
+### 3.2 Tradely LTD. Obligations (proposed)
 
 - Fund 100% of design, development, testing, and deployment
 - Manage all technical operations including hosting, uptime, and security
-- Provide ongoing maintenance, feature updates, and support for the duration of the agreement
+- Provide ongoing maintenance, feature updates, and support for the duration
+  of the agreement
 - Ensure platform availability targets are met (see Section 9)
 
-### 3.3 KACCIMA Obligations
+### 3.3 Chamber Partner Obligations (proposed)
 
-- Grant Tradely LTD. **exclusivity** as digital platform provider for all covered services
-- Enforce a **digital-first mandate**: all covered service payments processed through the platform
+- Grant Tradely LTD. **exclusivity** as digital platform provider for all
+  covered services
+- Enforce a **digital-first mandate**: all covered service payments processed
+  through the platform
 - Provide timely data, approvals, and cooperation required for development
 - Actively promote platform adoption among its membership
 
 ### 3.3 Digital-First Mandate — Engineering Guardrails
 
-Because the platform's entire commercial model depends on digital transaction volume, the following constraints are non-negotiable at the architecture level:
+Because the platform's entire commercial model depends on digital transaction
+volume, the following constraints are treated as non-negotiable at the
+architecture level regardless of which chamber eventually signs on:
 
-- **No Bypass Paths:** System workflows must completely eliminate manual, off-platform cash or cheque administration paths for all covered service categories. There shall be no back-door for staff to process payments outside the platform.
-- **Frictionless Fee Collection:** Every service, application, data request, and educational enrollment must route through an integrated, automated split-fee checkout mechanism to continuously secure Tradely LTD.'s ROI recovery throughout the 10-year term.
-- **Split-Settlement Automation:** Every transaction must execute real-time fee-routing logic. Revenue splits must be distributed instantly at the gateway level into designated corporate bank accounts for KACCIMA and Tradely LTD., based on pre-configured rule matrices — no manual reconciliation required.
+- **No Bypass Paths:** System workflows must completely eliminate manual,
+  off-platform cash or cheque administration paths for all covered service
+  categories. There shall be no back-door for staff to process payments
+  outside the platform.
+- **Frictionless Fee Collection:** Every service, application, data request,
+  and educational enrollment must route through an integrated, automated
+  split-fee checkout mechanism to secure Tradely LTD.'s ROI recovery across
+  the proposed contract term.
+- **Split-Settlement Automation:** Every transaction must execute real-time
+  fee-routing logic. Revenue splits must be distributed instantly at the
+  gateway level into designated corporate bank accounts for the chamber
+  partner and Tradely LTD., based on pre-configured rule matrices — no manual
+  reconciliation required.
 
-### 3.4 Transfer Terms
+### 3.4 Transfer Terms (proposed)
 
-- At the end of the **10-year partnership term**, full software ownership and source code are transferred to KACCIMA
-- Tradely LTD. retains the right to replicate and white-label the architecture for other chambers (with KACCIMA benefiting from a licensing revenue share — see Module 5)
+- At the end of the proposed **10-year partnership term**, full software
+  ownership and source code would transfer to the chamber partner
+- Tradely LTD. would retain the right to replicate and white-label the
+  architecture for other chambers (the flagship chamber partner would benefit
+  from a licensing revenue share — see Module 5)
 
 ---
 
@@ -130,11 +170,15 @@ Because the platform's entire commercial model depends on digital transaction vo
 
 ### 4.1 Business Goals
 
-1. Digitize 100% of KACCIMA's core revenue-generating services within 12 months
+1. Digitize 100% of a partner chamber's core revenue-generating services
+   within 12 months of go-live
 2. Eliminate cash/manual payment for all covered service categories
-3. Generate a self-sustaining, growing revenue stream for both KACCIMA and Tradely LTD.
-4. Position KACCIMA as Nigeria's most digitally advanced chamber of commerce
-5. Enable KACCIMA members to access trade finance, export markets, and business intelligence through a single platform
+3. Generate a self-sustaining, growing revenue stream for both the chamber
+   partner and Tradely LTD.
+4. Position the partner chamber as the most digitally advanced chamber of
+   commerce in its market
+5. Enable chamber members to access trade finance, export markets, and
+   business intelligence through a single platform
 
 ### 4.2 Key Performance Indicators (KPIs)
 
@@ -148,7 +192,7 @@ Because the platform's entire commercial model depends on digital transaction vo
 | Trade Fair booths managed digitally | 100% | 100% |
 | Banks/FIs subscribed to trade finance module | 3 | 10+ |
 | Trade intelligence reports sold | 50 | 300+/year |
-| KACCIMA Academy enrollments | 100 | 1,000+/year |
+| Chamber Academy enrollments | 100 | 1,000+/year |
 
 #### Financial Infrastructure KPIs
 
@@ -182,10 +226,10 @@ Because the platform's entire commercial model depends on digital transaction vo
 
 | Stakeholder | Role | Involvement |
 |-------------|------|-------------|
-| KACCIMA President & Executive Council | Executive Sponsor | Final approval, policy mandate |
-| KACCIMA Secretariat (Admin Staff) | Primary Operators | Daily platform operations, membership management |
-| KACCIMA Members (SMEs, Exporters) | End Users | Service consumers, fee payers |
-| Tradely LTD. (CEO + Engineering Team) | Platform Developer & Operator | Build, deploy, operate, maintain |
+| Chamber President & Executive Council | Executive Sponsor | Final approval, policy mandate |
+| Chamber Secretariat (Admin Staff) | Primary Operators | Daily platform operations, membership management |
+| Chamber Members (SMEs, Exporters) | End Users | Service consumers, fee payers |
+| Tradely LTD. (Engineering Team) | Platform Developer & Operator | Build, deploy, operate, maintain |
 | Nigerian Customs Service | Integration Partner | Export documentation verification |
 | Commercial Banks & MFBs | Institutional Subscribers | Trade finance verification module |
 | Embassies & Foreign Chambers | Trade Promotion Partners | Sponsored trade corridors |
@@ -195,12 +239,12 @@ Because the platform's entire commercial model depends on digital transaction vo
 
 ## 6. User Personas
 
-### Persona 1: The KACCIMA Administrator
+### Persona 1: The Chamber Administrator
 - **Role:** Secretariat staff managing memberships, certifications, and events
 - **Goals:** Reduce manual workload, have real-time visibility of dues and applications, generate reports easily
 - **Pain Points:** Chasing members for dues, manually printing certificates, reconciling cash payments
 
-### Persona 2: The KACCIMA Exporter Member
+### Persona 2: The Chamber Exporter Member
 - **Role:** SME exporter (agro-commodities, leather, solid minerals, manufactured goods)
 - **Goals:** Get documents quickly, verify status, access finance, find buyers
 - **Pain Points:** Long certificate processing times, difficulty proving creditworthiness to banks, lack of market intelligence
@@ -211,13 +255,13 @@ Because the platform's entire commercial model depends on digital transaction vo
 - **Pain Points:** Fraudulent documents, no centralized verification source, manual KYC for trade clients
 
 ### Persona 4: The Trade Fair Exhibitor
-- **Role:** Business looking to showcase products at the KACCIMA Trade Fair
+- **Role:** Business looking to showcase products at a chamber's Trade Fair
 - **Goals:** Easily reserve booth, pay online, receive confirmation and digital materials
 - **Pain Points:** Manual booking process, unclear booth availability, slow payment confirmation
 
 ### Persona 5: The Data/Intelligence Buyer
 - **Role:** Policy researcher, investor, commodity trader, or government agency
-- **Goals:** Access reliable, current data on Kano's trade flows, commodity pricing, and exporter profiles
+- **Goals:** Access reliable, current data on regional trade flows, commodity pricing, and exporter profiles
 - **Pain Points:** Data fragmented across multiple unverified sources
 
 ---
@@ -228,13 +272,14 @@ Because the platform's entire commercial model depends on digital transaction vo
 
 ### 7.1 Module 1: Revenue & Governance Core
 
-**Purpose:** Automate and digitize KACCIMA's foundational revenue streams — membership dues, certificate issuance, and event management.
+**Purpose:** Automate and digitize a chamber's foundational revenue streams —
+membership dues, certificate issuance, and event management.
 
 ---
 
 #### Feature 1.1: Membership Management System
 
-**Description:** A full-lifecycle digital membership platform enabling registration, renewal, tier management, and self-service for KACCIMA members.
+**Description:** A full-lifecycle digital membership platform enabling registration, renewal, tier management, and self-service for chamber members.
 
 **Functional Requirements:**
 
@@ -244,7 +289,7 @@ Because the platform's entire commercial model depends on digital transaction vo
 | MM-02 | Members shall be able to register online via web and mobile (iOS & Android) |
 | MM-03 | System shall send automated dues reminders via WhatsApp and Email at configurable intervals (e.g., 60 days, 30 days, 7 days, and day-of expiry) |
 | MM-04 | Members shall have a self-service dashboard to view membership status, renewal history, certificates, and transaction history |
-| MM-05 | Admin dashboard shall allow KACCIMA staff to view, search, filter, and export the full member database |
+| MM-05 | Admin dashboard shall allow chamber staff to view, search, filter, and export the full member database |
 | MM-06 | System shall generate and store a unique Member ID and digital membership card (with QR code) upon successful payment |
 | MM-07 | System shall support bulk onboarding of existing members via CSV import |
 | MM-08 | Expired members shall be automatically flagged and lose access to restricted services until renewal |
@@ -256,7 +301,7 @@ Because the platform's entire commercial model depends on digital transaction vo
 
 #### Feature 1.2: E-Certificate of Origin (eCO) Engine
 
-**Description:** A secure, end-to-end digital workflow for applying for, paying for, and receiving KACCIMA-issued Certificates of Origin, with QR-code verification.
+**Description:** A secure, end-to-end digital workflow for applying for, paying for, and receiving chamber-issued Certificates of Origin, with QR-code verification.
 
 **Functional Requirements:**
 
@@ -264,8 +309,8 @@ Because the platform's entire commercial model depends on digital transaction vo
 |----|-------------|
 | ECO-01 | Members shall submit eCO applications online via a guided single-page wizard, declaring: HS codes, cargo weight, shipping method, container IDs, destination market, and uploading required supporting documents (commercial invoice, packing list, etc.) |
 | ECO-02 | System shall enforce an active membership check before allowing eCO application submission |
-| ECO-03 | KACCIMA admin shall have a structured workflow queue to review, approve, reject, or request revision of applications. Rejection actions must include pre-set reason templates for common issues. All actions are logged with timestamp and actor identity. |
-| ECO-04 | Approved eCOs shall be digitally signed and stamped with KACCIMA's electronic seal, a unique certificate number, and an invisible cryptographic watermark to prevent forgery and ensure tamper-evidence |
+| ECO-03 | Chamber admin shall have a structured workflow queue to review, approve, reject, or request revision of applications. Rejection actions must include pre-set reason templates for common issues. All actions are logged with timestamp and actor identity. |
+| ECO-04 | Approved eCOs shall be digitally signed and stamped with the chamber's electronic seal, a unique certificate number, and an invisible cryptographic watermark to prevent forgery and ensure tamper-evidence |
 | ECO-05 | Each eCO shall embed a unique QR code that, when scanned, returns the certificate's authenticity status via a public verification endpoint |
 | ECO-06 | Approved eCOs shall be delivered to the member's dashboard and via email as a tamper-evident PDF |
 | ECO-07 | System shall maintain an auditable log of all certificate issuances, amendments, and verifications |
@@ -278,7 +323,7 @@ Because the platform's entire commercial model depends on digital transaction vo
 
 #### Feature 1.3: Trade Fair & Event Management System
 
-**Description:** Full digital management of KACCIMA's annual Trade Fair and other events, from booth selection to payment and communication.
+**Description:** Full digital management of a chamber's annual Trade Fair and other events, from booth selection to payment and communication.
 
 **Functional Requirements:**
 
@@ -300,7 +345,7 @@ Because the platform's entire commercial model depends on digital transaction vo
 
 ### 7.2 Module 2: Trade Facilitation & Finance
 
-**Purpose:** Streamline export documentation and enable trade finance access for KACCIMA members.
+**Purpose:** Streamline export documentation and enable trade finance access for chamber members.
 
 ---
 
@@ -312,14 +357,13 @@ Because the platform's entire commercial model depends on digital transaction vo
 
 | ID | Requirement |
 |----|-------------|
-| DTD-01 | System shall provide template-based document generation for: Commercial Invoice, Packing List, Export Declaration, and KACCIMA Verification Letter |
+| DTD-01 | System shall provide template-based document generation for: Commercial Invoice, Packing List, Export Declaration, and Chamber Verification Letter |
 | DTD-02 | Members shall be able to create, save, and reuse document templates for repeat shipments |
-| DTD-03 | All generated documents shall be stamped with KACCIMA's digital seal and a unique reference number |
+| DTD-03 | All generated documents shall be stamped with the chamber's digital seal and a unique reference number |
 | DTD-04 | Documents shall be downloadable as PDF and shareable via a secure, time-limited link |
 | DTD-05 | System shall maintain a searchable document history per member |
 | DTD-06 | System shall support document versioning — exporters and admins can track revision history for documents amended during customs clearance processes |
-| DTD-07 | Bundled service pricing shall be configurable by admin (e.g., per document or per bundle) |
-| DTD-07 | Revenue shall be split between KACCIMA and Tradely LTD. per agreed commercial terms |
+| DTD-07 | Bundled service pricing shall be configurable by admin (e.g., per document or per bundle); revenue shall be split between the chamber partner and Tradely LTD. per agreed commercial terms |
 
 **Revenue Stream:** Bundled service pricing with revenue sharing.
 
@@ -327,7 +371,7 @@ Because the platform's entire commercial model depends on digital transaction vo
 
 #### Feature 2.2: Trade Finance Enablement
 
-**Description:** A verification and credit-profiling service that allows banks and financial institutions to validate KACCIMA member exporters and their documents.
+**Description:** A verification and credit-profiling service that allows banks and financial institutions to validate chamber member exporters and their documents.
 
 **Functional Requirements:**
 
@@ -347,13 +391,13 @@ Because the platform's entire commercial model depends on digital transaction vo
 
 ### 7.3 Module 3: Business Intelligence & Data Monetization
 
-**Purpose:** Leverage KACCIMA's unique data position to generate intelligence products for sale to researchers, investors, policymakers, and market participants.
+**Purpose:** Leverage a chamber's unique data position to generate intelligence products for sale to researchers, investors, policymakers, and market participants.
 
 ---
 
-#### Feature 3.1: Kano Trade Intelligence Reports
+#### Feature 3.1: Regional Trade Intelligence Reports
 
-**Description:** Sector-specific, data-driven reports on trade flows, commodity pricing, and market trends across KACCIMA's key sectors.
+**Description:** Sector-specific, data-driven reports on trade flows, commodity pricing, and market trends across a chamber's key sectors.
 
 **Functional Requirements:**
 
@@ -373,7 +417,7 @@ Because the platform's entire commercial model depends on digital transaction vo
 
 #### Feature 3.2: Verified Business Data APIs
 
-**Description:** A developer-facing API that allows authorized third parties to programmatically query and verify KACCIMA member and exporter data.
+**Description:** A developer-facing API that allows authorized third parties to programmatically query and verify chamber member and exporter data.
 
 **Functional Requirements:**
 
@@ -393,7 +437,7 @@ Because the platform's entire commercial model depends on digital transaction vo
 
 ### 7.4 Module 4: Trade Promotion & Market Access
 
-**Purpose:** Connect KACCIMA members to new markets and provide visibility services to exporters seeking international buyers.
+**Purpose:** Connect chamber members to new markets and provide visibility services to exporters seeking international buyers.
 
 ---
 
@@ -415,16 +459,16 @@ Because the platform's entire commercial model depends on digital transaction vo
 
 #### Feature 4.2: Premium Exporter Visibility
 
-**Description:** Paid digital visibility services for KACCIMA members on the portal and TradelyX platform.
+**Description:** Paid digital visibility services for chamber members on the chamber's own portal.
 
 **Functional Requirements:**
 
 | ID | Requirement |
 |----|-------------|
-| PEV-01 | Members shall be able to purchase featured listings on the KACCIMA Member Directory |
+| PEV-01 | Members shall be able to purchase featured listings on the Chamber Member Directory |
 | PEV-02 | System shall offer a "Verified Exporter" badge for members meeting defined criteria (active membership, eCO history, trade documentation record) |
 | PEV-03 | Homepage spotlight placements shall be available on a time-bound, paid basis |
-| PEV-04 | Premium listings shall also surface on the TradelyX platform, extending reach to TradelyX's buyer network across 13+ countries |
+| PEV-04 | *(Removed — Chamberlink is a standalone platform. This requirement previously described cross-platform reach via a separate marketplace product; no such integration exists or is planned.)* |
 | PEV-05 | Admin shall manage all visibility packages, pricing, and active placements through a control panel |
 
 ---
@@ -435,9 +479,9 @@ Because the platform's entire commercial model depends on digital transaction vo
 
 ---
 
-#### Feature 5.1: KACCIMA Academy — Professional Trade Certifications
+#### Feature 5.1: Chamber Academy — Professional Trade Certifications
 
-**Description:** A digital learning and certification platform under the KACCIMA brand, issuing recognized certifications in trade operations and compliance.
+**Description:** A digital learning and certification platform under the chamber's own brand, issuing recognized certifications in trade operations and compliance.
 
 **Functional Requirements:**
 
@@ -447,13 +491,13 @@ Because the platform's entire commercial model depends on digital transaction vo
 | ACD-02 | Learners shall be able to enroll, pay, and access course materials through the portal |
 | ACD-03 | System shall administer online assessments with automated grading |
 | ACD-04 | Successful completions shall trigger issuance of a digitally signed, verifiable certificate with QR code |
-| ACD-05 | KACCIMA shall be able to configure course offerings, pricing, and certification criteria through an admin panel |
+| ACD-05 | The chamber shall be able to configure course offerings, pricing, and certification criteria through an admin panel |
 
 ---
 
 #### Feature 5.2: White-Label ERP Replication
 
-**Description:** A white-label version of the KACCIMA ERP offered to other chambers of commerce across Nigeria and Africa.
+**Description:** A white-label version of the platform offered to other chambers of commerce across Nigeria and Africa.
 
 **Functional Requirements:**
 
@@ -461,7 +505,7 @@ Because the platform's entire commercial model depends on digital transaction vo
 |----|-------------|
 | WL-01 | Platform architecture shall support multi-tenancy — each white-label instance is logically isolated with its own branding, data, and admin |
 | WL-02 | Tradely LTD. shall manage white-label licensing and onboarding of new chambers |
-| WL-03 | KACCIMA shall receive a defined revenue share on all white-label licensing fees earned |
+| WL-03 | The flagship chamber partner shall receive a defined revenue share on all white-label licensing fees earned |
 | WL-04 | White-label instances shall be configurable to include any subset of the five modules |
 
 ---
@@ -472,7 +516,7 @@ These requirements apply across all modules.
 
 | ID | Requirement |
 |----|-------------|
-| CR-01 | **Authentication & IAM:** The platform shall enforce granular Role-Based Access Control (RBAC) with the following distinct roles and permission scopes: **Super Admin** (Tradely LTD. — full system access); **KACCIMA Executive Leadership** (high-level analytics dashboards and strategic approvals, read-only financial summaries); **Chamber Administrator / Clerk** (verification queues, audit logs, dispute remediation); **Staff Operator** (day-to-day membership and certificate processing); **Registered Member / Exporter** (self-service profile, documentation, wallet); **Institutional Subscriber / Bank** (data lookup, credit report validation, API controls); **General Public / Foreign Buyer** (member directory search, public certificate verification, event ticketing). MFA via SMS OTP or Email OTP is mandatory for all Admin and Institutional roles. Sessions secured via JWT with sliding expiration. |
+| CR-01 | **Authentication & IAM:** The platform shall enforce granular Role-Based Access Control (RBAC) with the following distinct roles and permission scopes: **Super Admin** (Tradely LTD. — full system access); **Chamber Executive Leadership** (high-level analytics dashboards and strategic approvals, read-only financial summaries); **Chamber Administrator / Clerk** (verification queues, audit logs, dispute remediation); **Staff Operator** (day-to-day membership and certificate processing); **Registered Member / Exporter** (self-service profile, documentation, wallet); **Institutional Subscriber / Bank** (data lookup, credit report validation, API controls); **General Public / Foreign Buyer** (member directory search, public certificate verification, event ticketing). MFA via SMS OTP or Email OTP is mandatory for all Admin and Institutional roles. Sessions secured via JWT with sliding expiration. |
 | CR-02 | **Payments:** All payment processing shall integrate with multiple West African payment gateways (Paystack, Flutterwave, Remita) to support: card networks (Visa, Mastercard, Verve), instant bank transfers, USSD, and Mobile Money / NQR. Automatic failover between gateways is required. Split-settlement must execute at the gateway layer in real time per pre-configured rule matrices. |
 | CR-03 | **Notifications:** The system shall deliver transactional and promotional notifications via Email and WhatsApp (using approved WhatsApp Business API) |
 | CR-04 | **Reporting:** All modules shall expose an admin reporting panel with export functionality (CSV, PDF) |
@@ -526,7 +570,7 @@ These requirements apply across all modules.
 
 ### 9.5 Usability
 
-- Admin interfaces shall require no more than 2 hours of training for KACCIMA staff
+- Admin interfaces shall require no more than 2 hours of training for chamber staff
 - Member-facing flows shall require no prior technical knowledge
 - All critical user flows (membership renewal, eCO application, booth booking) shall be completable in under 5 minutes
 
@@ -534,9 +578,16 @@ These requirements apply across all modules.
 
 ## 10. Technical Architecture Overview
 
+> Note: this section is the PRD's original *recommended* stack. The team's
+> actual implementation is the Modular Express MVC stack documented in
+> `architecture.md` and `CHAMBERLINK_CONTEXT.md` — those win where the two
+> differ.
+
 ### 10.1 Delivery Platform
 
-The KACCIMA ERP is built on and delivered via the **TradelyX platform infrastructure** — Tradely LTD.'s existing cloud-native B2B trade platform.
+Chamberlink is a **standalone product built and delivered directly by Tradely
+LTD.** — it has no dependency on, or integration with, any other Tradely LTD.
+product or platform.
 
 ### 10.2 Technology Stack (Recommended)
 
@@ -572,7 +623,6 @@ The KACCIMA ERP is built on and delivered via the **TradelyX platform infrastruc
 | Nigerian Customs Service API (NCS) | Module 2 | Export declaration validation |
 | CAC (Corporate Affairs Commission) | Module 2 | Business registration verification |
 | BVN/NIN Verification (NIBSS) | Module 2 | KYC for trade finance |
-| TradelyX Marketplace | Module 4 | Exporter visibility to international buyers |
 | Google Analytics / Mixpanel | All | User behavior analytics |
 
 ---
@@ -583,11 +633,11 @@ The KACCIMA ERP is built on and delivered via the **TradelyX platform infrastruc
 
 | Phase | Focus | Duration | Key Deliverables |
 |-------|-------|----------|-----------------|
-| **Phase 1** | Revenue Foundation | 6 Weeks | Membership Portal, E-Certificate Engine, KACCIMA Landing Page |
+| **Phase 1** | Revenue Foundation | 6 Weeks | Membership Portal, E-Certificate Engine, Chamber Landing Page |
 | **Phase 2** | Trade Facilitation | 4 Weeks | Digital Trade Documentation, Trade Finance Verification Module |
 | **Phase 3** | Event Readiness | 4 Weeks | Trade Fair Management System, Communication Tools |
 | **Phase 4** | Intelligence & Data | 8 Weeks | Trade Intelligence Reports, Verified Business Data APIs |
-| **Phase 5** | Scale & Replication | 6 Weeks | KACCIMA Academy, White-Label ERP Framework |
+| **Phase 5** | Scale & Replication | 6 Weeks | Chamber Academy, White-Label ERP Framework |
 
 **Total Estimated Timeline:** ~28 weeks (7 months) from project kickoff
 
@@ -595,19 +645,19 @@ The KACCIMA ERP is built on and delivered via the **TradelyX platform infrastruc
 
 ### Phase 1 Detail: Revenue Foundation (Weeks 1–6)
 
-**Goal:** Get KACCIMA's core revenue streams live and collecting digital payments immediately.
+**Goal:** Get a chamber's core revenue streams live and collecting digital payments immediately.
 
 | Week | Activity |
 |------|----------|
 | 1–2 | Requirements finalization, design system setup, infrastructure provisioning |
 | 3–4 | Membership portal development (registration, renewal, dues payment) |
 | 5 | eCO engine development (application flow, approval workflow, PDF generation) |
-| 6 | QA, UAT with KACCIMA admin, KACCIMA landing page launch, go-live |
+| 6 | QA, UAT with chamber admin, chamber landing page launch, go-live |
 
 **Go/No-Go Criteria:**
 - Membership registration and payment flow functional end-to-end
 - eCO application, approval, and delivery flow functional
-- KACCIMA admin can log in and manage both workflows
+- Chamber admin can log in and manage both workflows
 - Payment gateway processing real transactions
 
 ---
@@ -638,7 +688,7 @@ The KACCIMA ERP is built on and delivered via the **TradelyX platform infrastruc
 
 ### Phase 4 Detail: Intelligence & Data (Weeks 15–22)
 
-**Goal:** Monetize KACCIMA's data through reports and APIs.
+**Goal:** Monetize a chamber's data through reports and APIs.
 
 | Week | Activity |
 |------|----------|
@@ -651,7 +701,7 @@ The KACCIMA ERP is built on and delivered via the **TradelyX platform infrastruc
 
 ### Phase 5 Detail: Scale & Replication (Weeks 23–28)
 
-**Goal:** Launch KACCIMA Academy and prepare the white-label framework.
+**Goal:** Launch Chamber Academy and prepare the white-label framework.
 
 | Week | Activity |
 |------|----------|
@@ -670,19 +720,19 @@ The KACCIMA ERP is built on and delivered via the **TradelyX platform infrastruc
 | Membership Management | % of dues collected | Per-transaction fee on all dues processed |
 | E-Certificate of Origin | Flat fee per certificate | Fee applied at payment confirmation |
 | Trade Fair & Events | Commission on sales | % of booth, ticket, and sponsorship revenue |
-| Trade Documentation | Bundled service fee | Per-document or per-bundle charge; revenue split with KACCIMA |
+| Trade Documentation | Bundled service fee | Per-document or per-bundle charge; revenue split with the chamber partner |
 | Trade Finance Verification | Per-verification fee + subscriptions | Ad hoc fee or monthly/annual institutional subscription |
 | Trade Intelligence Reports | Pay-per-report + subscriptions | Direct sales; individual or annual |
 | Verified Business Data APIs | Licensing + pay-per-call | Tiered access billing |
 | Trade Promotion | Sponsorship and visibility fees | Paid corridor sponsorships, featured listings |
-| KACCIMA Academy | % of course fees | Per-enrollment commission |
-| White-Label Licensing | Licensing revenue share | KACCIMA receives defined % of licensing fees |
+| Chamber Academy | % of course fees | Per-enrollment commission |
+| White-Label Licensing | Licensing revenue share | Flagship chamber partner receives a defined % of licensing fees |
 
-### 13.2 Investment Recovery Model
+### 13.2 Investment Recovery Model (proposed)
 
-- All Tradely LTD. development and operational costs are recouped exclusively through the above transaction fees
-- No cost is passed to KACCIMA at any point during the 10-year term
-- Financial projections and fee schedule to be documented in the Commercial Agreement (separate from this PRD)
+- All Tradely LTD. development and operational costs would be recouped exclusively through the above transaction fees
+- No cost would be passed to the chamber partner at any point during the proposed 10-year term
+- Financial projections and fee schedule to be documented in a future Commercial Agreement (separate from this PRD, not yet executed)
 
 ---
 
@@ -690,14 +740,14 @@ The KACCIMA ERP is built on and delivered via the **TradelyX platform infrastruc
 
 | Risk | Probability | Impact | Mitigation |
 |------|-------------|--------|------------|
-| Low member adoption of digital payments | Medium | High | Dedicated onboarding campaign; WhatsApp-first UX; KACCIMA digital-first mandate enforcement |
-| Delays in KACCIMA data/approvals during build | Medium | High | Dedicated project liaison from KACCIMA; weekly steering committee check-ins |
+| Low member adoption of digital payments | Medium | High | Dedicated onboarding campaign; WhatsApp-first UX; digital-first mandate enforcement |
+| Delays in chamber partner data/approvals during build | Medium | High | Dedicated project liaison from the chamber partner; weekly steering committee check-ins |
 | Regulatory changes to eCO standards | Low | High | Modular architecture allows eCO engine to be updated independently; maintain liaison with FMITI |
 | Payment gateway failures | Low | High | Dual gateway integration (Paystack + Flutterwave) with automatic failover |
 | Cybersecurity breach | Low | Critical | Quarterly pen testing, MFA enforcement for admin roles, NDPR compliance, regular security audits |
-| Staff resistance at KACCIMA | Medium | Medium | Training sessions, change management support, phased rollout |
+| Staff resistance at the chamber partner | Medium | Medium | Training sessions, change management support, phased rollout |
 | Scope creep | Medium | Medium | This PRD as contractually binding scope document; change request process required for additions |
-| White-label replication cannibalizing KACCIMA's uniqueness | Low | Low | KACCIMA branded as "pioneer" in all white-label marketing; KACCIMA benefits financially from replications |
+| White-label replication cannibalizing the flagship chamber partner's uniqueness | Low | Low | Flagship chamber partner branded as "pioneer" in all white-label marketing; benefits financially from replications |
 
 ---
 
@@ -705,19 +755,19 @@ The KACCIMA ERP is built on and delivered via the **TradelyX platform infrastruc
 
 ### Assumptions
 
-1. KACCIMA will issue an internal directive enforcing digital-first payment for all covered services
-2. KACCIMA will provide one dedicated staff member as project liaison throughout the build
-3. Current KACCIMA member data (names, contacts, dues history) is available for migration in a structured format
-4. KACCIMA's existing eCO seal and authorization is legally valid for digital issuance
-5. Internet connectivity is sufficient for platform use at KACCIMA offices and by the majority of members
-6. KACCIMA has or will obtain an approved WhatsApp Business API account
+1. The chamber partner will issue an internal directive enforcing digital-first payment for all covered services
+2. The chamber partner will provide one dedicated staff member as project liaison throughout the build
+3. Current chamber member data (names, contacts, dues history) is available for migration in a structured format
+4. The chamber's existing eCO seal and authorization is legally valid for digital issuance
+5. Internet connectivity is sufficient for platform use at chamber offices and by the majority of members
+6. The chamber partner has or will obtain an approved WhatsApp Business API account
 
 ### Dependencies
 
-1. Payment gateway approval (Paystack / Flutterwave merchant account for KACCIMA)
+1. Payment gateway approval (Paystack / Flutterwave merchant account for the chamber partner)
 2. WhatsApp Business API access approval (Meta)
 3. NCS API access (Phase 2 — may require government liaison)
-4. Execution of the Commercial & BOT Agreement between Tradely LTD. and KACCIMA
+4. Execution of a Commercial & BOT Agreement between Tradely LTD. and a chamber partner — **not yet executed**
 
 ---
 
@@ -725,8 +775,8 @@ The KACCIMA ERP is built on and delivered via the **TradelyX platform infrastruc
 
 The following are explicitly excluded from the current version of this PRD:
 
-- Integration with KACCIMA's existing legacy accounting software (unless specified in a future change request)
-- Physical access control systems for KACCIMA offices or events
+- Integration with any chamber's existing legacy accounting software (unless specified in a future change request)
+- Physical access control systems for chamber offices or events
 - AI/ML-powered features (e.g., predictive analytics, chatbots) — may be considered for Phase 3+
 - Cross-border payment settlement for international transactions
 - Mobile money (MOMO) integration — may be added post-MVP based on member demand
@@ -737,19 +787,19 @@ The following are explicitly excluded from the current version of this PRD:
 
 ## 17. Approval & Sign-off
 
-This PRD requires formal sign-off from the following parties before development commences.
+This PRD requires formal sign-off from the following parties before development commences on any given chamber deployment. **No such sign-off has occurred as of this writing** — the roles below are a template, not a record of an executed agreement.
 
 | Role | Name | Signature | Date |
 |------|------|-----------|------|
-| CEO, Tradely LTD. | Abubakar Kabiru Abubakar | ______________ | ________ |
-| President, KACCIMA | ______________________ | ______________ | ________ |
-| Secretary-General, KACCIMA | ______________________ | ______________ | ________ |
+| CEO, Tradely LTD. | ______________________ | ______________ | ________ |
+| President, Chamber Partner | ______________________ | ______________ | ________ |
+| Secretary-General, Chamber Partner | ______________________ | ______________ | ________ |
 | Technical Lead, Tradely LTD. | ______________________ | ______________ | ________ |
 
 ---
 
-*This document is confidential and proprietary to Tradely LTD. and KACCIMA. It is intended solely for the parties named herein and may not be reproduced or distributed without the written consent of both parties.*
+*This document is confidential and proprietary to Tradely LTD. It is intended for internal planning and prospective-partner discussions only, and may not be reproduced or distributed without the written consent of Tradely LTD.*
 
 ---
 
-**Document End — KACCIMA ERP PRD v1.0**
+**Document End — Chamberlink PRD v1.3**

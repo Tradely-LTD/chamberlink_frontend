@@ -170,16 +170,16 @@ const demoCorridors: TradeCorridor[] = [
   { id: 'c1', title: 'Nigeria — China Trade Corridor', origin: 'Kano, Nigeria', destination: 'Guangzhou, China', category: 'Manufacturing & Textiles', description: 'Facilitating exports of leather, hides, and agricultural products to China, with return imports of machinery and electronics.', status: 'active', memberCount: 214, tradeVolume: '$42M / year', sponsors: [{ id: 's1', companyName: 'Dantata & Sawoe Ltd', tier: 'gold' }, { id: 's2', companyName: 'Kano Textile Mills', tier: 'silver' }], sponsorSlotsAvailable: 1, sponsorPriceGold: 500000, sponsorPriceSilver: 250000, isFollowing: true },
   { id: 'c2', title: 'Nigeria — UAE Trade Corridor', origin: 'Kano, Nigeria', destination: 'Dubai, UAE', category: 'Agriculture & Food', description: 'Promoting Nigerian groundnuts, sesame seeds, and shea butter to the Gulf market and connecting Nigerian businesses to UAE investors.', status: 'active', memberCount: 178, tradeVolume: '$28M / year', sponsors: [{ id: 's3', companyName: 'Arewa Agro Exports', tier: 'gold' }], sponsorSlotsAvailable: 2, sponsorPriceGold: 500000, sponsorPriceSilver: 250000, isFollowing: false },
   { id: 'c3', title: 'Nigeria — UK Trade Corridor', origin: 'Kano, Nigeria', destination: 'London, UK', category: 'Creative & Cultural Goods', description: 'Connecting Northern Nigerian artisans, leather craftsmen, and cultural goods exporters to UK buyers and diaspora markets.', status: 'active', memberCount: 132, tradeVolume: '$12M / year', sponsors: [], sponsorSlotsAvailable: 3, sponsorPriceGold: 500000, sponsorPriceSilver: 250000, isFollowing: false },
-  { id: 'c4', title: 'Nigeria — West Africa Intra-Regional', origin: 'Kano, Nigeria', destination: 'Accra / Abidjan / Dakar', category: 'ECOWAS Free Trade', description: 'Leveraging ECOWAS protocols to facilitate preferential-tariff trade across West Africa for KACCIMA members.', status: 'upcoming', memberCount: 0, sponsors: [], sponsorSlotsAvailable: 3, sponsorPriceGold: 350000, sponsorPriceSilver: 175000, isFollowing: false },
+  { id: 'c4', title: 'Nigeria — West Africa Intra-Regional', origin: 'Kano, Nigeria', destination: 'Accra / Abidjan / Dakar', category: 'ECOWAS Free Trade', description: 'Leveraging ECOWAS protocols to facilitate preferential-tariff trade across West Africa for NACCIMA members.', status: 'upcoming', memberCount: 0, sponsors: [], sponsorSlotsAvailable: 3, sponsorPriceGold: 350000, sponsorPriceSilver: 175000, isFollowing: false },
 ];
 
 const demoMyApplications: SponsorApplication[] = [
-  { id: 'a1', corridorId: 'c1', corridorTitle: 'Nigeria — China Trade Corridor', companyName: 'My Company Ltd', tier: 'silver', status: 'approved', appliedAt: '2025-02-10T00:00:00Z', amount: 250000 },
+  { id: 'a1', corridorId: 'c1', corridorTitle: 'Nigeria — China Trade Corridor', companyName: 'My Company Ltd', tier: 'silver', status: 'approved', createdAt: '2025-02-10T00:00:00Z', appliedAt: '2025-02-10T00:00:00Z', amount: 250000 },
 ];
 
 const demoAllApplications: SponsorApplication[] = [
-  { id: 'a1', corridorId: 'c1', corridorTitle: 'Nigeria — China Trade Corridor', companyName: 'My Company Ltd', tier: 'silver', status: 'approved', appliedAt: '2025-02-10T00:00:00Z', amount: 250000, memberName: 'Amina Musa' },
-  { id: 'a2', corridorId: 'c3', corridorTitle: 'Nigeria — UK Trade Corridor', companyName: 'Kano Export House', tier: 'gold', status: 'pending', appliedAt: '2025-04-01T00:00:00Z', amount: 500000, memberName: 'Ibrahim Dantata' },
+  { id: 'a1', corridorId: 'c1', corridorTitle: 'Nigeria — China Trade Corridor', companyName: 'My Company Ltd', tier: 'silver', status: 'approved', createdAt: '2025-02-10T00:00:00Z', appliedAt: '2025-02-10T00:00:00Z', amount: 250000, memberName: 'Amina Musa' },
+  { id: 'a2', corridorId: 'c3', corridorTitle: 'Nigeria — UK Trade Corridor', companyName: 'Kano Export House', tier: 'gold', status: 'pending_review', createdAt: '2025-04-01T00:00:00Z', appliedAt: '2025-04-01T00:00:00Z', amount: 500000, memberName: 'Ibrahim Dantata' },
 ];
 
 const demoMyMemberships: CorridorMembershipItem[] = [
@@ -211,7 +211,7 @@ const appStatusConfig: Record<string, { label: string; bg: string; text: string 
   rejected:        { label: 'Rejected',          bg: '#ffdad6', text: '#93000a' },
 };
 
-const ADMIN_ROLES = ['chamber_admin', 'kaccima_executive', 'super_admin', 'staff_operator'];
+const ADMIN_ROLES = ['chamber_admin', 'chamber_executive', 'super_admin', 'staff_operator'];
 
 // ── Sponsor Modal ─────────────────────────────────────────────────────────
 
@@ -354,8 +354,8 @@ function MemberCorridorsView() {
 
   // Only use demo data while loading — never on error (fake IDs cause 404 on follow)
   const allCorridors = corridors ?? (isLoading ? demoCorridors : []);
-  const apps = myApps ?? [];
-  const memberships = myMemberships ?? [];
+  const apps = myApps ?? (appsLoading ? demoMyApplications : []);
+  const memberships = myMemberships ?? (membershipsLoading ? demoMyMemberships : []);
 
   return (
     <div className="p-6 max-w-4xl">
@@ -408,7 +408,7 @@ function MemberCorridorsView() {
           <ol className="text-xs text-[#74777f] space-y-0.5 list-decimal list-inside">
             <li>Pick a corridor below and click <strong>Become a Sponsor</strong>.</li>
             <li>Choose Gold or Silver tier, then proceed to our secure payment gateway (Paystack / Flutterwave).</li>
-            <li>Once payment is confirmed your company name and badge appear on the corridor — visible to all KACCIMA members and exporters.</li>
+            <li>Once payment is confirmed your company name and badge appear on the corridor — visible to all NACCIMA members and exporters.</li>
           </ol>
         </div>
       </div>
@@ -1071,7 +1071,7 @@ function AdminCorridorsView() {
                         <td className="px-4 py-3 text-[#74777f] max-w-[160px] truncate">{app.corridorTitle}</td>
                         <td className="px-4 py-3"><span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ background: tc.bg, color: tc.text }}>{tc.label}</span></td>
                         <td className="px-4 py-3 font-semibold text-[#191c1e]">₦{app.amount.toLocaleString()}</td>
-                        <td className="px-4 py-3 text-xs text-[#74777f]">{new Date(app.appliedAt).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'short', year: 'numeric' })}</td>
+                        <td className="px-4 py-3 text-xs text-[#74777f]">{new Date(app.createdAt).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'short', year: 'numeric' })}</td>
                         <td className="px-4 py-3"><span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ background: ac.bg, color: ac.text }}>{ac.label}</span></td>
                         <td className="px-4 py-3">
                           <button onClick={() => setSelectedApp(app)} className="text-xs font-medium text-[#002046] hover:underline">View</button>

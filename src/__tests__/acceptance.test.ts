@@ -1,5 +1,5 @@
 /**
- * Sprint 1 Acceptance Tests — KACCIMA Member Portal
+ * Sprint 1 Acceptance Tests — NACCIMA Member Portal
  *
  * These tests verify every acceptance criterion from the outside,
  * exercising the built artefacts without modifying implementation code.
@@ -14,7 +14,7 @@ import { resolve } from 'path';
 // Helpers
 // ---------------------------------------------------------------------------
 
-const ROOT = resolve(__dirname, '../..');          // kaccima_frontend/
+const ROOT = resolve(__dirname, '../..');          // naccima_frontend/
 const SRC  = resolve(ROOT, 'src');
 
 function src(...parts: string[]) { return resolve(SRC, ...parts); }

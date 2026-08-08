@@ -6,7 +6,7 @@ import { useGetAnalyticsSummaryQuery } from '@features/analytics/analyticsApi';
 import { SkeletonCard } from '@shared/ui/SkeletonCard';
 
 const ADMIN_ROLES = ['chamber_admin', 'super_admin', 'staff_operator'];
-const EXECUTIVE_ROLE = 'kaccima_executive';
+const EXECUTIVE_ROLE = 'chamber_executive';
 const INSTITUTIONAL_ROLE = 'institutional_subscriber';
 
 const memberStatusStyle: Record<string, { bg: string; text: string; label: string }> = {
@@ -301,7 +301,7 @@ function MemberOverview() {
                 { label: 'Apply for eCO Certificate', to: '/dashboard/eco/apply', icon: 'description' },
                 { label: 'View Trade Documents', to: '/dashboard/documents', icon: 'folder_open' },
                 { label: 'Browse Trade Fair', to: '/dashboard/trade-fair', icon: 'storefront' },
-                { label: 'KACCIMA Academy', to: '/dashboard/academy', icon: 'school' },
+                { label: 'NACCIMA Academy', to: '/dashboard/academy', icon: 'school' },
               ].map((a) => (
                 <Link
                   key={a.to}
@@ -403,7 +403,7 @@ function InstitutionalOverview() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {[
           { label: 'Bank Verification', sub: 'Verify exporters and trade documents', to: '/dashboard/bank-verification', icon: 'verified' },
-          { label: 'Exporter Visibility', sub: 'Search active KACCIMA exporters', to: '/dashboard/exporter-visibility', icon: 'visibility' },
+          { label: 'Exporter Visibility', sub: 'Search active NACCIMA exporters', to: '/dashboard/exporter-visibility', icon: 'visibility' },
           { label: 'Trade Corridors', sub: 'Browse active trade routes', to: '/dashboard/trade-corridors', icon: 'route' },
           { label: 'Trade Data API', sub: 'Access live trade intelligence feeds', to: '/dashboard/trade-data-api', icon: 'api' },
         ].map((a) => (

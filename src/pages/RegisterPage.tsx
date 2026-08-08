@@ -6,7 +6,7 @@ export function RegisterPage() {
       <div className="w-full max-w-lg">
         <div className="mb-8 text-center">
           <h1 className="font-serif text-3xl font-bold text-[#00502e]">
-            KACCIMA
+            NACCIMA
           </h1>
           <p className="mt-1 text-sm text-[#8A7E6E]">Create your account</p>
         </div>

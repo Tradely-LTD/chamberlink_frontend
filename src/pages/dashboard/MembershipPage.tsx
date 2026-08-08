@@ -126,7 +126,7 @@ export function MembershipPage() {
                   </p>
                 </div>
               </div>
-              <p className="text-sm text-[#8A7E6E] mb-4">Full KACCIMA membership benefits.</p>
+              <p className="text-sm text-[#8A7E6E] mb-4">Full NACCIMA membership benefits.</p>
               <Button
                 variant={isCurrentActive ? 'outline' : 'primary'}
                 className="w-full"

@@ -4,6 +4,7 @@ import { SkeletonCard } from '@shared/ui/SkeletonCard';
 import { Button } from '@shared/ui/Button';
 import { ErrorBanner } from '@shared/ui/ErrorBanner';
 import { useAppSelector } from '@shared/hooks/useAppDispatch';
+import { skipToken } from '@reduxjs/toolkit/query/react';
 import {
   useGetTradeFairEventsQuery,
   useGetAdminTradeFairEventsQuery,
@@ -23,7 +24,7 @@ import {
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
-const ADMIN_ROLES = ['chamber_admin', 'kaccima_executive', 'super_admin', 'staff_operator'];
+const ADMIN_ROLES = ['chamber_admin', 'chamber_executive', 'super_admin', 'staff_operator'];
 
 function countdown(targetDate: string) {
   const diff = new Date(targetDate).getTime() - Date.now();
@@ -297,7 +298,7 @@ function CreateEventModal({ onClose }: { onClose: () => void }) {
     endDate: '',
     registrationDeadline: '',
     description: '',
-    kaccimaSharePct: '90',
+    hostSharePct: '90',
     tradelySharePct: '10',
   });
 
@@ -310,10 +311,10 @@ function CreateEventModal({ onClose }: { onClose: () => void }) {
     setError(null);
     setShareError(null);
 
-    const kPct = Number(form.kaccimaSharePct);
+    const kPct = Number(form.hostSharePct);
     const tPct = Number(form.tradelySharePct);
     if (kPct + tPct !== 100) {
-      setShareError('KACCIMA share + Tradely share must equal 100.');
+      setShareError('Host share + Tradely share must equal 100.');
       return;
     }
 
@@ -323,7 +324,7 @@ function CreateEventModal({ onClose }: { onClose: () => void }) {
         venue: form.venue,
         startDate: new Date(form.startDate).toISOString(),
         endDate: new Date(form.endDate).toISOString(),
-        kaccimaSharePct: kPct,
+        hostSharePct: kPct,
         tradelySharePct: tPct,
         ...(form.registrationDeadline ? { registrationDeadline: new Date(form.registrationDeadline).toISOString() } : {}),
         ...(form.description ? { description: form.description } : {}),
@@ -352,7 +353,7 @@ function CreateEventModal({ onClose }: { onClose: () => void }) {
               required
               value={form.title}
               onChange={setField('title')}
-              placeholder="e.g. KACCIMA Annual Trade Fair 2026"
+              placeholder="e.g. NACCIMA Annual Trade Fair 2026"
               className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-[#002046]"
               style={{ '--tw-ring-color': '#002046' } as React.CSSProperties}
             />
@@ -415,14 +416,14 @@ function CreateEventModal({ onClose }: { onClose: () => void }) {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-[#44474e] mb-1">KACCIMA Share (%)</label>
+              <label className="block text-xs font-semibold text-[#44474e] mb-1">Host Share (%)</label>
               <input
                 required
                 type="number"
                 min={0}
                 max={100}
-                value={form.kaccimaSharePct}
-                onChange={setField('kaccimaSharePct')}
+                value={form.hostSharePct}
+                onChange={setField('hostSharePct')}
                 className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-[#002046]"
                 style={{ '--tw-ring-color': '#002046' } as React.CSSProperties}
               />
@@ -466,7 +467,8 @@ function CreateEventModal({ onClose }: { onClose: () => void }) {
 function MemberTradeFairView() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { data: events, isLoading } = useGetTradeFairEventsQuery();
+  const tenantId = useAppSelector((s) => s.auth.user?.tenantId);
+  const { data: events, isLoading } = useGetTradeFairEventsQuery(tenantId ?? skipToken);
   const [tab, setTab] = useState<'upcoming' | 'past'>('upcoming');
   const [bookingEvent, setBookingEvent] = useState<TradeFairEvent | null>(null);
 

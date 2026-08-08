@@ -169,7 +169,7 @@ const profileStatusConfig: Record<string, { label: string; bg: string; text: str
   rejected:       { label: 'Rejected',       bg: '#fce4ec', text: '#880e4f' },
 };
 
-const ADMIN_ROLES = ['chamber_admin', 'kaccima_executive', 'super_admin', 'staff_operator'];
+const ADMIN_ROLES = ['chamber_admin', 'chamber_executive', 'super_admin', 'staff_operator'];
 
 // ── Profile Form (shared by Create + Edit) ────────────────────────────────
 
@@ -569,7 +569,7 @@ function MemberExporterView() {
             <span className="material-symbols-outlined" style={{ fontSize: 32, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 32`, color: '#002046' }}>storefront</span>
           </div>
           <h3 className="font-bold text-[#191c1e] mb-2">Get Listed in the Export Directory</h3>
-          <p className="text-sm text-[#74777f] mb-6 max-w-sm mx-auto">Create your free exporter profile to reach international buyers through the KACCIMA trade network.</p>
+          <p className="text-sm text-[#74777f] mb-6 max-w-sm mx-auto">Create your free exporter profile to reach international buyers through the NACCIMA trade network.</p>
           <button onClick={() => setShowCreate(true)} className="rounded-lg px-6 py-2.5 text-sm font-semibold text-white" style={{ background: '#002046' }}>Create Exporter Profile</button>
         </div>
       ) : (

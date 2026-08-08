@@ -42,7 +42,7 @@ const membershipStatusColors: Record<string, string> = {
 const ROLE_LABELS: Record<string, string> = {
   chamber_admin: 'Chamber Admin',
   staff_operator: 'Staff Operator',
-  kaccima_executive: 'KACCIMA Executive',
+  chamber_executive: 'NACCIMA Executive',
   super_admin: 'Super Admin',
   institutional_subscriber: 'Institutional Subscriber',
 };
@@ -54,7 +54,7 @@ export function ProfilePage() {
   // Role flags — computed before any hooks that depend on them
   const isMember = role === 'member';
   const isSuperAdmin = role === 'super_admin';
-  const isTenantAdmin = role === 'chamber_admin' || role === 'staff_operator' || role === 'kaccima_executive';
+  const isTenantAdmin = role === 'chamber_admin' || role === 'staff_operator' || role === 'chamber_executive';
 
   // ALL hooks must be declared unconditionally, before any early returns
   const { data: profile, isLoading, isError, refetch } = useGetMemberProfileQuery();
@@ -191,7 +191,7 @@ export function ProfilePage() {
             </div>
             <dl className="divide-y divide-[#bec9bf]/30">
               {[
-                { label: 'Platform', value: 'KACCIMA ERP — Chamber Digital Portal' },
+                { label: 'Platform', value: 'Chamberlink ERP — Chamber Digital Portal' },
                 { label: 'Operated by', value: 'Tradely LTD.' },
                 { label: 'Your Role', value: ROLE_LABELS[user?.role ?? ''] ?? user?.role ?? '—' },
               ].map((row) => (

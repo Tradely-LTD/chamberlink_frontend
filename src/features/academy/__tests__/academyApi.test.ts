@@ -50,7 +50,7 @@ describe('academy transformResponse helpers', () => {
         price: 0,
         isFree: true,
         enrolledCount: 100,
-        instructorName: 'KACCIMA',
+        instructorName: 'NACCIMA',
         isPublished: true,
         videoUrl: 'https://www.youtube.com/watch?v=abc',
       };

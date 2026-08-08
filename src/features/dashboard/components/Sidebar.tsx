@@ -65,7 +65,7 @@ const chamberAdminNavItems: NavItem[] = [
   { label: 'My Profile',          to: '/dashboard/profile',             icon: 'manage_accounts' },
 ];
 
-// kaccima_executive: read-only analytics view — no write actions
+// chamber_executive: read-only analytics view — no write actions
 const executiveNavItems: NavItem[] = [
   { label: 'Overview',         to: '/dashboard',              icon: 'dashboard',   end: true },
   { label: 'Analytics',        to: '/dashboard/analytics',    icon: 'bar_chart' },
@@ -96,7 +96,7 @@ function getNavItems(role: Role | null): NavItem[] {
   switch (role) {
     case 'super_admin':            return superAdminNavItems;
     case 'chamber_admin':          return chamberAdminNavItems;
-    case 'kaccima_executive':      return executiveNavItems;
+    case 'chamber_executive':      return executiveNavItems;
     case 'staff_operator':         return staffNavItems;
     case 'institutional_subscriber': return institutionalNavItems;
     default:                       return memberNavItems;
@@ -107,7 +107,7 @@ const portalLabel: Record<string, string> = {
   member: 'Member Portal',
   staff_operator: 'Staff Console',
   chamber_admin: 'Admin Console',
-  kaccima_executive: 'Executive Portal',
+  chamber_executive: 'Executive Portal',
   super_admin: 'Super Admin',
   institutional_subscriber: 'Institutional Portal',
 };
@@ -116,7 +116,7 @@ const roleLabel: Record<string, string> = {
   member: 'Member',
   staff_operator: 'Staff Operator',
   chamber_admin: 'Chamber Admin',
-  kaccima_executive: 'Executive',
+  chamber_executive: 'Executive',
   super_admin: 'Super Admin',
   institutional_subscriber: 'Institutional',
 };
@@ -128,10 +128,10 @@ export function Sidebar() {
   const role = useAppSelector((s) => s.auth.role);
   const [logoutUser] = useLogoutUserMutation();
 
-  const isTenantAdmin = role === 'chamber_admin' || role === 'staff_operator' || role === 'kaccima_executive';
+  const isTenantAdmin = role === 'chamber_admin' || role === 'staff_operator' || role === 'chamber_executive';
   const { data: myTenant } = useGetMyTenantQuery(undefined, { skip: !isTenantAdmin });
 
-  const orgName = role === 'super_admin' ? 'KACCIMA ERP' : (myTenant?.name ?? 'KACCIMA');
+  const orgName = role === 'super_admin' ? 'Chamberlink ERP' : (myTenant?.name ?? 'NACCIMA');
 
   const visibleItems = getNavItems(role);
 

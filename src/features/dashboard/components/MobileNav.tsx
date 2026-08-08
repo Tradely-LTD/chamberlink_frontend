@@ -7,7 +7,7 @@ export function MobileNav() {
   return (
     <>
       <header className="md:hidden flex items-center justify-between px-4 h-14 bg-[#002046] border-b border-white/10">
-        <p className="text-white font-bold text-base tracking-tight">KACCIMA</p>
+        <p className="text-white font-bold text-base tracking-tight">NACCIMA</p>
         <button
           onClick={() => setOpen(!open)}
           className="p-2 rounded-lg text-white/70 hover:bg-white/10 transition-colors"

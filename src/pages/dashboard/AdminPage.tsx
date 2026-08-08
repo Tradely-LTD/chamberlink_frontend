@@ -29,7 +29,7 @@ const demoAudit: AuditEntry[] = [
   { id: 'a1', actorName: 'Admin User', action: 'MEMBER_APPROVED', resourceType: 'member', resourceId: 'KAC-2025-0003', createdAt: '2025-05-22T10:00:00Z', ipAddress: '102.89.45.12' },
   { id: 'a2', actorName: 'Staff Operator', action: 'ECO_REVIEWED', resourceType: 'eco_certificate', resourceId: 'ECO-2025-041', createdAt: '2025-05-21T15:30:00Z', ipAddress: '102.89.45.13' },
   { id: 'a3', actorName: 'Admin User', action: 'USER_DEACTIVATED', resourceType: 'user', resourceId: 'u4', createdAt: '2025-05-20T09:00:00Z', ipAddress: '102.89.45.12' },
-  { id: 'a4', actorName: 'member@demo.kaccima', action: 'ECO_SUBMITTED', resourceType: 'eco_certificate', resourceId: 'ECO-2025-042', createdAt: '2025-05-19T13:00:00Z', ipAddress: '197.211.52.44' },
+  { id: 'a4', actorName: 'member@demo.naccima', action: 'ECO_SUBMITTED', resourceType: 'eco_certificate', resourceId: 'ECO-2025-042', createdAt: '2025-05-19T13:00:00Z', ipAddress: '197.211.52.44' },
 ];
 
 function AuditLogTab() {

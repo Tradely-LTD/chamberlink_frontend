@@ -33,7 +33,7 @@ const docStatusConfig: Record<ExportDocument['status'], { label: string; bg: str
   downloaded: { label: 'Downloaded', bg: '#d6e3ff', text: '#001b3d' },
 };
 
-const ADMIN_ROLES = ['chamber_admin', 'kaccima_executive', 'super_admin', 'staff_operator'];
+const ADMIN_ROLES = ['chamber_admin', 'chamber_executive', 'super_admin', 'staff_operator'];
 
 // Self-service types (Commercial Invoice, Packing List) are handled by the generator page.
 // The admin-queue modal only covers types that still require admin processing.

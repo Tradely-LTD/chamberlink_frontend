@@ -6,7 +6,7 @@ export function ForgotPasswordPage() {
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
           <h1 className="font-serif text-3xl font-bold text-[#00502e]">
-            KACCIMA
+            NACCIMA
           </h1>
         </div>
         <div className="rounded-2xl bg-white p-8 shadow-sm border border-[#bec9bf]/40">

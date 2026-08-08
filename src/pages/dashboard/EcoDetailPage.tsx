@@ -26,7 +26,7 @@ const statusLabel: Record<ECertStatus, string> = {
   rejected: 'Rejected', revision_requested: 'Revision Required',
 };
 
-const ADMIN_ROLES = ['super_admin', 'chamber_admin', 'staff_operator', 'kaccima_executive'];
+const ADMIN_ROLES = ['super_admin', 'chamber_admin', 'staff_operator', 'chamber_executive'];
 
 const Row = ({ label, value }: { label: string; value: ReactNode }) => (
   <div className="flex items-start py-3 border-b border-[#bec9bf]/20 last:border-0">
@@ -39,7 +39,7 @@ export function EcoDetailPage() {
   const { id } = useParams<{ id: string }>();
   const role = useAppSelector((s) => s.auth.role);
   const isAdmin = role && ADMIN_ROLES.includes(role);
-  const isReadOnly = role === 'kaccima_executive';
+  const isReadOnly = role === 'chamber_executive';
 
   const { data: cert, isLoading, isError, refetch } = useGetEcoCertificateQuery(id!);
   const [reIssue, { isLoading: reIssuing }] = useReIssueCertificateMutation();

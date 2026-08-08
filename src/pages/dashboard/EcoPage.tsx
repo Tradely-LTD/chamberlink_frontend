@@ -30,8 +30,8 @@ const statusLabel: Record<ECertStatus, string> = {
   rejected: 'Rejected', revision_requested: 'Revision Required',
 };
 
-const ADMIN_ROLES = ['super_admin', 'chamber_admin', 'staff_operator', 'kaccima_executive'];
-const READ_ONLY_ROLES = ['kaccima_executive']; // can view queue but not take action
+const ADMIN_ROLES = ['super_admin', 'chamber_admin', 'staff_operator', 'chamber_executive'];
+const READ_ONLY_ROLES = ['chamber_executive']; // can view queue but not take action
 
 // ── Admin queue status filter options ────────────────────────────────────
 

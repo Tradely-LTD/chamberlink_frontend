@@ -19,7 +19,7 @@ const demoBooths: MyBooth[] = [
     boothNumber: 'A-01',
     boothType: 'Standard',
     zone: 'Zone A — Textile & Apparel',
-    eventTitle: 'KACCIMA Annual Trade Fair 2025',
+    eventTitle: 'NACCIMA Annual Trade Fair 2025',
     eventStartDate: '2025-11-10T00:00:00Z',
     size: '3×3m',
     amount: 150000,

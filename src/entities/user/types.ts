@@ -3,10 +3,10 @@ export type Role =
   | 'staff_operator'
   | 'institutional_subscriber'
   | 'chamber_admin'
-  | 'kaccima_executive'
+  | 'chamber_executive'
   | 'super_admin';
 
-export const MFA_REQUIRED_ROLES: Role[] = ['chamber_admin', 'kaccima_executive', 'super_admin'];
+export const MFA_REQUIRED_ROLES: Role[] = ['chamber_admin', 'chamber_executive', 'super_admin'];
 
 export interface AuthUser {
   id: string;
@@ -14,6 +14,7 @@ export interface AuthUser {
   firstName?: string;
   lastName?: string;
   role: Role;
+  tenantId?: string | null;
   isEmailVerified?: boolean;
   isPhoneVerified?: boolean;
   isMfaEnabled?: boolean;

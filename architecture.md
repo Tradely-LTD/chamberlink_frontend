@@ -1,4 +1,4 @@
-# KACCIMA Member Portal — Frontend Architecture
+# Chamberlink Member Portal — Frontend Architecture
 
 ## Stack
 
@@ -54,11 +54,11 @@ src/
 | `member` | Standard chamber member |
 | `staff_operator` | Chamber staff with limited admin access |
 | `institutional_subscriber` | Bank / institutional reader |
-| `chamber_admin` | KACCIMA chamber administrator |
-| `kaccima_executive` | Read-only analytics access |
+| `chamber_admin` | NACCIMA chamber administrator |
+| `naccima_executive` | Read-only analytics access |
 | `super_admin` | Tradely platform administrator |
 
-MFA is mandatory for `chamber_admin`, `kaccima_executive`, and `super_admin`.
+MFA is mandatory for `chamber_admin`, `naccima_executive`, and `super_admin`.
 
 ---
 

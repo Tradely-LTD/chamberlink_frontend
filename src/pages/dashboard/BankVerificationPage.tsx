@@ -61,7 +61,7 @@ const demoEcoResult: VerificationResult = {
   type: 'eco', certNumber: 'ECO-2025-KAN-004821',
   holderName: 'Amina Abdullahi', companyName: 'Kano Leather Exports Ltd',
   status: 'valid', issuedAt: '2025-03-01T00:00:00Z', expiresAt: '2026-03-01T00:00:00Z',
-  issuedBy: 'KACCIMA Secretariat', products: ['Finished Leather', 'Wet Blue Hides'],
+  issuedBy: 'NACCIMA Secretariat', products: ['Finished Leather', 'Wet Blue Hides'],
   verificationRef: 'VER-2025-001234',
 };
 
@@ -86,7 +86,7 @@ const resultConfig = {
   not_found: { icon: 'search_off', label: 'Not Found', bg: '#e0e3e5', text: '#44474e', iconColor: '#74777f' },
 };
 
-const ADMIN_ROLES = ['chamber_admin', 'kaccima_executive', 'super_admin', 'staff_operator'];
+const ADMIN_ROLES = ['chamber_admin', 'chamber_executive', 'super_admin', 'staff_operator'];
 
 // ── Verification Result Card ───────────────────────────────────────────────
 
@@ -166,7 +166,7 @@ function InstitutionalVerificationView() {
     <div className="p-6 max-w-2xl">
       <div className="mb-6">
         <h2 className="text-xl font-semibold text-[#191c1e]">Banks & FI Verification Portal</h2>
-        <p className="text-sm text-[#74777f] mt-0.5">Verify the authenticity of KACCIMA eCO certificates and member credentials.</p>
+        <p className="text-sm text-[#74777f] mt-0.5">Verify the authenticity of NACCIMA eCO certificates and member credentials.</p>
       </div>
 
       <div className="flex gap-1 bg-[#f7f9fb] rounded-lg p-1 mb-6 w-fit border border-[#e0e3e5]">
@@ -198,8 +198,8 @@ function InstitutionalVerificationView() {
         <div className="flex items-start gap-3">
           <span className="material-symbols-outlined text-[#74777f] flex-shrink-0 mt-0.5" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18` }}>info</span>
           <div className="text-xs text-[#74777f] space-y-1">
-            <p>All verification queries are logged for audit purposes per KACCIMA data governance policy.</p>
-            <p>For bulk verification or API access, contact the KACCIMA Secretariat.</p>
+            <p>All verification queries are logged for audit purposes per NACCIMA data governance policy.</p>
+            <p>For bulk verification or API access, contact the NACCIMA Secretariat.</p>
           </div>
         </div>
       </div>

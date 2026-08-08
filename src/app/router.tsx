@@ -104,7 +104,7 @@ export const router = createBrowserRouter([
           {
             path: '/dashboard/trade-data-api',
             element: (
-              <ProtectedRoute allowedRoles={['institutional_subscriber', 'chamber_admin', 'super_admin', 'kaccima_executive']}>
+              <ProtectedRoute allowedRoles={['institutional_subscriber', 'chamber_admin', 'super_admin', 'chamber_executive']}>
                 <TradeDataApiPage />
               </ProtectedRoute>
             ),
@@ -138,7 +138,7 @@ export const router = createBrowserRouter([
           {
             path: '/dashboard/analytics',
             element: (
-              <ProtectedRoute allowedRoles={['chamber_admin', 'kaccima_executive', 'super_admin']}>
+              <ProtectedRoute allowedRoles={['chamber_admin', 'chamber_executive', 'super_admin']}>
                 <AnalyticsPage />
               </ProtectedRoute>
             ),
@@ -146,7 +146,7 @@ export const router = createBrowserRouter([
           {
             path: '/dashboard/admin',
             element: (
-              <ProtectedRoute allowedRoles={['chamber_admin', 'kaccima_executive', 'super_admin', 'staff_operator']}>
+              <ProtectedRoute allowedRoles={['chamber_admin', 'chamber_executive', 'super_admin', 'staff_operator']}>
                 <AdminPage />
               </ProtectedRoute>
             ),

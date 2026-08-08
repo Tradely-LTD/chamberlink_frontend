@@ -107,7 +107,7 @@ const availablePermissions = [
   { id: 'directory.read', label: 'Exporter Directory', description: 'Read exporter profiles' },
 ];
 
-const ADMIN_ROLES = ['chamber_admin', 'kaccima_executive', 'super_admin', 'staff_operator'];
+const ADMIN_ROLES = ['chamber_admin', 'chamber_executive', 'super_admin', 'staff_operator'];
 
 // ── Create Key Modal ──────────────────────────────────────────────────────
 
@@ -222,7 +222,7 @@ function InstitutionalApiView() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-xl font-semibold text-[#191c1e]">Verified Business Data API</h2>
-          <p className="text-sm text-[#74777f] mt-0.5">Manage your API keys and integrate KACCIMA verified trade data into your systems.</p>
+          <p className="text-sm text-[#74777f] mt-0.5">Manage your API keys and integrate NACCIMA verified trade data into your systems.</p>
         </div>
       </div>
 
@@ -327,7 +327,7 @@ function InstitutionalApiView() {
         <div className="space-y-4">
           <div className="bg-white rounded-xl border border-[#e0e3e5] p-6">
             <h3 className="font-bold text-[#191c1e] mb-1">Base URL</h3>
-            <code className="block rounded-lg px-4 py-3 text-sm font-mono text-[#191c1e]" style={{ background: '#f7f9fb', border: '1px solid #e0e3e5' }}>https://api.kaccima.ng/v1</code>
+            <code className="block rounded-lg px-4 py-3 text-sm font-mono text-[#191c1e]" style={{ background: '#f7f9fb', border: '1px solid #e0e3e5' }}>https://api.chamberlink.ng/v1</code>
           </div>
           <div className="bg-white rounded-xl border border-[#e0e3e5] p-6">
             <h3 className="font-bold text-[#191c1e] mb-3">Authentication</h3>
