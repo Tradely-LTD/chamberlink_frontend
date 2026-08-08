@@ -112,7 +112,7 @@ const portalLabel: Record<string, string> = {
   institutional_subscriber: 'Institutional Portal',
 };
 
-const roleLabel: Record<string, string> = {
+const roleLabels: Record<string, string> = {
   member: 'Member',
   staff_operator: 'Staff Operator',
   chamber_admin: 'Chamber Admin',
@@ -231,7 +231,7 @@ export function Sidebar() {
                 {user.firstName} {user.lastName}
               </p>
               <p className="text-white/50 text-xs truncate">
-                {role ? (roleLabel[role] ?? role) : ''}
+                {role ? (roleLabels[role] ?? role) : ''}
               </p>
             </div>
           </div>

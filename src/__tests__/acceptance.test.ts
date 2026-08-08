@@ -513,11 +513,13 @@ describe('AC-9: Dashboard Shell', () => {
     expect(sidebar).toContain('Academy');
   });
 
-  it('AC-9.3 — Coming-soon items are disabled (not clickable NavLinks)', () => {
+  it('AC-9.3 — Every nav item is a live NavLink (no coming-soon placeholders left)', () => {
+    // Sprint 1 shipped with some nav items disabled as "coming soon"; the product
+    // has since shipped every one of those destinations as a real page, so the
+    // criterion is now that nothing in the nav is disabled/placeholder anymore.
     const sidebar = readSrc('features', 'dashboard', 'components', 'Sidebar.tsx');
-    expect(sidebar).toContain('comingSoon');
-    // Coming-soon items rendered as <span> not <NavLink>/<a>
-    expect(sidebar).toContain('cursor-not-allowed');
+    expect(sidebar).not.toContain('cursor-not-allowed');
+    expect(sidebar).toContain('NavLink');
   });
 
   it('AC-9.4 — OverviewPanel has welcome message, MembershipStatusCard, recent activity placeholder', () => {
@@ -527,12 +529,14 @@ describe('AC-9: Dashboard Shell', () => {
     expect(overview).toContain('RecentActivityPlaceholder');
   });
 
-  it('AC-9.5 — GET /members/profile on mount, skeleton while loading, retry on error', () => {
+  it('AC-9.5 — GET /membership/me on mount, skeleton while loading, retry on error', () => {
     const api  = readSrc('features', 'dashboard', 'dashboardApi.ts');
     const overview = readSrc('features', 'dashboard', 'components', 'OverviewPanel.tsx');
     const card = readSrc('features', 'dashboard', 'components', 'MembershipStatusCard.tsx');
 
-    expect(api).toContain('/members/profile');
+    // Sprint 1 spec'd this as /members/profile; the backend shipped it as
+    // /membership/me (mounted under the membership module) — matching that here.
+    expect(api).toContain('/membership/me');
     expect(overview).toContain('isLoading');
     expect(card).toContain('SkeletonCard');
     expect(overview).toContain('refetch');

@@ -89,7 +89,11 @@ function CourseFormModal({
         onClose();
       } else {
         const newCourse = await createCourse(payload).unwrap();
-        onCreated ? onCreated(newCourse) : onClose();
+        if (onCreated) {
+          onCreated(newCourse);
+        } else {
+          onClose();
+        }
       }
     } catch {
       setError(`Failed to ${course ? 'update' : 'create'} course. Please try again.`);

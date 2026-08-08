@@ -734,12 +734,9 @@ export function ExportDocGeneratorPage() {
   const { data: draft, isLoading: isLoadingDraft } = useGetExportDocDraftQuery(draftId ?? '', { skip: !draftId });
 
   // When type changes reset to step 0 so step indices stay valid
-  const prevType = form.type;
-  useEffect(() => { void prevType; }, []); // eslint lint suppression — intentional
-  const handleTypeChange = (next: GeneratorForm['type']) => {
-    setForm((f) => ({ ...f, type: next }));
+  useEffect(() => {
     setStep(0);
-  };
+  }, [form.type]);
 
   useEffect(() => {
     if (!draft) return;
@@ -880,9 +877,6 @@ export function ExportDocGeneratorPage() {
     }
     return null;
   };
-
-  // Suppress unused warning
-  void handleTypeChange;
 
   return (
     <div className="p-6 max-w-2xl">
