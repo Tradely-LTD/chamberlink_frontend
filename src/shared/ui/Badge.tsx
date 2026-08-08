@@ -7,7 +7,7 @@ interface Props {
 }
 
 const styles: Record<NonNullable<Props['variant']>, string> = {
-  default: 'bg-gray-100 text-gray-600',
+  default: 'bg-[#00502e]/10 text-[#00502e]',
   'coming-soon': 'bg-amber-100 text-amber-800',
   success: 'bg-green-100 text-green-800',
   warning: 'bg-yellow-100 text-yellow-800',
