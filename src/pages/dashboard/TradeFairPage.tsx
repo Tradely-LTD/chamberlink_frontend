@@ -46,7 +46,7 @@ const statusConfig: Record<TradeFairEvent['status'], { label: string; bg: string
 
 const bookingStatusConfig: Record<AdminBooking['status'], { label: string; bg: string; text: string }> = {
   reserved:        { label: 'Reserved',        bg: '#a0f4ca', text: '#005137' },
-  checked_in:      { label: 'Checked In',      bg: '#d6e3ff', text: '#001b3d' },
+  checked_in:      { label: 'Checked In',      bg: '#d6e3ff', text: '#023293' },
   pending_payment: { label: 'Pending Payment', bg: '#ffdea5', text: '#5d4201' },
   cancelled:       { label: 'Cancelled',       bg: '#ffdad6', text: '#93000a' },
 };
@@ -124,14 +124,14 @@ function BoothBookingModal({ event, onClose }: { event: TradeFairEvent; onClose:
                           onClick={() => isAvailable && setSelected(booth.id)}
                           className={`rounded-xl border p-4 text-left transition-all ${
                             isSelected
-                              ? 'border-[#002046] ring-2 ring-[#002046]/20'
+                              ? 'border-[#023293] ring-2 ring-[#023293]/20'
                               : isAvailable
-                              ? 'border-[#e0e3e5] hover:border-[#002046]/40 bg-white'
+                              ? 'border-[#e0e3e5] hover:border-[#023293]/40 bg-white'
                               : 'border-[#e0e3e5] bg-[#f7f9fb] opacity-50 cursor-not-allowed'
                           }`}
                           style={isSelected ? { background: '#f0f4ff' } : {}}
                         >
-                          <p className="font-bold text-[#002046] text-base">{booth.boothNumber}</p>
+                          <p className="font-bold text-[#023293] text-base">{booth.boothNumber}</p>
                           <p className="text-xs text-[#74777f] mt-0.5">{booth.boothType}</p>
                           <p className="text-xs text-[#74777f]">{booth.size}</p>
                           <p className="text-sm font-bold text-[#191c1e] mt-2">₦{booth.price.toLocaleString()}</p>
@@ -139,7 +139,7 @@ function BoothBookingModal({ event, onClose }: { event: TradeFairEvent; onClose:
                             <span className="inline-flex items-center mt-1 rounded-full px-2 py-0.5 text-xs font-medium" style={{ background: '#ffdad6', color: '#93000a' }}>Reserved</span>
                           )}
                           {isSelected && (
-                            <span className="inline-flex items-center mt-1 rounded-full px-2 py-0.5 text-xs font-medium" style={{ background: '#d6e3ff', color: '#001b3d' }}>Selected</span>
+                            <span className="inline-flex items-center mt-1 rounded-full px-2 py-0.5 text-xs font-medium" style={{ background: '#d6e3ff', color: '#023293' }}>Selected</span>
                           )}
                         </button>
                       );
@@ -150,8 +150,8 @@ function BoothBookingModal({ event, onClose }: { event: TradeFairEvent; onClose:
 
               {/* Summary */}
               {selectedBooth && (
-                <div className="rounded-xl border border-[#002046]/20 p-4 mb-6" style={{ background: '#f0f4ff' }}>
-                  <p className="text-xs font-semibold text-[#002046] uppercase tracking-wide mb-3">Booking Summary</p>
+                <div className="rounded-xl border border-[#023293]/20 p-4 mb-6" style={{ background: '#f0f4ff' }}>
+                  <p className="text-xs font-semibold text-[#023293] uppercase tracking-wide mb-3">Booking Summary</p>
                   <div className="grid grid-cols-2 gap-y-2 text-sm">
                     <span className="text-[#74777f]">Booth</span>
                     <span className="font-semibold text-[#191c1e]">{selectedBooth.boothNumber} — {selectedBooth.boothType}</span>
@@ -160,7 +160,7 @@ function BoothBookingModal({ event, onClose }: { event: TradeFairEvent; onClose:
                     <span className="text-[#74777f]">Size</span>
                     <span className="text-[#191c1e]">{selectedBooth.size}</span>
                     <span className="text-[#74777f]">Amount</span>
-                    <span className="font-bold text-[#002046] text-base">₦{selectedBooth.price.toLocaleString()}</span>
+                    <span className="font-bold text-[#023293] text-base">₦{selectedBooth.price.toLocaleString()}</span>
                   </div>
                   <p className="text-xs text-[#74777f] mt-3">You will be redirected to complete payment. Booth is reserved upon payment confirmation.</p>
                 </div>
@@ -172,7 +172,7 @@ function BoothBookingModal({ event, onClose }: { event: TradeFairEvent; onClose:
                   disabled={!selected || reserving}
                   onClick={handleReserve}
                   className="flex-1 flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50 transition-opacity"
-                  style={{ background: '#002046' }}
+                  style={{ background: '#023293' }}
                 >
                   {reserving ? 'Processing…' : (
                     <>
@@ -255,8 +255,8 @@ function AddBoothModal({ eventId: initialEventId, events, onClose }: { eventId: 
                 value={form[key]}
                 onChange={set(key)}
                 placeholder={placeholder}
-                className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-[#002046]"
-                style={{ '--tw-ring-color': '#002046' } as React.CSSProperties}
+                className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-[#023293]"
+                style={{ '--tw-ring-color': '#023293' } as React.CSSProperties}
               />
             </div>
           ))}
@@ -274,7 +274,7 @@ function AddBoothModal({ eventId: initialEventId, events, onClose }: { eventId: 
               type="submit"
               disabled={isLoading}
               className="flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
-              style={{ background: '#002046' }}
+              style={{ background: '#023293' }}
             >
               {isLoading ? 'Adding…' : 'Add Booth'}
             </button>
@@ -354,8 +354,8 @@ function CreateEventModal({ onClose }: { onClose: () => void }) {
               value={form.title}
               onChange={setField('title')}
               placeholder="e.g. NACCIMA Annual Trade Fair 2026"
-              className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-[#002046]"
-              style={{ '--tw-ring-color': '#002046' } as React.CSSProperties}
+              className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-[#023293]"
+              style={{ '--tw-ring-color': '#023293' } as React.CSSProperties}
             />
           </div>
           <div>
@@ -365,8 +365,8 @@ function CreateEventModal({ onClose }: { onClose: () => void }) {
               value={form.venue}
               onChange={setField('venue')}
               placeholder="e.g. Kano Trade Fair Complex, Kano"
-              className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-[#002046]"
-              style={{ '--tw-ring-color': '#002046' } as React.CSSProperties}
+              className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-[#023293]"
+              style={{ '--tw-ring-color': '#023293' } as React.CSSProperties}
             />
           </div>
           <div className="grid grid-cols-2 gap-3">
@@ -377,8 +377,8 @@ function CreateEventModal({ onClose }: { onClose: () => void }) {
                 type="date"
                 value={form.startDate}
                 onChange={setField('startDate')}
-                className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-[#002046]"
-                style={{ '--tw-ring-color': '#002046' } as React.CSSProperties}
+                className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-[#023293]"
+                style={{ '--tw-ring-color': '#023293' } as React.CSSProperties}
               />
             </div>
             <div>
@@ -388,8 +388,8 @@ function CreateEventModal({ onClose }: { onClose: () => void }) {
                 type="date"
                 value={form.endDate}
                 onChange={setField('endDate')}
-                className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-[#002046]"
-                style={{ '--tw-ring-color': '#002046' } as React.CSSProperties}
+                className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-[#023293]"
+                style={{ '--tw-ring-color': '#023293' } as React.CSSProperties}
               />
             </div>
           </div>
@@ -399,8 +399,8 @@ function CreateEventModal({ onClose }: { onClose: () => void }) {
               type="date"
               value={form.registrationDeadline}
               onChange={setField('registrationDeadline')}
-              className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-[#002046]"
-              style={{ '--tw-ring-color': '#002046' } as React.CSSProperties}
+              className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-[#023293]"
+              style={{ '--tw-ring-color': '#023293' } as React.CSSProperties}
             />
           </div>
           <div>
@@ -410,8 +410,8 @@ function CreateEventModal({ onClose }: { onClose: () => void }) {
               onChange={setField('description')}
               rows={3}
               placeholder="Brief description of the event…"
-              className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-[#002046] resize-none"
-              style={{ '--tw-ring-color': '#002046' } as React.CSSProperties}
+              className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-[#023293] resize-none"
+              style={{ '--tw-ring-color': '#023293' } as React.CSSProperties}
             />
           </div>
           <div className="grid grid-cols-2 gap-3">
@@ -424,8 +424,8 @@ function CreateEventModal({ onClose }: { onClose: () => void }) {
                 max={100}
                 value={form.hostSharePct}
                 onChange={setField('hostSharePct')}
-                className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-[#002046]"
-                style={{ '--tw-ring-color': '#002046' } as React.CSSProperties}
+                className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-[#023293]"
+                style={{ '--tw-ring-color': '#023293' } as React.CSSProperties}
               />
             </div>
             <div>
@@ -437,8 +437,8 @@ function CreateEventModal({ onClose }: { onClose: () => void }) {
                 max={100}
                 value={form.tradelySharePct}
                 onChange={setField('tradelySharePct')}
-                className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-[#002046]"
-                style={{ '--tw-ring-color': '#002046' } as React.CSSProperties}
+                className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-[#023293]"
+                style={{ '--tw-ring-color': '#023293' } as React.CSSProperties}
               />
             </div>
           </div>
@@ -451,7 +451,7 @@ function CreateEventModal({ onClose }: { onClose: () => void }) {
               type="submit"
               disabled={isLoading}
               className="flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
-              style={{ background: '#002046' }}
+              style={{ background: '#023293' }}
             >
               {isLoading ? 'Creating…' : 'Create Event'}
             </button>
@@ -503,7 +503,7 @@ function MemberTradeFairView() {
           <p className="text-sm text-[#74777f] mt-0.5">Upcoming events and booth registrations.</p>
         </div>
         <Link to="/dashboard/trade-fair/booths">
-          <button className="flex items-center gap-2 rounded-lg border border-[#c4c6cf] bg-white px-4 py-2 text-sm font-medium text-[#191c1e] hover:border-[#002046] hover:text-[#002046] transition-colors">
+          <button className="flex items-center gap-2 rounded-lg border border-[#c4c6cf] bg-white px-4 py-2 text-sm font-medium text-[#191c1e] hover:border-[#023293] hover:text-[#023293] transition-colors">
             <span className="material-symbols-outlined" style={{ fontSize: 16, fontVariationSettings: `'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 16` }}>storefront</span>
             My Booths
           </button>
@@ -560,7 +560,7 @@ function MemberTradeFairView() {
                 {cd && st !== 'completed' && st !== 'cancelled' && (
                   <div className="flex gap-3 mb-4">
                     {[{ v: cd.days, l: 'Days' }, { v: cd.hours, l: 'Hours' }, { v: cd.mins, l: 'Mins' }].map(({ v, l }) => (
-                      <div key={l} className="flex flex-col items-center rounded-lg px-4 py-2.5 min-w-[64px]" style={{ background: '#002046' }}>
+                      <div key={l} className="flex flex-col items-center rounded-lg px-4 py-2.5 min-w-[64px]" style={{ background: '#023293' }}>
                         <span className="text-2xl font-bold text-white leading-none">{String(v).padStart(2, '0')}</span>
                         <span className="text-xs text-[#aec7f7] mt-0.5 font-medium">{l}</span>
                       </div>
@@ -592,7 +592,7 @@ function MemberTradeFairView() {
                   <button
                     onClick={() => setBookingEvent(event)}
                     className="flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-                    style={{ background: '#002046' }}
+                    style={{ background: '#023293' }}
                   >
                     <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add_business</span>
                     Book a Booth
@@ -679,8 +679,8 @@ function EditBoothModal({ booth, events, onClose }: { booth: TradeFairBooth; eve
             <div key={key}>
               <label className="block text-xs font-semibold text-[#44474e] mb-1">{label}</label>
               <input required value={form[key]} onChange={set(key)} placeholder={placeholder}
-                className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-[#002046]"
-                style={{ '--tw-ring-color': '#002046' } as React.CSSProperties} />
+                className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-[#023293]"
+                style={{ '--tw-ring-color': '#023293' } as React.CSSProperties} />
             </div>
           ))}
 
@@ -695,7 +695,7 @@ function EditBoothModal({ booth, events, onClose }: { booth: TradeFairBooth; eve
 
           <div className="flex gap-3 pt-2">
             <Button variant="outline" type="button" onClick={onClose}>Cancel</Button>
-            <button type="submit" disabled={isLoading} className="flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50" style={{ background: '#002046' }}>
+            <button type="submit" disabled={isLoading} className="flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50" style={{ background: '#023293' }}>
               {isLoading ? 'Saving…' : 'Save Changes'}
             </button>
           </div>
@@ -781,7 +781,7 @@ function AdminTradeFairView() {
           </select>
           <button
             onClick={() => setShowCreateEvent(true)}
-            className="flex items-center gap-2 rounded-lg border border-[#002046] px-4 py-2 text-sm font-semibold text-[#002046] hover:bg-[#002046] hover:text-white transition-colors"
+            className="flex items-center gap-2 rounded-lg border border-[#023293] px-4 py-2 text-sm font-semibold text-[#023293] hover:bg-[#023293] hover:text-white transition-colors"
           >
             <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add_circle</span>
             Create Event
@@ -790,7 +790,7 @@ function AdminTradeFairView() {
             onClick={() => setShowAddBooth(true)}
             disabled={!selectedEventId}
             className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white disabled:opacity-40 disabled:cursor-not-allowed"
-            style={{ background: '#002046' }}
+            style={{ background: '#023293' }}
           >
             <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>
             Add Booth
@@ -806,7 +806,7 @@ function AdminTradeFairView() {
           { icon: 'event_available', label: 'Available', value: availableCount, accent: false },
           { icon: 'payments', label: 'Revenue', value: `₦${(revenue / 1000).toFixed(0)}K`, accent: false },
         ].map(({ icon, label, value, accent }) => (
-          <div key={label} className={`rounded-xl border p-4 ${accent ? 'border-[#002046]' : 'bg-white border-[#e0e3e5]'}`} style={accent ? { background: '#002046' } : {}}>
+          <div key={label} className={`rounded-xl border p-4 ${accent ? 'border-[#023293]' : 'bg-white border-[#e0e3e5]'}`} style={accent ? { background: '#023293' } : {}}>
             <div className="flex items-center gap-2 mb-2">
               <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`, color: accent ? '#aec7f7' : '#74777f' }}>{icon}</span>
               <p className={`text-xs font-semibold uppercase tracking-wide ${accent ? 'text-[#aec7f7]' : 'text-[#74777f]'}`}>{label}</p>
@@ -854,7 +854,7 @@ function AdminTradeFairView() {
                 {cd && event.status !== 'completed' && (
                   <div className="flex gap-3 mb-4">
                     {[{ v: cd.days, l: 'Days' }, { v: cd.hours, l: 'Hours' }, { v: cd.mins, l: 'Mins' }].map(({ v, l }) => (
-                      <div key={l} className="flex flex-col items-center rounded-lg px-4 py-2.5" style={{ background: '#002046' }}>
+                      <div key={l} className="flex flex-col items-center rounded-lg px-4 py-2.5" style={{ background: '#023293' }}>
                         <span className="text-xl font-bold text-white leading-none">{String(v).padStart(2, '0')}</span>
                         <span className="text-xs text-[#aec7f7] mt-0.5">{l}</span>
                       </div>
@@ -883,7 +883,7 @@ function AdminTradeFairView() {
                           className="rounded-lg px-3 py-1 text-xs font-semibold border transition-colors disabled:opacity-50"
                           style={isCancel
                             ? { borderColor: '#93000a', color: '#93000a', background: 'transparent' }
-                            : { borderColor: '#002046', color: '#002046', background: 'transparent' }}
+                            : { borderColor: '#023293', color: '#023293', background: 'transparent' }}
                         >
                           {isLoading ? '…' : next.label}
                         </button>
@@ -920,16 +920,16 @@ function AdminTradeFairView() {
                   <div
                     key={booth.id}
                     className="bg-white rounded-xl border p-4"
-                    style={{ borderColor: booth.status === 'available' ? '#e0e3e5' : booth.status === 'paid' ? '#002046' : '#ffc300' }}
+                    style={{ borderColor: booth.status === 'available' ? '#e0e3e5' : booth.status === 'paid' ? '#023293' : '#ffc300' }}
                   >
                     <div className="flex items-start justify-between mb-2">
-                      <p className="font-bold text-[#002046] text-lg leading-none">{booth.boothNumber}</p>
+                      <p className="font-bold text-[#023293] text-lg leading-none">{booth.boothNumber}</p>
                       <span
                         className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold"
                         style={booth.status === 'available'
                           ? { background: '#a0f4ca', color: '#005137' }
                           : booth.status === 'paid'
-                          ? { background: '#d6e3ff', color: '#001b3d' }
+                          ? { background: '#d6e3ff', color: '#023293' }
                           : { background: '#ffdea5', color: '#5d4201' }}
                       >
                         {booth.status}
@@ -946,7 +946,7 @@ function AdminTradeFairView() {
                     )}
                     <button
                       onClick={() => setEditingBooth(booth)}
-                      className="mt-2 w-full rounded-lg border border-[#c4c6cf] px-2 py-1 text-xs font-semibold text-[#74777f] hover:border-[#002046] hover:text-[#002046] transition-colors"
+                      className="mt-2 w-full rounded-lg border border-[#c4c6cf] px-2 py-1 text-xs font-semibold text-[#74777f] hover:border-[#023293] hover:text-[#023293] transition-colors"
                     >
                       Edit
                     </button>
@@ -956,7 +956,7 @@ function AdminTradeFairView() {
               {/* Add new booth card */}
               <button
                 onClick={() => setShowAddBooth(true)}
-                className="rounded-xl border-2 border-dashed border-[#c4c6cf] p-4 flex flex-col items-center justify-center gap-2 text-[#74777f] hover:border-[#002046] hover:text-[#002046] transition-colors min-h-[120px]"
+                className="rounded-xl border-2 border-dashed border-[#c4c6cf] p-4 flex flex-col items-center justify-center gap-2 text-[#74777f] hover:border-[#023293] hover:text-[#023293] transition-colors min-h-[120px]"
               >
                 <span className="material-symbols-outlined" style={{ fontSize: 24 }}>add</span>
                 <span className="text-xs font-medium">Add Booth</span>
@@ -985,7 +985,7 @@ function AdminTradeFairView() {
                     return (
                       <tr key={b.id} className="hover:bg-[#f7f9fb] transition-colors">
                         <td className="px-4 py-3">
-                          <p className="font-bold text-[#002046]">{b.boothNumber}</p>
+                          <p className="font-bold text-[#023293]">{b.boothNumber}</p>
                           <p className="text-xs text-[#74777f]">{b.size}</p>
                         </td>
                         <td className="px-4 py-3">

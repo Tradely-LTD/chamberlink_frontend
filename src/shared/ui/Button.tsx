@@ -6,10 +6,10 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variants: Record<NonNullable<Props['variant']>, string> = {
-  primary: 'bg-[#00502e] text-white hover:bg-[#006b3f]',
+  primary: 'bg-[#023293] text-white hover:bg-[#0267bf]',
   secondary: 'bg-[#795900] text-white hover:bg-[#5c4300]',
-  ghost: 'bg-transparent text-[#00502e] hover:bg-[#00502e]/10 border border-[#00502e]',
-  outline: 'bg-white text-[#221a0f] border border-[#bec9bf] hover:border-[#00502e] hover:text-[#00502e]',
+  ghost: 'bg-transparent text-[#023293] hover:bg-[#023293]/10 border border-[#023293]',
+  outline: 'bg-white text-[#221a0f] border border-[#bec9bf] hover:border-[#023293] hover:text-[#023293]',
 };
 
 export function Button({

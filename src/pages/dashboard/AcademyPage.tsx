@@ -115,11 +115,11 @@ function CourseFormModal({
 
           <div>
             <label className="block text-xs font-semibold text-[#44474e] mb-1">Course Title</label>
-            <input required value={form.title} onChange={set('title')} placeholder="e.g. Export Documentation Fundamentals" className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#002046]" />
+            <input required value={form.title} onChange={set('title')} placeholder="e.g. Export Documentation Fundamentals" className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293]" />
           </div>
           <div>
             <label className="block text-xs font-semibold text-[#44474e] mb-1">Description</label>
-            <textarea required rows={3} value={form.description} onChange={set('description')} className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#002046] resize-none" />
+            <textarea required rows={3} value={form.description} onChange={set('description')} className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293] resize-none" />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -152,11 +152,11 @@ function CourseFormModal({
             </div>
             <div className="flex flex-col gap-2 pt-5">
               <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" checked={form.isFree} onChange={(e) => setForm((f) => ({ ...f, isFree: e.target.checked }))} className="w-4 h-4 accent-[#002046]" />
+                <input type="checkbox" checked={form.isFree} onChange={(e) => setForm((f) => ({ ...f, isFree: e.target.checked }))} className="w-4 h-4 accent-[#023293]" />
                 <span className="text-sm text-[#191c1e]">Free course</span>
               </label>
               <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" checked={form.isPublished} onChange={(e) => setForm((f) => ({ ...f, isPublished: e.target.checked }))} className="w-4 h-4 accent-[#002046]" />
+                <input type="checkbox" checked={form.isPublished} onChange={(e) => setForm((f) => ({ ...f, isPublished: e.target.checked }))} className="w-4 h-4 accent-[#023293]" />
                 <span className="text-sm text-[#191c1e]">Published</span>
               </label>
             </div>
@@ -169,7 +169,7 @@ function CourseFormModal({
               value={form.videoUrl}
               onChange={set('videoUrl')}
               placeholder="https://www.youtube.com/watch?v=..."
-              className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#002046]"
+              className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293]"
             />
           </div>
 
@@ -178,19 +178,19 @@ function CourseFormModal({
             <button
               type="button"
               onClick={onManageSections}
-              className="w-full flex items-center justify-between rounded-xl border border-dashed border-[#002046]/30 bg-[#f0f4ff] px-4 py-3 text-sm text-[#002046] hover:bg-[#e8eeff] transition-colors"
+              className="w-full flex items-center justify-between rounded-xl border border-dashed border-[#023293]/30 bg-[#f0f4ff] px-4 py-3 text-sm text-[#023293] hover:bg-[#e8eeff] transition-colors"
             >
               <span className="flex items-center gap-2 font-semibold">
                 <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1` }}>video_library</span>
                 Add / manage course content (sections &amp; videos)
               </span>
-              <span className="material-symbols-outlined text-[#002046]/60" style={{ fontSize: 18 }}>arrow_forward</span>
+              <span className="material-symbols-outlined text-[#023293]/60" style={{ fontSize: 18 }}>arrow_forward</span>
             </button>
           )}
 
           <div className="flex gap-3 pt-2">
             <Button variant="outline" type="button" onClick={onClose}>Cancel</Button>
-            <button type="submit" disabled={isLoading} className="flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50" style={{ background: '#002046' }}>
+            <button type="submit" disabled={isLoading} className="flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50" style={{ background: '#023293' }}>
               {isLoading ? 'Saving...' : (course ? 'Save Changes' : 'Create Course')}
             </button>
           </div>
@@ -304,7 +304,7 @@ function SectionManagerModal({ course, onClose }: { course: Course; onClose: () 
             <button
               onClick={() => { setShowAddForm(true); setEditingId(null); }}
               className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-white"
-              style={{ background: '#002046' }}
+              style={{ background: '#023293' }}
             >
               <span className="material-symbols-outlined" style={{ fontSize: 14 }}>add</span>
               Add Section
@@ -328,19 +328,19 @@ function SectionManagerModal({ course, onClose }: { course: Course; onClose: () 
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-[#191c1e]">Course material uploaded</p>
-                    <a href={pdfUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-[#002046] underline">Preview PDF</a>
+                    <a href={pdfUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-[#023293] underline">Preview PDF</a>
                   </div>
-                  <label className="cursor-pointer rounded-lg border border-[#c4c6cf] px-3 py-1.5 text-xs font-semibold text-[#44474e] hover:border-[#002046] hover:text-[#002046] transition-colors flex-shrink-0">
+                  <label className="cursor-pointer rounded-lg border border-[#c4c6cf] px-3 py-1.5 text-xs font-semibold text-[#44474e] hover:border-[#023293] hover:text-[#023293] transition-colors flex-shrink-0">
                     {uploading ? 'Uploading…' : 'Replace'}
                     <input type="file" accept="application/pdf" className="sr-only" onChange={handlePdfChange} disabled={uploading} />
                   </label>
                 </div>
               ) : (
-                <label className={`flex flex-col items-center justify-center gap-2 py-6 cursor-pointer rounded-lg border-2 border-dashed transition-colors ${uploading ? 'border-[#002046]/40 bg-[#f0f4ff]' : 'border-[#c4c6cf] hover:border-[#002046]'}`}>
+                <label className={`flex flex-col items-center justify-center gap-2 py-6 cursor-pointer rounded-lg border-2 border-dashed transition-colors ${uploading ? 'border-[#023293]/40 bg-[#f0f4ff]' : 'border-[#c4c6cf] hover:border-[#023293]'}`}>
                   {uploading ? (
                     <>
-                      <span className="h-6 w-6 animate-spin rounded-full border-2 border-[#002046] border-t-transparent" />
-                      <span className="text-xs text-[#002046] font-medium">Uploading…</span>
+                      <span className="h-6 w-6 animate-spin rounded-full border-2 border-[#023293] border-t-transparent" />
+                      <span className="text-xs text-[#023293] font-medium">Uploading…</span>
                     </>
                   ) : (
                     <>
@@ -370,7 +370,7 @@ function SectionManagerModal({ course, onClose }: { course: Course; onClose: () 
               <span className="material-symbols-outlined text-[#74777f] mb-2 block" style={{ fontSize: 32, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 32` }}>video_library</span>
               <p className="text-sm font-semibold text-[#44474e] mb-1">No sections yet</p>
               <p className="text-xs text-[#74777f] mb-4">Add YouTube or Vimeo video links as course sections.</p>
-              <button onClick={() => setShowAddForm(true)} className="rounded-lg px-4 py-2 text-xs font-semibold text-white" style={{ background: '#002046' }}>
+              <button onClick={() => setShowAddForm(true)} className="rounded-lg px-4 py-2 text-xs font-semibold text-white" style={{ background: '#023293' }}>
                 Add First Section
               </button>
             </div>
@@ -383,15 +383,15 @@ function SectionManagerModal({ course, onClose }: { course: Course; onClose: () 
                   <div className="grid grid-cols-2 gap-3">
                     <div className="col-span-2">
                       <label className="block text-xs font-semibold text-[#44474e] mb-1">Section Title</label>
-                      <input required value={editForm.title} onChange={setEdit('title')} className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#002046]" />
+                      <input required value={editForm.title} onChange={setEdit('title')} className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293]" />
                     </div>
                     <div className="col-span-2">
                       <label className="block text-xs font-semibold text-[#44474e] mb-1">Video URL (YouTube/Vimeo)</label>
-                      <input required value={editForm.videoUrl} onChange={setEdit('videoUrl')} placeholder="https://www.youtube.com/watch?v=..." className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#002046]" />
+                      <input required value={editForm.videoUrl} onChange={setEdit('videoUrl')} placeholder="https://www.youtube.com/watch?v=..." className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293]" />
                     </div>
                     <div className="col-span-2">
                       <label className="block text-xs font-semibold text-[#44474e] mb-1">Description <span className="font-normal text-[#74777f]">— optional</span></label>
-                      <textarea rows={2} value={editForm.description} onChange={setEdit('description')} className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#002046] resize-none" />
+                      <textarea rows={2} value={editForm.description} onChange={setEdit('description')} className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293] resize-none" />
                     </div>
                     <div>
                       <label className="block text-xs font-semibold text-[#44474e] mb-1">Order</label>
@@ -400,14 +400,14 @@ function SectionManagerModal({ course, onClose }: { course: Course; onClose: () 
                   </div>
                   <div className="flex gap-2 pt-1">
                     <button onClick={() => setEditingId(null)} className="rounded-lg px-3 py-1.5 text-xs font-semibold border border-[#c4c6cf] text-[#44474e]">Cancel</button>
-                    <button onClick={() => handleUpdate(s.id)} disabled={!!updatingId} className="rounded-lg px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50" style={{ background: '#002046' }}>
+                    <button onClick={() => handleUpdate(s.id)} disabled={!!updatingId} className="rounded-lg px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50" style={{ background: '#023293' }}>
                       {updatingId ? 'Saving…' : 'Save Changes'}
                     </button>
                   </div>
                 </div>
               ) : (
                 <div className="flex items-center gap-3 p-4">
-                  <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold" style={{ background: '#d6e3ff', color: '#002046' }}>
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold" style={{ background: '#d6e3ff', color: '#023293' }}>
                     {idx + 1}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -415,7 +415,7 @@ function SectionManagerModal({ course, onClose }: { course: Course; onClose: () 
                     <p className="text-xs text-[#74777f] truncate">{s.videoUrl}</p>
                   </div>
                   <div className="flex items-center gap-1 flex-shrink-0">
-                    <button onClick={() => startEdit(s)} className="p-1.5 rounded-lg hover:bg-[#f7f9fb] text-[#74777f] hover:text-[#002046]">
+                    <button onClick={() => startEdit(s)} className="p-1.5 rounded-lg hover:bg-[#f7f9fb] text-[#74777f] hover:text-[#023293]">
                       <span className="material-symbols-outlined" style={{ fontSize: 16 }}>edit</span>
                     </button>
                     <button onClick={() => handleDelete(s.id)} className="p-1.5 rounded-lg hover:bg-[#ffdad6] text-[#74777f] hover:text-[#93000a]">
@@ -429,20 +429,20 @@ function SectionManagerModal({ course, onClose }: { course: Course; onClose: () 
 
           {/* Add section form */}
           {showAddForm && (
-            <div className="bg-[#f7f9fb] rounded-xl border border-[#002046]/20 p-4">
-              <p className="text-xs font-bold text-[#002046] mb-3 uppercase tracking-wide">New Section</p>
+            <div className="bg-[#f7f9fb] rounded-xl border border-[#023293]/20 p-4">
+              <p className="text-xs font-bold text-[#023293] mb-3 uppercase tracking-wide">New Section</p>
               <form onSubmit={handleAdd} className="space-y-3">
                 <div>
                   <label className="block text-xs font-semibold text-[#44474e] mb-1">Section Title</label>
-                  <input required value={addForm.title} onChange={setAdd('title')} placeholder="e.g. Introduction to HS Codes" className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#002046]" />
+                  <input required value={addForm.title} onChange={setAdd('title')} placeholder="e.g. Introduction to HS Codes" className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293]" />
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-[#44474e] mb-1">Video URL (YouTube/Vimeo)</label>
-                  <input required value={addForm.videoUrl} onChange={setAdd('videoUrl')} placeholder="https://www.youtube.com/watch?v=..." className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#002046]" />
+                  <input required value={addForm.videoUrl} onChange={setAdd('videoUrl')} placeholder="https://www.youtube.com/watch?v=..." className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293]" />
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-[#44474e] mb-1">Description <span className="font-normal text-[#74777f]">— optional</span></label>
-                  <textarea rows={2} value={addForm.description} onChange={setAdd('description')} className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#002046] resize-none" />
+                  <textarea rows={2} value={addForm.description} onChange={setAdd('description')} className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293] resize-none" />
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-[#44474e] mb-1">Order <span className="font-normal text-[#74777f]">— leave blank to add at end</span></label>
@@ -450,7 +450,7 @@ function SectionManagerModal({ course, onClose }: { course: Course; onClose: () 
                 </div>
                 <div className="flex gap-2 pt-1">
                   <button type="button" onClick={() => { setShowAddForm(false); setAddForm(blank); }} className="rounded-lg px-3 py-1.5 text-xs font-semibold border border-[#c4c6cf] text-[#44474e]">Cancel</button>
-                  <button type="submit" disabled={adding} className="rounded-lg px-4 py-1.5 text-xs font-semibold text-white disabled:opacity-50" style={{ background: '#002046' }}>
+                  <button type="submit" disabled={adding} className="rounded-lg px-4 py-1.5 text-xs font-semibold text-white disabled:opacity-50" style={{ background: '#023293' }}>
                     {adding ? 'Adding…' : 'Add Section'}
                   </button>
                 </div>
@@ -510,7 +510,7 @@ function AdminAcademyView() {
           <button
             onClick={() => setShowForm(true)}
             className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white"
-            style={{ background: '#002046' }}
+            style={{ background: '#023293' }}
           >
             <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>
             Add Course
@@ -526,7 +526,7 @@ function AdminAcademyView() {
           { icon: 'verified', label: 'Completed', value: completedCount },
           { icon: 'trending_up', label: 'Avg Progress', value: `${avgProgress}%` },
         ].map(({ icon, label, value, accent }) => (
-          <div key={label} className={`rounded-xl border p-4 ${accent ? '' : 'bg-white border-[#e0e3e5]'}`} style={accent ? { background: '#002046', borderColor: '#002046' } : {}}>
+          <div key={label} className={`rounded-xl border p-4 ${accent ? '' : 'bg-white border-[#e0e3e5]'}`} style={accent ? { background: '#023293', borderColor: '#023293' } : {}}>
             <div className="flex items-center gap-2 mb-2">
               <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`, color: accent ? '#aec7f7' : '#74777f' }}>{icon}</span>
               <p className={`text-xs font-semibold uppercase tracking-wide ${accent ? 'text-[#aec7f7]' : 'text-[#74777f]'}`}>{label}</p>
@@ -549,7 +549,7 @@ function AdminAcademyView() {
       {tab === 'courses' && (
         <>
           <div className="mb-4">
-            <input type="search" placeholder="Search courses..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-full max-w-sm rounded-lg border border-[#c4c6cf] px-4 py-2 text-sm focus:outline-none focus:border-[#002046]" />
+            <input type="search" placeholder="Search courses..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-full max-w-sm rounded-lg border border-[#c4c6cf] px-4 py-2 text-sm focus:outline-none focus:border-[#023293]" />
           </div>
           {coursesError && <div className="mb-4"><ErrorBanner message="Failed to load courses. Please refresh." /></div>}
           {coursesLoading ? (
@@ -595,14 +595,14 @@ function AdminAcademyView() {
                           <div className="flex items-center gap-2">
                             <button
                               onClick={() => setEditCourse(course)}
-                              className="rounded-lg border border-[#c4c6cf] px-2.5 py-1 text-xs font-semibold text-[#44474e] hover:border-[#002046] hover:text-[#002046] transition-colors"
+                              className="rounded-lg border border-[#c4c6cf] px-2.5 py-1 text-xs font-semibold text-[#44474e] hover:border-[#023293] hover:text-[#023293] transition-colors"
                             >
                               Edit
                             </button>
                             <button
                               onClick={() => setManagingSections(course)}
                               className="flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-semibold text-white transition-colors"
-                              style={{ background: '#002046' }}
+                              style={{ background: '#023293' }}
                             >
                               <span className="material-symbols-outlined" style={{ fontSize: 13, fontVariationSettings: `'FILL' 1` }}>video_library</span>
                               Content
@@ -649,7 +649,7 @@ function AdminAcademyView() {
                     <td className="px-4 py-3 min-w-[120px]">
                       <div className="flex items-center gap-2">
                         <div className="flex-1 h-1.5 bg-[#e0e3e5] rounded-full overflow-hidden">
-                          <div className="h-full rounded-full" style={{ width: `${e.progress}%`, background: e.progress === 100 ? '#0b6c4b' : '#002046' }} />
+                          <div className="h-full rounded-full" style={{ width: `${e.progress}%`, background: e.progress === 100 ? '#0b6c4b' : '#023293' }} />
                         </div>
                         <span className="text-xs font-semibold text-[#74777f] w-8 text-right">{e.progress}%</span>
                       </div>
@@ -702,7 +702,7 @@ function CoursePlayerModal({ enrollment, onClose }: { enrollment: Enrollment; on
 
         {isLoading ? (
           <div className="flex-1 flex items-center justify-center p-10">
-            <span className="h-8 w-8 animate-spin rounded-full border-2 border-[#002046] border-t-transparent" />
+            <span className="h-8 w-8 animate-spin rounded-full border-2 border-[#023293] border-t-transparent" />
           </div>
         ) : sections.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center p-10 text-center">
@@ -720,12 +720,12 @@ function CoursePlayerModal({ enrollment, onClose }: { enrollment: Enrollment; on
                     key={s.id}
                     onClick={() => setActiveIdx(i)}
                     className={`w-full text-left rounded-lg px-3 py-2.5 transition-colors ${i === activeIdx ? 'text-white' : 'hover:bg-[#f7f9fb] text-[#191c1e]'}`}
-                    style={i === activeIdx ? { background: '#002046' } : {}}
+                    style={i === activeIdx ? { background: '#023293' } : {}}
                   >
                     <div className="flex items-center gap-2.5">
                       <span
                         className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
-                        style={i === activeIdx ? { background: 'rgba(255,255,255,0.2)', color: 'white' } : { background: '#d6e3ff', color: '#002046' }}
+                        style={i === activeIdx ? { background: 'rgba(255,255,255,0.2)', color: 'white' } : { background: '#d6e3ff', color: '#023293' }}
                       >
                         {i + 1}
                       </span>
@@ -753,7 +753,7 @@ function CoursePlayerModal({ enrollment, onClose }: { enrollment: Enrollment; on
                 <div className="flex flex-col items-center justify-center p-8 text-center" style={{ aspectRatio: '16/9' }}>
                   <span className="material-symbols-outlined text-[#74777f] mb-2" style={{ fontSize: 36 }}>link_off</span>
                   <p className="text-sm font-semibold text-[#44474e] mb-1">Unsupported video URL</p>
-                  <a href={active?.videoUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-[#002046] underline break-all">{active?.videoUrl}</a>
+                  <a href={active?.videoUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-[#023293] underline break-all">{active?.videoUrl}</a>
                 </div>
               )}
               {active?.description && (
@@ -834,7 +834,7 @@ function EnrolledCourseCard({
       <div className="mb-3">
         <div className="flex justify-between text-xs text-[#74777f] mb-1"><span>Progress</span><span className="font-semibold">{enrollment.progress}%</span></div>
         <div className="h-2 bg-[#e0e3e5] rounded-full overflow-hidden">
-          <div className="h-full rounded-full transition-all" style={{ width: `${enrollment.progress}%`, background: enrollment.progress === 100 ? '#0b6c4b' : '#002046' }} />
+          <div className="h-full rounded-full transition-all" style={{ width: `${enrollment.progress}%`, background: enrollment.progress === 100 ? '#0b6c4b' : '#023293' }} />
         </div>
       </div>
       {materialError && (
@@ -848,7 +848,7 @@ function EnrolledCourseCard({
           <button
             onClick={handleDownloadMaterial}
             disabled={loadingMaterial}
-            className="flex items-center gap-1.5 rounded-lg border border-[#c4c6cf] px-3 py-1.5 text-xs font-semibold text-[#191c1e] hover:border-[#002046] hover:text-[#002046] transition-colors disabled:opacity-50"
+            className="flex items-center gap-1.5 rounded-lg border border-[#c4c6cf] px-3 py-1.5 text-xs font-semibold text-[#191c1e] hover:border-[#023293] hover:text-[#023293] transition-colors disabled:opacity-50"
           >
             <span className="material-symbols-outlined" style={{ fontSize: 14, fontVariationSettings: `'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 14` }}>download</span>
             {loadingMaterial ? 'Loading...' : 'PDF Materials'}
@@ -857,7 +857,7 @@ function EnrolledCourseCard({
             <button
               onClick={() => onContinue(enrollment)}
               className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-white transition-colors"
-              style={{ background: '#002046' }}
+              style={{ background: '#023293' }}
             >
               <span className="material-symbols-outlined" style={{ fontSize: 14, fontVariationSettings: `'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 14` }}>play_arrow</span>
               Continue Learning
@@ -906,7 +906,7 @@ function CourseDetailModal({
           <div className="flex flex-wrap items-center gap-2 mb-5">
             <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize" style={{ background: lc.bg, color: lc.text }}>{course.level}</span>
             {course.category && (
-              <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ background: '#d6e3ff', color: '#002046' }}>
+              <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ background: '#d6e3ff', color: '#023293' }}>
                 <span className="material-symbols-outlined" style={{ fontSize: 12, fontVariationSettings: `'FILL' 1` }}>category</span>
                 {course.category}
               </span>
@@ -941,7 +941,7 @@ function CourseDetailModal({
               />
             </div>
           ) : (
-            <div className="rounded-xl flex items-center justify-center mb-5" style={{ background: '#002046', height: 120 }}>
+            <div className="rounded-xl flex items-center justify-center mb-5" style={{ background: '#023293', height: 120 }}>
               <div className="text-center">
                 <span className="material-symbols-outlined text-white/40" style={{ fontSize: 36, fontVariationSettings: `'FILL' 1` }}>school</span>
                 <p className="text-xs text-[#aec7f7] mt-1 uppercase tracking-wide font-semibold">{course.category}</p>
@@ -977,7 +977,7 @@ function CourseDetailModal({
                 onClick={onEnroll}
                 disabled={enrolling}
                 className="flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
-                style={{ background: '#002046' }}
+                style={{ background: '#023293' }}
               >
                 <span className="material-symbols-outlined" style={{ fontSize: 16, fontVariationSettings: `'FILL' 1` }}>school</span>
                 {enrolling ? 'Enrolling…' : 'Enroll Now'}
@@ -1051,7 +1051,7 @@ function MemberAcademyView() {
           <button key={t} onClick={() => setTab(t)} className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === t ? 'bg-white text-[#191c1e] shadow-sm' : 'text-[#74777f] hover:text-[#191c1e]'}`}>
             {label}
             {t === 'my-courses' && myEnrollments.length > 0 && (
-              <span className="ml-1.5 rounded-full px-1.5 py-0.5 text-xs text-white font-bold" style={{ background: '#002046' }}>{myEnrollments.length}</span>
+              <span className="ml-1.5 rounded-full px-1.5 py-0.5 text-xs text-white font-bold" style={{ background: '#023293' }}>{myEnrollments.length}</span>
             )}
           </button>
         ))}
@@ -1063,7 +1063,7 @@ function MemberAcademyView() {
         <>
           <div className="mb-5">
             <input type="search" placeholder="Search courses..." value={search} onChange={(e) => setSearch(e.target.value)}
-              className="w-full max-w-md rounded-lg border border-[#c4c6cf] px-4 py-2.5 text-sm focus:outline-none focus:border-[#002046]" />
+              className="w-full max-w-md rounded-lg border border-[#c4c6cf] px-4 py-2.5 text-sm focus:outline-none focus:border-[#023293]" />
           </div>
           {coursesError && <div className="mb-4"><ErrorBanner message="Failed to load courses. Please refresh." /></div>}
           {coursesLoading ? (
@@ -1084,7 +1084,7 @@ function MemberAcademyView() {
                     <button
                       onClick={() => setPreviewCourse(course)}
                       className="h-24 w-full flex items-center justify-center px-4 relative group"
-                      style={{ background: '#002046' }}
+                      style={{ background: '#023293' }}
                     >
                       <div className="text-center">
                         <span className="material-symbols-outlined text-white/60" style={{ fontSize: 28, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 28` }}>school</span>
@@ -1099,7 +1099,7 @@ function MemberAcademyView() {
                     </button>
                     <div className="p-4 flex flex-col flex-1">
                       <button onClick={() => setPreviewCourse(course)} className="text-left">
-                        <h3 className="text-sm font-bold text-[#191c1e] line-clamp-2 mb-1 hover:text-[#002046] transition-colors">{course.title}</h3>
+                        <h3 className="text-sm font-bold text-[#191c1e] line-clamp-2 mb-1 hover:text-[#023293] transition-colors">{course.title}</h3>
                       </button>
                       <p className="text-xs text-[#74777f] mb-3 line-clamp-2 flex-1">{course.description}</p>
                       {course.instructorName && <p className="text-xs text-[#74777f] mb-2">by {course.instructorName}</p>}
@@ -1115,7 +1115,7 @@ function MemberAcademyView() {
                         <div className="flex items-center gap-1.5">
                           <button
                             onClick={() => setPreviewCourse(course)}
-                            className="rounded-lg px-2.5 py-1.5 text-xs font-semibold border border-[#c4c6cf] text-[#74777f] hover:border-[#002046] hover:text-[#002046] transition-colors"
+                            className="rounded-lg px-2.5 py-1.5 text-xs font-semibold border border-[#c4c6cf] text-[#74777f] hover:border-[#023293] hover:text-[#023293] transition-colors"
                           >
                             Details
                           </button>
@@ -1125,7 +1125,7 @@ function MemberAcademyView() {
                             className="rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-all disabled:opacity-50"
                             style={isEnrolled
                               ? { border: '1px solid #c4c6cf', color: '#191c1e', background: 'white' }
-                              : { background: '#002046', color: 'white' }
+                              : { background: '#023293', color: 'white' }
                             }
                           >
                             {isBusy ? '…' : isEnrolled ? 'My Course' : 'Enroll'}
@@ -1149,7 +1149,7 @@ function MemberAcademyView() {
           ) : myEnrollments.length === 0 ? (
             <div className="bg-white rounded-xl border border-[#e0e3e5] p-12 text-center">
               <p className="text-sm text-[#74777f] mb-4">You haven&apos;t enrolled in any courses yet.</p>
-              <button onClick={() => setTab('catalog')} className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white" style={{ background: '#002046' }}>
+              <button onClick={() => setTab('catalog')} className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white" style={{ background: '#023293' }}>
                 Browse Catalog
               </button>
             </div>

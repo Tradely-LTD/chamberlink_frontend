@@ -141,14 +141,14 @@ function CreateKeyModal({ onClose, onCreated }: { onClose: () => void; onCreated
           {error && <ErrorBanner message={error} />}
           <div>
             <label className="block text-xs font-semibold text-[#44474e] mb-1">Key Name</label>
-            <input required value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Production Key, Test Key" className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#002046]" />
+            <input required value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Production Key, Test Key" className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293]" />
           </div>
           <div>
             <label className="block text-xs font-semibold text-[#44474e] mb-2">Permissions</label>
             <div className="space-y-2">
               {availablePermissions.map((perm) => (
-                <label key={perm.id} className="flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors" style={{ borderColor: selectedPerms.includes(perm.id) ? '#002046' : '#e0e3e5', background: selectedPerms.includes(perm.id) ? '#f0f4ff' : 'white' }}>
-                  <input type="checkbox" checked={selectedPerms.includes(perm.id)} onChange={() => togglePerm(perm.id)} className="mt-0.5 accent-[#002046]" />
+                <label key={perm.id} className="flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors" style={{ borderColor: selectedPerms.includes(perm.id) ? '#023293' : '#e0e3e5', background: selectedPerms.includes(perm.id) ? '#f0f4ff' : 'white' }}>
+                  <input type="checkbox" checked={selectedPerms.includes(perm.id)} onChange={() => togglePerm(perm.id)} className="mt-0.5 accent-[#023293]" />
                   <div>
                     <p className="text-sm font-semibold text-[#191c1e]">{perm.label}</p>
                     <p className="text-xs text-[#74777f]">{perm.description}</p>
@@ -159,7 +159,7 @@ function CreateKeyModal({ onClose, onCreated }: { onClose: () => void; onCreated
           </div>
           <div className="flex gap-3">
             <Button variant="outline" type="button" onClick={onClose}>Cancel</Button>
-            <button type="submit" disabled={isLoading || selectedPerms.length === 0} className="flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50" style={{ background: '#002046' }}>
+            <button type="submit" disabled={isLoading || selectedPerms.length === 0} className="flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50" style={{ background: '#023293' }}>
               {isLoading ? 'Creating…' : 'Create Key'}
             </button>
           </div>
@@ -192,7 +192,7 @@ function NewKeyBanner({ apiKey, onDismiss }: { apiKey: string; onDismiss: () => 
       <p className="text-xs text-[#005137] mb-3">This key will not be shown again. Copy and store it securely.</p>
       <div className="flex items-center gap-2">
         <code className="flex-1 rounded-lg bg-white border border-[#a0f4ca] px-3 py-2 text-sm font-mono text-[#191c1e] overflow-x-auto">{apiKey}</code>
-        <button onClick={handleCopy} className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold transition-colors" style={{ background: copied ? '#0b6c4b' : '#002046', color: 'white' }}>
+        <button onClick={handleCopy} className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold transition-colors" style={{ background: copied ? '#0b6c4b' : '#023293', color: 'white' }}>
           <span className="material-symbols-outlined" style={{ fontSize: 16 }}>{copied ? 'check' : 'content_copy'}</span>
           {copied ? 'Copied!' : 'Copy'}
         </button>
@@ -234,7 +234,7 @@ function InstitutionalApiView() {
           { icon: 'api', label: 'Requests This Month', value: totalRequests.toLocaleString() },
           { icon: 'integration_instructions', label: 'Endpoints', value: stats.length },
         ].map(({ icon, label, value, accent }) => (
-          <div key={label} className={`rounded-xl border p-4 ${accent ? '' : 'bg-white border-[#e0e3e5]'}`} style={accent ? { background: '#002046', borderColor: '#002046' } : {}}>
+          <div key={label} className={`rounded-xl border p-4 ${accent ? '' : 'bg-white border-[#e0e3e5]'}`} style={accent ? { background: '#023293', borderColor: '#023293' } : {}}>
             <div className="flex items-center gap-2 mb-2">
               <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`, color: accent ? '#aec7f7' : '#74777f' }}>{icon}</span>
               <p className={`text-xs font-semibold uppercase tracking-wide ${accent ? 'text-[#aec7f7]' : 'text-[#74777f]'}`}>{label}</p>
@@ -253,7 +253,7 @@ function InstitutionalApiView() {
       {tab === 'keys' && (
         <>
           <div className="flex justify-end mb-4">
-            <button onClick={() => setShowCreate(true)} className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white" style={{ background: '#002046' }}>
+            <button onClick={() => setShowCreate(true)} className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white" style={{ background: '#023293' }}>
               <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>New API Key
             </button>
           </div>
@@ -284,7 +284,7 @@ function InstitutionalApiView() {
                         <span className="font-semibold">{k.requestsThisMonth.toLocaleString()} / {k.requestLimit.toLocaleString()}</span>
                       </div>
                       <div className="h-1.5 bg-[#e0e3e5] rounded-full overflow-hidden">
-                        <div className="h-full rounded-full transition-all" style={{ width: `${usagePct}%`, background: usagePct > 80 ? '#ba1a1a' : '#002046' }} />
+                        <div className="h-full rounded-full transition-all" style={{ width: `${usagePct}%`, background: usagePct > 80 ? '#ba1a1a' : '#023293' }} />
                       </div>
                     </div>
                   </div>
@@ -344,7 +344,7 @@ function InstitutionalApiView() {
                 { method: 'GET', path: '/directory/exporters', desc: 'List verified exporter profiles (paginated).' },
               ].map(({ method, path, desc }) => (
                 <div key={path} className="flex items-start gap-3">
-                  <span className="rounded-md px-2 py-0.5 text-xs font-bold flex-shrink-0 mt-0.5" style={{ background: '#d6e3ff', color: '#001b3d' }}>{method}</span>
+                  <span className="rounded-md px-2 py-0.5 text-xs font-bold flex-shrink-0 mt-0.5" style={{ background: '#d6e3ff', color: '#023293' }}>{method}</span>
                   <div>
                     <code className="text-sm font-mono text-[#191c1e]">{path}</code>
                     <p className="text-xs text-[#74777f] mt-0.5">{desc}</p>
@@ -382,7 +382,7 @@ function AdminApiView() {
           { icon: 'api', label: 'Total API Keys', value: allConsumers.reduce((s, c) => s + c.apiKeyCount, 0) },
           { icon: 'trending_up', label: 'Requests / Mo', value: totalRequests.toLocaleString() },
         ].map(({ icon, label, value, accent }) => (
-          <div key={label} className={`rounded-xl border p-4 ${accent ? '' : 'bg-white border-[#e0e3e5]'}`} style={accent ? { background: '#002046', borderColor: '#002046' } : {}}>
+          <div key={label} className={`rounded-xl border p-4 ${accent ? '' : 'bg-white border-[#e0e3e5]'}`} style={accent ? { background: '#023293', borderColor: '#023293' } : {}}>
             <div className="flex items-center gap-2 mb-2">
               <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`, color: accent ? '#aec7f7' : '#74777f' }}>{icon}</span>
               <p className={`text-xs font-semibold uppercase tracking-wide ${accent ? 'text-[#aec7f7]' : 'text-[#74777f]'}`}>{label}</p>
@@ -418,7 +418,7 @@ function AdminApiView() {
                     <td className="px-4 py-3">
                       {c.status === 'active'
                         ? <button onClick={() => updateStatus({ id: c.id, status: 'suspended' })} className="text-xs font-medium px-2.5 py-1 rounded-md border border-[#c4c6cf] text-[#74777f]">Suspend</button>
-                        : <button onClick={() => updateStatus({ id: c.id, status: 'active' })} className="text-xs font-medium px-2.5 py-1 rounded-md text-white" style={{ background: '#002046' }}>Reinstate</button>
+                        : <button onClick={() => updateStatus({ id: c.id, status: 'active' })} className="text-xs font-medium px-2.5 py-1 rounded-md text-white" style={{ background: '#023293' }}>Reinstate</button>
                       }
                     </td>
                   </tr>

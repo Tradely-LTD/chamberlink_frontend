@@ -9,7 +9,7 @@ const demoData = {
 
 function StatCard({ label, value, sublabel, accent }: { label: string; value: string; sublabel?: string; accent?: boolean }) {
   return (
-    <div className={`rounded-xl border p-5 ${accent ? 'border-[#002046] text-white' : 'bg-white border-[#e0e3e5]'}`} style={accent ? { background: '#002046' } : {}}>
+    <div className={`rounded-xl border p-5 ${accent ? 'border-[#023293] text-white' : 'bg-white border-[#e0e3e5]'}`} style={accent ? { background: '#023293' } : {}}>
       <p className={`text-sm mb-1 ${accent ? 'text-[#aec7f7]' : 'text-[#74777f]'}`}>{label}</p>
       <p className={`text-2xl font-bold ${accent ? 'text-white' : 'text-[#191c1e]'}`}>{value}</p>
       {sublabel && <p className={`text-xs mt-1 ${accent ? 'text-[#aec7f7]' : 'text-[#74777f]'}`}>{sublabel}</p>}

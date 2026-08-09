@@ -102,8 +102,8 @@ function totalNetWeight(items: LineItem[])   { return items.reduce((s, i) => s +
 function totalGrossWeight(items: LineItem[]) { return items.reduce((s, i) => s + (i.grossWeight ?? 0), 0); }
 function totalPackages(items: LineItem[])    { return items.reduce((s, i) => s + (i.numberOfPackages ?? i.quantity), 0); }
 
-const inputCls   = 'w-full rounded-lg border border-[#bec9bf]/60 px-3 py-2.5 text-sm text-[#221a0f] placeholder-[#8A7E6E] focus:outline-none focus:ring-2 focus:ring-[#00502e]/30 focus:border-[#00502e]';
-const inputSmCls = 'w-full rounded-lg border border-[#bec9bf]/60 px-3 py-2 text-sm text-[#221a0f] placeholder-[#8A7E6E] focus:outline-none focus:ring-2 focus:ring-[#00502e]/30 focus:border-[#00502e]';
+const inputCls   = 'w-full rounded-lg border border-[#bec9bf]/60 px-3 py-2.5 text-sm text-[#221a0f] placeholder-[#8A7E6E] focus:outline-none focus:ring-2 focus:ring-[#023293]/30 focus:border-[#023293]';
+const inputSmCls = 'w-full rounded-lg border border-[#bec9bf]/60 px-3 py-2 text-sm text-[#221a0f] placeholder-[#8A7E6E] focus:outline-none focus:ring-2 focus:ring-[#023293]/30 focus:border-[#023293]';
 
 // ── Step 1: Document Type ──────────────────────────────────────────────────
 
@@ -116,11 +116,11 @@ function StepDocType({ form, setForm }: { form: GeneratorForm; setForm: React.Di
           { value: 'commercial_invoice' as const, label: 'Commercial Invoice', desc: 'Invoice issued to the buyer listing goods, quantities, and agreed prices.', icon: 'receipt_long' },
           { value: 'packing_list' as const,       label: 'Packing List',       desc: 'Shipping manifest — weights, dimensions, marks & numbers. No prices.', icon: 'inventory_2' },
         ]).map((opt) => (
-          <label key={opt.value} className={`flex flex-col gap-2 p-4 rounded-xl border-2 cursor-pointer transition-all ${form.type === opt.value ? 'border-[#00502e] bg-[#f0faf4]' : 'border-[#bec9bf]/40 hover:border-[#00502e]/40'}`}>
+          <label key={opt.value} className={`flex flex-col gap-2 p-4 rounded-xl border-2 cursor-pointer transition-all ${form.type === opt.value ? 'border-[#023293] bg-[#f0faf4]' : 'border-[#bec9bf]/40 hover:border-[#023293]/40'}`}>
             <input type="radio" name="docType" value={opt.value} checked={form.type === opt.value}
               onChange={() => setForm((f) => ({ ...f, type: opt.value }))} className="sr-only" />
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-[#00502e]" style={{ fontSize: 20, fontVariationSettings: `'FILL' 1` }}>{opt.icon}</span>
+              <span className="material-symbols-outlined text-[#023293]" style={{ fontSize: 20, fontVariationSettings: `'FILL' 1` }}>{opt.icon}</span>
               <span className="font-semibold text-sm text-[#221a0f]">{opt.label}</span>
             </div>
             <p className="text-xs text-[#8A7E6E]">{opt.desc}</p>
@@ -148,10 +148,10 @@ function StepTransport({ form, setForm }: { form: GeneratorForm; setForm: React.
         <p className="text-xs text-[#8A7E6E] mb-4">Choose first — this shapes which fields appear on your line items.</p>
         <div className="grid grid-cols-4 gap-3">
           {MODE_META.map((m) => (
-            <label key={m.value} className={`flex flex-col items-center gap-1.5 p-4 rounded-xl border-2 cursor-pointer transition-all text-center ${form.shippingMethod === m.value ? 'border-[#00502e] bg-[#f0faf4]' : 'border-[#bec9bf]/40 hover:border-[#00502e]/40'}`}>
+            <label key={m.value} className={`flex flex-col items-center gap-1.5 p-4 rounded-xl border-2 cursor-pointer transition-all text-center ${form.shippingMethod === m.value ? 'border-[#023293] bg-[#f0faf4]' : 'border-[#bec9bf]/40 hover:border-[#023293]/40'}`}>
               <input type="radio" name="shippingMethod" value={m.value} checked={form.shippingMethod === m.value}
                 onChange={() => setForm((f) => ({ ...f, shippingMethod: m.value }))} className="sr-only" />
-              <span className="material-symbols-outlined text-[#00502e]" style={{ fontSize: 28, fontVariationSettings: `'FILL' 1` }}>{m.icon}</span>
+              <span className="material-symbols-outlined text-[#023293]" style={{ fontSize: 28, fontVariationSettings: `'FILL' 1` }}>{m.icon}</span>
               <span className="text-sm font-semibold text-[#221a0f]">{m.label}</span>
               <span className="text-xs text-[#8A7E6E]">{m.hint}</span>
             </label>
@@ -165,7 +165,7 @@ function StepTransport({ form, setForm }: { form: GeneratorForm; setForm: React.
           <div className="mt-0.5">
             <input type="checkbox" checked={form.hasBooking}
               onChange={(e) => setForm((f) => ({ ...f, hasBooking: e.target.checked }))}
-              className="w-4 h-4 rounded border-[#bec9bf] text-[#00502e] focus:ring-[#00502e]/30 cursor-pointer" />
+              className="w-4 h-4 rounded border-[#bec9bf] text-[#023293] focus:ring-[#023293]/30 cursor-pointer" />
           </div>
           <div>
             <p className="text-sm font-semibold text-[#221a0f]">I already have a booking confirmation</p>
@@ -194,7 +194,7 @@ function StepParties({ form, setForm }: { form: GeneratorForm; setForm: React.Di
       </h2>
 
       <div className="rounded-lg border border-[#bec9bf]/40 p-4 space-y-3">
-        <p className="text-xs font-semibold text-[#00502e] uppercase tracking-wide">
+        <p className="text-xs font-semibold text-[#023293] uppercase tracking-wide">
           {isPacking ? 'Shipper / Exporter (Your Company)' : 'Seller (Your Company)'}
         </p>
         <Input label={`${isPacking ? 'Shipper / Exporter' : 'Seller'} Name *`} value={form.sellerName}
@@ -297,11 +297,11 @@ function PackingLineItemFields({ item, idx, updateItem, mode }: {
 
       {/* Dimensions — shown for air (required) and sea (optional for CBM); hidden for road/rail */}
       {showDims && (
-        <div className={`rounded-lg p-3 border ${dimsRequired ? 'border-[#00502e]/30 bg-[#f0faf4]' : 'border-[#bec9bf]/30 bg-[#fdf8f3]'}`}>
+        <div className={`rounded-lg p-3 border ${dimsRequired ? 'border-[#023293]/30 bg-[#f0faf4]' : 'border-[#bec9bf]/30 bg-[#fdf8f3]'}`}>
           <label className="block text-xs font-semibold text-[#44474e] mb-1">
             Dimensions (L × W × H)
             {dimsRequired
-              ? <span className="ml-1 text-[#00502e]">— needed for volumetric weight calculation</span>
+              ? <span className="ml-1 text-[#023293]">— needed for volumetric weight calculation</span>
               : <span className="ml-1 font-normal text-[#8A7E6E]">— optional, for CBM calculation</span>
             }
           </label>
@@ -440,7 +440,7 @@ function StepLineItems({ form, setForm }: { form: GeneratorForm; setForm: React.
 
       {items.length < 50 && (
         <button onClick={addItem}
-          className="w-full rounded-xl border-2 border-dashed border-[#bec9bf]/60 py-3 text-sm text-[#8A7E6E] hover:border-[#00502e] hover:text-[#00502e] transition-colors flex items-center justify-center gap-2">
+          className="w-full rounded-xl border-2 border-dashed border-[#bec9bf]/60 py-3 text-sm text-[#8A7E6E] hover:border-[#023293] hover:text-[#023293] transition-colors flex items-center justify-center gap-2">
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
@@ -449,7 +449,7 @@ function StepLineItems({ form, setForm }: { form: GeneratorForm; setForm: React.
       )}
 
       {/* Summary footer */}
-      <div className="mt-4 p-3 rounded-lg bg-[#f0faf4] border border-[#00502e]/20">
+      <div className="mt-4 p-3 rounded-lg bg-[#f0faf4] border border-[#023293]/20">
         {isPacking ? (
           <div className="flex flex-wrap gap-4 text-xs text-[#8A7E6E]">
             <span>Packages: <span className="font-bold text-[#221a0f]">{totalPackages(items)}</span></span>
@@ -459,7 +459,7 @@ function StepLineItems({ form, setForm }: { form: GeneratorForm; setForm: React.
         ) : (
           <div className="text-right">
             <span className="text-xs text-[#8A7E6E]">Grand Total: </span>
-            <span className="text-base font-bold text-[#00502e]">{fmtNaira(grandTotal(items))}</span>
+            <span className="text-base font-bold text-[#023293]">{fmtNaira(grandTotal(items))}</span>
           </div>
         )}
       </div>
@@ -499,8 +499,8 @@ function StepDetails({ form, setForm }: { form: GeneratorForm; setForm: React.Di
 
           {/* Booking details — gated by checkbox from StepTransport */}
           {form.hasBooking ? (
-            <div className="rounded-xl border border-[#00502e]/30 bg-[#f0faf4] p-4 space-y-4">
-              <p className="text-xs font-semibold text-[#00502e] uppercase tracking-wide">Booking Details</p>
+            <div className="rounded-xl border border-[#023293]/30 bg-[#f0faf4] p-4 space-y-4">
+              <p className="text-xs font-semibold text-[#023293] uppercase tracking-wide">Booking Details</p>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -583,7 +583,7 @@ function StepDetails({ form, setForm }: { form: GeneratorForm; setForm: React.Di
         <label className="block text-sm font-medium text-[#221a0f] mb-1.5">Notes (optional)</label>
         <textarea rows={3} value={form.notes} onChange={set('notes')}
           placeholder="Any additional notes to appear on the document"
-          className="w-full rounded-lg border border-[#bec9bf]/60 px-3 py-2.5 text-sm text-[#221a0f] placeholder-[#8A7E6E] focus:outline-none focus:ring-2 focus:ring-[#00502e]/30 focus:border-[#00502e] resize-none" />
+          className="w-full rounded-lg border border-[#bec9bf]/60 px-3 py-2.5 text-sm text-[#221a0f] placeholder-[#8A7E6E] focus:outline-none focus:ring-2 focus:ring-[#023293]/30 focus:border-[#023293] resize-none" />
       </div>
     </div>
   );
@@ -703,14 +703,14 @@ function SuccessBanner({ referenceNo, downloadUrl, onEcoAttach }: { referenceNo:
           <p className="text-xs text-green-700 mb-3">Saved to your Document Library and ready to download.</p>
           <div className="flex flex-wrap gap-3">
             <a href={downloadUrl} target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-lg bg-[#00502e] text-white px-4 py-2 text-sm font-medium hover:bg-[#006b3f] transition-colors">
+              className="inline-flex items-center gap-1.5 rounded-lg bg-[#023293] text-white px-4 py-2 text-sm font-medium hover:bg-[#0267bf] transition-colors">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
               </svg>
               Download PDF
             </a>
             <button onClick={onEcoAttach}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-[#00502e] text-[#00502e] px-4 py-2 text-sm font-medium hover:bg-[#f0faf4] transition-colors">
+              className="inline-flex items-center gap-1.5 rounded-lg border border-[#023293] text-[#023293] px-4 py-2 text-sm font-medium hover:bg-[#f0faf4] transition-colors">
               Attach to new eCO application
             </button>
           </div>
@@ -899,12 +899,12 @@ export function ExportDocGeneratorPage() {
           <div key={label} className="flex items-center flex-1 last:flex-none">
             <div className="flex flex-col items-center">
               <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium transition-colors
-                ${i < step ? 'bg-[#00502e] text-white' : i === step ? 'bg-[#00502e] text-white ring-2 ring-[#00502e]/30 ring-offset-2' : 'bg-[#bec9bf]/30 text-[#8A7E6E]'}`}>
+                ${i < step ? 'bg-[#023293] text-white' : i === step ? 'bg-[#023293] text-white ring-2 ring-[#023293]/30 ring-offset-2' : 'bg-[#bec9bf]/30 text-[#8A7E6E]'}`}>
                 {i < step ? '✓' : i + 1}
               </div>
-              <span className={`text-xs mt-1 whitespace-nowrap hidden sm:block ${i === step ? 'text-[#00502e] font-medium' : 'text-[#8A7E6E]'}`}>{label}</span>
+              <span className={`text-xs mt-1 whitespace-nowrap hidden sm:block ${i === step ? 'text-[#023293] font-medium' : 'text-[#8A7E6E]'}`}>{label}</span>
             </div>
-            {i < steps.length - 1 && <div className={`flex-1 h-px mx-2 mb-5 ${i < step ? 'bg-[#00502e]' : 'bg-[#bec9bf]/40'}`} />}
+            {i < steps.length - 1 && <div className={`flex-1 h-px mx-2 mb-5 ${i < step ? 'bg-[#023293]' : 'bg-[#bec9bf]/40'}`} />}
           </div>
         ))}
       </div>

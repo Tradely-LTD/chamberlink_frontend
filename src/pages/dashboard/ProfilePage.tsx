@@ -444,7 +444,7 @@ export function ProfilePage() {
         <div className="relative flex-shrink-0">
           {isUploadingLogo ? (
             <div className="w-20 h-20 rounded-xl bg-[#f7f9f7] border border-[#bec9bf]/40 flex items-center justify-center">
-              <svg className="w-5 h-5 animate-spin text-[#00502e]" fill="none" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 animate-spin text-[#023293]" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
               </svg>
@@ -467,7 +467,7 @@ export function ProfilePage() {
           <button
             onClick={() => logoInputRef.current?.click()}
             disabled={isUploadingLogo}
-            className="text-xs font-medium px-3 py-1.5 rounded-lg border border-[#bec9bf]/60 text-[#00502e] hover:bg-[#fdf8f3] transition-colors disabled:opacity-50"
+            className="text-xs font-medium px-3 py-1.5 rounded-lg border border-[#bec9bf]/60 text-[#023293] hover:bg-[#fdf8f3] transition-colors disabled:opacity-50"
           >
             {logoUrl ? 'Replace Logo' : 'Upload Logo'}
           </button>

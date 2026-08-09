@@ -58,7 +58,7 @@ function DocSlot({ label, filterCategory, selectedDocId, selectedFile, onSelectD
         <div className="flex items-center gap-1 bg-white rounded-lg border border-[#bec9bf]/40 p-0.5">
           {(['library', 'upload'] as const).map((m) => (
             <button key={m} onClick={() => { setMode(m); onSelectDocId(null); onSelectFile(null); }}
-              className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${mode === m ? 'bg-[#00502e] text-white' : 'text-[#8A7E6E] hover:text-[#221a0f]'}`}>
+              className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${mode === m ? 'bg-[#023293] text-white' : 'text-[#8A7E6E] hover:text-[#221a0f]'}`}>
               {m === 'library' ? 'From Library' : 'Upload New'}
             </button>
           ))}
@@ -69,18 +69,18 @@ function DocSlot({ label, filterCategory, selectedDocId, selectedFile, onSelectD
           matchingDocs.length === 0 ? (
             <div className="text-center py-4">
               <p className="text-sm text-[#8A7E6E]">No {label.toLowerCase()} in your library.</p>
-              <button onClick={() => setMode('upload')} className="mt-2 text-xs text-[#00502e] hover:underline font-medium">Upload one now</button>
+              <button onClick={() => setMode('upload')} className="mt-2 text-xs text-[#023293] hover:underline font-medium">Upload one now</button>
             </div>
           ) : (
             <div className="space-y-2">
               {matchingDocs.map((doc) => (
-                <label key={doc.id} className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${selectedDocId === doc.id ? 'border-[#00502e] bg-[#f0faf4]' : 'border-[#bec9bf]/40 hover:border-[#00502e]/40'}`}>
-                  <input type="radio" name={`doc-${filterCategory}`} value={doc.id} checked={selectedDocId === doc.id} onChange={() => onSelectDocId(doc.id)} className="text-[#00502e] focus:ring-[#00502e]/30" />
+                <label key={doc.id} className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${selectedDocId === doc.id ? 'border-[#023293] bg-[#f0faf4]' : 'border-[#bec9bf]/40 hover:border-[#023293]/40'}`}>
+                  <input type="radio" name={`doc-${filterCategory}`} value={doc.id} checked={selectedDocId === doc.id} onChange={() => onSelectDocId(doc.id)} className="text-[#023293] focus:ring-[#023293]/30" />
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium text-[#221a0f] truncate">{doc.name}</p>
                     <p className="text-xs text-[#8A7E6E]">{new Date(doc.uploadedAt).toLocaleDateString('en-NG', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
                   </div>
-                  {selectedDocId === doc.id && <svg className="w-4 h-4 text-[#00502e] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>}
+                  {selectedDocId === doc.id && <svg className="w-4 h-4 text-[#023293] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>}
                 </label>
               ))}
               {selectedDocId && <button onClick={() => onSelectDocId(null)} className="text-xs text-[#8A7E6E] hover:text-[#221a0f]">Clear selection</button>}
@@ -90,7 +90,7 @@ function DocSlot({ label, filterCategory, selectedDocId, selectedFile, onSelectD
           <div>
             <input ref={fileInputRef} type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={(e) => onSelectFile(e.target.files?.[0] ?? null)} />
             <button type="button" onClick={() => fileInputRef.current?.click()}
-              className="w-full rounded-lg border-2 border-dashed border-[#bec9bf]/60 px-4 py-5 text-center hover:border-[#00502e] transition-colors">
+              className="w-full rounded-lg border-2 border-dashed border-[#bec9bf]/60 px-4 py-5 text-center hover:border-[#023293] transition-colors">
               {selectedFile ? (
                 <div><p className="text-sm font-medium text-[#221a0f]">{selectedFile.name}</p><p className="text-xs text-[#8A7E6E] mt-0.5">{(selectedFile.size / 1024).toFixed(0)} KB</p></div>
               ) : (
@@ -271,12 +271,12 @@ export function EcoApplyPage() {
         {STEPS.map((label, i) => (
           <div key={label} className="flex items-center flex-1 last:flex-none">
             <div className="flex flex-col items-center">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${i <= step ? 'bg-[#00502e] text-white' : 'bg-[#bec9bf]/30 text-[#8A7E6E]'}`}>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${i <= step ? 'bg-[#023293] text-white' : 'bg-[#bec9bf]/30 text-[#8A7E6E]'}`}>
                 {i < step ? '✓' : i + 1}
               </div>
-              <span className={`text-xs mt-1 whitespace-nowrap ${i === step ? 'text-[#00502e] font-medium' : 'text-[#8A7E6E]'}`}>{label}</span>
+              <span className={`text-xs mt-1 whitespace-nowrap ${i === step ? 'text-[#023293] font-medium' : 'text-[#8A7E6E]'}`}>{label}</span>
             </div>
-            {i < STEPS.length - 1 && <div className={`flex-1 h-px mx-2 mb-5 ${i < step ? 'bg-[#00502e]' : 'bg-[#bec9bf]/40'}`} />}
+            {i < STEPS.length - 1 && <div className={`flex-1 h-px mx-2 mb-5 ${i < step ? 'bg-[#023293]' : 'bg-[#bec9bf]/40'}`} />}
           </div>
         ))}
       </div>
@@ -290,19 +290,19 @@ export function EcoApplyPage() {
             <Input label="HS Code *" placeholder="e.g. 0901.21" value={form.hsCode} onChange={(e) => set('hsCode', e.target.value)} />
             <div>
               <label className="block text-sm font-medium text-[#221a0f] mb-1.5">Cargo Description *</label>
-              <textarea rows={3} className="w-full rounded-lg border border-[#bec9bf]/60 px-3 py-2.5 text-sm text-[#221a0f] placeholder-[#8A7E6E] focus:outline-none focus:ring-2 focus:ring-[#00502e]/30 focus:border-[#00502e] resize-none"
+              <textarea rows={3} className="w-full rounded-lg border border-[#bec9bf]/60 px-3 py-2.5 text-sm text-[#221a0f] placeholder-[#8A7E6E] focus:outline-none focus:ring-2 focus:ring-[#023293]/30 focus:border-[#023293] resize-none"
                 placeholder="Describe the goods being exported" value={form.cargoDescription} onChange={(e) => set('cargoDescription', e.target.value)} />
             </div>
             <Input label="Cargo Weight (kg) *" type="number" placeholder="e.g. 1000" value={form.cargoWeight} onChange={(e) => set('cargoWeight', e.target.value)} />
             <div>
               <label className="block text-sm font-medium text-[#221a0f] mb-1.5">Shipping Method *</label>
-              <select className="w-full rounded-lg border border-[#bec9bf]/60 px-3 py-2.5 text-sm text-[#221a0f] focus:outline-none focus:ring-2 focus:ring-[#00502e]/30 focus:border-[#00502e]"
+              <select className="w-full rounded-lg border border-[#bec9bf]/60 px-3 py-2.5 text-sm text-[#221a0f] focus:outline-none focus:ring-2 focus:ring-[#023293]/30 focus:border-[#023293]"
                 value={form.shippingMethod} onChange={(e) => set('shippingMethod', e.target.value as NewECertPayload['shippingMethod'])}>
                 {SHIPPING_METHODS.map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
               </select>
             </div>
             <label className="flex items-center gap-3 cursor-pointer">
-              <input type="checkbox" checked={form.isExpedited} onChange={(e) => set('isExpedited', e.target.checked)} className="w-4 h-4 rounded border-[#bec9bf] text-[#00502e] focus:ring-[#00502e]/30" />
+              <input type="checkbox" checked={form.isExpedited} onChange={(e) => set('isExpedited', e.target.checked)} className="w-4 h-4 rounded border-[#bec9bf] text-[#023293] focus:ring-[#023293]/30" />
               <span className="text-sm text-[#221a0f]">Expedited processing <span className="text-[#8A7E6E]">(additional fee applies)</span></span>
             </label>
           </div>
@@ -316,13 +316,13 @@ export function EcoApplyPage() {
             <Input label="Exporter Name *" placeholder="Your company name" value={form.exporterName} onChange={(e) => set('exporterName', e.target.value)} />
             <div>
               <label className="block text-sm font-medium text-[#221a0f] mb-1.5">Exporter Address *</label>
-              <textarea rows={2} className="w-full rounded-lg border border-[#bec9bf]/60 px-3 py-2.5 text-sm text-[#221a0f] placeholder-[#8A7E6E] focus:outline-none focus:ring-2 focus:ring-[#00502e]/30 focus:border-[#00502e] resize-none"
+              <textarea rows={2} className="w-full rounded-lg border border-[#bec9bf]/60 px-3 py-2.5 text-sm text-[#221a0f] placeholder-[#8A7E6E] focus:outline-none focus:ring-2 focus:ring-[#023293]/30 focus:border-[#023293] resize-none"
                 placeholder="Full business address" value={form.exporterAddress} onChange={(e) => set('exporterAddress', e.target.value)} />
             </div>
             <Input label="Consignee Name" placeholder="Recipient company name" value={form.consigneeName} onChange={(e) => set('consigneeName', e.target.value)} />
             <div>
               <label className="block text-sm font-medium text-[#221a0f] mb-1.5">Consignee Address</label>
-              <textarea rows={2} className="w-full rounded-lg border border-[#bec9bf]/60 px-3 py-2.5 text-sm text-[#221a0f] placeholder-[#8A7E6E] focus:outline-none focus:ring-2 focus:ring-[#00502e]/30 focus:border-[#00502e] resize-none"
+              <textarea rows={2} className="w-full rounded-lg border border-[#bec9bf]/60 px-3 py-2.5 text-sm text-[#221a0f] placeholder-[#8A7E6E] focus:outline-none focus:ring-2 focus:ring-[#023293]/30 focus:border-[#023293] resize-none"
                 value={form.consigneeAddress} onChange={(e) => set('consigneeAddress', e.target.value)} />
             </div>
           </div>

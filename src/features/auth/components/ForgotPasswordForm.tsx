@@ -38,7 +38,7 @@ export function ForgotPasswordForm() {
         </p>
         <Link
           to="/login"
-          className="text-sm text-[#00502e] hover:underline"
+          className="text-sm text-[#023293] hover:underline"
         >
           Back to Login
         </Link>
@@ -67,7 +67,7 @@ export function ForgotPasswordForm() {
       </Button>
       <Link
         to="/login"
-        className="text-center text-sm text-[#00502e] hover:underline"
+        className="text-center text-sm text-[#023293] hover:underline"
       >
         Back to Login
       </Link>

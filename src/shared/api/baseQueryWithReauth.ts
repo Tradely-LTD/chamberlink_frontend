@@ -63,7 +63,18 @@ export const baseQueryWithReauth: BaseQueryFn<
             extraOptions
           );
 
-          if (!refreshResult.data) throw new Error('Refresh failed');
+          if (!refreshResult.data) {
+            // Only a genuine 401 means this refresh token is actually dead. Anything
+            // else — a transient 5xx, a network error, this request getting aborted —
+            // says nothing about whether the token is still good, so don't destroy it
+            // and force everyone back to /login over that.
+            const status = (refreshResult.error as FetchBaseQueryError | undefined)?.status;
+            if (status === 401) tokenStorage.remove();
+            api.dispatch({ type: 'auth/logout' });
+            const redirectTo = encodeURIComponent(window.location.pathname + window.location.search);
+            window.location.href = `/login?reason=session_expired&redirectTo=${redirectTo}`;
+            return null;
+          }
 
           const tokens = (
             refreshResult.data as ApiEnvelope<{ accessToken: string; refreshToken: string }>
@@ -87,7 +98,8 @@ export const baseQueryWithReauth: BaseQueryFn<
 
           return tokens.accessToken;
         } catch {
-          tokenStorage.remove();
+          // Unexpected exception, not a normal error response — same soft-fail,
+          // no real evidence the token itself is invalid.
           api.dispatch({ type: 'auth/logout' });
           const redirectTo = encodeURIComponent(window.location.pathname + window.location.search);
           window.location.href = `/login?reason=session_expired&redirectTo=${redirectTo}`;

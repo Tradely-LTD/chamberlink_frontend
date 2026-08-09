@@ -4,7 +4,7 @@ export function PageLoader() {
       <div className="flex flex-col items-center gap-3">
         <span
           className="inline-block h-8 w-8 animate-spin rounded-full border-[3px] border-t-transparent"
-          style={{ borderColor: '#002046', borderTopColor: 'transparent' }}
+          style={{ borderColor: '#023293', borderTopColor: 'transparent' }}
         />
         <p className="text-sm text-[#74777f]">Loading…</p>
       </div>

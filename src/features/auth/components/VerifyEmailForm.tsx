@@ -35,8 +35,8 @@ export function VerifyEmailForm() {
   if (success) {
     return (
       <div className="flex flex-col items-center gap-4 text-center">
-        <div className="text-5xl text-[#00502e]">&#10003;</div>
-        <h2 className="text-xl font-semibold text-[#00502e]">
+        <div className="text-5xl text-[#023293]">&#10003;</div>
+        <h2 className="text-xl font-semibold text-[#023293]">
           Email Verified!
         </h2>
         <p className="text-sm text-[#8A7E6E]">

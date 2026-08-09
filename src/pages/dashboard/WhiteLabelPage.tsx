@@ -35,7 +35,7 @@ const EMPTY_CREATE_FORM: CreateForm = {
   chamberAdminEmail: '',
   chamberAdminFirstName: '',
   chamberAdminLastName: '',
-  primaryColor: '#002046',
+  primaryColor: '#023293',
   secondaryColor: '#ffffff',
   tagline: '',
   city: '',
@@ -113,7 +113,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
               value={form.name}
               onChange={setField('name')}
               placeholder="e.g. Kaduna Chamber of Commerce"
-              className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#002046]"
+              className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293]"
             />
           </div>
 
@@ -128,7 +128,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
               onChange={setField('slug')}
               placeholder="e.g. kadccima"
               pattern="[a-z0-9\-]+"
-              className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#002046]"
+              className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293]"
             />
           </div>
 
@@ -141,7 +141,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
               value={form.region}
               onChange={setField('region')}
               placeholder="e.g. Kano State"
-              className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#002046]"
+              className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293]"
             />
           </div>
 
@@ -154,7 +154,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
               value={form.rcNumber}
               onChange={setField('rcNumber')}
               placeholder="e.g. RC1234567"
-              className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#002046]"
+              className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293]"
             />
           </div>
 
@@ -173,7 +173,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
                   value={form.chamberAdminFirstName}
                   onChange={setField('chamberAdminFirstName')}
                   placeholder="First name"
-                  className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#002046]"
+                  className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293]"
                 />
               </div>
               <div>
@@ -185,7 +185,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
                   value={form.chamberAdminLastName}
                   onChange={setField('chamberAdminLastName')}
                   placeholder="Last name"
-                  className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#002046]"
+                  className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293]"
                 />
               </div>
             </div>
@@ -199,7 +199,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
                 value={form.chamberAdminEmail}
                 onChange={setField('chamberAdminEmail')}
                 placeholder="admin@organisation.ng"
-                className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#002046]"
+                className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293]"
               />
             </div>
           </div>
@@ -248,7 +248,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
                   value={form.tagline ?? ''}
                   onChange={setField('tagline')}
                   placeholder="e.g. Growing Commerce Together"
-                  className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#002046]"
+                  className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293]"
                 />
               </div>
               <div>
@@ -259,7 +259,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
                   value={form.city ?? ''}
                   onChange={setField('city')}
                   placeholder="e.g. Kaduna"
-                  className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#002046]"
+                  className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293]"
                 />
               </div>
             </div>
@@ -293,7 +293,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
               type="submit"
               disabled={isLoading}
               className="flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
-              style={{ background: '#002046' }}
+              style={{ background: '#023293' }}
             >
               {isLoading ? 'Creating…' : 'Create Tenant'}
             </button>
@@ -328,7 +328,7 @@ function EditTenantModal({ tenant, onClose }: { tenant: Tenant; onClose: () => v
     region: tenant.region,
     city: tenant.city ?? '',
     tagline: tenant.tagline ?? '',
-    primaryColor: tenant.primaryColor ?? '#002046',
+    primaryColor: tenant.primaryColor ?? '#023293',
     secondaryColor: tenant.secondaryColor ?? '#ffffff',
     address: tenant.address ?? '',
     phone: tenant.phone ?? '',
@@ -395,7 +395,7 @@ function EditTenantModal({ tenant, onClose }: { tenant: Tenant; onClose: () => v
               required
               value={form.name}
               onChange={setField('name')}
-              className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#002046]"
+              className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293]"
             />
           </div>
 
@@ -406,7 +406,7 @@ function EditTenantModal({ tenant, onClose }: { tenant: Tenant; onClose: () => v
                 value={form.region}
                 onChange={setField('region')}
                 placeholder="e.g. Kano State"
-                className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#002046]"
+                className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293]"
               />
             </div>
             <div>
@@ -415,7 +415,7 @@ function EditTenantModal({ tenant, onClose }: { tenant: Tenant; onClose: () => v
                 value={form.city}
                 onChange={setField('city')}
                 placeholder="e.g. Kano"
-                className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#002046]"
+                className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293]"
               />
             </div>
           </div>
@@ -425,7 +425,7 @@ function EditTenantModal({ tenant, onClose }: { tenant: Tenant; onClose: () => v
             <select
               value={form.status}
               onChange={(e) => setForm((f) => ({ ...f, status: e.target.value as Tenant['status'] }))}
-              className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#002046] bg-white"
+              className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293] bg-white"
             >
               <option value="active">Active</option>
               <option value="trial">Trial</option>
@@ -442,7 +442,7 @@ function EditTenantModal({ tenant, onClose }: { tenant: Tenant; onClose: () => v
                 value={form.tagline}
                 onChange={setField('tagline')}
                 placeholder="e.g. Growing Commerce Together"
-                className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#002046]"
+                className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293]"
               />
             </div>
             <div className="grid grid-cols-2 gap-3 mt-3">
@@ -483,7 +483,7 @@ function EditTenantModal({ tenant, onClose }: { tenant: Tenant; onClose: () => v
                   value={form.address}
                   onChange={setField('address')}
                   placeholder="Chamber street address"
-                  className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#002046]"
+                  className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293]"
                 />
               </div>
               <div className="grid grid-cols-2 gap-3">
@@ -493,7 +493,7 @@ function EditTenantModal({ tenant, onClose }: { tenant: Tenant; onClose: () => v
                     value={form.phone}
                     onChange={setField('phone')}
                     placeholder="+234 700 000 0000"
-                    className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#002046]"
+                    className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293]"
                   />
                 </div>
                 <div>
@@ -503,7 +503,7 @@ function EditTenantModal({ tenant, onClose }: { tenant: Tenant; onClose: () => v
                     value={form.email}
                     onChange={setField('email')}
                     placeholder="info@chamber.ng"
-                    className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#002046]"
+                    className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293]"
                   />
                 </div>
               </div>
@@ -513,7 +513,7 @@ function EditTenantModal({ tenant, onClose }: { tenant: Tenant; onClose: () => v
                   value={form.website}
                   onChange={setField('website')}
                   placeholder="https://chamber.ng"
-                  className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#002046]"
+                  className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293]"
                 />
               </div>
             </div>
@@ -525,7 +525,7 @@ function EditTenantModal({ tenant, onClose }: { tenant: Tenant; onClose: () => v
               type="submit"
               disabled={isLoading}
               className="flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
-              style={{ background: '#002046' }}
+              style={{ background: '#023293' }}
             >
               {isLoading ? 'Saving…' : 'Save Changes'}
             </button>
@@ -580,14 +580,14 @@ function ModuleConfigPanel({ tenant, onClose }: { tenant: Tenant; onClose: () =>
                 key={key}
                 className="flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors"
                 style={{
-                  borderColor: enabled ? '#002046' : '#e0e3e5',
+                  borderColor: enabled ? '#023293' : '#e0e3e5',
                   background: enabled ? '#f0f4ff' : 'white',
                 }}
               >
                 <span className="text-sm text-[#191c1e] font-medium">{key}</span>
                 <div
                   className="relative w-9 h-5 rounded-full transition-colors flex-shrink-0"
-                  style={enabled ? { background: '#002046' } : { background: '#e0e3e5' }}
+                  style={enabled ? { background: '#023293' } : { background: '#e0e3e5' }}
                 >
                   <div
                     className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${
@@ -612,7 +612,7 @@ function ModuleConfigPanel({ tenant, onClose }: { tenant: Tenant; onClose: () =>
               disabled={isLoading}
               onClick={handleSave}
               className="flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
-              style={{ background: '#002046' }}
+              style={{ background: '#023293' }}
             >
               {isLoading ? 'Saving…' : 'Save Modules'}
             </button>
@@ -660,7 +660,7 @@ function WhiteLabelView() {
         <button
           onClick={() => setShowCreate(true)}
           className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white"
-          style={{ background: '#002046' }}
+          style={{ background: '#023293' }}
         >
           <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>
           New Tenant
@@ -692,7 +692,7 @@ function WhiteLabelView() {
           <div
             key={label}
             className={`rounded-xl border p-4 ${accent ? '' : 'bg-white border-[#e0e3e5]'}`}
-            style={accent ? { background: '#002046', borderColor: '#002046' } : {}}
+            style={accent ? { background: '#023293', borderColor: '#023293' } : {}}
           >
             <div className="flex items-center gap-2 mb-2">
               <span
@@ -751,7 +751,7 @@ function WhiteLabelView() {
                   <div className="flex items-center gap-4">
                     <div
                       className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-                      style={{ background: tenant.primaryColor ?? '#002046' }}
+                      style={{ background: tenant.primaryColor ?? '#023293' }}
                     >
                       <span className="text-white font-bold text-sm">{tenant.name[0]}</span>
                     </div>
@@ -780,7 +780,7 @@ function WhiteLabelView() {
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <button
                       onClick={() => setEditTenant(tenant)}
-                      className="flex items-center gap-1.5 rounded-lg border border-[#c4c6cf] px-3 py-1.5 text-xs font-semibold text-[#191c1e] hover:border-[#002046] hover:text-[#002046] transition-colors"
+                      className="flex items-center gap-1.5 rounded-lg border border-[#c4c6cf] px-3 py-1.5 text-xs font-semibold text-[#191c1e] hover:border-[#023293] hover:text-[#023293] transition-colors"
                     >
                       <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
                         edit
@@ -789,7 +789,7 @@ function WhiteLabelView() {
                     </button>
                     <button
                       onClick={() => setModulesTenant(tenant)}
-                      className="flex items-center gap-1.5 rounded-lg border border-[#c4c6cf] px-3 py-1.5 text-xs font-semibold text-[#191c1e] hover:border-[#002046] hover:text-[#002046] transition-colors"
+                      className="flex items-center gap-1.5 rounded-lg border border-[#c4c6cf] px-3 py-1.5 text-xs font-semibold text-[#191c1e] hover:border-[#023293] hover:text-[#023293] transition-colors"
                     >
                       <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
                         tune
@@ -808,7 +808,7 @@ function WhiteLabelView() {
                       <button
                         onClick={() => handleStatusChange(tenant, 'active')}
                         className="rounded-lg px-3 py-1.5 text-xs font-semibold text-white"
-                        style={{ background: '#002046' }}
+                        style={{ background: '#023293' }}
                       >
                         Reinstate
                       </button>
@@ -832,7 +832,7 @@ function WhiteLabelView() {
                       <span
                         key={mod}
                         className="rounded-full px-2.5 py-0.5 text-xs font-medium"
-                        style={{ background: '#d6e3ff', color: '#001b3d' }}
+                        style={{ background: '#d6e3ff', color: '#023293' }}
                       >
                         {mod}
                       </span>

@@ -46,7 +46,7 @@ function AuditLogTab() {
           <div key={entry.id} className="px-4 py-3 flex items-start gap-4 hover:bg-[#fdf8f3]">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-xs font-mono bg-[#00502e]/10 text-[#00502e] px-2 py-0.5 rounded">{entry.action}</span>
+                <span className="text-xs font-mono bg-[#023293]/10 text-[#023293] px-2 py-0.5 rounded">{entry.action}</span>
                 <span className="text-sm text-[#221a0f]">{entry.actorName}</span>
                 <span className="text-xs text-[#8A7E6E]">on</span>
                 <span className="text-xs font-mono text-[#8A7E6E]">{entry.resourceType}/{entry.resourceId}</span>

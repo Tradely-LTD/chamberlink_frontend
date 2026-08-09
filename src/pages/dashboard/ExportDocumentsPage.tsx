@@ -19,7 +19,7 @@ import { DocumentLibraryView } from '@pages/dashboard/DocumentsPage';
 // ── Config ─────────────────────────────────────────────────────────────────
 
 const docTypeConfig: Record<DocType, { label: string; icon: string; bg: string; text: string }> = {
-  commercial_invoice:   { label: 'Commercial Invoice',   icon: 'receipt_long',      bg: '#d6e3ff', text: '#001b3d' },
+  commercial_invoice:   { label: 'Commercial Invoice',   icon: 'receipt_long',      bg: '#d6e3ff', text: '#023293' },
   packing_list:         { label: 'Packing List',         icon: 'inventory_2',       bg: '#a0f4ca', text: '#005137' },
   combined_certificate: { label: 'Combined Certificate', icon: 'workspace_premium', bg: '#ffdea5', text: '#5d4201' },
   export_declaration:   { label: 'Export Declaration',   icon: 'fact_check',        bg: '#e0e3e5', text: '#44474e' },
@@ -30,7 +30,7 @@ const docStatusConfig: Record<ExportDocument['status'], { label: string; bg: str
   draft:      { label: 'Draft',      bg: '#e0e3e5', text: '#44474e' },
   processing: { label: 'Processing', bg: '#ffdea5', text: '#5d4201' },
   ready:      { label: 'Ready',      bg: '#a0f4ca', text: '#005137' },
-  downloaded: { label: 'Downloaded', bg: '#d6e3ff', text: '#001b3d' },
+  downloaded: { label: 'Downloaded', bg: '#d6e3ff', text: '#023293' },
 };
 
 const ADMIN_ROLES = ['chamber_admin', 'chamber_executive', 'super_admin', 'staff_operator'];
@@ -112,7 +112,7 @@ function CreateDocModal({ onClose }: { onClose: () => void }) {
                 value={form[key]}
                 onChange={set(key)}
                 placeholder={placeholder}
-                className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#002046]"
+                className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293]"
               />
             </div>
           ))}
@@ -124,7 +124,7 @@ function CreateDocModal({ onClose }: { onClose: () => void }) {
               value={form.products}
               onChange={set('products')}
               placeholder="e.g. Wet Blue Hides (500 pcs), Finished Leather (200 sqm)"
-              className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#002046] resize-none"
+              className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293] resize-none"
             />
           </div>
           <div className="flex gap-3 pt-2">
@@ -133,7 +133,7 @@ function CreateDocModal({ onClose }: { onClose: () => void }) {
               type="submit"
               disabled={isLoading}
               className="flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
-              style={{ background: '#002046' }}
+              style={{ background: '#023293' }}
             >
               {isLoading ? 'Generating…' : 'Generate Document'}
             </button>
@@ -201,7 +201,7 @@ function MarkReadyModal({ docId, onClose }: MarkReadyModalProps) {
               Document File <span className="text-red-500">*</span>
             </label>
             <div
-              className="border-2 border-dashed border-[#c4c6cf] rounded-lg p-4 text-center cursor-pointer hover:border-[#002046] transition-colors"
+              className="border-2 border-dashed border-[#c4c6cf] rounded-lg p-4 text-center cursor-pointer hover:border-[#023293] transition-colors"
               onClick={() => fileInputRef.current?.click()}
             >
               {file ? (
@@ -233,7 +233,7 @@ function MarkReadyModal({ docId, onClose }: MarkReadyModalProps) {
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Any notes for the member…"
-              className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#002046] resize-none"
+              className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293] resize-none"
             />
           </div>
 
@@ -334,7 +334,7 @@ function MemberExportDocsView() {
             <button
               onClick={() => navigate('/dashboard/export-documents/generate')}
               className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-white"
-              style={{ background: '#00502e' }}
+              style={{ background: '#023293' }}
             >
               <span className="material-symbols-outlined" style={{ fontSize: 16 }}>receipt_long</span>
               <span className="hidden sm:inline">Generate Invoice / Packing List</span>
@@ -342,7 +342,7 @@ function MemberExportDocsView() {
             </button>
             <button
               onClick={() => setShowCreate(true)}
-              className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold border border-[#c4c6cf] text-[#191c1e] hover:border-[#002046] transition-colors"
+              className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold border border-[#c4c6cf] text-[#191c1e] hover:border-[#023293] transition-colors"
             >
               <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>
               <span className="hidden sm:inline">Other Document</span>
@@ -404,7 +404,7 @@ function MemberExportDocsView() {
                   <button
                     onClick={() => navigate('/dashboard/export-documents/generate')}
                     className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white"
-                    style={{ background: '#002046' }}
+                    style={{ background: '#023293' }}
                   >
                     Generate First Document
                   </button>
@@ -462,7 +462,7 @@ function MemberExportDocsView() {
                             {(doc.type === 'commercial_invoice' || doc.type === 'packing_list') && doc.draftId && doc.status !== 'processing' && (
                               <button
                                 onClick={() => navigate(`/dashboard/export-documents/generate/${doc.draftId}`)}
-                                className="flex items-center gap-1 rounded-lg border border-[#c4c6cf] px-2.5 py-1.5 text-xs font-semibold text-[#191c1e] hover:border-[#002046] hover:text-[#002046] transition-colors"
+                                className="flex items-center gap-1 rounded-lg border border-[#c4c6cf] px-2.5 py-1.5 text-xs font-semibold text-[#191c1e] hover:border-[#023293] hover:text-[#023293] transition-colors"
                               >
                                 <span className="material-symbols-outlined" style={{ fontSize: 13 }}>edit</span>
                                 Edit
@@ -475,7 +475,7 @@ function MemberExportDocsView() {
                                 <button
                                   disabled={isBusy}
                                   onClick={() => handleView(doc)}
-                                  className="flex items-center gap-1 rounded-lg border border-[#c4c6cf] px-2.5 py-1.5 text-xs font-semibold text-[#191c1e] hover:border-[#002046] hover:text-[#002046] transition-colors disabled:opacity-50"
+                                  className="flex items-center gap-1 rounded-lg border border-[#c4c6cf] px-2.5 py-1.5 text-xs font-semibold text-[#191c1e] hover:border-[#023293] hover:text-[#023293] transition-colors disabled:opacity-50"
                                 >
                                   {isBusy ? '…' : (
                                     <>
@@ -487,7 +487,7 @@ function MemberExportDocsView() {
                                 <button
                                   disabled={isBusy}
                                   onClick={() => handleDownload(doc)}
-                                  className="flex items-center gap-1 rounded-lg border border-[#c4c6cf] px-2.5 py-1.5 text-xs font-semibold text-[#74777f] hover:border-[#002046] hover:text-[#002046] transition-colors disabled:opacity-50"
+                                  className="flex items-center gap-1 rounded-lg border border-[#c4c6cf] px-2.5 py-1.5 text-xs font-semibold text-[#74777f] hover:border-[#023293] hover:text-[#023293] transition-colors disabled:opacity-50"
                                 >
                                   {isBusy ? '…' : (
                                     <>
@@ -605,7 +605,7 @@ function AdminExportDocsView() {
           <div
             key={label}
             className={`rounded-xl border p-4 ${accent ? '' : 'bg-white border-[#e0e3e5]'}`}
-            style={accent ? { background: '#002046', borderColor: '#002046' } : {}}
+            style={accent ? { background: '#023293', borderColor: '#023293' } : {}}
           >
             <div className="flex items-center gap-2 mb-2">
               <span
@@ -639,7 +639,7 @@ function AdminExportDocsView() {
           placeholder="Search by ref or member…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="rounded-lg border border-[#c4c6cf] px-4 py-2 text-sm focus:outline-none focus:border-[#002046] w-64"
+          className="rounded-lg border border-[#c4c6cf] px-4 py-2 text-sm focus:outline-none focus:border-[#023293] w-64"
         />
         <div className="flex gap-1 bg-[#f7f9fb] rounded-lg p-1 border border-[#e0e3e5]">
           {(['all', 'draft', 'processing', 'ready', 'downloaded'] as const).map((s) => (

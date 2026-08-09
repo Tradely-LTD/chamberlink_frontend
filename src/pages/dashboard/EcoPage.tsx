@@ -83,7 +83,7 @@ function ReviewNotesModal({
             </label>
             <textarea
               rows={3}
-              className="w-full rounded-lg border border-[#bec9bf]/60 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#00502e]/30 resize-none"
+              className="w-full rounded-lg border border-[#bec9bf]/60 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#023293]/30 resize-none"
               placeholder={action === 'approve' ? 'Optional remarks for the applicant…' : 'Reason or instructions for the applicant…'}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
@@ -94,7 +94,7 @@ function ReviewNotesModal({
             <Button
               loading={isLoading}
               disabled={requiresNotes && !notes.trim()}
-              className={action === 'approve' ? 'bg-[#00502e] hover:bg-[#006b3f] text-white' : 'bg-red-600 hover:bg-red-700 text-white'}
+              className={action === 'approve' ? 'bg-[#023293] hover:bg-[#0267bf] text-white' : 'bg-red-600 hover:bg-red-700 text-white'}
               onClick={() => onConfirm(notes)}
             >
               Confirm
@@ -141,7 +141,7 @@ function CertActionButtons({ certId, compact = false }: { certId: string; compac
       <div className="flex items-center gap-2">
         {error && <span className="text-xs text-red-600" title={error}>⚠</span>}
         <button disabled={busy} onClick={() => open('view')}
-          className="flex items-center gap-1 rounded-lg border border-[#bec9bf]/60 px-2.5 py-1.5 text-xs font-semibold text-[#00502e] hover:bg-[#f0faf4] transition-colors disabled:opacity-50">
+          className="flex items-center gap-1 rounded-lg border border-[#bec9bf]/60 px-2.5 py-1.5 text-xs font-semibold text-[#023293] hover:bg-[#f0faf4] transition-colors disabled:opacity-50">
           <span className="material-symbols-outlined" style={{ fontSize: 13 }}>visibility</span>
           {busy ? '…' : 'View'}
         </button>
@@ -158,7 +158,7 @@ function CertActionButtons({ certId, compact = false }: { certId: string; compac
     <div className="flex items-center gap-2">
       {error && <span className="text-xs text-red-600" title={error}>⚠ {error}</span>}
       <button disabled={busy} onClick={() => open('view')}
-        className="text-xs font-medium text-[#00502e] hover:underline disabled:opacity-50">
+        className="text-xs font-medium text-[#023293] hover:underline disabled:opacity-50">
         {busy ? '…' : 'View'}
       </button>
       <button disabled={busy} onClick={() => open('download')}
@@ -272,8 +272,8 @@ function AdminEcoQueue({ isReadOnly }: { isReadOnly: boolean }) {
 
       {!isLoading && !isError && items.length === 0 && (
         <div className="bg-white rounded-xl border border-[#bec9bf]/40 p-12 text-center">
-          <div className="w-16 h-16 rounded-full bg-[#00502e]/10 flex items-center justify-center mx-auto mb-4">
-            <span className="material-symbols-outlined text-[#00502e]" style={{ fontSize: 32, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 32` }}>task_alt</span>
+          <div className="w-16 h-16 rounded-full bg-[#023293]/10 flex items-center justify-center mx-auto mb-4">
+            <span className="material-symbols-outlined text-[#023293]" style={{ fontSize: 32, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 32` }}>task_alt</span>
           </div>
           <h3 className="text-base font-medium text-[#221a0f] mb-1">Queue is empty</h3>
           <p className="text-sm text-[#8A7E6E]">No applications match the selected filter.</p>
@@ -315,7 +315,7 @@ function AdminEcoQueue({ isReadOnly }: { isReadOnly: boolean }) {
                         {item.status === 'submitted' && !isReadOnly && (
                           <button
                             onClick={() => handleAction(item, 'start_review')}
-                            className="text-xs font-semibold text-white bg-[#002046] hover:bg-[#001533] rounded-md px-2.5 py-1 transition-colors"
+                            className="text-xs font-semibold text-white bg-[#023293] hover:bg-[#001533] rounded-md px-2.5 py-1 transition-colors"
                           >
                             Start Review
                           </button>
@@ -331,7 +331,7 @@ function AdminEcoQueue({ isReadOnly }: { isReadOnly: boolean }) {
                         {!isReadOnly && ['under_review', 'revision_requested'].includes(item.status) && (
                           <button
                             onClick={() => handleAction(item, 'approve')}
-                            className="text-xs font-semibold text-white bg-[#00502e] hover:bg-[#006b3f] rounded-md px-2.5 py-1 transition-colors"
+                            className="text-xs font-semibold text-white bg-[#023293] hover:bg-[#0267bf] rounded-md px-2.5 py-1 transition-colors"
                           >
                             Approve
                           </button>
@@ -361,7 +361,7 @@ function AdminEcoQueue({ isReadOnly }: { isReadOnly: boolean }) {
                         {/* View detail — always visible */}
                         <Link
                           to={`/dashboard/eco/${item.id}`}
-                          className="text-xs font-medium text-[#002046] hover:underline"
+                          className="text-xs font-medium text-[#023293] hover:underline"
                         >
                           Details
                         </Link>
@@ -404,7 +404,7 @@ function PayButton({ certId }: { certId: string }) {
         disabled={isLoading}
         onClick={handlePay}
         className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-white transition-colors disabled:opacity-60"
-        style={{ background: '#00502e' }}
+        style={{ background: '#023293' }}
       >
         <span className="material-symbols-outlined" style={{ fontSize: 13 }}>
           {isLoading ? 'hourglass_empty' : 'payments'}
@@ -448,7 +448,7 @@ function VerifyPaymentButton({ certRef, onConfirmed }: { certRef: string; onConf
   };
 
   if (status === 'done') {
-    return <p className="text-xs font-semibold text-[#00502e]">✓ Confirmed — your application is now under review.</p>;
+    return <p className="text-xs font-semibold text-[#023293]">✓ Confirmed — your application is now under review.</p>;
   }
 
   return (
@@ -514,8 +514,8 @@ function MemberEcoView() {
 
       {!isLoading && !isError && (certs ?? []).length === 0 && (
         <div className="bg-white rounded-xl border border-[#bec9bf]/40 p-12 text-center">
-          <div className="w-16 h-16 rounded-full bg-[#00502e]/10 flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-[#00502e]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="w-16 h-16 rounded-full bg-[#023293]/10 flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-[#023293]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
           </div>
@@ -543,7 +543,7 @@ function MemberEcoView() {
                 <div className="flex items-start justify-between gap-3 mb-2">
                   <div className="flex items-center gap-2 flex-wrap min-w-0">
                     <Link to={`/dashboard/eco/${cert.id}`}
-                      className="text-sm font-mono font-semibold text-[#00502e] hover:underline flex-shrink-0">
+                      className="text-sm font-mono font-semibold text-[#023293] hover:underline flex-shrink-0">
                       {cert.certificateNumber ?? cert.id.slice(0, 8).toUpperCase()}
                     </Link>
                     <Badge variant={statusVariant[cert.status]}>{statusLabel[cert.status]}</Badge>
@@ -597,7 +597,7 @@ function MemberEcoView() {
                   </Link>
                   {isEditableDraft && (
                     <Link to={`/dashboard/eco/apply/${cert.id}`}
-                      className="flex items-center gap-1 rounded-lg border border-[#bec9bf]/60 px-2.5 py-1.5 text-xs font-semibold text-[#00502e] hover:bg-[#f0faf4] transition-colors">
+                      className="flex items-center gap-1 rounded-lg border border-[#bec9bf]/60 px-2.5 py-1.5 text-xs font-semibold text-[#023293] hover:bg-[#f0faf4] transition-colors">
                       <span className="material-symbols-outlined" style={{ fontSize: 13 }}>edit</span>
                       {cert.status === 'draft' ? 'Continue' : 'Edit & Resubmit'}
                     </Link>
@@ -612,7 +612,7 @@ function MemberEcoView() {
 
       {/* "Try again" only when the hard error state is showing (no cached data) */}
       {isError && !hasCachedData && (
-        <button onClick={() => refetch()} className="mt-4 text-sm text-[#00502e] hover:underline">
+        <button onClick={() => refetch()} className="mt-4 text-sm text-[#023293] hover:underline">
           Try again
         </button>
       )}

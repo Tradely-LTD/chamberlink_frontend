@@ -18,7 +18,7 @@ const memberStatusStyle: Record<string, { bg: string; text: string; label: strin
 
 const ecoStatusStyle: Record<string, string> = {
   draft:              'bg-[#e0e3e5] text-[#44474e]',
-  submitted:          'bg-[#d6e3ff] text-[#001b3d]',
+  submitted:          'bg-[#d6e3ff] text-[#023293]',
   under_review:       'bg-[#ffdea5] text-[#5d4201]',
   pending_payment:    'bg-[#ffdea5] text-[#5d4201]',
   approved:           'bg-[#a0f4ca] text-[#002114]',
@@ -29,7 +29,7 @@ const ecoStatusStyle: Record<string, string> = {
 
 function StatCard({ icon, label, value, sub, accent }: { icon: string; label: string; value: string; sub?: string; accent?: boolean }) {
   return (
-    <div className={`rounded-xl p-5 border ${accent ? 'bg-[#002046] border-[#002046]' : 'bg-white border-[#e0e3e5]'}`}>
+    <div className={`rounded-xl p-5 border ${accent ? 'bg-[#023293] border-[#023293]' : 'bg-white border-[#e0e3e5]'}`}>
       <div className="flex items-start justify-between mb-3">
         <p className={`text-xs font-semibold uppercase tracking-wide ${accent ? 'text-[#aec7f7]' : 'text-[#74777f]'}`}>{label}</p>
         <span
@@ -46,16 +46,11 @@ function StatCard({ icon, label, value, sub, accent }: { icon: string; label: st
 }
 
 function AdminOverview() {
-  const { data: stats, isLoading } = useGetAnalyticsSummaryQuery();
+  const { data: stats, isLoading, isError, refetch } = useGetAnalyticsSummaryQuery();
 
-  const demoStats = {
-    totalMembers: 4821, activeMembers: 3964, pendingRenewals: 412,
-    ecoCertificatesIssued: 1243, revenueThisMonth: 18750000,
-    revenueLastMonth: 15200000, newMembersThisMonth: 87, tradeFairRegistrations: 234,
-  };
-
-  const s = stats ?? demoStats;
-  const growth = (((s.revenueThisMonth - s.revenueLastMonth) / s.revenueLastMonth) * 100).toFixed(1);
+  const growth = stats && stats.revenueLastMonth > 0
+    ? (((stats.revenueThisMonth - stats.revenueLastMonth) / stats.revenueLastMonth) * 100).toFixed(1)
+    : null;
 
   return (
     <div className="p-6 max-w-6xl">
@@ -68,13 +63,18 @@ function AdminOverview() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)}
         </div>
+      ) : isError || !stats ? (
+        <div className="rounded-xl border border-[#ffdad6] bg-[#fff8f7] p-5 flex items-center justify-between mb-6">
+          <p className="text-sm text-[#93000a]">Failed to load chamber metrics.</p>
+          <button onClick={refetch} className="text-sm text-[#023293] hover:underline">Retry</button>
+        </div>
       ) : (
         <>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
-            <StatCard icon="group" label="Total Members" value={s.totalMembers.toLocaleString()} sub={`${s.activeMembers.toLocaleString()} active`} accent />
-            <StatCard icon="payments" label="Revenue This Month" value={`₦${(s.revenueThisMonth / 1_000_000).toFixed(1)}M`} sub={`+${growth}% vs last month`} />
-            <StatCard icon="description" label="Certificates Issued" value={s.ecoCertificatesIssued.toLocaleString()} sub="All time" />
-            <StatCard icon="person_add" label="New This Month" value={`+${s.newMembersThisMonth}`} sub="New registrations" />
+            <StatCard icon="group" label="Total Members" value={stats.totalMembers.toLocaleString()} sub={`${stats.activeMembers.toLocaleString()} active`} accent />
+            <StatCard icon="payments" label="Revenue This Month" value={`₦${(stats.revenueThisMonth / 1_000_000).toFixed(1)}M`} sub={growth ? `${Number(growth) >= 0 ? '+' : ''}${growth}% vs last month` : 'No revenue last month'} />
+            <StatCard icon="description" label="Certificates Issued" value={stats.ecoCertificatesIssued.toLocaleString()} sub="All time" />
+            <StatCard icon="person_add" label="New This Month" value={`+${stats.newMembersThisMonth}`} sub="New registrations" />
           </div>
 
           {/* Quick links row */}
@@ -87,10 +87,10 @@ function AdminOverview() {
               <Link
                 key={a.to}
                 to={a.to}
-                className="flex items-center gap-4 bg-white rounded-xl border border-[#e0e3e5] p-4 hover:border-[#002046]/30 hover:shadow-sm transition-all"
+                className="flex items-center gap-4 bg-white rounded-xl border border-[#e0e3e5] p-4 hover:border-[#023293]/30 hover:shadow-sm transition-all"
               >
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: '#d6e3ff' }}>
-                  <span className="material-symbols-outlined" style={{ fontSize: 20, fontVariationSettings: `'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 20`, color: '#002046' }}>{a.icon}</span>
+                  <span className="material-symbols-outlined" style={{ fontSize: 20, fontVariationSettings: `'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 20`, color: '#023293' }}>{a.icon}</span>
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-[#191c1e]">{a.label}</p>
@@ -104,26 +104,30 @@ function AdminOverview() {
           {/* Membership breakdown */}
           <div className="bg-white rounded-xl border border-[#e0e3e5] p-6">
             <h3 className="text-sm font-semibold text-[#191c1e] mb-4">Membership Status Breakdown</h3>
-            <div className="space-y-3">
-              {[
-                { label: 'Active', count: s.activeMembers, color: '#0b6c4b' },
-                { label: 'Pending Renewal', count: s.pendingRenewals, color: '#c5a059' },
-                { label: 'Inactive / Expired', count: s.totalMembers - s.activeMembers - s.pendingRenewals, color: '#c4c6cf' },
-              ].map((row) => {
-                const pct = ((row.count / s.totalMembers) * 100).toFixed(1);
-                return (
-                  <div key={row.label}>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span className="text-[#191c1e] font-medium">{row.label}</span>
-                      <span className="text-[#74777f]">{row.count.toLocaleString()} ({pct}%)</span>
+            {stats.totalMembers === 0 ? (
+              <p className="text-sm text-[#74777f]">No members yet.</p>
+            ) : (
+              <div className="space-y-3">
+                {[
+                  { label: 'Active', count: stats.activeMembers, color: '#0b6c4b' },
+                  { label: 'Pending Renewal', count: stats.pendingRenewals, color: '#c5a059' },
+                  { label: 'Inactive / Expired', count: stats.totalMembers - stats.activeMembers - stats.pendingRenewals, color: '#c4c6cf' },
+                ].map((row) => {
+                  const pct = ((row.count / stats.totalMembers) * 100).toFixed(1);
+                  return (
+                    <div key={row.label}>
+                      <div className="flex justify-between text-sm mb-1">
+                        <span className="text-[#191c1e] font-medium">{row.label}</span>
+                        <span className="text-[#74777f]">{row.count.toLocaleString()} ({pct}%)</span>
+                      </div>
+                      <div className="h-1.5 bg-[#e0e3e5] rounded-full overflow-hidden">
+                        <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: row.color }} />
+                      </div>
                     </div>
-                    <div className="h-1.5 bg-[#e0e3e5] rounded-full overflow-hidden">
-                      <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: row.color }} />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </>
       )}
@@ -160,21 +164,21 @@ function MemberOverview() {
         <Link
           to="/dashboard/eco/apply"
           className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors hover:opacity-90"
-          style={{ background: '#002046' }}
+          style={{ background: '#023293' }}
         >
           <span className="material-symbols-outlined" style={{ fontSize: 16, fontVariationSettings: `'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 16` }}>add</span>
           New eCO Certificate
         </Link>
         <Link
           to="/dashboard/membership"
-          className="inline-flex items-center gap-2 rounded-lg border border-[#c4c6cf] bg-white px-4 py-2 text-sm font-medium text-[#191c1e] hover:border-[#002046] hover:text-[#002046] transition-colors"
+          className="inline-flex items-center gap-2 rounded-lg border border-[#c4c6cf] bg-white px-4 py-2 text-sm font-medium text-[#191c1e] hover:border-[#023293] hover:text-[#023293] transition-colors"
         >
           <span className="material-symbols-outlined" style={{ fontSize: 16, fontVariationSettings: `'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 16` }}>verified_user</span>
           Renew Membership
         </Link>
         <Link
           to="/dashboard/documents"
-          className="inline-flex items-center gap-2 rounded-lg border border-[#c4c6cf] bg-white px-4 py-2 text-sm font-medium text-[#191c1e] hover:border-[#002046] hover:text-[#002046] transition-colors"
+          className="inline-flex items-center gap-2 rounded-lg border border-[#c4c6cf] bg-white px-4 py-2 text-sm font-medium text-[#191c1e] hover:border-[#023293] hover:text-[#023293] transition-colors"
         >
           <span className="material-symbols-outlined" style={{ fontSize: 16, fontVariationSettings: `'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 16` }}>folder_open</span>
           Documents
@@ -189,7 +193,7 @@ function MemberOverview() {
         ) : profileError ? (
           <div className="rounded-xl border border-[#ffdad6] bg-[#fff8f7] p-5 flex items-center justify-between">
             <p className="text-sm text-[#93000a]">Failed to load membership status.</p>
-            <button onClick={refetch} className="text-sm text-[#002046] hover:underline">Retry</button>
+            <button onClick={refetch} className="text-sm text-[#023293] hover:underline">Retry</button>
           </div>
         ) : (
           <div className="bg-white rounded-xl border border-[#e0e3e5] p-5">
@@ -224,7 +228,7 @@ function MemberOverview() {
         </div>
 
         {/* Issued certificates */}
-        <div className="rounded-xl border border-[#002046] p-5" style={{ background: '#002046' }}>
+        <div className="rounded-xl border border-[#023293] p-5" style={{ background: '#023293' }}>
           <div className="flex items-start justify-between mb-3">
             <p className="text-xs font-semibold uppercase tracking-wide text-[#aec7f7]">Certificates Issued</p>
             <span className="material-symbols-outlined" style={{ fontSize: 20, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20`, color: '#aec7f7' }}>verified</span>
@@ -244,7 +248,7 @@ function MemberOverview() {
         <div className="lg:col-span-2 bg-white rounded-xl border border-[#e0e3e5] overflow-hidden">
           <div className="px-5 py-4 border-b border-[#e0e3e5] flex justify-between items-center">
             <h3 className="text-sm font-semibold text-[#191c1e]">Recent eCO Certificates</h3>
-            <Link to="/dashboard/eco" className="text-xs font-medium text-[#002046] hover:underline">View all</Link>
+            <Link to="/dashboard/eco" className="text-xs font-medium text-[#023293] hover:underline">View all</Link>
           </div>
           {ecoLoading ? (
             <div className="p-5 space-y-3">
@@ -253,7 +257,7 @@ function MemberOverview() {
           ) : !certificates || certificates.length === 0 ? (
             <div className="p-8 text-center">
               <p className="text-sm text-[#74777f]">No certificates yet.</p>
-              <Link to="/dashboard/eco/apply" className="mt-2 inline-block text-sm text-[#002046] hover:underline font-medium">
+              <Link to="/dashboard/eco/apply" className="mt-2 inline-block text-sm text-[#023293] hover:underline font-medium">
                 Apply for your first eCO
               </Link>
             </div>
@@ -306,7 +310,7 @@ function MemberOverview() {
                 <Link
                   key={a.to}
                   to={a.to}
-                  className="flex items-center justify-between w-full rounded-lg border border-[#e0e3e5] px-3 py-2.5 text-sm text-[#191c1e] hover:bg-[#002046] hover:text-white hover:border-[#002046] transition-colors group"
+                  className="flex items-center justify-between w-full rounded-lg border border-[#e0e3e5] px-3 py-2.5 text-sm text-[#191c1e] hover:bg-[#023293] hover:text-white hover:border-[#023293] transition-colors group"
                 >
                   <div className="flex items-center gap-2.5">
                     <span className="material-symbols-outlined group-hover:text-white text-[#74777f]" style={{ fontSize: 16, fontVariationSettings: `'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 16` }}>{a.icon}</span>
@@ -339,14 +343,10 @@ function MemberOverview() {
 }
 
 function ExecutiveOverview() {
-  const { data: stats, isLoading } = useGetAnalyticsSummaryQuery();
-  const demoStats = {
-    totalMembers: 4821, activeMembers: 3964, pendingRenewals: 412,
-    ecoCertificatesIssued: 1243, revenueThisMonth: 18750000,
-    revenueLastMonth: 15200000, newMembersThisMonth: 87, tradeFairRegistrations: 234,
-  };
-  const s = stats ?? demoStats;
-  const growth = (((s.revenueThisMonth - s.revenueLastMonth) / s.revenueLastMonth) * 100).toFixed(1);
+  const { data: stats, isLoading, isError, refetch } = useGetAnalyticsSummaryQuery();
+  const growth = stats && stats.revenueLastMonth > 0
+    ? (((stats.revenueThisMonth - stats.revenueLastMonth) / stats.revenueLastMonth) * 100).toFixed(1)
+    : null;
 
   return (
     <div className="p-6 max-w-6xl">
@@ -363,12 +363,17 @@ function ExecutiveOverview() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)}
         </div>
+      ) : isError || !stats ? (
+        <div className="rounded-xl border border-[#ffdad6] bg-[#fff8f7] p-5 flex items-center justify-between mb-6">
+          <p className="text-sm text-[#93000a]">Failed to load chamber metrics.</p>
+          <button onClick={refetch} className="text-sm text-[#023293] hover:underline">Retry</button>
+        </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
-          <StatCard icon="group" label="Total Members" value={s.totalMembers.toLocaleString()} sub={`${s.activeMembers.toLocaleString()} active`} accent />
-          <StatCard icon="payments" label="Revenue This Month" value={`₦${(s.revenueThisMonth / 1_000_000).toFixed(1)}M`} sub={`+${growth}% vs last month`} />
-          <StatCard icon="description" label="Certificates Issued" value={s.ecoCertificatesIssued.toLocaleString()} sub="All time" />
-          <StatCard icon="person_add" label="New This Month" value={`+${s.newMembersThisMonth}`} sub="New registrations" />
+          <StatCard icon="group" label="Total Members" value={stats.totalMembers.toLocaleString()} sub={`${stats.activeMembers.toLocaleString()} active`} accent />
+          <StatCard icon="payments" label="Revenue This Month" value={`₦${(stats.revenueThisMonth / 1_000_000).toFixed(1)}M`} sub={growth ? `${Number(growth) >= 0 ? '+' : ''}${growth}% vs last month` : 'No revenue last month'} />
+          <StatCard icon="description" label="Certificates Issued" value={stats.ecoCertificatesIssued.toLocaleString()} sub="All time" />
+          <StatCard icon="person_add" label="New This Month" value={`+${stats.newMembersThisMonth}`} sub="New registrations" />
         </div>
       )}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -376,9 +381,9 @@ function ExecutiveOverview() {
           { label: 'Full Analytics', sub: 'Detailed charts and reports', to: '/dashboard/analytics', icon: 'bar_chart' },
           { label: 'Member Directory', sub: 'View all registered members', to: '/dashboard/admin', icon: 'group' },
         ].map((a) => (
-          <Link key={a.to} to={a.to} className="flex items-center gap-4 bg-white rounded-xl border border-[#e0e3e5] p-4 hover:border-[#002046]/30 hover:shadow-sm transition-all">
+          <Link key={a.to} to={a.to} className="flex items-center gap-4 bg-white rounded-xl border border-[#e0e3e5] p-4 hover:border-[#023293]/30 hover:shadow-sm transition-all">
             <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: '#d6e3ff' }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 20, fontVariationSettings: `'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 20`, color: '#002046' }}>{a.icon}</span>
+              <span className="material-symbols-outlined" style={{ fontSize: 20, fontVariationSettings: `'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 20`, color: '#023293' }}>{a.icon}</span>
             </div>
             <div>
               <p className="text-sm font-semibold text-[#191c1e]">{a.label}</p>
@@ -407,9 +412,9 @@ function InstitutionalOverview() {
           { label: 'Trade Corridors', sub: 'Browse active trade routes', to: '/dashboard/trade-corridors', icon: 'route' },
           { label: 'Trade Data API', sub: 'Access live trade intelligence feeds', to: '/dashboard/trade-data-api', icon: 'api' },
         ].map((a) => (
-          <Link key={a.to} to={a.to} className="flex items-center gap-4 bg-white rounded-xl border border-[#e0e3e5] p-5 hover:border-[#002046]/30 hover:shadow-sm transition-all">
+          <Link key={a.to} to={a.to} className="flex items-center gap-4 bg-white rounded-xl border border-[#e0e3e5] p-5 hover:border-[#023293]/30 hover:shadow-sm transition-all">
             <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: '#d6e3ff' }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 20, fontVariationSettings: `'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 20`, color: '#002046' }}>{a.icon}</span>
+              <span className="material-symbols-outlined" style={{ fontSize: 20, fontVariationSettings: `'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 20`, color: '#023293' }}>{a.icon}</span>
             </div>
             <div>
               <p className="text-sm font-semibold text-[#191c1e]">{a.label}</p>

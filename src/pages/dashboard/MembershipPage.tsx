@@ -120,7 +120,7 @@ export function MembershipPage() {
                   <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${tierColors[tier.name.toLowerCase()] ?? 'bg-gray-100 text-gray-700'}`}>
                     {tier.name}
                   </span>
-                  <p className="text-xl font-bold text-[#00502e] mt-2">
+                  <p className="text-xl font-bold text-[#023293] mt-2">
                     ₦{Number(tier.annualDues ?? 0).toLocaleString()}
                     <span className="text-sm font-normal text-[#8A7E6E]">/year</span>
                   </p>

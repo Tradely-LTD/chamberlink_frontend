@@ -33,7 +33,7 @@ describe('Button', () => {
 
   it('applies primary variant classes by default', () => {
     render(<Button>Primary</Button>);
-    expect(screen.getByRole('button')).toHaveClass('bg-[#00502e]');
+    expect(screen.getByRole('button')).toHaveClass('bg-[#023293]');
   });
 
   it('applies secondary variant classes', () => {

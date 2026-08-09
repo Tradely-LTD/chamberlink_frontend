@@ -9,7 +9,7 @@ describe('Badge', () => {
 
   it('applies default variant styling', () => {
     render(<Badge label="Active" />);
-    expect(screen.getByText('Active')).toHaveClass('bg-[#00502e]/10');
+    expect(screen.getByText('Active')).toHaveClass('bg-[#023293]/10');
   });
 
   it('applies coming-soon variant styling', () => {

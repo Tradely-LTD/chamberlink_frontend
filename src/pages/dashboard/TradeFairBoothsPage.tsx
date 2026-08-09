@@ -32,7 +32,7 @@ const demoBooths: MyBooth[] = [
 
 const statusConfig: Record<MyBooth['status'], { label: string; bg: string; text: string }> = {
   reserved:        { label: 'Reserved',        bg: '#a0f4ca', text: '#005137' },
-  checked_in:      { label: 'Checked In',      bg: '#d6e3ff', text: '#001b3d' },
+  checked_in:      { label: 'Checked In',      bg: '#d6e3ff', text: '#023293' },
   pending_payment: { label: 'Pending Payment', bg: '#ffdea5', text: '#5d4201' },
   cancelled:       { label: 'Cancelled',       bg: '#ffdad6', text: '#93000a' },
 };
@@ -107,8 +107,8 @@ export function TradeFairBoothsPage() {
 
       {/* Payment verification banner */}
       {verifying && (
-        <div className="mb-4 flex items-center gap-3 rounded-xl border border-[#d6e3ff] bg-[#f0f4ff] px-4 py-3 text-sm text-[#002046]">
-          <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#002046] border-t-transparent flex-shrink-0" />
+        <div className="mb-4 flex items-center gap-3 rounded-xl border border-[#d6e3ff] bg-[#f0f4ff] px-4 py-3 text-sm text-[#023293]">
+          <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#023293] border-t-transparent flex-shrink-0" />
           Verifying your payment…
         </div>
       )}
@@ -131,12 +131,12 @@ export function TradeFairBoothsPage() {
       {!isLoading && booths.length === 0 ? (
         <div className="bg-white rounded-xl border border-[#e0e3e5] p-12 text-center">
           <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: '#d6e3ff' }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 32, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 32`, color: '#002046' }}>storefront</span>
+            <span className="material-symbols-outlined" style={{ fontSize: 32, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 32`, color: '#023293' }}>storefront</span>
           </div>
           <h3 className="text-base font-semibold text-[#191c1e] mb-1">No booth reservations yet</h3>
           <p className="text-sm text-[#74777f] mb-4">Book a booth at an upcoming trade fair event.</p>
           <Link to="/dashboard/trade-fair">
-            <button className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white" style={{ background: '#002046' }}>
+            <button className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white" style={{ background: '#023293' }}>
               Browse Events
             </button>
           </Link>
@@ -151,7 +151,7 @@ export function TradeFairBoothsPage() {
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: '#d6e3ff' }}>
-                        <span className="font-bold text-[#002046] text-sm leading-none text-center">{booth.boothNumber}</span>
+                        <span className="font-bold text-[#023293] text-sm leading-none text-center">{booth.boothNumber}</span>
                       </div>
                       <div>
                         <p className="font-bold text-[#191c1e]">{booth.boothType} Booth</p>
@@ -198,7 +198,7 @@ export function TradeFairBoothsPage() {
                         disabled={payLoading && payingId === booth.id}
                         onClick={() => handlePay(booth.id)}
                         className="flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
-                        style={{ background: '#002046' }}
+                        style={{ background: '#023293' }}
                       >
                         <span className="material-symbols-outlined" style={{ fontSize: 16 }}>payments</span>
                         {payLoading && payingId === booth.id ? 'Processing…' : 'Complete Payment'}
@@ -209,7 +209,7 @@ export function TradeFairBoothsPage() {
                         href={booth.receiptUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 rounded-lg border border-[#002046] px-4 py-2 text-sm font-medium text-[#002046] hover:bg-[#002046] hover:text-white transition-colors"
+                        className="flex items-center gap-2 rounded-lg border border-[#023293] px-4 py-2 text-sm font-medium text-[#023293] hover:bg-[#023293] hover:text-white transition-colors"
                       >
                         <span className="material-symbols-outlined" style={{ fontSize: 16 }}>download</span>
                         Download Receipt

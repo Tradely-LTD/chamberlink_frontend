@@ -52,7 +52,7 @@ export function EcoDetailPage() {
   if (isError || !cert) return (
     <div className="p-6 max-w-3xl">
       <ErrorBanner message="Failed to load certificate details. You may not have permission to view this certificate." />
-      <Link to="/dashboard/eco" className="inline-block mt-4 text-sm text-[#00502e] hover:underline">
+      <Link to="/dashboard/eco" className="inline-block mt-4 text-sm text-[#023293] hover:underline">
         ← Back
       </Link>
     </div>
@@ -106,7 +106,7 @@ export function EcoDetailPage() {
     <div className="p-6 max-w-3xl">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 mb-6">
-        <Link to="/dashboard/eco" className="text-sm text-[#8A7E6E] hover:text-[#00502e]">
+        <Link to="/dashboard/eco" className="text-sm text-[#8A7E6E] hover:text-[#023293]">
           {isAdmin ? 'eCO Queue' : 'eCO Certificates'}
         </Link>
         <span className="text-[#bec9bf]">/</span>
@@ -160,7 +160,7 @@ export function EcoDetailPage() {
           <Button
             loading={downloadLoading}
             onClick={() => openSignedUrl('download')}
-            className="bg-[#00502e] hover:bg-[#006b3f] text-white"
+            className="bg-[#023293] hover:bg-[#0267bf] text-white"
           >
             <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -242,7 +242,7 @@ export function EcoDetailPage() {
         </div>
       </div>
 
-      <Link to="/dashboard/eco" className="text-sm text-[#8A7E6E] hover:text-[#00502e]">
+      <Link to="/dashboard/eco" className="text-sm text-[#8A7E6E] hover:text-[#023293]">
         ← Back to {isAdmin ? 'queue' : 'all applications'}
       </Link>
     </div>

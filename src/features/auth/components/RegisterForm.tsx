@@ -102,7 +102,7 @@ export function RegisterForm() {
         Already have an account?{' '}
         <Link
           to="/login"
-          className="text-[#00502e] font-medium hover:underline"
+          className="text-[#023293] font-medium hover:underline"
         >
           Sign in
         </Link>

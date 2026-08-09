@@ -28,7 +28,7 @@ const CATEGORY_LABELS: Record<DocumentCategory, string> = {
 };
 
 const CATEGORY_COLORS: Record<DocumentCategory, { bg: string; text: string }> = {
-  commercial_invoice:    { bg: '#d6e3ff', text: '#001b3d' },
+  commercial_invoice:    { bg: '#d6e3ff', text: '#023293' },
   packing_list:          { bg: '#a0f4ca', text: '#005137' },
   certificate_of_origin: { bg: '#ffdea5', text: '#5d4201' },
   membership_card:       { bg: '#e8d5f5', text: '#3d1060' },
@@ -141,12 +141,12 @@ function UploadModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: (
             <label className="block text-xs font-semibold text-[#44474e] mb-1">Document Name <span className="text-red-500">*</span></label>
             <input type="text" required value={docName} onChange={(e) => setDocName(e.target.value)}
               placeholder="e.g. Business Registration Certificate"
-              className="w-full rounded-lg border border-[#bec9bf]/60 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#00502e]/30 focus:border-[#00502e]" />
+              className="w-full rounded-lg border border-[#bec9bf]/60 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#023293]/30 focus:border-[#023293]" />
           </div>
           <div>
             <label className="block text-xs font-semibold text-[#44474e] mb-1">Category</label>
             <select value={category} onChange={(e) => setCategory(e.target.value as DocumentCategory)}
-              className="w-full rounded-lg border border-[#bec9bf]/60 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#00502e]/30 focus:border-[#00502e]">
+              className="w-full rounded-lg border border-[#bec9bf]/60 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#023293]/30 focus:border-[#023293]">
               {(Object.keys(CATEGORY_LABELS) as DocumentCategory[]).map((k) => (
                 <option key={k} value={k}>{CATEGORY_LABELS[k]}</option>
               ))}
@@ -156,7 +156,7 @@ function UploadModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: (
             <label className="block text-xs font-semibold text-[#44474e] mb-1">File <span className="text-red-500">*</span></label>
             <input ref={fileInputRef} type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" className="hidden" onChange={handleFileSelect} />
             <button type="button" onClick={() => fileInputRef.current?.click()}
-              className="w-full rounded-lg border-2 border-dashed border-[#bec9bf]/60 px-4 py-6 text-center hover:border-[#00502e] transition-colors">
+              className="w-full rounded-lg border-2 border-dashed border-[#bec9bf]/60 px-4 py-6 text-center hover:border-[#023293] transition-colors">
               {selectedFile ? (
                 <div className="text-sm text-[#221a0f]">
                   <p className="font-medium">{selectedFile.name}</p>
@@ -175,7 +175,7 @@ function UploadModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: (
           </div>
           <div className="flex gap-3 pt-2">
             <Button variant="outline" type="button" onClick={onClose}>Cancel</Button>
-            <Button type="submit" loading={isLoading} className="flex-1 bg-[#00502e] hover:bg-[#006b3f] text-white">Upload</Button>
+            <Button type="submit" loading={isLoading} className="flex-1 bg-[#023293] hover:bg-[#0267bf] text-white">Upload</Button>
           </div>
         </form>
       </div>
@@ -207,7 +207,7 @@ function CategoryBadge({ docId, category, readonly }: { docId: string; category:
           await patchCategory({ id: docId, category: e.target.value as DocumentCategory });
           setEditing(false);
         }}
-        className="text-xs rounded-lg border border-[#bec9bf]/60 px-2 py-1 focus:outline-none focus:ring-2 focus:ring-[#00502e]/30"
+        className="text-xs rounded-lg border border-[#bec9bf]/60 px-2 py-1 focus:outline-none focus:ring-2 focus:ring-[#023293]/30"
         onClick={(e) => e.stopPropagation()}
       >
         {(Object.keys(CATEGORY_LABELS) as DocumentCategory[]).map((k) => (
@@ -355,7 +355,7 @@ export function DocumentLibraryView() {
                   <div className="flex items-center gap-1">
                     {doc.url && (
                       <a href={doc.url} target="_blank" rel="noopener noreferrer"
-                        className="p-1 rounded-md text-[#00502e] hover:bg-[#f0faf4] transition-colors" title="Download">
+                        className="p-1 rounded-md text-[#023293] hover:bg-[#f0faf4] transition-colors" title="Download">
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                         </svg>
@@ -383,7 +383,7 @@ export function DocumentLibraryView() {
                 <div className="flex items-center gap-1 flex-shrink-0">
                   {doc.url && (
                     <a href={doc.url} target="_blank" rel="noopener noreferrer"
-                      className="p-1.5 rounded-md text-[#00502e] hover:bg-[#f0faf4] transition-colors" title="Download">
+                      className="p-1.5 rounded-md text-[#023293] hover:bg-[#f0faf4] transition-colors" title="Download">
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                       </svg>

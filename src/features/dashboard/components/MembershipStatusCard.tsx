@@ -39,7 +39,7 @@ export function MembershipStatusCard({
         {onRetry && (
           <button
             onClick={onRetry}
-            className="text-sm text-[#00502e] hover:underline"
+            className="text-sm text-[#023293] hover:underline"
           >
             Retry
           </button>

@@ -183,9 +183,9 @@ function InstitutionalVerificationView() {
             value={tab === 'eco' ? certInput : memberInput}
             onChange={(e) => tab === 'eco' ? setCertInput(e.target.value) : setMemberInput(e.target.value)}
             placeholder={tab === 'eco' ? 'e.g. ECO-2025-KAN-004821' : 'e.g. KAC-M-00214'}
-            className="flex-1 rounded-lg border border-[#c4c6cf] px-4 py-2.5 text-sm focus:outline-none focus:border-[#002046] font-mono"
+            className="flex-1 rounded-lg border border-[#c4c6cf] px-4 py-2.5 text-sm focus:outline-none focus:border-[#023293] font-mono"
           />
-          <button type="submit" disabled={isLoading} className="flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50" style={{ background: '#002046' }}>
+          <button type="submit" disabled={isLoading} className="flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50" style={{ background: '#023293' }}>
             {isLoading ? 'Verifying…' : <><span className="material-symbols-outlined" style={{ fontSize: 16 }}>search</span>Verify</>}
           </button>
         </form>
@@ -235,7 +235,7 @@ function AdminVerificationView() {
           { icon: 'schedule', label: 'Expired', value: allLogs.filter((l) => l.result === 'expired').length },
           { icon: 'search_off', label: 'Not Found', value: allLogs.filter((l) => l.result === 'not_found').length },
         ].map(({ icon, label, value, accent }) => (
-          <div key={label} className={`rounded-xl border p-4 ${accent ? '' : 'bg-white border-[#e0e3e5]'}`} style={accent ? { background: '#002046', borderColor: '#002046' } : {}}>
+          <div key={label} className={`rounded-xl border p-4 ${accent ? '' : 'bg-white border-[#e0e3e5]'}`} style={accent ? { background: '#023293', borderColor: '#023293' } : {}}>
             <div className="flex items-center gap-2 mb-2">
               <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`, color: accent ? '#aec7f7' : '#74777f' }}>{icon}</span>
               <p className={`text-xs font-semibold uppercase tracking-wide ${accent ? 'text-[#aec7f7]' : 'text-[#74777f]'}`}>{label}</p>
@@ -280,7 +280,7 @@ function AdminVerificationView() {
                     <tr key={log.id} className="hover:bg-[#f7f9fb] transition-colors">
                       <td className="px-4 py-3 font-mono text-sm text-[#191c1e]">{log.queriedRef}</td>
                       <td className="px-4 py-3">
-                        <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide" style={{ background: log.queryType === 'eco' ? '#d6e3ff' : '#a0f4ca', color: log.queryType === 'eco' ? '#001b3d' : '#005137' }}>
+                        <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide" style={{ background: log.queryType === 'eco' ? '#d6e3ff' : '#a0f4ca', color: log.queryType === 'eco' ? '#023293' : '#005137' }}>
                           {log.queryType === 'eco' ? 'eCO' : 'Member'}
                         </span>
                       </td>

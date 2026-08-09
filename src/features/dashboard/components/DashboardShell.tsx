@@ -1,4 +1,4 @@
-import { Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { MobileNav } from './MobileNav';
 import { useAppSelector } from '@shared/hooks/useAppDispatch';
@@ -62,17 +62,21 @@ export function DashboardShell() {
               </span>
             </button>
             {user && (
-              <div className="ml-1 flex items-center gap-2 pl-3 border-l border-[#e0e3e5]">
+              <Link
+                to="/dashboard/profile"
+                title="My Profile"
+                className="ml-1 flex items-center gap-2 pl-3 border-l border-[#e0e3e5] rounded-lg hover:bg-[#eceef0] transition-colors py-1 pr-2"
+              >
                 <div
-                  className="h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold"
-                  style={{ background: '#d6e3ff', color: '#001b3d' }}
+                  className="h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+                  style={{ background: '#d6e3ff', color: '#023293' }}
                 >
-                  {[user.firstName?.[0], user.lastName?.[0]].filter(Boolean).join('').toUpperCase()}
+                  {[user.firstName?.[0], user.lastName?.[0]].filter(Boolean).join('').toUpperCase() || user.email[0].toUpperCase()}
                 </div>
                 <span className="text-sm font-medium text-[#191c1e]">
-                  {user.firstName}
+                  {user.firstName ?? user.email.split('@')[0]}
                 </span>
-              </div>
+              </Link>
             )}
           </div>
         </header>

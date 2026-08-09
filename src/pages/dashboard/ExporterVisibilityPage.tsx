@@ -159,7 +159,7 @@ const demoAllProfiles: ExporterProfile[] = [
 const tierConfig = {
   standard: { label: 'Standard', bg: '#e0e3e5', text: '#44474e', accent: '#74777f', price: 0 },
   featured:  { label: 'Featured', bg: '#ffdea5', text: '#5d4201', accent: '#c5a059', price: 75000 },
-  premium:   { label: 'Premium',  bg: '#d6e3ff', text: '#001b3d', accent: '#002046', price: 150000 },
+  premium:   { label: 'Premium',  bg: '#d6e3ff', text: '#023293', accent: '#023293', price: 150000 },
 };
 
 const profileStatusConfig: Record<string, { label: string; bg: string; text: string }> = {
@@ -193,14 +193,14 @@ function ProfileFormFields({ form, set }: { form: ProfileFormData; set: (k: keyo
         <div key={key}>
           <label className="block text-xs font-semibold text-[#44474e] mb-1">{label}</label>
           <input required={required} value={form[key]} onChange={set(key)} placeholder={placeholder}
-            className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#002046]" />
+            className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293]" />
         </div>
       ))}
       <div>
         <label className="block text-xs font-semibold text-[#44474e] mb-1">Business Description</label>
         <textarea required rows={3} value={form.description} onChange={set('description')}
           placeholder="Describe your export business…"
-          className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#002046] resize-none" />
+          className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293] resize-none" />
       </div>
     </>
   );
@@ -238,7 +238,7 @@ function CreateProfileModal({ onClose }: { onClose: () => void }) {
           <ProfileFormFields form={form} set={set} />
           <div className="flex gap-3 pt-2">
             <Button variant="outline" type="button" onClick={onClose}>Cancel</Button>
-            <button type="submit" disabled={isLoading} className="flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50" style={{ background: '#002046' }}>
+            <button type="submit" disabled={isLoading} className="flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50" style={{ background: '#023293' }}>
               {isLoading ? 'Creating…' : 'Create Profile'}
             </button>
           </div>
@@ -294,7 +294,7 @@ function EditProfileModal({ profile, onClose }: { profile: ExporterProfile; onCl
           <ProfileFormFields form={form} set={set} />
           <div className="flex gap-3 pt-2">
             <Button variant="outline" type="button" onClick={onClose}>Cancel</Button>
-            <button type="submit" disabled={isLoading} className="flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50" style={{ background: '#002046' }}>
+            <button type="submit" disabled={isLoading} className="flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50" style={{ background: '#023293' }}>
               {isLoading ? 'Saving…' : 'Save Changes'}
             </button>
           </div>
@@ -344,7 +344,7 @@ function UpgradeModal({ currentTier, onClose }: { currentTier: ExporterProfile['
           })}
           <div className="flex gap-3">
             <Button variant="outline" onClick={onClose}>Cancel</Button>
-            <button disabled={isLoading} onClick={handleUpgrade} className="flex-1 flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50" style={{ background: '#002046' }}>
+            <button disabled={isLoading} onClick={handleUpgrade} className="flex-1 flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50" style={{ background: '#023293' }}>
               {isLoading ? 'Processing…' : <><span className="material-symbols-outlined" style={{ fontSize: 16 }}>payments</span>Proceed to Payment</>}
             </button>
           </div>
@@ -392,7 +392,7 @@ function ExporterDetailModal({
             <div><span className="font-semibold text-[#44474e]">Sector: </span><span className="text-[#191c1e]">{profile.sector}</span></div>
             <div><span className="font-semibold text-[#44474e]">Tier: </span><span className="text-[#191c1e] capitalize">{profile.tier}</span></div>
             <div><span className="font-semibold text-[#44474e]">Email: </span><span className="text-[#191c1e]">{profile.contactEmail || '—'}</span></div>
-            {profile.website && <div><span className="font-semibold text-[#44474e]">Website: </span><a href={profile.website} target="_blank" rel="noopener noreferrer" className="text-[#002046] underline text-xs">{profile.website}</a></div>}
+            {profile.website && <div><span className="font-semibold text-[#44474e]">Website: </span><a href={profile.website} target="_blank" rel="noopener noreferrer" className="text-[#023293] underline text-xs">{profile.website}</a></div>}
           </div>
 
           {profile.description && (
@@ -406,7 +406,7 @@ function ExporterDetailModal({
             <div>
               <p className="text-xs font-semibold text-[#44474e] uppercase tracking-wide mb-2">Products & Services</p>
               <div className="flex flex-wrap gap-2">
-                {profile.products.map((p, i) => <span key={i} className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium" style={{ background: '#f0f4ff', color: '#001b3d' }}>{p}</span>)}
+                {profile.products.map((p, i) => <span key={i} className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium" style={{ background: '#f0f4ff', color: '#023293' }}>{p}</span>)}
               </div>
             </div>
           )}
@@ -415,7 +415,7 @@ function ExporterDetailModal({
             <div>
               <p className="text-xs font-semibold text-[#44474e] uppercase tracking-wide mb-2">Certifications</p>
               <div className="flex flex-wrap gap-2">
-                {profile.certifications.map((c, i) => <span key={i} className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium" style={{ background: '#e6f5ef', color: '#00502e' }}>{c}</span>)}
+                {profile.certifications.map((c, i) => <span key={i} className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium" style={{ background: '#e6f5ef', color: '#023293' }}>{c}</span>)}
               </div>
             </div>
           )}
@@ -557,8 +557,8 @@ function MemberExporterView() {
         </div>
       )}
       {verifying && (
-        <div className="mb-4 flex items-center gap-3 rounded-xl border border-[#d6e3ff] bg-[#f0f4ff] px-4 py-3 text-sm text-[#002046]">
-          <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#002046] border-t-transparent flex-shrink-0" />
+        <div className="mb-4 flex items-center gap-3 rounded-xl border border-[#d6e3ff] bg-[#f0f4ff] px-4 py-3 text-sm text-[#023293]">
+          <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#023293] border-t-transparent flex-shrink-0" />
           Verifying your payment…
         </div>
       )}
@@ -566,11 +566,11 @@ function MemberExporterView() {
       {!profile ? (
         <div className="bg-white rounded-xl border border-[#e0e3e5] p-12 text-center">
           <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: '#d6e3ff' }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 32, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 32`, color: '#002046' }}>storefront</span>
+            <span className="material-symbols-outlined" style={{ fontSize: 32, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 32`, color: '#023293' }}>storefront</span>
           </div>
           <h3 className="font-bold text-[#191c1e] mb-2">Get Listed in the Export Directory</h3>
           <p className="text-sm text-[#74777f] mb-6 max-w-sm mx-auto">Create your free exporter profile to reach international buyers through the NACCIMA trade network.</p>
-          <button onClick={() => setShowCreate(true)} className="rounded-lg px-6 py-2.5 text-sm font-semibold text-white" style={{ background: '#002046' }}>Create Exporter Profile</button>
+          <button onClick={() => setShowCreate(true)} className="rounded-lg px-6 py-2.5 text-sm font-semibold text-white" style={{ background: '#023293' }}>Create Exporter Profile</button>
         </div>
       ) : (
         <>
@@ -618,7 +618,7 @@ function MemberExporterView() {
             </div>
             <button
               onClick={() => setShowEdit(true)}
-              className="flex items-center gap-1.5 rounded-lg border border-[#c4c6cf] px-4 py-2 text-sm font-semibold text-[#44474e] hover:border-[#002046] hover:text-[#002046] transition-colors"
+              className="flex items-center gap-1.5 rounded-lg border border-[#c4c6cf] px-4 py-2 text-sm font-semibold text-[#44474e] hover:border-[#023293] hover:text-[#023293] transition-colors"
             >
               <span className="material-symbols-outlined" style={{ fontSize: 16 }}>edit</span>
               Edit Profile
@@ -629,7 +629,7 @@ function MemberExporterView() {
             <div className="bg-white rounded-xl border border-[#e0e3e5] p-6">
               <h3 className="font-semibold text-[#191c1e] mb-1">Boost Your Visibility</h3>
               <p className="text-sm text-[#74777f] mb-4">Upgrade to reach more international buyers and get priority placement in the directory.</p>
-              <button onClick={() => setShowUpgrade(true)} className="flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold text-white" style={{ background: '#002046' }}>
+              <button onClick={() => setShowUpgrade(true)} className="flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold text-white" style={{ background: '#023293' }}>
                 <span className="material-symbols-outlined" style={{ fontSize: 16 }}>upgrade</span>Upgrade Plan
               </button>
             </div>
@@ -686,7 +686,7 @@ function AdminExporterView() {
           { icon: 'star',              label: 'Featured',        value: allProfiles.filter((p) => p.tier === 'featured').length },
           { icon: 'pending',           label: 'Pending Review',  value: allProfiles.filter((p) => p.status === 'pending_review').length },
         ].map(({ icon, label, value, accent }) => (
-          <div key={label} className={`rounded-xl border p-4 ${accent ? '' : 'bg-white border-[#e0e3e5]'}`} style={accent ? { background: '#002046', borderColor: '#002046' } : {}}>
+          <div key={label} className={`rounded-xl border p-4 ${accent ? '' : 'bg-white border-[#e0e3e5]'}`} style={accent ? { background: '#023293', borderColor: '#023293' } : {}}>
             <div className="flex items-center gap-2 mb-2">
               <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`, color: accent ? '#aec7f7' : '#74777f' }}>{icon}</span>
               <p className={`text-xs font-semibold uppercase tracking-wide ${accent ? 'text-[#aec7f7]' : 'text-[#74777f]'}`}>{label}</p>
@@ -697,7 +697,7 @@ function AdminExporterView() {
       </div>
 
       <div className="flex items-center gap-3 mb-4 flex-wrap">
-        <input type="search" placeholder="Search by company or sector…" value={search} onChange={(e) => setSearch(e.target.value)} className="rounded-lg border border-[#c4c6cf] px-4 py-2 text-sm focus:outline-none focus:border-[#002046] w-64" />
+        <input type="search" placeholder="Search by company or sector…" value={search} onChange={(e) => setSearch(e.target.value)} className="rounded-lg border border-[#c4c6cf] px-4 py-2 text-sm focus:outline-none focus:border-[#023293] w-64" />
         <div className="flex gap-1 bg-[#f7f9fb] rounded-lg p-1 border border-[#e0e3e5]">
           {(['all', 'active', 'pending_review', 'suspended', 'rejected'] as const).map((s) => (
             <button key={s} onClick={() => setStatusFilter(s)} className={`px-3 py-1 rounded-md text-xs font-medium capitalize transition-colors ${statusFilter === s ? 'bg-white shadow-sm text-[#191c1e]' : 'text-[#74777f]'}`}>{s.replace('_', ' ')}</button>
@@ -733,7 +733,7 @@ function AdminExporterView() {
                         <td className="px-4 py-3 font-medium text-[#191c1e]">{p.viewCount.toLocaleString()}</td>
                         <td className="px-4 py-3 font-medium text-[#191c1e]">{p.inquiryCount.toLocaleString()}</td>
                         <td className="px-4 py-3">
-                          <button onClick={() => setDetailProfile(p)} className="text-xs font-semibold px-3 py-1.5 rounded-md border border-[#002046] text-[#002046] hover:bg-[#002046] hover:text-white transition-colors">
+                          <button onClick={() => setDetailProfile(p)} className="text-xs font-semibold px-3 py-1.5 rounded-md border border-[#023293] text-[#023293] hover:bg-[#023293] hover:text-white transition-colors">
                             Review
                           </button>
                         </td>

@@ -287,7 +287,7 @@ function MemberDetailModal({ member, onClose, isChamberAdmin }: MemberDetailModa
                 onClick={handleReactivate}
                 disabled={reactivating}
                 className="rounded-lg px-4 py-2 text-sm font-semibold text-white disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
-                style={{ background: '#002046' }}
+                style={{ background: '#023293' }}
               >
                 {reactivating ? 'Reactivating…' : 'Reactivate'}
               </button>
@@ -386,7 +386,7 @@ function BulkImportModal({ onClose }: BulkImportModalProps) {
                   accept=".csv"
                   onChange={handleFileChange}
                   className="block w-full text-sm text-[#191c1e] file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:text-white file:cursor-pointer"
-                  style={{ '--tw-file-bg': '#002046' } as React.CSSProperties}
+                  style={{ '--tw-file-bg': '#023293' } as React.CSSProperties}
                 />
                 {fileError && (
                   <p className="mt-1 text-xs text-[#93000a]">{fileError}</p>
@@ -406,7 +406,7 @@ function BulkImportModal({ onClose }: BulkImportModalProps) {
                   type="submit"
                   disabled={isLoading || !selectedFile}
                   className="rounded-lg px-4 py-2 text-sm font-semibold text-white disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
-                  style={{ background: '#002046' }}
+                  style={{ background: '#023293' }}
                 >
                   {isLoading ? 'Importing…' : 'Import Members'}
                 </button>
@@ -574,13 +574,13 @@ export function MemberManagementPage() {
           placeholder="Search by name, email or business..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full max-w-sm rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#002046]"
+          className="w-full max-w-sm rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293]"
         />
 
         <select
           value={statusFilter}
           onChange={handleStatusChange}
-          className="rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#002046] bg-white"
+          className="rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293] bg-white"
         >
           <option value="">All</option>
           <option value="active">Active</option>
@@ -593,7 +593,7 @@ export function MemberManagementPage() {
           <button
             onClick={() => void handleExport()}
             disabled={isExporting}
-            className="rounded-lg border border-[#c4c6cf] bg-white px-4 py-2 text-sm font-semibold text-[#191c1e] hover:border-[#002046] hover:text-[#002046] disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+            className="rounded-lg border border-[#c4c6cf] bg-white px-4 py-2 text-sm font-semibold text-[#191c1e] hover:border-[#023293] hover:text-[#023293] disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
           >
             {isExporting ? 'Exporting...' : 'Export CSV'}
           </button>
@@ -601,7 +601,7 @@ export function MemberManagementPage() {
             <button
               onClick={() => setShowBulkImport(true)}
               className="rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors"
-              style={{ background: '#002046' }}
+              style={{ background: '#023293' }}
             >
               Bulk Import
             </button>
@@ -617,7 +617,7 @@ export function MemberManagementPage() {
           <ErrorBanner message="Failed to load members." />
           <button
             onClick={() => void refetch()}
-            className="rounded-lg border border-[#c4c6cf] bg-white px-4 py-2 text-sm font-semibold text-[#191c1e] hover:border-[#002046] transition-colors"
+            className="rounded-lg border border-[#c4c6cf] bg-white px-4 py-2 text-sm font-semibold text-[#191c1e] hover:border-[#023293] transition-colors"
           >
             Retry
           </button>
@@ -651,7 +651,7 @@ export function MemberManagementPage() {
                       key={member.id}
                       className="border-b border-[#e0e3e5] hover:bg-[#f7f9fb] transition-colors"
                     >
-                      <td className="px-4 py-3 font-mono text-xs text-[#002046]">
+                      <td className="px-4 py-3 font-mono text-xs text-[#023293]">
                         {member.memberId ?? '—'}
                       </td>
                       <td className="px-4 py-3">
@@ -679,7 +679,7 @@ export function MemberManagementPage() {
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => setViewMember(member)}
-                            className="text-xs font-medium text-[#002046] hover:underline"
+                            className="text-xs font-medium text-[#023293] hover:underline"
                           >
                             View
                           </button>
@@ -717,14 +717,14 @@ export function MemberManagementPage() {
               <button
                 disabled={page === 1}
                 onClick={() => setPage((p) => p - 1)}
-                className="rounded-lg border border-[#c4c6cf] bg-white px-3 py-1.5 text-sm font-medium text-[#191c1e] hover:border-[#002046] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="rounded-lg border border-[#c4c6cf] bg-white px-3 py-1.5 text-sm font-medium text-[#191c1e] hover:border-[#023293] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 Prev
               </button>
               <button
                 disabled={page * PAGE_SIZE >= total}
                 onClick={() => setPage((p) => p + 1)}
-                className="rounded-lg border border-[#c4c6cf] bg-white px-3 py-1.5 text-sm font-medium text-[#191c1e] hover:border-[#002046] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="rounded-lg border border-[#c4c6cf] bg-white px-3 py-1.5 text-sm font-medium text-[#191c1e] hover:border-[#023293] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 Next
               </button>

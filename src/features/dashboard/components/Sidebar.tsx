@@ -128,7 +128,11 @@ export function Sidebar() {
   const role = useAppSelector((s) => s.auth.role);
   const [logoutUser] = useLogoutUserMutation();
 
-  const isTenantAdmin = role === 'chamber_admin' || role === 'staff_operator' || role === 'chamber_executive';
+  // GET /tenants/me is chamber_admin/super_admin only on the backend (chamberAdminOrSuperAdmin
+  // middleware) — super_admin doesn't need it here (orgName below hardcodes their label), so
+  // only fetch for chamber_admin. staff_operator/chamber_executive used to be included here too
+  // and got a 403 on every single page load for a fetch they could never use.
+  const isTenantAdmin = role === 'chamber_admin';
   const { data: myTenant } = useGetMyTenantQuery(undefined, { skip: !isTenantAdmin });
 
   const orgName = role === 'super_admin' ? 'Chamberlink ERP' : (myTenant?.name ?? 'NACCIMA');
@@ -143,7 +147,9 @@ export function Sidebar() {
     navigate('/login');
   };
 
-  const initials = [user?.firstName?.[0], user?.lastName?.[0]].filter(Boolean).join('').toUpperCase() || '??';
+  const initials = [user?.firstName?.[0], user?.lastName?.[0]].filter(Boolean).join('').toUpperCase()
+    || user?.email?.[0]?.toUpperCase()
+    || '?';
 
   const navRef = useRef<HTMLElement>(null);
   const [canScrollMore, setCanScrollMore] = useState(false);
@@ -160,13 +166,22 @@ export function Sidebar() {
   }, [visibleItems]);
 
   return (
-    <aside className="flex h-full w-60 flex-col" style={{ background: '#002046' }}>
-      {/* Logo */}
-      <div className="px-5 pt-6 pb-5 border-b border-white/10">
-        <p className="text-white font-bold text-lg tracking-tight leading-none">{orgName}</p>
-        <p className="text-white/50 text-xs mt-1 font-medium">
-          {role ? (portalLabel[role] ?? 'Portal') : 'Digital Gateway'}
-        </p>
+    <aside className="flex h-full w-60 flex-col" style={{ background: '#023293' }}>
+      {/* Logo — white backdrop plate so the multi-color seal doesn't wash out against the blue nav */}
+      <div className="flex items-center gap-3 px-5 pt-6 pb-5 border-b border-white/10">
+        <div className="h-10 w-10 rounded-full bg-white flex items-center justify-center flex-shrink-0 shadow-sm">
+          <img
+            src="/naccima-seal.png"
+            alt="NACCIMA seal"
+            className="h-9 w-9 object-contain"
+          />
+        </div>
+        <div className="min-w-0">
+          <p className="text-white font-bold text-sm leading-tight truncate">{orgName}</p>
+          <p className="text-white/50 text-xs mt-0.5 font-medium truncate">
+            {role ? (portalLabel[role] ?? 'Portal') : 'Digital Gateway'}
+          </p>
+        </div>
       </div>
 
       {/* Nav — relative wrapper enables the fade overlay */}
@@ -211,7 +226,7 @@ export function Sidebar() {
         {canScrollMore && (
           <div
             className="pointer-events-none absolute bottom-0 left-0 right-0 h-10"
-            style={{ background: 'linear-gradient(to bottom, transparent, #002046)' }}
+            style={{ background: 'linear-gradient(to bottom, transparent, #023293)' }}
           />
         )}
       </div>
