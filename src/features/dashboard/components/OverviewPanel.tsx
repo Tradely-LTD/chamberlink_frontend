@@ -2,10 +2,12 @@ import { useAppSelector } from '@shared/hooks/useAppDispatch';
 import { useGetMemberProfileQuery } from '../dashboardApi';
 import { MembershipStatusCard } from './MembershipStatusCard';
 import { RecentActivityPlaceholder } from './RecentActivityPlaceholder';
+import { isNoActiveChamberError } from '@shared/utils';
 
 export function OverviewPanel() {
   const user = useAppSelector((s) => s.auth.user);
-  const { data: profile, isLoading, isError, refetch } = useGetMemberProfileQuery();
+  const { data: profile, isLoading, isError, error, refetch } = useGetMemberProfileQuery();
+  const noConnection = isNoActiveChamberError(error);
 
   return (
     <div className="p-6 max-w-4xl">
@@ -19,7 +21,8 @@ export function OverviewPanel() {
         <MembershipStatusCard
           profile={profile}
           isLoading={isLoading}
-          error={isError}
+          error={isError && !noConnection}
+          noConnection={noConnection}
           onRetry={refetch}
         />
         <RecentActivityPlaceholder />

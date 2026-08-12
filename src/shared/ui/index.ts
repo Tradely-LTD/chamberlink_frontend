@@ -7,3 +7,4 @@ export { Toast } from './Toast';
 export { ErrorBanner } from './ErrorBanner';
 export { Badge } from './Badge';
 export { PageLoader } from './PageLoader';
+export { EmptyState } from './EmptyState';

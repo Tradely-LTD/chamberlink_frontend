@@ -4,6 +4,7 @@ import { useGetMemberProfileQuery } from '@features/dashboard/dashboardApi';
 import { useGetEcoCertificatesQuery } from '@features/eco/ecoApi';
 import { useGetAnalyticsSummaryQuery } from '@features/analytics/analyticsApi';
 import { SkeletonCard } from '@shared/ui/SkeletonCard';
+import { isNoActiveChamberError } from '@shared/utils';
 
 const ADMIN_ROLES = ['chamber_admin', 'super_admin', 'staff_operator'];
 const EXECUTIVE_ROLE = 'chamber_executive';
@@ -137,8 +138,9 @@ function AdminOverview() {
 
 function MemberOverview() {
   const user = useAppSelector((s) => s.auth.user);
-  const { data: profile, isLoading: profileLoading, isError: profileError, refetch } = useGetMemberProfileQuery();
+  const { data: profile, isLoading: profileLoading, isError: profileError, error: profileErrorObj, refetch } = useGetMemberProfileQuery();
   const { data: certificates, isLoading: ecoLoading } = useGetEcoCertificatesQuery();
+  const noChamberConnection = isNoActiveChamberError(profileErrorObj);
 
   const pendingEco = certificates?.filter((c) =>
     ['submitted', 'under_review', 'pending_payment'].includes(c.status)
@@ -190,6 +192,14 @@ function MemberOverview() {
         {/* Membership card */}
         {profileLoading ? (
           <SkeletonCard className="h-28" />
+        ) : noChamberConnection ? (
+          <div className="bg-white rounded-xl border border-dashed border-[#c4c6cf] p-5">
+            <p className="text-xs font-semibold uppercase tracking-wide text-[#74777f] mb-2">Membership</p>
+            <p className="text-sm text-[#191c1e] mb-2">You&apos;re not connected to a chamber yet.</p>
+            <Link to="/dashboard/connections" className="text-xs font-medium text-[#023293] hover:underline">
+              Connect a chamber
+            </Link>
+          </div>
         ) : profileError ? (
           <div className="rounded-xl border border-[#ffdad6] bg-[#fff8f7] p-5 flex items-center justify-between">
             <p className="text-sm text-[#93000a]">Failed to load membership status.</p>

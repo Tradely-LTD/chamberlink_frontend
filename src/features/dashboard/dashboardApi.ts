@@ -56,6 +56,7 @@ export const dashboardApi = emptyApi.injectEndpoints({
         logoKey: res.data.profile.logoKey,
         logoUrl: res.data.profile.logoUrl,
       }),
+      providesTags: ['Membership'],
     }),
   }),
 });

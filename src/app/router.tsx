@@ -11,6 +11,7 @@ import { DashboardShell } from '@features/dashboard/components/DashboardShell';
 import { OverviewPage } from '@pages/dashboard/OverviewPage';
 import { ProfilePage } from '@pages/dashboard/ProfilePage';
 import { MembershipPage } from '@pages/dashboard/MembershipPage';
+import { MyConnectionsPage } from '@pages/dashboard/MyConnectionsPage';
 import { EcoPage } from '@pages/dashboard/EcoPage';
 import { EcoApplyPage } from '@pages/dashboard/EcoApplyPage';
 import { EcoDetailPage } from '@pages/dashboard/EcoDetailPage';
@@ -45,6 +46,11 @@ export const router = createBrowserRouter([
         children: [
           { path: '/dashboard', element: <OverviewPage /> },
           { path: '/dashboard/profile', element: <ProfilePage /> },
+
+          // Chamber connections — every authenticated user (no role restriction on
+          // the backend; e.g. a staff_operator can also personally be a member of
+          // a different chamber).
+          { path: '/dashboard/connections', element: <MyConnectionsPage /> },
 
           // Member-only routes (members + patron members)
           {

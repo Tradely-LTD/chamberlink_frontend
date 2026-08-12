@@ -44,6 +44,7 @@ export const membershipApi = emptyApi.injectEndpoints({
         expiresAt: res.data.profile.expiresAt,
         memberId: res.data.profile.memberId,
       }),
+      providesTags: ['Membership'],
     }),
   }),
 });
