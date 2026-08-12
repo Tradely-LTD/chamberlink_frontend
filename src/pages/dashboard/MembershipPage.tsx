@@ -1,10 +1,14 @@
 import { useState } from 'react';
 import { useGetMembershipTiersQuery, useGetMembershipStatusQuery } from '@features/membership/membershipApi';
+import { ConnectChamberModal } from '@features/membership/components/ConnectChamberModal';
 import { emptyApi } from '@shared/api/emptyApi';
 import { SkeletonCard } from '@shared/ui/SkeletonCard';
 import { ErrorBanner } from '@shared/ui/ErrorBanner';
+import { EmptyState } from '@shared/ui/EmptyState';
 import { Button } from '@shared/ui/Button';
 import { Spinner } from '@shared/ui/Spinner';
+import { Toast } from '@shared/ui/Toast';
+import { isNoActiveChamberError } from '@shared/utils';
 
 interface PaymentResult { authorizationUrl: string; reference: string; }
 interface ApiResponse<T> { success: boolean; data: T; }
@@ -39,11 +43,13 @@ const statusColors: Record<string, string> = {
 };
 
 export function MembershipPage() {
-  const { data: status, isLoading: statusLoading, isError: statusError } = useGetMembershipStatusQuery();
+  const { data: status, isLoading: statusLoading, isError: statusError, error: statusErrorObj } = useGetMembershipStatusQuery();
   const { data: tiers, isLoading: tiersLoading } = useGetMembershipTiersQuery();
   const [initiateDues, { isLoading: payLoading }] = useInitiateDuesPaymentMutation();
   const [payError, setPayError] = useState<string | null>(null);
   const [payingTierId, setPayingTierId] = useState<string | null>(null);
+  const [connectModalOpen, setConnectModalOpen] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   const handlePay = async (tierId?: string) => {
     setPayError(null);
@@ -58,7 +64,31 @@ export function MembershipPage() {
   };
 
   if (statusLoading || tiersLoading) return <div className="p-6"><SkeletonCard /><div className="mt-4"><SkeletonCard /></div></div>;
-  if (statusError) return <div className="p-6"><ErrorBanner message="Failed to load membership information." /></div>;
+
+  if (statusError) {
+    if (isNoActiveChamberError(statusErrorObj)) {
+      return (
+        <div className="p-6 max-w-3xl">
+          <h1 className="text-2xl font-semibold text-[#221a0f] mb-1">Membership</h1>
+          <p className="text-sm text-[#8A7E6E] mb-6">View your membership status and available tiers.</p>
+          <EmptyState
+            icon="corporate_fare"
+            title="You're not connected to a chamber yet"
+            message="Connect to a chamber to view your membership status, pay dues, and access member benefits."
+            action={<Button onClick={() => setConnectModalOpen(true)}>Connect a chamber</Button>}
+          />
+          {connectModalOpen && (
+            <ConnectChamberModal
+              onClose={() => setConnectModalOpen(false)}
+              onConnected={(message) => setToast({ message, type: 'success' })}
+            />
+          )}
+          {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+        </div>
+      );
+    }
+    return <div className="p-6"><ErrorBanner message="Failed to load membership information." /></div>;
+  }
 
   const expiresAt = status?.expiresAt ? new Date(status.expiresAt).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'long', year: 'numeric' }) : null;
   const memberSince = status?.memberSince ? new Date(status.memberSince).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'long', year: 'numeric' }) : null;

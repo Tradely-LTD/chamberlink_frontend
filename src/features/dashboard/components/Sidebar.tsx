@@ -24,6 +24,7 @@ const memberNavItems: NavItem[] = [
   { label: 'Membership',          to: '/dashboard/membership',          icon: 'verified_user' },
   { label: 'Trade Corridors',     to: '/dashboard/trade-corridors',     icon: 'route' },
   { label: 'Exporter Visibility', to: '/dashboard/exporter-visibility', icon: 'visibility' },
+  { label: 'My Chambers',         to: '/dashboard/connections',         icon: 'corporate_fare' },
   { label: 'My Profile',          to: '/dashboard/profile',             icon: 'manage_accounts' },
 ];
 
@@ -34,6 +35,7 @@ const institutionalNavItems: NavItem[] = [
   { label: 'Exporter Visibility', to: '/dashboard/exporter-visibility', icon: 'visibility' },
   { label: 'Trade Corridors',     to: '/dashboard/trade-corridors',     icon: 'route' },
   { label: 'Trade Data API',      to: '/dashboard/trade-data-api',      icon: 'api' },
+  { label: 'My Chambers',         to: '/dashboard/connections',         icon: 'corporate_fare' },
   { label: 'My Profile',          to: '/dashboard/profile',             icon: 'manage_accounts' },
 ];
 
@@ -47,6 +49,7 @@ const staffNavItems: NavItem[] = [
   { label: 'Academy',             to: '/dashboard/academy',             icon: 'school' },
   { label: 'Exporter Visibility', to: '/dashboard/exporter-visibility', icon: 'visibility' },
   { label: 'Export Documents',    to: '/dashboard/export-documents',    icon: 'receipt_long' },
+  { label: 'My Chambers',         to: '/dashboard/connections',         icon: 'corporate_fare' },
   { label: 'My Profile',          to: '/dashboard/profile',             icon: 'manage_accounts' },
 ];
 
@@ -62,6 +65,7 @@ const chamberAdminNavItems: NavItem[] = [
   { label: 'Exporter Visibility', to: '/dashboard/exporter-visibility', icon: 'visibility' },
   { label: 'Export Documents',    to: '/dashboard/export-documents',    icon: 'receipt_long' },
   { label: 'Academy',             to: '/dashboard/academy',             icon: 'school' },
+  { label: 'My Chambers',         to: '/dashboard/connections',         icon: 'corporate_fare' },
   { label: 'My Profile',          to: '/dashboard/profile',             icon: 'manage_accounts' },
 ];
 
@@ -73,6 +77,7 @@ const executiveNavItems: NavItem[] = [
   { label: 'Audit Log',        to: '/dashboard/admin',        icon: 'history' },
   { label: 'eCO Queue',        to: '/dashboard/eco',          icon: 'task_alt' },
   { label: 'Trade Fair',       to: '/dashboard/trade-fair',   icon: 'storefront' },
+  { label: 'My Chambers',      to: '/dashboard/connections',  icon: 'corporate_fare' },
   { label: 'My Profile',       to: '/dashboard/profile',      icon: 'manage_accounts' },
 ];
 
@@ -89,6 +94,7 @@ const superAdminNavItems: NavItem[] = [
   { label: 'Export Documents',    to: '/dashboard/export-documents',    icon: 'receipt_long' },
   { label: 'Academy',             to: '/dashboard/academy',             icon: 'school' },
   { label: 'White-Label',         to: '/dashboard/white-label',         icon: 'corporate_fare' },
+  { label: 'My Chambers',         to: '/dashboard/connections',         icon: 'corporate_fare' },
   { label: 'My Profile',          to: '/dashboard/profile',             icon: 'manage_accounts' },
 ];
 

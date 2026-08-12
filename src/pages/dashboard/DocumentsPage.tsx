@@ -1,8 +1,10 @@
 import { useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { emptyApi } from '@shared/api/emptyApi';
 import { SkeletonCard } from '@shared/ui/SkeletonCard';
 import { ErrorBanner } from '@shared/ui/ErrorBanner';
 import { Button } from '@shared/ui/Button';
+import { isNoActiveChamberError } from '@shared/utils';
 
 const ALLOWED_TYPES = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
@@ -277,11 +279,24 @@ function DeleteButton({ docId, docName }: { docId: string; docName: string }) {
 
 // Exported so ExportDocumentsPage can embed it as a tab
 export function DocumentLibraryView() {
-  const { data: docs, isLoading, isError } = useGetDocumentsQuery();
+  const { data: docs, isLoading, isError, error } = useGetDocumentsQuery();
   const [showUpload, setShowUpload] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
+  const noConnection = isNoActiveChamberError(error);
 
   const documents = docs ?? [];
+
+  if (!isLoading && noConnection) {
+    return (
+      <div className="rounded-xl border border-dashed border-[#bec9bf]/60 bg-[#f7f9f7] p-8 text-center">
+        <p className="text-sm font-semibold text-[#221a0f] mb-1">You&apos;re not connected to a chamber yet</p>
+        <p className="text-sm text-[#8A7E6E] mb-4">Connect to a chamber to upload and manage your documents.</p>
+        <Link to="/dashboard/connections" className="text-sm font-medium text-[#023293] hover:underline">
+          Connect a chamber
+        </Link>
+      </div>
+    );
+  }
 
   const handleSuccess = () => {
     setShowUpload(false);

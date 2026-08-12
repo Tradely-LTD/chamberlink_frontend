@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import type { MemberProfile } from '@entities/user/types';
 import { SkeletonCard } from '@shared/ui/SkeletonCard';
 
@@ -19,6 +20,12 @@ interface Props {
   profile?: MemberProfile;
   isLoading: boolean;
   error?: boolean;
+  /**
+   * True when the failure is specifically "no active chamber connection" —
+   * an expected, normal state for a brand-new ChamberLink identity, not a
+   * real error. Renders a "connect a chamber" prompt instead of a red banner.
+   */
+  noConnection?: boolean;
   onRetry?: () => void;
 }
 
@@ -26,9 +33,24 @@ export function MembershipStatusCard({
   profile,
   isLoading,
   error,
+  noConnection,
   onRetry,
 }: Props) {
   if (isLoading) return <SkeletonCard className="h-28" />;
+
+  if (noConnection) {
+    return (
+      <div className="rounded-xl border border-dashed border-[#bec9bf]/60 bg-[#f7f9f7] p-5">
+        <p className="text-xs font-medium text-[#8A7E6E] uppercase tracking-wide mb-2">
+          Membership Status
+        </p>
+        <p className="text-sm text-[#221a0f] mb-2">You&apos;re not connected to a chamber yet.</p>
+        <Link to="/dashboard/connections" className="text-sm font-medium text-[#023293] hover:underline">
+          Connect a chamber
+        </Link>
+      </div>
+    );
+  }
 
   if (error) {
     return (
