@@ -75,7 +75,7 @@ function ReviewNotesModal({
         </div>
         <div className="p-6">
           <p className="text-sm text-[#8A7E6E] mb-4">
-            Application by <span className="font-medium text-[#221a0f]">{item.applicantName}</span> — {item.cargoDescription} → {item.destinationCountry}
+            Application by <span className="font-medium text-[#221a0f]">{item.companyName}</span> — {item.solidMineralName} → {item.destinationCountry}
           </p>
           <div className="mb-4">
             <label className="block text-xs font-semibold text-[#44474e] mb-1">
@@ -286,7 +286,7 @@ function AdminEcoQueue({ isReadOnly }: { isReadOnly: boolean }) {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-[#bec9bf]/40 bg-[#fdf8f3]">
-                  {['Applicant', 'Cargo / Description', 'Destination', 'Status', 'Submitted', 'Actions'].map((h) => (
+                  {['Applicant', 'Solid Mineral', 'Destination', 'Status', 'Submitted', 'Actions'].map((h) => (
                     <th key={h} className="text-left px-4 py-3 font-medium text-[#8A7E6E] text-xs uppercase tracking-wide">{h}</th>
                   ))}
                 </tr>
@@ -295,12 +295,11 @@ function AdminEcoQueue({ isReadOnly }: { isReadOnly: boolean }) {
                 {items.map((item) => (
                   <tr key={item.id} className="hover:bg-[#fdf8f3] transition-colors">
                     <td className="px-4 py-3">
-                      <p className="font-medium text-[#221a0f]">{item.applicantName}</p>
-                      {item.memberId && <p className="text-xs text-[#8A7E6E] font-mono">{item.memberId}</p>}
+                      <p className="font-medium text-[#221a0f]">{item.companyName}</p>
+                      {item.membershipId && <p className="text-xs text-[#8A7E6E] font-mono">{item.membershipId}</p>}
                     </td>
                     <td className="px-4 py-3">
-                      <p className="text-[#221a0f] max-w-[200px] truncate">{item.cargoDescription}</p>
-                      <p className="text-xs text-[#8A7E6E]">{item.exporterName}</p>
+                      <p className="text-[#221a0f] max-w-[200px] truncate">{item.solidMineralName}</p>
                     </td>
                     <td className="px-4 py-3 text-[#221a0f]">{item.destinationCountry}</td>
                     <td className="px-4 py-3">
@@ -571,11 +570,11 @@ function MemberEcoView() {
                     <span className="font-medium text-[#44474e]">To:</span> {cert.destinationCountry || '—'}
                   </span>
                   <span className="text-xs text-[#8A7E6E] truncate max-w-xs">
-                    <span className="font-medium text-[#44474e]">Cargo:</span> {cert.cargoDescription || '—'}
+                    <span className="font-medium text-[#44474e]">Mineral:</span> {cert.solidMineralName || '—'}
                   </span>
                   {cert.applicationFee != null && cert.applicationFee > 0 && (
                     <span className="text-xs text-[#8A7E6E]">
-                      <span className="font-medium text-[#44474e]">Fee:</span> ₦{cert.applicationFee.toLocaleString()}
+                      <span className="font-medium text-[#44474e]">Fee:</span> ₦{cert.applicationFee}
                     </span>
                   )}
                 </div>

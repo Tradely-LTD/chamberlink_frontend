@@ -16,48 +16,53 @@ export type ECertStatus =
   | 'rejected'
   | 'revision_requested';
 
+export interface ChamberOption {
+  id: string;
+  name: string;
+}
+
 export interface EcoQueueItem {
   id: string;
   certificateNumber?: string;
-  applicantName: string;
-  exporterName: string;
-  cargoDescription: string;
+  companyName: string;
+  solidMineralName: string;
   destinationCountry: string;
   status: ECertStatus;
   createdAt: string;
-  memberId?: string;
+  membershipId?: string;
   rejectionReason?: string;
   revisionNotes?: string;
   certificatePdfUrl?: string | null;
 }
 
-interface NestedQueueItem {
-  cert: {
-    id: string; certificateNumber?: string; exporterName: string;
-    cargoDescription: string; destinationCountry: string; status: ECertStatus;
-    createdAt: string; rejectionReason?: string; revisionNotes?: string;
-    certificatePdfUrl?: string | null;
-  };
-  member: { firstName: string; lastName: string; memberId: string };
-}
-
 export interface ECertificate {
   id: string;
   certificateNumber?: string;
-  memberId: string;
+  memberId?: string;
   applicantUserId: string;
-  hsCode: string;
-  cargoDescription: string;
-  cargoWeight: number;
-  shippingMethod: string;
+
+  // Product details
+  solidMineralName: string;
+  descriptionOfGoods: string;
+  originOfGoods: string;
   destinationCountry: string;
-  destinationPort?: string;
-  exporterName: string;
-  exporterAddress: string;
-  consigneeName?: string;
-  consigneeAddress?: string;
+  batchIdNo?: string;
+
+  // Company details
+  isLicenseOwner: boolean;
+  miningLicenseNo?: string;
+  companyName: string;
+  companyAddress: string;
+  companyEmail?: string;
+  companyPhone?: string;
+
+  // Commercial information
+  invoiceTotal: number;
+  isChamberMember: boolean;
+  membershipId?: string;
+  chamberOfCommerceId: string;
+
   status: ECertStatus;
-  isExpedited: boolean;
   applicationFee?: number;
   paymentRef?: string;
   certificatePdfUrl?: string;
@@ -70,25 +75,31 @@ export interface ECertificate {
 }
 
 export interface NewECertPayload {
-  hsCode: string;
-  cargoDescription: string;
-  cargoWeight: number;
-  shippingMethod: 'sea' | 'air' | 'road' | 'rail';
+  solidMineralName: string;
+  descriptionOfGoods: string;
+  originOfGoods: string;
   destinationCountry: string;
-  destinationPort?: string;
-  exporterName: string;
-  exporterAddress: string;
-  consigneeName?: string;
-  consigneeAddress?: string;
-  isExpedited?: boolean;
-  // Document library IDs (alternative to file upload)
-  commercialInvoiceDocId?: string;
-  packingListDocId?: string;
-  additionalDocIds?: string[];
+  batchIdNo?: string;
+
+  isLicenseOwner: boolean;
+  miningLicenseNo?: string;
+  companyName: string;
+  companyAddress: string;
+  companyEmail?: string;
+  companyPhone?: string;
+
+  invoiceTotal: number;
+  isChamberMember: boolean;
+  membershipId?: string;
+  chamberOfCommerceId: string;
 }
 
 export const ecoApi = emptyApi.injectEndpoints({
   endpoints: (builder) => ({
+    getEcoChambers: builder.query<ChamberOption[], void>({
+      query: () => '/eco/chambers',
+      transformResponse: (res: ApiResponse<ChamberOption[]>) => res.data,
+    }),
     getEcoCertificates: builder.query<ECertificate[], void>({
       query: () => '/eco/my',
       transformResponse: (res: ApiResponse<ECertificate[]>) => res.data,
@@ -103,16 +114,12 @@ export const ecoApi = emptyApi.injectEndpoints({
       query: (payload) => ({
         url: '/eco',
         method: 'POST',
-        body: {
-          ...payload,
-          cargoWeight: Number(payload.cargoWeight),
-          isExpedited: Boolean(payload.isExpedited),
-        },
+        body: payload,
       }),
       transformResponse: (res: ApiResponse<ECertificate>) => res.data,
       invalidatesTags: ['ECO'],
     }),
-    // Used when the member is uploading files (multipart/form-data)
+    // Used when the applicant is uploading files (multipart/form-data)
     createEcoCertificateWithFiles: builder.mutation<ECertificate, FormData>({
       query: (formData) => ({
         url: '/eco',
@@ -124,7 +131,7 @@ export const ecoApi = emptyApi.injectEndpoints({
       invalidatesTags: ['ECO'],
     }),
     // Save a draft (partial fields, no validation)
-    saveDraftEco: builder.mutation<ECertificate, FormData | NewECertPayload>({
+    saveDraftEco: builder.mutation<ECertificate, FormData | Partial<NewECertPayload>>({
       query: (body) => body instanceof FormData
         ? { url: '/eco/draft', method: 'POST', body, formData: true }
         : { url: '/eco/draft', method: 'POST', body },
@@ -152,21 +159,7 @@ export const ecoApi = emptyApi.injectEndpoints({
         url: '/eco/admin/queue',
         params: { ...(status ? { status } : {}), page, limit: 50 },
       }),
-      transformResponse: (res: ApiResponse<NestedQueueItem[]>) =>
-        res.data.map((item) => ({
-          id: item.cert.id,
-          certificateNumber: item.cert.certificateNumber,
-          applicantName: `${item.member.firstName} ${item.member.lastName}`,
-          exporterName: item.cert.exporterName,
-          cargoDescription: item.cert.cargoDescription,
-          destinationCountry: item.cert.destinationCountry,
-          status: item.cert.status,
-          createdAt: item.cert.createdAt,
-          memberId: item.member.memberId,
-          rejectionReason: item.cert.rejectionReason,
-          revisionNotes: item.cert.revisionNotes,
-          certificatePdfUrl: item.cert.certificatePdfUrl,
-        })),
+      transformResponse: (res: ApiResponse<EcoQueueItem[]>) => res.data,
       providesTags: ['EcoQueue'],
     }),
     reviewEcoCert: builder.mutation<void, { id: string; action: 'start_review' | 'approve' | 'reject' | 'request_revision'; notes?: string }>({
@@ -197,6 +190,7 @@ export const ecoApi = emptyApi.injectEndpoints({
 });
 
 export const {
+  useGetEcoChambersQuery,
   useGetEcoCertificatesQuery,
   useGetEcoCertificateQuery,
   useCreateEcoCertificateMutation,
