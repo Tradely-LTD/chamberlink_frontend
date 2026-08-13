@@ -7,102 +7,44 @@ import {
   useUpdateEcoDraftMutation,
   useSubmitEcoDraftMutation,
   useGetEcoCertificateQuery,
+  useGetEcoChambersQuery,
 } from '@features/eco/ecoApi';
 import type { NewECertPayload } from '@features/eco/ecoApi';
 import { Input } from '@shared/ui/Input';
 import { Button } from '@shared/ui/Button';
 import { ErrorBanner } from '@shared/ui/ErrorBanner';
-import { emptyApi } from '@shared/api/emptyApi';
-import type { DocumentCategory } from './DocumentsPage';
 
-const STEPS = ['Cargo Details', 'Parties & Route', 'Supporting Documents', 'Review & Submit'];
+const STEPS = ['Product Details', 'Company Details', 'Commercial Information', 'Compliance', 'Review & Submit'];
 
-const SHIPPING_METHODS: { label: string; value: NewECertPayload['shippingMethod'] }[] = [
-  { label: 'Sea Freight', value: 'sea' },
-  { label: 'Air Freight', value: 'air' },
-  { label: 'Road Transport', value: 'road' },
-  { label: 'Rail Freight', value: 'rail' },
-];
+const CHAMBER_MEMBER_FEE = 0.11;
+const NON_CHAMBER_MEMBER_FEE = 0.125;
+const fmtFee = (n: number) => `₦${n.toFixed(3).replace(/0$/, '')}`;
 
-// Inline docs API for library picker
-interface LibraryDoc { id: string; name: string; category: DocumentCategory; uploadedAt: string; }
-interface DocsApiResponse { success: boolean; data: LibraryDoc[]; }
-const ecoDocsApi = emptyApi.injectEndpoints({
-  endpoints: (builder) => ({
-    getLibraryDocsForEco: builder.query<LibraryDoc[], void>({
-      query: () => '/membership/me/documents',
-      transformResponse: (res: DocsApiResponse) => res.data ?? [],
-      providesTags: ['Documents'],
-    }),
-  }),
-  overrideExisting: false,
-});
-const { useGetLibraryDocsForEcoQuery } = ecoDocsApi;
-
-type SupportingDocMode = 'library' | 'upload';
-
-function DocSlot({ label, filterCategory, selectedDocId, selectedFile, onSelectDocId, onSelectFile }: {
-  label: string; filterCategory: DocumentCategory;
-  selectedDocId: string | null; selectedFile: File | null;
-  onSelectDocId: (id: string | null) => void; onSelectFile: (file: File | null) => void;
+function FileSlot({ label, hint, file, onSelect }: {
+  label: string; hint?: string; file: File | null; onSelect: (file: File | null) => void;
 }) {
-  const { data: allDocs = [] } = useGetLibraryDocsForEcoQuery();
-  const [mode, setMode] = useState<SupportingDocMode>('library');
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const matchingDocs = allDocs.filter((d) => d.category === filterCategory);
-
   return (
     <div className="rounded-xl border border-[#bec9bf]/40 overflow-hidden">
-      <div className="px-4 py-3 bg-[#fdf8f3] border-b border-[#bec9bf]/30 flex items-center justify-between">
+      <div className="px-4 py-3 bg-[#fdf8f3] border-b border-[#bec9bf]/30">
         <p className="text-sm font-medium text-[#221a0f]">{label}</p>
-        <div className="flex items-center gap-1 bg-white rounded-lg border border-[#bec9bf]/40 p-0.5">
-          {(['library', 'upload'] as const).map((m) => (
-            <button key={m} onClick={() => { setMode(m); onSelectDocId(null); onSelectFile(null); }}
-              className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${mode === m ? 'bg-[#023293] text-white' : 'text-[#8A7E6E] hover:text-[#221a0f]'}`}>
-              {m === 'library' ? 'From Library' : 'Upload New'}
-            </button>
-          ))}
-        </div>
+        {hint && <p className="text-xs text-[#8A7E6E] mt-0.5">{hint}</p>}
       </div>
       <div className="p-4">
-        {mode === 'library' ? (
-          matchingDocs.length === 0 ? (
-            <div className="text-center py-4">
-              <p className="text-sm text-[#8A7E6E]">No {label.toLowerCase()} in your library.</p>
-              <button onClick={() => setMode('upload')} className="mt-2 text-xs text-[#023293] hover:underline font-medium">Upload one now</button>
-            </div>
+        <input ref={fileInputRef} type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={(e) => onSelect(e.target.files?.[0] ?? null)} />
+        <button type="button" onClick={() => fileInputRef.current?.click()}
+          className="w-full rounded-lg border-2 border-dashed border-[#bec9bf]/60 px-4 py-5 text-center hover:border-[#023293] transition-colors">
+          {file ? (
+            <div><p className="text-sm font-medium text-[#221a0f]">{file.name}</p><p className="text-xs text-[#8A7E6E] mt-0.5">{(file.size / 1024).toFixed(0)} KB</p></div>
           ) : (
-            <div className="space-y-2">
-              {matchingDocs.map((doc) => (
-                <label key={doc.id} className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${selectedDocId === doc.id ? 'border-[#023293] bg-[#f0faf4]' : 'border-[#bec9bf]/40 hover:border-[#023293]/40'}`}>
-                  <input type="radio" name={`doc-${filterCategory}`} value={doc.id} checked={selectedDocId === doc.id} onChange={() => onSelectDocId(doc.id)} className="text-[#023293] focus:ring-[#023293]/30" />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-[#221a0f] truncate">{doc.name}</p>
-                    <p className="text-xs text-[#8A7E6E]">{new Date(doc.uploadedAt).toLocaleDateString('en-NG', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
-                  </div>
-                  {selectedDocId === doc.id && <svg className="w-4 h-4 text-[#023293] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>}
-                </label>
-              ))}
-              {selectedDocId && <button onClick={() => onSelectDocId(null)} className="text-xs text-[#8A7E6E] hover:text-[#221a0f]">Clear selection</button>}
+            <div>
+              <svg className="w-5 h-5 mx-auto text-[#8A7E6E] mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+              <p className="text-sm text-[#8A7E6E]">Click to select file</p>
+              <p className="text-xs text-[#8A7E6E] mt-0.5">PDF, JPEG, PNG · Max 10MB</p>
             </div>
-          )
-        ) : (
-          <div>
-            <input ref={fileInputRef} type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={(e) => onSelectFile(e.target.files?.[0] ?? null)} />
-            <button type="button" onClick={() => fileInputRef.current?.click()}
-              className="w-full rounded-lg border-2 border-dashed border-[#bec9bf]/60 px-4 py-5 text-center hover:border-[#023293] transition-colors">
-              {selectedFile ? (
-                <div><p className="text-sm font-medium text-[#221a0f]">{selectedFile.name}</p><p className="text-xs text-[#8A7E6E] mt-0.5">{(selectedFile.size / 1024).toFixed(0)} KB</p></div>
-              ) : (
-                <div>
-                  <svg className="w-5 h-5 mx-auto text-[#8A7E6E] mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
-                  <p className="text-sm text-[#8A7E6E]">Click to select file</p>
-                  <p className="text-xs text-[#8A7E6E] mt-0.5">PDF, JPEG, PNG · Max 10MB</p>
-                </div>
-              )}
-            </button>
-          </div>
-        )}
+          )}
+        </button>
+        {file && <button onClick={() => onSelect(null)} className="mt-2 text-xs text-[#8A7E6E] hover:text-[#221a0f]">Remove</button>}
       </div>
     </div>
   );
@@ -114,6 +56,7 @@ export function EcoApplyPage() {
   const isEditing = !!certId;
 
   const { data: existingCert } = useGetEcoCertificateQuery(certId ?? '', { skip: !certId });
+  const { data: chambers = [] } = useGetEcoChambersQuery();
 
   const [createEco, { isLoading: isCreating }] = useCreateEcoCertificateMutation();
   const [createEcoWithFiles, { isLoading: isCreatingFiles }] = useCreateEcoCertificateWithFilesMutation();
@@ -128,76 +71,78 @@ export function EcoApplyPage() {
   const [currentDraftId, setCurrentDraftId] = useState<string | null>(certId ?? null);
 
   const [form, setForm] = useState({
-    hsCode: '', cargoDescription: '', cargoWeight: '', shippingMethod: 'sea' as NewECertPayload['shippingMethod'],
-    destinationCountry: '', destinationPort: '', exporterName: '', exporterAddress: '',
-    consigneeName: '', consigneeAddress: '', isExpedited: false,
+    solidMineralName: '', descriptionOfGoods: '', originOfGoods: '', destinationCountry: '', batchIdNo: '',
+    isLicenseOwner: false, miningLicenseNo: '', companyName: '', companyAddress: '', companyEmail: '', companyPhone: '',
+    invoiceTotal: '', isChamberMember: false, membershipId: '', chamberOfCommerceId: '',
   });
 
-  const [commercialInvoiceDocId, setCommercialInvoiceDocId] = useState<string | null>(null);
-  const [commercialInvoiceFile, setCommercialInvoiceFile] = useState<File | null>(null);
-  const [packingListDocId, setPackingListDocId] = useState<string | null>(null);
-  const [packingListFile, setPackingListFile] = useState<File | null>(null);
+  const [invoiceFile, setInvoiceFile] = useState<File | null>(null);
+  const [signatureFile, setSignatureFile] = useState<File | null>(null);
+  const [cacFile, setCacFile] = useState<File | null>(null);
+  const [nepcFile, setNepcFile] = useState<File | null>(null);
 
   // Pre-populate form when editing existing draft/revision_requested
   useEffect(() => {
     if (!existingCert) return;
     setForm({
-      hsCode: existingCert.hsCode ?? '',
-      cargoDescription: existingCert.cargoDescription ?? '',
-      cargoWeight: existingCert.cargoWeight ? String(existingCert.cargoWeight) : '',
-      shippingMethod: (existingCert.shippingMethod as NewECertPayload['shippingMethod']) ?? 'sea',
+      solidMineralName: existingCert.solidMineralName ?? '',
+      descriptionOfGoods: existingCert.descriptionOfGoods ?? '',
+      originOfGoods: existingCert.originOfGoods ?? '',
       destinationCountry: existingCert.destinationCountry ?? '',
-      destinationPort: existingCert.destinationPort ?? '',
-      exporterName: existingCert.exporterName ?? '',
-      exporterAddress: existingCert.exporterAddress ?? '',
-      consigneeName: existingCert.consigneeName ?? '',
-      consigneeAddress: existingCert.consigneeAddress ?? '',
-      isExpedited: existingCert.isExpedited ?? false,
+      batchIdNo: existingCert.batchIdNo ?? '',
+      isLicenseOwner: existingCert.isLicenseOwner ?? false,
+      miningLicenseNo: existingCert.miningLicenseNo ?? '',
+      companyName: existingCert.companyName ?? '',
+      companyAddress: existingCert.companyAddress ?? '',
+      companyEmail: existingCert.companyEmail ?? '',
+      companyPhone: existingCert.companyPhone ?? '',
+      invoiceTotal: existingCert.invoiceTotal ? String(existingCert.invoiceTotal) : '',
+      isChamberMember: existingCert.isChamberMember ?? false,
+      membershipId: existingCert.membershipId ?? '',
+      chamberOfCommerceId: existingCert.chamberOfCommerceId ?? '',
     });
   }, [existingCert]);
+
+  // Default the chamber dropdown to the first option once loaded
+  useEffect(() => {
+    if (chambers.length > 0 && !form.chamberOfCommerceId) {
+      setForm((f) => ({ ...f, chamberOfCommerceId: chambers[0].id }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chambers]);
 
   const set = <K extends keyof typeof form>(field: K, value: typeof form[K]) =>
     setForm((f) => ({ ...f, [field]: value }));
 
   const buildFormDataOrJson = () => {
-    const hasFiles = !!(commercialInvoiceFile || packingListFile);
-    if (!hasFiles) {
-      return {
-        isFormData: false,
-        body: {
-          hsCode: form.hsCode || undefined,
-          cargoDescription: form.cargoDescription || undefined,
-          cargoWeight: form.cargoWeight ? parseFloat(form.cargoWeight) : undefined,
-          shippingMethod: form.shippingMethod,
-          destinationCountry: form.destinationCountry || undefined,
-          destinationPort: form.destinationPort || undefined,
-          exporterName: form.exporterName || undefined,
-          exporterAddress: form.exporterAddress || undefined,
-          consigneeName: form.consigneeName || undefined,
-          consigneeAddress: form.consigneeAddress || undefined,
-          isExpedited: form.isExpedited,
-          commercialInvoiceDocId: commercialInvoiceDocId ?? undefined,
-          packingListDocId: packingListDocId ?? undefined,
-        } as Partial<NewECertPayload>,
-      };
-    }
+    const hasFiles = !!(invoiceFile || signatureFile || cacFile || nepcFile);
+    const jsonBody: Partial<NewECertPayload> = {
+      solidMineralName: form.solidMineralName || undefined,
+      descriptionOfGoods: form.descriptionOfGoods || undefined,
+      originOfGoods: form.originOfGoods || undefined,
+      destinationCountry: form.destinationCountry || undefined,
+      batchIdNo: form.batchIdNo || undefined,
+      isLicenseOwner: form.isLicenseOwner,
+      miningLicenseNo: form.miningLicenseNo || undefined,
+      companyName: form.companyName || undefined,
+      companyAddress: form.companyAddress || undefined,
+      companyEmail: form.companyEmail || undefined,
+      companyPhone: form.companyPhone || undefined,
+      invoiceTotal: form.invoiceTotal ? parseFloat(form.invoiceTotal) : undefined,
+      isChamberMember: form.isChamberMember,
+      membershipId: form.membershipId || undefined,
+      chamberOfCommerceId: form.chamberOfCommerceId || undefined,
+    };
+
+    if (!hasFiles) return { isFormData: false, body: jsonBody };
+
     const fd = new FormData();
-    const append = (k: string, v: string | boolean | number | undefined) => { if (v !== undefined) fd.append(k, String(v)); };
-    append('hsCode', form.hsCode);
-    append('cargoDescription', form.cargoDescription);
-    if (form.cargoWeight) append('cargoWeight', parseFloat(form.cargoWeight));
-    append('shippingMethod', form.shippingMethod);
-    append('destinationCountry', form.destinationCountry);
-    if (form.destinationPort) append('destinationPort', form.destinationPort);
-    if (form.exporterName) append('exporterName', form.exporterName);
-    if (form.exporterAddress) append('exporterAddress', form.exporterAddress);
-    if (form.consigneeName) append('consigneeName', form.consigneeName);
-    if (form.consigneeAddress) append('consigneeAddress', form.consigneeAddress);
-    append('isExpedited', form.isExpedited);
-    if (commercialInvoiceFile) fd.append('commercialInvoice', commercialInvoiceFile);
-    if (packingListFile) fd.append('packingList', packingListFile);
-    if (commercialInvoiceDocId) append('commercialInvoiceDocId', commercialInvoiceDocId);
-    if (packingListDocId) append('packingListDocId', packingListDocId);
+    const append = (k: string, v: string | boolean | number | undefined) => { if (v !== undefined && v !== '') fd.append(k, String(v)); };
+    Object.entries(jsonBody).forEach(([k, v]) => append(k, v as string | boolean | number | undefined));
+    if (invoiceFile) fd.append('invoice', invoiceFile);
+    if (signatureFile) fd.append('signature', signatureFile);
+    if (cacFile) fd.append('cac', cacFile);
+    if (nepcFile) fd.append('nepc', nepcFile);
     return { isFormData: true, body: fd };
   };
 
@@ -209,7 +154,7 @@ export function EcoApplyPage() {
         const res = await updateDraft({ certId: currentDraftId, body: isFormData ? body as FormData : body }).unwrap();
         setCurrentDraftId(res.id);
       } else {
-        const res = await saveDraftEco(isFormData ? body as FormData : body as NewECertPayload).unwrap();
+        const res = await saveDraftEco(isFormData ? body as FormData : body).unwrap();
         setCurrentDraftId(res.id);
       }
       setDraftSaved(true);
@@ -237,8 +182,13 @@ export function EcoApplyPage() {
   };
 
   const isRevisionRequested = existingCert?.status === 'revision_requested';
-  const canContinueStep0 = !!(form.hsCode && form.cargoDescription && form.cargoWeight);
-  const canContinueStep1 = !!(form.destinationCountry && form.exporterName && form.exporterAddress);
+  const canContinueStep0 = !!(form.solidMineralName && form.descriptionOfGoods && form.originOfGoods && form.destinationCountry);
+  const canContinueStep1 = !!(form.companyName && form.companyAddress && (!form.isLicenseOwner || form.miningLicenseNo));
+  const canContinueStep2 = !!(form.invoiceTotal && form.chamberOfCommerceId && (!form.isChamberMember || form.membershipId));
+  const canContinue = [canContinueStep0, canContinueStep1, canContinueStep2, true][step];
+
+  const fee = form.isChamberMember ? CHAMBER_MEMBER_FEE : NON_CHAMBER_MEMBER_FEE;
+  const chamberName = chambers.find((c) => c.id === form.chamberOfCommerceId)?.name;
 
   return (
     <div className="p-6 max-w-2xl">
@@ -251,7 +201,7 @@ export function EcoApplyPage() {
       <h1 className="text-2xl font-semibold text-[#221a0f] mb-1">
         {isRevisionRequested ? 'Resubmit Application' : isEditing ? 'Continue Draft' : 'Apply for Certificate of Origin'}
       </h1>
-      <p className="text-sm text-[#8A7E6E] mb-2">Complete all required fields to submit your eCO application.</p>
+      <p className="text-sm text-[#8A7E6E] mb-2">Solid Minerals Certificate of Origin — complete all required fields to submit your application.</p>
 
       {isRevisionRequested && existingCert?.revisionNotes && (
         <div className="mb-4 rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-800">
@@ -286,79 +236,100 @@ export function EcoApplyPage() {
       <div className="bg-white rounded-xl border border-[#bec9bf]/40 p-6">
         {step === 0 && (
           <div className="space-y-4">
-            <h2 className="font-medium text-[#221a0f] mb-4">Cargo Details</h2>
-            <Input label="HS Code *" placeholder="e.g. 0901.21" value={form.hsCode} onChange={(e) => set('hsCode', e.target.value)} />
+            <h2 className="font-medium text-[#221a0f] mb-4">Product Details</h2>
+            <Input label="Solid Mineral Name *" placeholder="e.g. Tantalite" value={form.solidMineralName} onChange={(e) => set('solidMineralName', e.target.value)} />
             <div>
-              <label className="block text-sm font-medium text-[#221a0f] mb-1.5">Cargo Description *</label>
+              <label className="block text-sm font-medium text-[#221a0f] mb-1.5">Description of Goods: Quality *</label>
               <textarea rows={3} className="w-full rounded-lg border border-[#bec9bf]/60 px-3 py-2.5 text-sm text-[#221a0f] placeholder-[#8A7E6E] focus:outline-none focus:ring-2 focus:ring-[#023293]/30 focus:border-[#023293] resize-none"
-                placeholder="Describe the goods being exported" value={form.cargoDescription} onChange={(e) => set('cargoDescription', e.target.value)} />
+                placeholder="Describe the quality/grade of the goods being exported" value={form.descriptionOfGoods} onChange={(e) => set('descriptionOfGoods', e.target.value)} />
             </div>
-            <Input label="Cargo Weight (kg) *" type="number" placeholder="e.g. 1000" value={form.cargoWeight} onChange={(e) => set('cargoWeight', e.target.value)} />
-            <div>
-              <label className="block text-sm font-medium text-[#221a0f] mb-1.5">Shipping Method *</label>
-              <select className="w-full rounded-lg border border-[#bec9bf]/60 px-3 py-2.5 text-sm text-[#221a0f] focus:outline-none focus:ring-2 focus:ring-[#023293]/30 focus:border-[#023293]"
-                value={form.shippingMethod} onChange={(e) => set('shippingMethod', e.target.value as NewECertPayload['shippingMethod'])}>
-                {SHIPPING_METHODS.map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
-              </select>
-            </div>
-            <label className="flex items-center gap-3 cursor-pointer">
-              <input type="checkbox" checked={form.isExpedited} onChange={(e) => set('isExpedited', e.target.checked)} className="w-4 h-4 rounded border-[#bec9bf] text-[#023293] focus:ring-[#023293]/30" />
-              <span className="text-sm text-[#221a0f]">Expedited processing <span className="text-[#8A7E6E]">(additional fee applies)</span></span>
-            </label>
+            <Input label="Origin of Goods *" placeholder="e.g. Jos, Plateau State" value={form.originOfGoods} onChange={(e) => set('originOfGoods', e.target.value)} />
+            <Input label="Destination Country *" placeholder="e.g. China" value={form.destinationCountry} onChange={(e) => set('destinationCountry', e.target.value)} />
+            <Input label="Batch ID/No" placeholder="Optional" value={form.batchIdNo} onChange={(e) => set('batchIdNo', e.target.value)} />
           </div>
         )}
 
         {step === 1 && (
           <div className="space-y-4">
-            <h2 className="font-medium text-[#221a0f] mb-4">Parties & Route</h2>
-            <Input label="Destination Country *" placeholder="e.g. United States" value={form.destinationCountry} onChange={(e) => set('destinationCountry', e.target.value)} />
-            <Input label="Destination Port" placeholder="e.g. Port of New York" value={form.destinationPort} onChange={(e) => set('destinationPort', e.target.value)} />
-            <Input label="Exporter Name *" placeholder="Your company name" value={form.exporterName} onChange={(e) => set('exporterName', e.target.value)} />
+            <h2 className="font-medium text-[#221a0f] mb-4">Company Details</h2>
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" checked={form.isLicenseOwner} onChange={(e) => set('isLicenseOwner', e.target.checked)} className="w-4 h-4 rounded border-[#bec9bf] text-[#023293] focus:ring-[#023293]/30" />
+              <span className="text-sm text-[#221a0f]">Are you a license owner?</span>
+            </label>
+            {form.isLicenseOwner && (
+              <Input label="Mining License No *" placeholder="License number" value={form.miningLicenseNo} onChange={(e) => set('miningLicenseNo', e.target.value)} />
+            )}
+            <Input label="Company Name *" placeholder="Your company name" value={form.companyName} onChange={(e) => set('companyName', e.target.value)} />
             <div>
-              <label className="block text-sm font-medium text-[#221a0f] mb-1.5">Exporter Address *</label>
+              <label className="block text-sm font-medium text-[#221a0f] mb-1.5">Address *</label>
               <textarea rows={2} className="w-full rounded-lg border border-[#bec9bf]/60 px-3 py-2.5 text-sm text-[#221a0f] placeholder-[#8A7E6E] focus:outline-none focus:ring-2 focus:ring-[#023293]/30 focus:border-[#023293] resize-none"
-                placeholder="Full business address" value={form.exporterAddress} onChange={(e) => set('exporterAddress', e.target.value)} />
+                placeholder="Full business address" value={form.companyAddress} onChange={(e) => set('companyAddress', e.target.value)} />
             </div>
-            <Input label="Consignee Name" placeholder="Recipient company name" value={form.consigneeName} onChange={(e) => set('consigneeName', e.target.value)} />
-            <div>
-              <label className="block text-sm font-medium text-[#221a0f] mb-1.5">Consignee Address</label>
-              <textarea rows={2} className="w-full rounded-lg border border-[#bec9bf]/60 px-3 py-2.5 text-sm text-[#221a0f] placeholder-[#8A7E6E] focus:outline-none focus:ring-2 focus:ring-[#023293]/30 focus:border-[#023293] resize-none"
-                value={form.consigneeAddress} onChange={(e) => set('consigneeAddress', e.target.value)} />
-            </div>
+            <Input label="Email" type="email" placeholder="company@example.com" value={form.companyEmail} onChange={(e) => set('companyEmail', e.target.value)} />
+            <Input label="Phone No" placeholder="e.g. 08012345678" value={form.companyPhone} onChange={(e) => set('companyPhone', e.target.value)} />
           </div>
         )}
 
         {step === 2 && (
           <div className="space-y-4">
-            <div className="mb-4">
-              <h2 className="font-medium text-[#221a0f]">Supporting Documents</h2>
-              <p className="text-xs text-[#8A7E6E] mt-1">Select from your library or upload new files. Both are optional — you can attach documents later.</p>
+            <h2 className="font-medium text-[#221a0f] mb-4">Commercial Information</h2>
+            <Input label="Invoice Total (₦) *" type="number" placeholder="e.g. 500000" value={form.invoiceTotal} onChange={(e) => set('invoiceTotal', e.target.value)} />
+            <FileSlot label="Attach Invoice" file={invoiceFile} onSelect={setInvoiceFile} />
+
+            <div>
+              <label className="block text-sm font-medium text-[#221a0f] mb-1.5">From which Chamber of Commerce *</label>
+              <select className="w-full rounded-lg border border-[#bec9bf]/60 px-3 py-2.5 text-sm text-[#221a0f] focus:outline-none focus:ring-2 focus:ring-[#023293]/30 focus:border-[#023293]"
+                value={form.chamberOfCommerceId} onChange={(e) => set('chamberOfCommerceId', e.target.value)}>
+                {chambers.length === 0 && <option value="">No chambers available</option>}
+                {chambers.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </select>
             </div>
-            <DocSlot label="Commercial Invoice" filterCategory="commercial_invoice" selectedDocId={commercialInvoiceDocId} selectedFile={commercialInvoiceFile} onSelectDocId={setCommercialInvoiceDocId} onSelectFile={setCommercialInvoiceFile} />
-            <DocSlot label="Packing List" filterCategory="packing_list" selectedDocId={packingListDocId} selectedFile={packingListFile} onSelectDocId={setPackingListDocId} onSelectFile={setPackingListFile} />
-            {(commercialInvoiceDocId || commercialInvoiceFile || packingListDocId || packingListFile) && (
-              <div className="rounded-lg bg-green-50 border border-green-200 px-4 py-3 text-xs text-green-700">
-                {[(commercialInvoiceDocId || commercialInvoiceFile) && 'Commercial Invoice attached', (packingListDocId || packingListFile) && 'Packing List attached'].filter(Boolean).join(' · ')}
-              </div>
+
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" checked={form.isChamberMember} onChange={(e) => set('isChamberMember', e.target.checked)} className="w-4 h-4 rounded border-[#bec9bf] text-[#023293] focus:ring-[#023293]/30" />
+              <span className="text-sm text-[#221a0f]">Are you a member of any chamber?</span>
+            </label>
+            {form.isChamberMember && (
+              <Input label="Membership ID *" placeholder="e.g. KAC-2024-001" value={form.membershipId} onChange={(e) => set('membershipId', e.target.value)} />
             )}
+
+            <div className="rounded-lg bg-[#fdf8f3] border border-[#bec9bf]/40 px-4 py-3 text-sm text-[#221a0f]">
+              Application fee: <span className="font-semibold">{fmtFee(fee)}</span>
+              <span className="text-xs text-[#8A7E6E]"> — {form.isChamberMember ? 'chamber member rate' : 'non-member rate'}</span>
+            </div>
           </div>
         )}
 
         {step === 3 && (
           <div className="space-y-4">
+            <h2 className="font-medium text-[#221a0f] mb-4">Compliance</h2>
+            <FileSlot label="Attach Signature" file={signatureFile} onSelect={setSignatureFile} />
+            <FileSlot label="Attach CAC" hint="Corporate Affairs Commission certificate" file={cacFile} onSelect={setCacFile} />
+            <FileSlot label="Attach NEPC" hint="Nigerian Export Promotion Council certificate" file={nepcFile} onSelect={setNepcFile} />
+          </div>
+        )}
+
+        {step === 4 && (
+          <div className="space-y-4">
             <h2 className="font-medium text-[#221a0f] mb-4">Review Your Application</h2>
             <dl className="divide-y divide-[#bec9bf]/30 rounded-lg border border-[#bec9bf]/40 overflow-hidden">
               {[
-                { label: 'HS Code', value: form.hsCode },
-                { label: 'Cargo Description', value: form.cargoDescription },
-                { label: 'Weight', value: form.cargoWeight ? `${form.cargoWeight} kg` : '—' },
-                { label: 'Shipping Method', value: SHIPPING_METHODS.find((m) => m.value === form.shippingMethod)?.label ?? form.shippingMethod },
-                { label: 'Destination', value: [form.destinationCountry, form.destinationPort].filter(Boolean).join(', ') || '—' },
-                { label: 'Exporter', value: form.exporterName },
-                { label: 'Consignee', value: form.consigneeName || '—' },
-                { label: 'Expedited', value: form.isExpedited ? 'Yes (+₦10,000)' : 'No' },
-                { label: 'Commercial Invoice', value: commercialInvoiceFile?.name ?? (commercialInvoiceDocId ? 'From library' : '—') },
-                { label: 'Packing List', value: packingListFile?.name ?? (packingListDocId ? 'From library' : '—') },
+                { label: 'Solid Mineral', value: form.solidMineralName },
+                { label: 'Description (Quality)', value: form.descriptionOfGoods },
+                { label: 'Origin of Goods', value: form.originOfGoods },
+                { label: 'Destination Country', value: form.destinationCountry },
+                { label: 'Batch ID/No', value: form.batchIdNo || '—' },
+                { label: 'License Owner', value: form.isLicenseOwner ? `Yes — ${form.miningLicenseNo || '—'}` : 'No' },
+                { label: 'Company Name', value: form.companyName },
+                { label: 'Company Address', value: form.companyAddress },
+                { label: 'Invoice Total', value: form.invoiceTotal ? `₦${Number(form.invoiceTotal).toLocaleString()}` : '—' },
+                { label: 'Chamber of Commerce', value: chamberName ?? '—' },
+                { label: 'Chamber Member', value: form.isChamberMember ? `Yes — ${form.membershipId || '—'}` : 'No' },
+                { label: 'Application Fee', value: fmtFee(fee) },
+                { label: 'Invoice', value: invoiceFile?.name ?? '—' },
+                { label: 'Signature', value: signatureFile?.name ?? '—' },
+                { label: 'CAC', value: cacFile?.name ?? '—' },
+                { label: 'NEPC', value: nepcFile?.name ?? '—' },
               ].map((row) => (
                 <div key={row.label} className="grid grid-cols-3 gap-4 px-4 py-3">
                   <dt className="text-sm text-[#8A7E6E]">{row.label}</dt>
@@ -377,8 +348,8 @@ export function EcoApplyPage() {
         </Button>
 
         <div className="flex items-center gap-3">
-          {/* Save Draft button — visible on steps 0–2 */}
-          {step < 3 && (
+          {/* Save Draft button — visible on steps 0–3 */}
+          {step < 4 && (
             <Button
               variant="outline"
               loading={isSavingDraft || isUpdating}
@@ -389,8 +360,7 @@ export function EcoApplyPage() {
           )}
 
           {step < STEPS.length - 1 ? (
-            <Button onClick={() => setStep((s) => s + 1)}
-              disabled={(step === 0 && !canContinueStep0) || (step === 1 && !canContinueStep1)}>
+            <Button onClick={() => setStep((s) => s + 1)} disabled={!canContinue}>
               Continue
             </Button>
           ) : (

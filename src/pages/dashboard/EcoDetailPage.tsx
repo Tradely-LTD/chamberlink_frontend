@@ -6,6 +6,7 @@ import {
   useGetEcoCertificateQuery,
   useReIssueCertificateMutation,
   useLazyGetEcoCertDownloadUrlQuery,
+  useGetEcoChambersQuery,
   type ECertStatus,
 } from '@features/eco/ecoApi';
 import { SkeletonCard } from '@shared/ui/SkeletonCard';
@@ -42,6 +43,7 @@ export function EcoDetailPage() {
   const isReadOnly = role === 'chamber_executive';
 
   const { data: cert, isLoading, isError, refetch } = useGetEcoCertificateQuery(id!);
+  const { data: chambers = [] } = useGetEcoChambersQuery();
   const [reIssue, { isLoading: reIssuing }] = useReIssueCertificateMutation();
   const [fetchDownloadUrl] = useLazyGetEcoCertDownloadUrlQuery();
   const [downloadLoading, setDownloadLoading] = useState(false);
@@ -210,35 +212,45 @@ export function EcoDetailPage() {
           <Row label="Status" value={<Badge variant={statusVariant[cert.status]}>{statusLabel[cert.status]}</Badge>} />
           <Row label="Applied" value={fmtDate(cert.createdAt)} />
           <Row label="Issued" value={cert.issuedAt ? fmtDate(cert.issuedAt) : '—'} />
-          <Row label="Application Fee" value={cert.applicationFee ? `₦${cert.applicationFee.toLocaleString()}` : '—'} />
-          <Row label="Expedited" value={cert.isExpedited ? 'Yes — Expedited' : 'Standard'} />
+          <Row label="Application Fee" value={cert.applicationFee != null ? `₦${cert.applicationFee}` : '—'} />
           {cert.paymentRef && <Row label="Payment Ref" value={<span className="font-mono text-xs">{cert.paymentRef}</span>} />}
         </div>
       </div>
 
       <div className="bg-white rounded-xl border border-[#bec9bf]/40 overflow-hidden mb-4">
         <div className="px-6 py-3 border-b border-[#bec9bf]/40">
-          <h2 className="text-xs font-semibold text-[#8A7E6E] uppercase tracking-wide">Cargo Details</h2>
+          <h2 className="text-xs font-semibold text-[#8A7E6E] uppercase tracking-wide">Product Details</h2>
         </div>
         <div className="px-6">
-          <Row label="HS Code" value={cert.hsCode} />
-          <Row label="Description" value={cert.cargoDescription} />
-          <Row label="Weight" value={cert.cargoWeight ? `${cert.cargoWeight} kg` : null} />
-          <Row label="Shipping Method" value={cert.shippingMethod} />
+          <Row label="Solid Mineral" value={cert.solidMineralName} />
+          <Row label="Description (Quality)" value={cert.descriptionOfGoods} />
+          <Row label="Origin of Goods" value={cert.originOfGoods} />
           <Row label="Destination Country" value={cert.destinationCountry} />
-          {cert.destinationPort && <Row label="Destination Port" value={cert.destinationPort} />}
+          {cert.batchIdNo && <Row label="Batch ID/No" value={cert.batchIdNo} />}
+        </div>
+      </div>
+
+      <div className="bg-white rounded-xl border border-[#bec9bf]/40 overflow-hidden mb-4">
+        <div className="px-6 py-3 border-b border-[#bec9bf]/40">
+          <h2 className="text-xs font-semibold text-[#8A7E6E] uppercase tracking-wide">Company Details</h2>
+        </div>
+        <div className="px-6">
+          <Row label="Company Name" value={cert.companyName} />
+          <Row label="Address" value={cert.companyAddress} />
+          {cert.companyEmail && <Row label="Email" value={cert.companyEmail} />}
+          {cert.companyPhone && <Row label="Phone" value={cert.companyPhone} />}
+          <Row label="License Owner" value={cert.isLicenseOwner ? `Yes — ${cert.miningLicenseNo ?? '—'}` : 'No'} />
         </div>
       </div>
 
       <div className="bg-white rounded-xl border border-[#bec9bf]/40 overflow-hidden mb-6">
         <div className="px-6 py-3 border-b border-[#bec9bf]/40">
-          <h2 className="text-xs font-semibold text-[#8A7E6E] uppercase tracking-wide">Parties</h2>
+          <h2 className="text-xs font-semibold text-[#8A7E6E] uppercase tracking-wide">Commercial Information</h2>
         </div>
         <div className="px-6">
-          <Row label="Exporter" value={cert.exporterName} />
-          <Row label="Exporter Address" value={cert.exporterAddress} />
-          {cert.consigneeName && <Row label="Consignee" value={cert.consigneeName} />}
-          {cert.consigneeAddress && <Row label="Consignee Address" value={cert.consigneeAddress} />}
+          <Row label="Invoice Total" value={`₦${cert.invoiceTotal.toLocaleString()}`} />
+          <Row label="Chamber of Commerce" value={chambers.find((c) => c.id === cert.chamberOfCommerceId)?.name ?? '—'} />
+          <Row label="Chamber Member" value={cert.isChamberMember ? `Yes — ${cert.membershipId ?? '—'}` : 'No'} />
         </div>
       </div>
 

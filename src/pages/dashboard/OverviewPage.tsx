@@ -277,7 +277,7 @@ function MemberOverview() {
                     <tr key={cert.id} className="hover:bg-[#f7f9fb] transition-colors">
                       <td className="px-5 py-3">
                         <p className="font-semibold text-[#191c1e]">{cert.certificateNumber ?? cert.id.slice(0, 12).toUpperCase()}</p>
-                        <p className="text-xs text-[#74777f] truncate max-w-[160px]">{cert.cargoDescription}</p>
+                        <p className="text-xs text-[#74777f] truncate max-w-[160px]">{cert.solidMineralName}</p>
                       </td>
                       <td className="px-5 py-3 text-[#191c1e]">{cert.destinationCountry}</td>
                       <td className="px-5 py-3">
