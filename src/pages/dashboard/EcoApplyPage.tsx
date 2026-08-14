@@ -326,7 +326,7 @@ export function EcoApplyPage() {
     append('marksAndNumbers', form.marksAndNumbers);
     if (form.quantity) append('quantity', Number(form.quantity));
     append('quantityUnit', form.quantityUnit);
-    form.originStates.forEach((s) => fd.append('originStates[]', s));
+    fd.append('originStates', JSON.stringify(form.originStates));
     append('destinationCountry', form.destinationCountry);
     append('destinationPort', form.destinationPort);
     append('batchIdNo', form.batchIdNo);
