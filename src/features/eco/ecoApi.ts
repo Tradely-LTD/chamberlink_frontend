@@ -10,85 +10,180 @@ export type ECertStatus =
   | 'draft'
   | 'submitted'
   | 'under_review'
-  | 'pending_payment'
+  | 'revision_requested'
   | 'approved'
+  | 'pending_payment'
   | 'issued'
-  | 'rejected'
-  | 'revision_requested';
+  | 'rejected';
 
-export interface EcoQueueItem {
+export interface SolidMineral {
   id: string;
-  certificateNumber?: string;
-  applicantName: string;
-  exporterName: string;
-  cargoDescription: string;
-  destinationCountry: string;
-  status: ECertStatus;
-  createdAt: string;
-  memberId?: string;
-  rejectionReason?: string;
-  revisionNotes?: string;
-  certificatePdfUrl?: string | null;
+  name: string;
+  hsCode: string;
 }
 
-interface NestedQueueItem {
-  cert: {
-    id: string; certificateNumber?: string; exporterName: string;
-    cargoDescription: string; destinationCountry: string; status: ECertStatus;
-    createdAt: string; rejectionReason?: string; revisionNotes?: string;
-    certificatePdfUrl?: string | null;
-  };
-  member: { firstName: string; lastName: string; memberId: string };
+export interface OnboardedTenant {
+  id: string;
+  name: string;
+  slug: string;
+  city: string | null;
 }
 
 export interface ECertificate {
   id: string;
-  certificateNumber?: string;
-  memberId: string;
+  certificateNumber: string | null;
   applicantUserId: string;
-  hsCode: string;
-  cargoDescription: string;
-  cargoWeight: number;
-  shippingMethod: string;
-  destinationCountry: string;
-  destinationPort?: string;
-  exporterName: string;
-  exporterAddress: string;
-  consigneeName?: string;
-  consigneeAddress?: string;
+  tenantId: string | null;
+  memberId: string | null;
+
+  // Product/Goods Details
+  solidMineralId: string | null;
+  solidMineralName: string | null;
+  hsCode: string | null;
+  descriptionOfGoods: string | null;
+  numberAndKindOfPackages: string | null;
+  marksAndNumbers: string | null;
+  quantity: number | null;
+  quantityUnit: 'KG' | 'MT' | null;
+  originStates: string[];
+  destinationCountry: string | null;
+  destinationPort: string | null;
+  batchIdNo: string | null;
+
+  // Exporter/Company Details
+  isLicenseOwner: boolean;
+  miningLicenseNo: string | null;
+  companyName: string | null;
+  companyAddress: string | null;
+  companyCountry: string | null;
+  companyEmail: string | null;
+  companyPhone: string | null;
+
+  // Consignee Details
+  consigneeName: string | null;
+  consigneeAddress: string | null;
+
+  // Shipment & Transport
+  departureDate: string | null;
+  meansOfTransport: 'sea' | 'air' | 'land' | null;
+  vesselFlightVehicleNameVoyageNo: string | null;
+  portOfLoading: string | null;
+  portOfDischarge: string | null;
+  issuedRetrospectively: boolean;
+
+  // Commercial Information
+  invoiceNumber: string | null;
+  invoiceDate: string | null;
+  invoiceTotal: number | null;
+  invoiceFileKey: string | null;
+  customerOrderOrLcNo: string | null;
+  selfDeclaredIsMember: boolean;
+  selfDeclaredMembershipId: string | null;
+
+  // Compliance/Declaration uploads
+  signatureKey: string | null;
+  cacCertificateKey: string | null;
+  nepcCertificateKey: string | null;
+  additionalDocsKeys: string | null;
+
+  // Application state
   status: ECertStatus;
-  isExpedited: boolean;
-  applicationFee?: number;
-  paymentRef?: string;
-  certificatePdfUrl?: string;
-  signedDownloadUrl?: string;
-  rejectionReason?: string;
-  revisionNotes?: string;
-  issuedAt?: string;
+  applicationFee: number | null;
+  membershipVerified: boolean;
+  paymentRef: string | null;
+  paymentGateway: string | null;
+  paidAt: string | null;
+
+  reviewedByUserId: string | null;
+  reviewedAt: string | null;
+  rejectionReason: string | null;
+  revisionNotes: string | null;
+
+  certificatePdfKey: string | null;
+  certificatePdfUrl: string | null;
+  qrCodeData: string | null;
+  issuedAt: string | null;
+
   createdAt: string;
   updatedAt: string;
+
+  // Optional client-only field: fresh signed URL for the currently-loaded cert
+  signedDownloadUrl?: string;
 }
 
 export interface NewECertPayload {
-  hsCode: string;
-  cargoDescription: string;
-  cargoWeight: number;
-  shippingMethod: 'sea' | 'air' | 'road' | 'rail';
+  solidMineralId: string;
+  descriptionOfGoods: string;
+  numberAndKindOfPackages: string;
+  marksAndNumbers?: string;
+  quantity: number;
+  quantityUnit: 'KG' | 'MT';
+  originStates: string[];
   destinationCountry: string;
   destinationPort?: string;
-  exporterName: string;
-  exporterAddress: string;
-  consigneeName?: string;
-  consigneeAddress?: string;
-  isExpedited?: boolean;
-  // Document library IDs (alternative to file upload)
-  commercialInvoiceDocId?: string;
-  packingListDocId?: string;
+  batchIdNo?: string;
+  isLicenseOwner: boolean;
+  miningLicenseNo?: string;
+  companyName: string;
+  companyAddress: string;
+  companyCountry: string;
+  companyEmail: string;
+  companyPhone: string;
+  consigneeName: string;
+  consigneeAddress: string;
+  departureDate: string;
+  meansOfTransport: 'sea' | 'air' | 'land';
+  vesselFlightVehicleNameVoyageNo: string;
+  portOfLoading: string;
+  portOfDischarge: string;
+  invoiceNumber: string;
+  invoiceDate: string;
+  invoiceTotal: number;
+  customerOrderOrLcNo?: string;
+  tenantId: string;
+  selfDeclaredIsMember: boolean;
+  selfDeclaredMembershipId?: string;
+  // library-doc references (alternative to file upload, existing DocSlot pattern)
+  invoiceDocId?: string;
+  signatureDocId?: string;
+  cacCertificateDocId?: string;
+  nepcCertificateDocId?: string;
   additionalDocIds?: string[];
+}
+
+export interface EcoQueueItem {
+  id: string;
+  certificateNumber: string | null;
+  applicantFirstName: string;
+  applicantLastName: string;
+  memberId?: string;
+  solidMineralName: string | null;
+  destinationCountry: string | null;
+  status: ECertStatus;
+  createdAt: string;
+  selfDeclaredIsMember: boolean;
+  rejectionReason?: string | null;
+  revisionNotes?: string | null;
+  certificatePdfUrl?: string | null;
+}
+
+interface NestedQueueItem {
+  cert: ECertificate;
+  member: { firstName: string; lastName: string; memberId: string } | null;
+  applicantFirstName: string;
+  applicantLastName: string;
 }
 
 export const ecoApi = emptyApi.injectEndpoints({
   endpoints: (builder) => ({
+    getSolidMinerals: builder.query<SolidMineral[], void>({
+      query: () => '/eco/solid-minerals',
+      transformResponse: (res: ApiResponse<SolidMineral[]>) => res.data,
+    }),
+    getOnboardedTenants: builder.query<OnboardedTenant[], void>({
+      query: () => '/tenants/public/onboarded',
+      transformResponse: (res: ApiResponse<OnboardedTenant[]>) => res.data,
+    }),
     getEcoCertificates: builder.query<ECertificate[], void>({
       query: () => '/eco/my',
       transformResponse: (res: ApiResponse<ECertificate[]>) => res.data,
@@ -105,8 +200,7 @@ export const ecoApi = emptyApi.injectEndpoints({
         method: 'POST',
         body: {
           ...payload,
-          cargoWeight: Number(payload.cargoWeight),
-          isExpedited: Boolean(payload.isExpedited),
+          quantity: Number(payload.quantity),
         },
       }),
       transformResponse: (res: ApiResponse<ECertificate>) => res.data,
@@ -124,7 +218,7 @@ export const ecoApi = emptyApi.injectEndpoints({
       invalidatesTags: ['ECO'],
     }),
     // Save a draft (partial fields, no validation)
-    saveDraftEco: builder.mutation<ECertificate, FormData | NewECertPayload>({
+    saveDraftEco: builder.mutation<ECertificate, FormData | Partial<NewECertPayload>>({
       query: (body) => body instanceof FormData
         ? { url: '/eco/draft', method: 'POST', body, formData: true }
         : { url: '/eco/draft', method: 'POST', body },
@@ -156,23 +250,32 @@ export const ecoApi = emptyApi.injectEndpoints({
         res.data.map((item) => ({
           id: item.cert.id,
           certificateNumber: item.cert.certificateNumber,
-          applicantName: `${item.member.firstName} ${item.member.lastName}`,
-          exporterName: item.cert.exporterName,
-          cargoDescription: item.cert.cargoDescription,
+          applicantFirstName: item.applicantFirstName,
+          applicantLastName: item.applicantLastName,
+          memberId: item.member?.memberId,
+          solidMineralName: item.cert.solidMineralName,
           destinationCountry: item.cert.destinationCountry,
           status: item.cert.status,
           createdAt: item.cert.createdAt,
-          memberId: item.member.memberId,
+          selfDeclaredIsMember: item.cert.selfDeclaredIsMember,
           rejectionReason: item.cert.rejectionReason,
           revisionNotes: item.cert.revisionNotes,
           certificatePdfUrl: item.cert.certificatePdfUrl,
         })),
       providesTags: ['EcoQueue'],
     }),
-    reviewEcoCert: builder.mutation<void, { id: string; action: 'start_review' | 'approve' | 'reject' | 'request_revision'; notes?: string }>({
+    reviewEcoCert: builder.mutation<void, {
+      id: string;
+      action: 'start_review' | 'verify_membership' | 'approve' | 'reject' | 'request_revision';
+      verified?: boolean;
+      notes?: string;
+      rejectionReason?: string;
+    }>({
       query: ({ id, ...body }) => ({ url: `/eco/${id}/review`, method: 'POST', body }),
-      invalidatesTags: ['EcoQueue'],
+      invalidatesTags: (_r, _e, { id }) => [{ type: 'ECO', id }, 'EcoQueue'],
     }),
+    // Not covered by the new contract (unchanged endpoint) — kept for the
+    // "Re-generate Certificate" / "Re-issue (Replacement Copy)" admin actions.
     reIssueCertificate: builder.mutation<{ certNumber: string; pdfUrl: string }, string>({
       query: (id) => ({ url: `/eco/${id}/issue`, method: 'POST' }),
       transformResponse: (res: { success: boolean; data: { certNumber: string; pdfUrl: string } }) => res.data,
@@ -197,6 +300,8 @@ export const ecoApi = emptyApi.injectEndpoints({
 });
 
 export const {
+  useGetSolidMineralsQuery,
+  useGetOnboardedTenantsQuery,
   useGetEcoCertificatesQuery,
   useGetEcoCertificateQuery,
   useCreateEcoCertificateMutation,

@@ -18,7 +18,7 @@ import { Badge } from '@shared/ui/Badge';
 // ── Shared status config ───────────────────────────────────────────────────
 
 const statusVariant: Record<ECertStatus, 'success' | 'warning' | 'error' | 'default'> = {
-  issued: 'success', approved: 'success',
+  issued: 'success', approved: 'warning',
   submitted: 'warning', under_review: 'warning', pending_payment: 'warning',
   draft: 'default',
   rejected: 'error', revision_requested: 'error',
@@ -26,7 +26,7 @@ const statusVariant: Record<ECertStatus, 'success' | 'warning' | 'error' | 'defa
 
 const statusLabel: Record<ECertStatus, string> = {
   draft: 'Draft', submitted: 'Submitted', under_review: 'Under Review',
-  pending_payment: 'Pending Payment', approved: 'Approved', issued: 'Issued',
+  pending_payment: 'Awaiting Payment', approved: 'Approved — Awaiting Payment', issued: 'Issued',
   rejected: 'Rejected', revision_requested: 'Revision Required',
 };
 
@@ -39,19 +39,21 @@ const FILTER_OPTIONS: { label: string; value: string }[] = [
   { label: 'All', value: '' },
   { label: 'Submitted', value: 'submitted' },
   { label: 'Under Review', value: 'under_review' },
-  { label: 'Pending Payment', value: 'pending_payment' },
-  { label: 'Approved', value: 'approved' },
+  { label: 'Approved — Awaiting Payment', value: 'approved' },
+  { label: 'Awaiting Payment', value: 'pending_payment' },
   { label: 'Issued', value: 'issued' },
   { label: 'Rejected', value: 'rejected' },
 ];
 
 // ── Review Notes Modal ────────────────────────────────────────────────────
 
+type ReviewAction = 'start_review' | 'approve' | 'reject' | 'request_revision';
+
 function ReviewNotesModal({
   item, action, onClose, onConfirm, isLoading,
 }: {
   item: EcoQueueItem;
-  action: 'start_review' | 'approve' | 'reject' | 'request_revision';
+  action: ReviewAction;
   onClose: () => void;
   onConfirm: (notes: string) => void;
   isLoading: boolean;
@@ -75,7 +77,7 @@ function ReviewNotesModal({
         </div>
         <div className="p-6">
           <p className="text-sm text-[#8A7E6E] mb-4">
-            Application by <span className="font-medium text-[#221a0f]">{item.applicantName}</span> — {item.cargoDescription} → {item.destinationCountry}
+            Application by <span className="font-medium text-[#221a0f]">{item.applicantFirstName} {item.applicantLastName}</span> — {item.solidMineralName ?? '—'} → {item.destinationCountry ?? '—'}
           </p>
           <div className="mb-4">
             <label className="block text-xs font-semibold text-[#44474e] mb-1">
@@ -173,13 +175,43 @@ function CertActionButtons({ certId, compact = false }: { certId: string; compac
 const CertDownloadButtons = ({ certId }: { certId: string }) =>
   <CertActionButtons certId={certId} />;
 
+// ── "Mark Membership Verified" button (admin, under_review + self-declared member) ──
+
+function VerifyMembershipButton({ item, onDone }: { item: EcoQueueItem; onDone: () => void }) {
+  const [reviewEco, { isLoading }] = useReviewEcoCertMutation();
+  const [error, setError] = useState<string | null>(null);
+
+  const handleVerify = async () => {
+    setError(null);
+    try {
+      await reviewEco({ id: item.id, action: 'verify_membership', verified: true }).unwrap();
+      onDone();
+    } catch {
+      setError('Failed to verify membership.');
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-1">
+      <button
+        disabled={isLoading}
+        onClick={handleVerify}
+        className="text-xs font-semibold text-[#005137] border border-[#a0f4ca] bg-[#f0faf4] rounded-md px-2.5 py-1 hover:bg-[#a0f4ca]/40 transition-colors disabled:opacity-50"
+      >
+        {isLoading ? 'Verifying…' : 'Mark Membership Verified'}
+      </button>
+      {error && <span className="text-xs text-red-600">{error}</span>}
+    </div>
+  );
+}
+
 // ── Admin Queue View ──────────────────────────────────────────────────────
 
 function AdminEcoQueue({ isReadOnly }: { isReadOnly: boolean }) {
   const [statusFilter, setStatusFilter] = useState('');
   const [reviewModal, setReviewModal] = useState<{
     item: EcoQueueItem;
-    action: 'start_review' | 'approve' | 'reject' | 'request_revision';
+    action: ReviewAction;
   } | null>(null);
   const [reviewError, setReviewError] = useState<string | null>(null);
 
@@ -191,7 +223,7 @@ function AdminEcoQueue({ isReadOnly }: { isReadOnly: boolean }) {
 
   const items = data ?? [];
 
-  const handleAction = (item: EcoQueueItem, action: 'start_review' | 'approve' | 'reject' | 'request_revision') => {
+  const handleAction = (item: EcoQueueItem, action: ReviewAction) => {
     setReviewError(null);
     setReviewModal({ item, action });
   };
@@ -286,7 +318,7 @@ function AdminEcoQueue({ isReadOnly }: { isReadOnly: boolean }) {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-[#bec9bf]/40 bg-[#fdf8f3]">
-                  {['Applicant', 'Cargo / Description', 'Destination', 'Status', 'Submitted', 'Actions'].map((h) => (
+                  {['Applicant', 'Mineral', 'Destination', 'Status', 'Submitted', 'Actions'].map((h) => (
                     <th key={h} className="text-left px-4 py-3 font-medium text-[#8A7E6E] text-xs uppercase tracking-wide">{h}</th>
                   ))}
                 </tr>
@@ -295,14 +327,13 @@ function AdminEcoQueue({ isReadOnly }: { isReadOnly: boolean }) {
                 {items.map((item) => (
                   <tr key={item.id} className="hover:bg-[#fdf8f3] transition-colors">
                     <td className="px-4 py-3">
-                      <p className="font-medium text-[#221a0f]">{item.applicantName}</p>
+                      <p className="font-medium text-[#221a0f]">{item.applicantFirstName} {item.applicantLastName}</p>
                       {item.memberId && <p className="text-xs text-[#8A7E6E] font-mono">{item.memberId}</p>}
                     </td>
                     <td className="px-4 py-3">
-                      <p className="text-[#221a0f] max-w-[200px] truncate">{item.cargoDescription}</p>
-                      <p className="text-xs text-[#8A7E6E]">{item.exporterName}</p>
+                      <p className="text-[#221a0f] max-w-[200px] truncate">{item.solidMineralName ?? '—'}</p>
                     </td>
-                    <td className="px-4 py-3 text-[#221a0f]">{item.destinationCountry}</td>
+                    <td className="px-4 py-3 text-[#221a0f]">{item.destinationCountry ?? '—'}</td>
                     <td className="px-4 py-3">
                       <Badge variant={statusVariant[item.status]}>{statusLabel[item.status]}</Badge>
                     </td>
@@ -323,11 +354,18 @@ function AdminEcoQueue({ isReadOnly }: { isReadOnly: boolean }) {
                         {item.status === 'submitted' && isReadOnly && (
                           <span className="text-xs text-[#8A7E6E] italic">Awaiting review</span>
                         )}
-                        {item.status === 'pending_payment' && (
-                          <span className="text-xs text-[#8A7E6E] italic">Payment processing…</span>
+                        {(item.status === 'pending_payment' || item.status === 'approved') && (
+                          <span className="text-xs text-[#8A7E6E] italic">Awaiting applicant payment…</span>
                         )}
 
-                        {/* Review actions — only for non-read-only admins on actionable statuses */}
+                        {/* Mark Membership Verified — under_review + self-declared member only */}
+                        {!isReadOnly && item.status === 'under_review' && item.selfDeclaredIsMember && (
+                          <VerifyMembershipButton item={item} onDone={refetch} />
+                        )}
+
+                        {/* Review actions — only for non-read-only admins on actionable statuses.
+                            Note: reject / request_revision are also valid from 'approved' so a
+                            reviewer can walk back a mistaken approval before the applicant pays. */}
                         {!isReadOnly && ['under_review', 'revision_requested'].includes(item.status) && (
                           <button
                             onClick={() => handleAction(item, 'approve')}
@@ -336,7 +374,7 @@ function AdminEcoQueue({ isReadOnly }: { isReadOnly: boolean }) {
                             Approve
                           </button>
                         )}
-                        {!isReadOnly && item.status === 'under_review' && (
+                        {!isReadOnly && ['under_review', 'approved'].includes(item.status) && (
                           <>
                             <button
                               onClick={() => handleAction(item, 'request_revision')}
@@ -448,7 +486,7 @@ function VerifyPaymentButton({ certRef, onConfirmed }: { certRef: string; onConf
   };
 
   if (status === 'done') {
-    return <p className="text-xs font-semibold text-[#023293]">✓ Confirmed — your application is now under review.</p>;
+    return <p className="text-xs font-semibold text-[#023293]">✓ Confirmed — certificate moved to issuance.</p>;
   }
 
   return (
@@ -529,8 +567,9 @@ function MemberEcoView() {
         <div className="space-y-3">
           {(certs ?? []).map((cert) => {
             const isEditableDraft = cert.status === 'draft' || cert.status === 'revision_requested';
-            const isPayable = cert.status === 'submitted';
-            const isPendingPayment = cert.status === 'pending_payment';
+            const isPayable = cert.status === 'approved' || (cert.status === 'pending_payment' && !cert.paymentRef);
+            const isAwaitingReview = cert.status === 'submitted' || cert.status === 'under_review';
+            const isPendingPaymentWithRef = cert.status === 'pending_payment' && !!cert.paymentRef;
             const isIssued = cert.status === 'issued';
             return (
               <div key={cert.id}
@@ -553,14 +592,24 @@ function MemberEcoView() {
                   </span>
                 </div>
 
-                {/* Payment prompt banner — shown when action is required */}
-                {isPayable && (
+                {/* Status banners */}
+                {isAwaitingReview && (
+                  <div className="flex items-center gap-2 mb-3 px-3 py-2 rounded-lg bg-[#f0f4ff] border border-[#023293]/20">
+                    <span className="material-symbols-outlined text-[#023293] flex-shrink-0" style={{ fontSize: 16 }}>hourglass_top</span>
+                    <p className="text-xs text-[#023293] font-medium">Awaiting chamber review.</p>
+                  </div>
+                )}
+                {cert.status === 'approved' && (
+                  <div className="flex items-center gap-2 mb-3 px-3 py-2 rounded-lg bg-amber-100 border border-amber-200">
+                    <span className="material-symbols-outlined text-amber-700 flex-shrink-0" style={{ fontSize: 16, fontVariationSettings: `'FILL' 1` }}>warning</span>
+                    <p className="text-xs text-amber-800 font-medium">Approved — payment required to proceed to issuance.</p>
+                  </div>
+                )}
+                {isPendingPaymentWithRef && (
                   <div className="flex items-center gap-2 mb-3 px-3 py-2 rounded-lg bg-amber-100 border border-amber-200">
                     <span className="material-symbols-outlined text-amber-700 flex-shrink-0" style={{ fontSize: 16, fontVariationSettings: `'FILL' 1` }}>warning</span>
                     <p className="text-xs text-amber-800 font-medium">
-                      {cert.status === 'submitted'
-                        ? 'Payment required — your application is pending payment of the processing fee.'
-                        : 'Payment initiated — if you completed the payment, click "I already paid — Verify Payment" below.'}
+                      Payment initiated — if you completed the payment, click &quot;I already paid — Verify Payment&quot; below.
                     </p>
                   </div>
                 )}
@@ -571,7 +620,7 @@ function MemberEcoView() {
                     <span className="font-medium text-[#44474e]">To:</span> {cert.destinationCountry || '—'}
                   </span>
                   <span className="text-xs text-[#8A7E6E] truncate max-w-xs">
-                    <span className="font-medium text-[#44474e]">Cargo:</span> {cert.cargoDescription || '—'}
+                    <span className="font-medium text-[#44474e]">Mineral:</span> {cert.solidMineralName || '—'}
                   </span>
                   {cert.applicationFee != null && cert.applicationFee > 0 && (
                     <span className="text-xs text-[#8A7E6E]">
@@ -583,11 +632,8 @@ function MemberEcoView() {
                 {/* Actions */}
                 <div className="flex flex-wrap items-start gap-2">
                   {isPayable && <PayButton certId={cert.id} />}
-                  {isPendingPayment && cert.paymentRef && (
-                    <VerifyPaymentButton certRef={cert.paymentRef} onConfirmed={refetch} />
-                  )}
-                  {isPendingPayment && !cert.paymentRef && (
-                    <PayButton certId={cert.id} />
+                  {isPendingPaymentWithRef && (
+                    <VerifyPaymentButton certRef={cert.paymentRef!} onConfirmed={refetch} />
                   )}
 
                   <Link to={`/dashboard/eco/${cert.id}`}
