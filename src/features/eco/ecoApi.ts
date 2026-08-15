@@ -136,7 +136,7 @@ export interface NewECertPayload {
   vesselFlightVehicleNameVoyageNo: string;
   portOfLoading: string;
   portOfDischarge: string;
-  invoiceNumber: string;
+  invoiceNumber?: string;
   invoiceDate: string;
   invoiceTotal: number;
   customerOrderOrLcNo?: string;

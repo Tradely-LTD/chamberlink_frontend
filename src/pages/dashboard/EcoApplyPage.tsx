@@ -253,15 +253,6 @@ export function EcoApplyPage() {
   const set = <K extends keyof FormState>(field: K, value: FormState[K]) =>
     setForm((f) => ({ ...f, [field]: value }));
 
-  const toggleOriginState = (stateName: string) => {
-    setForm((f) => ({
-      ...f,
-      originStates: f.originStates.includes(stateName)
-        ? f.originStates.filter((s) => s !== stateName)
-        : [...f.originStates, stateName],
-    }));
-  };
-
   const setUnknown = (
     field: 'departureDate' | 'vesselFlightVehicleNameVoyageNo' | 'portOfLoading' | 'portOfDischarge',
     setter: (v: boolean) => void,
@@ -387,6 +378,10 @@ export function EcoApplyPage() {
       setError('Invoice Total must be greater than zero.');
       return;
     }
+    if (!canContinueStep4) {
+      setError('Invoice, Signature, CAC Certificate, and NEPC Certificate are all required to submit.');
+      return;
+    }
     const { isFormData, body } = buildFormDataOrJson();
     try {
       if (currentDraftId) {
@@ -418,9 +413,18 @@ export function EcoApplyPage() {
     form.departureDate && form.meansOfTransport && form.vesselFlightVehicleNameVoyageNo
     && form.portOfLoading && form.portOfDischarge
   );
-  const canContinueStep3 = !!(form.invoiceNumber && form.invoiceDate && form.invoiceTotal && Number(form.invoiceTotal) > 0);
+  const canContinueStep3 = !!(form.invoiceDate && form.invoiceTotal && Number(form.invoiceTotal) > 0);
+  // All four documents are compulsory — an existing draft's already-saved key
+  // (invoiceFileKey etc. via existingCert) also counts, not just a file/docId
+  // picked in this session.
+  const canContinueStep4 = !!(
+    (invoiceFile || invoiceDocId || existingCert?.invoiceFileKey)
+    && (signatureFile || signatureDocId || existingCert?.signatureKey)
+    && (cacCertificateFile || cacCertificateDocId || existingCert?.cacCertificateKey)
+    && (nepcCertificateFile || nepcCertificateDocId || existingCert?.nepcCertificateKey)
+  );
 
-  const canContinue = [canContinueStep0, canContinueStep1, canContinueStep2, canContinueStep3, true, true];
+  const canContinue = [canContinueStep0, canContinueStep1, canContinueStep2, canContinueStep3, canContinueStep4, true];
 
   const feeEstimate = form.invoiceTotal
     ? {
@@ -538,20 +542,14 @@ export function EcoApplyPage() {
             </div>
 
             <div>
-              <label className={labelClass}>Origin of Goods (Nigerian States) — select one or more *</label>
-              <div className="max-h-48 overflow-y-auto grid grid-cols-2 sm:grid-cols-3 gap-1.5 rounded-lg border border-[#bec9bf]/60 p-3">
+              <label className={labelClass}>Origin of Goods (Nigerian State) *</label>
+              <select className={selectClass} value={form.originStates[0] ?? ''}
+                onChange={(e) => set('originStates', e.target.value ? [e.target.value] : [])}>
+                <option value="">Select a state…</option>
                 {NIGERIAN_STATES.map((stateName) => (
-                  <label key={stateName} className="flex items-center gap-1.5 text-xs text-[#221a0f] cursor-pointer">
-                    <input type="checkbox" checked={form.originStates.includes(stateName)}
-                      onChange={() => toggleOriginState(stateName)}
-                      className="w-3.5 h-3.5 rounded border-[#bec9bf] text-[#023293] focus:ring-[#023293]/30" />
-                    {stateName}
-                  </label>
+                  <option key={stateName} value={stateName}>{stateName}</option>
                 ))}
-              </div>
-              {form.originStates.length > 0 && (
-                <p className="text-xs text-[#8A7E6E] mt-1">{form.originStates.join(', ')}</p>
-              )}
+              </select>
             </div>
 
             <Input label="Destination Country *" placeholder="e.g. United Arab Emirates" value={form.destinationCountry}
@@ -592,8 +590,20 @@ export function EcoApplyPage() {
               <span className="text-sm text-[#221a0f]">Are you a member of any chamber of commerce?</span>
             </label>
             {form.selfDeclaredIsMember && (
-              <Input label="Membership ID *" value={form.selfDeclaredMembershipId}
-                onChange={(e) => set('selfDeclaredMembershipId', e.target.value)} />
+              <div className="pl-4 border-l-2 border-[#bec9bf]/40 space-y-3">
+                <div>
+                  <label className={labelClass}>Which chamber are you a member of? *</label>
+                  <select className={selectClass} value={form.tenantId} onChange={(e) => set('tenantId', e.target.value)} disabled={chamberLocked}>
+                    <option value="">Select a chamber…</option>
+                    {onboardedTenants.map((t) => (
+                      <option key={t.id} value={t.id}>{t.name}{t.city ? ` — ${t.city}` : ''}</option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-[#8A7E6E] mt-1">Same chamber your application is routed to — the one selected in Product &amp; Goods.</p>
+                </div>
+                <Input label="Membership ID *" value={form.selfDeclaredMembershipId}
+                  onChange={(e) => set('selfDeclaredMembershipId', e.target.value)} />
+              </div>
             )}
 
             <hr className="border-[#bec9bf]/30" />
@@ -675,7 +685,7 @@ export function EcoApplyPage() {
         {step === 3 && (
           <div className="space-y-4">
             <h2 className="font-medium text-[#221a0f] mb-4">Commercial Information</h2>
-            <Input label="Invoice Number *" value={form.invoiceNumber} onChange={(e) => set('invoiceNumber', e.target.value)} />
+            <Input label="Invoice Number" placeholder="Optional" value={form.invoiceNumber} onChange={(e) => set('invoiceNumber', e.target.value)} />
             <Input label="Invoice Date *" type="date" value={form.invoiceDate} onChange={(e) => set('invoiceDate', e.target.value)} />
             <Input label="Invoice Total (NGN) *" type="number" min="0.01" step="0.01" placeholder="Amount in Naira, must be greater than 0"
               value={form.invoiceTotal} onChange={(e) => set('invoiceTotal', e.target.value)} />
@@ -691,12 +701,12 @@ export function EcoApplyPage() {
           <div className="space-y-4">
             <div className="mb-4">
               <h2 className="font-medium text-[#221a0f]">Compliance / Declaration Documents</h2>
-              <p className="text-xs text-[#8A7E6E] mt-1">Select from your library or upload new files.</p>
+              <p className="text-xs text-[#8A7E6E] mt-1">All four documents below are required. Select from your library or upload new files.</p>
             </div>
-            <DocSlot label="Attach Invoice" filterCategory="commercial_invoice" selectedDocId={invoiceDocId} selectedFile={invoiceFile} onSelectDocId={setInvoiceDocId} onSelectFile={setInvoiceFile} />
-            <DocSlot label="Signature" filterCategory="signature" selectedDocId={signatureDocId} selectedFile={signatureFile} onSelectDocId={setSignatureDocId} onSelectFile={setSignatureFile} />
-            <DocSlot label="CAC Certificate" filterCategory="cac_certificate" selectedDocId={cacCertificateDocId} selectedFile={cacCertificateFile} onSelectDocId={setCacCertificateDocId} onSelectFile={setCacCertificateFile} />
-            <DocSlot label="NEPC Certificate" filterCategory="nepc_certificate" selectedDocId={nepcCertificateDocId} selectedFile={nepcCertificateFile} onSelectDocId={setNepcCertificateDocId} onSelectFile={setNepcCertificateFile} />
+            <DocSlot label="Attach Invoice *" filterCategory="commercial_invoice" selectedDocId={invoiceDocId} selectedFile={invoiceFile} onSelectDocId={setInvoiceDocId} onSelectFile={setInvoiceFile} />
+            <DocSlot label="Signature *" filterCategory="signature" selectedDocId={signatureDocId} selectedFile={signatureFile} onSelectDocId={setSignatureDocId} onSelectFile={setSignatureFile} />
+            <DocSlot label="CAC Certificate *" filterCategory="cac_certificate" selectedDocId={cacCertificateDocId} selectedFile={cacCertificateFile} onSelectDocId={setCacCertificateDocId} onSelectFile={setCacCertificateFile} />
+            <DocSlot label="NEPC Certificate *" filterCategory="nepc_certificate" selectedDocId={nepcCertificateDocId} selectedFile={nepcCertificateFile} onSelectDocId={setNepcCertificateDocId} onSelectFile={setNepcCertificateFile} />
           </div>
         )}
 
@@ -771,7 +781,7 @@ export function EcoApplyPage() {
               <h3 className="text-xs font-semibold text-[#8A7E6E] uppercase tracking-wide mb-2">Commercial Information</h3>
               <dl className="divide-y divide-[#bec9bf]/30 rounded-lg border border-[#bec9bf]/40 overflow-hidden">
                 {[
-                  { label: 'Invoice Number', value: form.invoiceNumber },
+                  { label: 'Invoice Number', value: form.invoiceNumber || '—' },
                   { label: 'Invoice Date', value: form.invoiceDate },
                   { label: 'Invoice Total', value: form.invoiceTotal ? `₦${Number(form.invoiceTotal).toLocaleString()}` : '—' },
                   { label: 'Customer Order / LC No.', value: form.customerOrderOrLcNo || '—' },
