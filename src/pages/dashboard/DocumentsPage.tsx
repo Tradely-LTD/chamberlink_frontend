@@ -14,6 +14,9 @@ export type DocumentCategory =
   | 'business_registration'
   | 'tax_clearance'
   | 'export_permit'
+  | 'signature'
+  | 'cac_certificate'
+  | 'nepc_certificate'
   | 'other';
 
 const CATEGORY_LABELS: Record<DocumentCategory, string> = {
@@ -24,6 +27,9 @@ const CATEGORY_LABELS: Record<DocumentCategory, string> = {
   business_registration:'Business Registration',
   tax_clearance:        'Tax Clearance',
   export_permit:        'Export Permit',
+  signature:            'Signature',
+  cac_certificate:      'CAC Certificate',
+  nepc_certificate:     'NEPC Certificate',
   other:                'Other',
 };
 
@@ -35,6 +41,9 @@ const CATEGORY_COLORS: Record<DocumentCategory, { bg: string; text: string }> = 
   business_registration: { bg: '#e0e3e5', text: '#44474e' },
   tax_clearance:         { bg: '#fce4ec', text: '#880e4f' },
   export_permit:         { bg: '#e0f2fe', text: '#01579b' },
+  signature:             { bg: '#fff3c4', text: '#7a5c00' },
+  cac_certificate:       { bg: '#d1f5ea', text: '#00695c' },
+  nepc_certificate:      { bg: '#e3d9ff', text: '#4527a0' },
   other:                 { bg: '#f5f5f5', text: '#616161' },
 };
 

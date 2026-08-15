@@ -7,22 +7,33 @@ import {
   useUpdateEcoDraftMutation,
   useSubmitEcoDraftMutation,
   useGetEcoCertificateQuery,
+  useGetSolidMineralsQuery,
+  useGetOnboardedTenantsQuery,
 } from '@features/eco/ecoApi';
 import type { NewECertPayload } from '@features/eco/ecoApi';
+import { NIGERIAN_STATES } from '@shared/constants/nigerianStates';
 import { Input } from '@shared/ui/Input';
 import { Button } from '@shared/ui/Button';
 import { ErrorBanner } from '@shared/ui/ErrorBanner';
 import { emptyApi } from '@shared/api/emptyApi';
 import type { DocumentCategory } from './DocumentsPage';
 
-const STEPS = ['Cargo Details', 'Parties & Route', 'Supporting Documents', 'Review & Submit'];
-
-const SHIPPING_METHODS: { label: string; value: NewECertPayload['shippingMethod'] }[] = [
-  { label: 'Sea Freight', value: 'sea' },
-  { label: 'Air Freight', value: 'air' },
-  { label: 'Road Transport', value: 'road' },
-  { label: 'Rail Freight', value: 'rail' },
+const STEPS = [
+  'Product & Goods',
+  'Exporter & Consignee',
+  'Shipment & Transport',
+  'Commercial Information',
+  'Compliance Documents',
+  'Review & Submit',
 ];
+
+const MEANS_OF_TRANSPORT: { label: string; value: NewECertPayload['meansOfTransport'] }[] = [
+  { label: 'Sea', value: 'sea' },
+  { label: 'Air', value: 'air' },
+  { label: 'Land', value: 'land' },
+];
+
+const UNKNOWN_VALUE = '***';
 
 // Inline docs API for library picker
 interface LibraryDoc { id: string; name: string; category: DocumentCategory; uploadedAt: string; }
@@ -108,12 +119,63 @@ function DocSlot({ label, filterCategory, selectedDocId, selectedFile, onSelectD
   );
 }
 
+const textareaClass = 'w-full rounded-lg border border-[#bec9bf]/60 px-3 py-2.5 text-sm text-[#221a0f] placeholder-[#8A7E6E] focus:outline-none focus:ring-2 focus:ring-[#023293]/30 focus:border-[#023293] resize-none';
+const selectClass = 'w-full rounded-lg border border-[#bec9bf]/60 px-3 py-2.5 text-sm text-[#221a0f] focus:outline-none focus:ring-2 focus:ring-[#023293]/30 focus:border-[#023293]';
+const labelClass = 'block text-sm font-medium text-[#221a0f] mb-1.5';
+
+interface FormState {
+  tenantId: string;
+  solidMineralId: string;
+  descriptionOfGoods: string;
+  numberAndKindOfPackages: string;
+  marksAndNumbers: string;
+  quantity: string;
+  quantityUnit: 'KG' | 'MT';
+  originStates: string[];
+  destinationCountry: string;
+  destinationPort: string;
+  batchIdNo: string;
+  isLicenseOwner: boolean;
+  miningLicenseNo: string;
+  companyName: string;
+  companyAddress: string;
+  companyCountry: string;
+  companyEmail: string;
+  companyPhone: string;
+  consigneeName: string;
+  consigneeAddress: string;
+  departureDate: string;
+  meansOfTransport: NonNullable<NewECertPayload['meansOfTransport']>;
+  vesselFlightVehicleNameVoyageNo: string;
+  portOfLoading: string;
+  portOfDischarge: string;
+  invoiceNumber: string;
+  invoiceDate: string;
+  invoiceTotal: string;
+  customerOrderOrLcNo: string;
+  selfDeclaredIsMember: boolean;
+  selfDeclaredMembershipId: string;
+}
+
+const initialForm: FormState = {
+  tenantId: '', solidMineralId: '', descriptionOfGoods: '', numberAndKindOfPackages: '', marksAndNumbers: '',
+  quantity: '', quantityUnit: 'KG', originStates: [], destinationCountry: '', destinationPort: '', batchIdNo: '',
+  isLicenseOwner: false, miningLicenseNo: '',
+  companyName: '', companyAddress: '', companyCountry: 'Nigeria', companyEmail: '', companyPhone: '',
+  consigneeName: '', consigneeAddress: '',
+  departureDate: '', meansOfTransport: 'sea', vesselFlightVehicleNameVoyageNo: '', portOfLoading: '', portOfDischarge: '',
+  invoiceNumber: '', invoiceDate: '', invoiceTotal: '', customerOrderOrLcNo: '',
+  selfDeclaredIsMember: false, selfDeclaredMembershipId: '',
+};
+
 export function EcoApplyPage() {
   const navigate = useNavigate();
   const { certId } = useParams<{ certId?: string }>();
   const isEditing = !!certId;
 
   const { data: existingCert } = useGetEcoCertificateQuery(certId ?? '', { skip: !certId });
+  const { data: solidMinerals = [] } = useGetSolidMineralsQuery();
+  const { data: onboardedTenants = [] } = useGetOnboardedTenantsQuery();
 
   const [createEco, { isLoading: isCreating }] = useCreateEcoCertificateMutation();
   const [createEcoWithFiles, { isLoading: isCreatingFiles }] = useCreateEcoCertificateWithFilesMutation();
@@ -127,78 +189,169 @@ export function EcoApplyPage() {
   const [draftSaved, setDraftSaved] = useState(false);
   const [currentDraftId, setCurrentDraftId] = useState<string | null>(certId ?? null);
 
-  const [form, setForm] = useState({
-    hsCode: '', cargoDescription: '', cargoWeight: '', shippingMethod: 'sea' as NewECertPayload['shippingMethod'],
-    destinationCountry: '', destinationPort: '', exporterName: '', exporterAddress: '',
-    consigneeName: '', consigneeAddress: '', isExpedited: false,
-  });
+  const [form, setForm] = useState<FormState>(initialForm);
 
-  const [commercialInvoiceDocId, setCommercialInvoiceDocId] = useState<string | null>(null);
-  const [commercialInvoiceFile, setCommercialInvoiceFile] = useState<File | null>(null);
-  const [packingListDocId, setPackingListDocId] = useState<string | null>(null);
-  const [packingListFile, setPackingListFile] = useState<File | null>(null);
+  // "I don't know yet" toggles for shipment subfields that accept the literal "***"
+  const [departureUnknown, setDepartureUnknown] = useState(false);
+  const [vesselUnknown, setVesselUnknown] = useState(false);
+  const [loadingPortUnknown, setLoadingPortUnknown] = useState(false);
+  const [dischargePortUnknown, setDischargePortUnknown] = useState(false);
+
+  const [invoiceDocId, setInvoiceDocId] = useState<string | null>(null);
+  const [invoiceFile, setInvoiceFile] = useState<File | null>(null);
+  const [signatureDocId, setSignatureDocId] = useState<string | null>(null);
+  const [signatureFile, setSignatureFile] = useState<File | null>(null);
+  const [cacCertificateDocId, setCacCertificateDocId] = useState<string | null>(null);
+  const [cacCertificateFile, setCacCertificateFile] = useState<File | null>(null);
+  const [nepcCertificateDocId, setNepcCertificateDocId] = useState<string | null>(null);
+  const [nepcCertificateFile, setNepcCertificateFile] = useState<File | null>(null);
+
+  const chamberLocked = !!existingCert && existingCert.status !== 'draft';
 
   // Pre-populate form when editing existing draft/revision_requested
   useEffect(() => {
     if (!existingCert) return;
     setForm({
-      hsCode: existingCert.hsCode ?? '',
-      cargoDescription: existingCert.cargoDescription ?? '',
-      cargoWeight: existingCert.cargoWeight ? String(existingCert.cargoWeight) : '',
-      shippingMethod: (existingCert.shippingMethod as NewECertPayload['shippingMethod']) ?? 'sea',
+      tenantId: existingCert.tenantId ?? '',
+      solidMineralId: existingCert.solidMineralId ?? '',
+      descriptionOfGoods: existingCert.descriptionOfGoods ?? '',
+      numberAndKindOfPackages: existingCert.numberAndKindOfPackages ?? '',
+      marksAndNumbers: existingCert.marksAndNumbers ?? '',
+      quantity: existingCert.quantity != null ? String(existingCert.quantity) : '',
+      quantityUnit: existingCert.quantityUnit ?? 'KG',
+      originStates: existingCert.originStates ?? [],
       destinationCountry: existingCert.destinationCountry ?? '',
       destinationPort: existingCert.destinationPort ?? '',
-      exporterName: existingCert.exporterName ?? '',
-      exporterAddress: existingCert.exporterAddress ?? '',
+      batchIdNo: existingCert.batchIdNo ?? '',
+      isLicenseOwner: existingCert.isLicenseOwner ?? false,
+      miningLicenseNo: existingCert.miningLicenseNo ?? '',
+      companyName: existingCert.companyName ?? '',
+      companyAddress: existingCert.companyAddress ?? '',
+      companyCountry: existingCert.companyCountry ?? 'Nigeria',
+      companyEmail: existingCert.companyEmail ?? '',
+      companyPhone: existingCert.companyPhone ?? '',
       consigneeName: existingCert.consigneeName ?? '',
       consigneeAddress: existingCert.consigneeAddress ?? '',
-      isExpedited: existingCert.isExpedited ?? false,
+      departureDate: existingCert.departureDate ?? '',
+      meansOfTransport: existingCert.meansOfTransport ?? 'sea',
+      vesselFlightVehicleNameVoyageNo: existingCert.vesselFlightVehicleNameVoyageNo ?? '',
+      portOfLoading: existingCert.portOfLoading ?? '',
+      portOfDischarge: existingCert.portOfDischarge ?? '',
+      invoiceNumber: existingCert.invoiceNumber ?? '',
+      invoiceDate: existingCert.invoiceDate ?? '',
+      invoiceTotal: existingCert.invoiceTotal != null ? String(existingCert.invoiceTotal) : '',
+      customerOrderOrLcNo: existingCert.customerOrderOrLcNo ?? '',
+      selfDeclaredIsMember: existingCert.selfDeclaredIsMember ?? false,
+      selfDeclaredMembershipId: existingCert.selfDeclaredMembershipId ?? '',
     });
+    setDepartureUnknown(existingCert.departureDate === UNKNOWN_VALUE);
+    setVesselUnknown(existingCert.vesselFlightVehicleNameVoyageNo === UNKNOWN_VALUE);
+    setLoadingPortUnknown(existingCert.portOfLoading === UNKNOWN_VALUE);
+    setDischargePortUnknown(existingCert.portOfDischarge === UNKNOWN_VALUE);
   }, [existingCert]);
 
-  const set = <K extends keyof typeof form>(field: K, value: typeof form[K]) =>
+  const set = <K extends keyof FormState>(field: K, value: FormState[K]) =>
     setForm((f) => ({ ...f, [field]: value }));
 
+  const setUnknown = (
+    field: 'departureDate' | 'vesselFlightVehicleNameVoyageNo' | 'portOfLoading' | 'portOfDischarge',
+    setter: (v: boolean) => void,
+    checked: boolean,
+  ) => {
+    setter(checked);
+    set(field, checked ? UNKNOWN_VALUE : '');
+  };
+
+  const selectedMineral = solidMinerals.find((m) => m.id === form.solidMineralId);
+
   const buildFormDataOrJson = () => {
-    const hasFiles = !!(commercialInvoiceFile || packingListFile);
+    const hasFiles = !!(invoiceFile || signatureFile || cacCertificateFile || nepcCertificateFile);
+
+    const jsonBody: Partial<NewECertPayload> = {
+      solidMineralId: form.solidMineralId || undefined,
+      descriptionOfGoods: form.descriptionOfGoods || undefined,
+      numberAndKindOfPackages: form.numberAndKindOfPackages || undefined,
+      marksAndNumbers: form.marksAndNumbers || undefined,
+      quantity: form.quantity ? Number(form.quantity) : undefined,
+      quantityUnit: form.quantityUnit,
+      originStates: form.originStates.length ? form.originStates : undefined,
+      destinationCountry: form.destinationCountry || undefined,
+      destinationPort: form.destinationPort || undefined,
+      batchIdNo: form.batchIdNo || undefined,
+      isLicenseOwner: form.isLicenseOwner,
+      miningLicenseNo: form.isLicenseOwner ? (form.miningLicenseNo || undefined) : undefined,
+      companyName: form.companyName || undefined,
+      companyAddress: form.companyAddress || undefined,
+      companyCountry: form.companyCountry || undefined,
+      companyEmail: form.companyEmail || undefined,
+      companyPhone: form.companyPhone || undefined,
+      consigneeName: form.consigneeName || undefined,
+      consigneeAddress: form.consigneeAddress || undefined,
+      departureDate: form.departureDate || undefined,
+      meansOfTransport: form.meansOfTransport,
+      vesselFlightVehicleNameVoyageNo: form.vesselFlightVehicleNameVoyageNo || undefined,
+      portOfLoading: form.portOfLoading || undefined,
+      portOfDischarge: form.portOfDischarge || undefined,
+      invoiceNumber: form.invoiceNumber || undefined,
+      invoiceDate: form.invoiceDate || undefined,
+      invoiceTotal: form.invoiceTotal ? Number(form.invoiceTotal) : undefined,
+      customerOrderOrLcNo: form.customerOrderOrLcNo || undefined,
+      tenantId: form.tenantId || undefined,
+      selfDeclaredIsMember: form.selfDeclaredIsMember,
+      selfDeclaredMembershipId: form.selfDeclaredIsMember ? (form.selfDeclaredMembershipId || undefined) : undefined,
+      invoiceDocId: invoiceDocId ?? undefined,
+      signatureDocId: signatureDocId ?? undefined,
+      cacCertificateDocId: cacCertificateDocId ?? undefined,
+      nepcCertificateDocId: nepcCertificateDocId ?? undefined,
+    };
+
     if (!hasFiles) {
-      return {
-        isFormData: false,
-        body: {
-          hsCode: form.hsCode || undefined,
-          cargoDescription: form.cargoDescription || undefined,
-          cargoWeight: form.cargoWeight ? parseFloat(form.cargoWeight) : undefined,
-          shippingMethod: form.shippingMethod,
-          destinationCountry: form.destinationCountry || undefined,
-          destinationPort: form.destinationPort || undefined,
-          exporterName: form.exporterName || undefined,
-          exporterAddress: form.exporterAddress || undefined,
-          consigneeName: form.consigneeName || undefined,
-          consigneeAddress: form.consigneeAddress || undefined,
-          isExpedited: form.isExpedited,
-          commercialInvoiceDocId: commercialInvoiceDocId ?? undefined,
-          packingListDocId: packingListDocId ?? undefined,
-        } as Partial<NewECertPayload>,
-      };
+      return { isFormData: false as const, body: jsonBody };
     }
+
     const fd = new FormData();
-    const append = (k: string, v: string | boolean | number | undefined) => { if (v !== undefined) fd.append(k, String(v)); };
-    append('hsCode', form.hsCode);
-    append('cargoDescription', form.cargoDescription);
-    if (form.cargoWeight) append('cargoWeight', parseFloat(form.cargoWeight));
-    append('shippingMethod', form.shippingMethod);
+    const append = (k: string, v: string | boolean | number | undefined) => { if (v !== undefined && v !== '') fd.append(k, String(v)); };
+    append('solidMineralId', form.solidMineralId);
+    append('descriptionOfGoods', form.descriptionOfGoods);
+    append('numberAndKindOfPackages', form.numberAndKindOfPackages);
+    append('marksAndNumbers', form.marksAndNumbers);
+    if (form.quantity) append('quantity', Number(form.quantity));
+    append('quantityUnit', form.quantityUnit);
+    fd.append('originStates', JSON.stringify(form.originStates));
     append('destinationCountry', form.destinationCountry);
-    if (form.destinationPort) append('destinationPort', form.destinationPort);
-    if (form.exporterName) append('exporterName', form.exporterName);
-    if (form.exporterAddress) append('exporterAddress', form.exporterAddress);
-    if (form.consigneeName) append('consigneeName', form.consigneeName);
-    if (form.consigneeAddress) append('consigneeAddress', form.consigneeAddress);
-    append('isExpedited', form.isExpedited);
-    if (commercialInvoiceFile) fd.append('commercialInvoice', commercialInvoiceFile);
-    if (packingListFile) fd.append('packingList', packingListFile);
-    if (commercialInvoiceDocId) append('commercialInvoiceDocId', commercialInvoiceDocId);
-    if (packingListDocId) append('packingListDocId', packingListDocId);
-    return { isFormData: true, body: fd };
+    append('destinationPort', form.destinationPort);
+    append('batchIdNo', form.batchIdNo);
+    append('isLicenseOwner', form.isLicenseOwner);
+    if (form.isLicenseOwner) append('miningLicenseNo', form.miningLicenseNo);
+    append('companyName', form.companyName);
+    append('companyAddress', form.companyAddress);
+    append('companyCountry', form.companyCountry);
+    append('companyEmail', form.companyEmail);
+    append('companyPhone', form.companyPhone);
+    append('consigneeName', form.consigneeName);
+    append('consigneeAddress', form.consigneeAddress);
+    append('departureDate', form.departureDate);
+    append('meansOfTransport', form.meansOfTransport);
+    append('vesselFlightVehicleNameVoyageNo', form.vesselFlightVehicleNameVoyageNo);
+    append('portOfLoading', form.portOfLoading);
+    append('portOfDischarge', form.portOfDischarge);
+    append('invoiceNumber', form.invoiceNumber);
+    append('invoiceDate', form.invoiceDate);
+    if (form.invoiceTotal) append('invoiceTotal', Number(form.invoiceTotal));
+    append('customerOrderOrLcNo', form.customerOrderOrLcNo);
+    append('tenantId', form.tenantId);
+    append('selfDeclaredIsMember', form.selfDeclaredIsMember);
+    if (form.selfDeclaredIsMember) append('selfDeclaredMembershipId', form.selfDeclaredMembershipId);
+    if (invoiceFile) fd.append('invoice', invoiceFile);
+    if (signatureFile) fd.append('signature', signatureFile);
+    if (cacCertificateFile) fd.append('cacCertificate', cacCertificateFile);
+    if (nepcCertificateFile) fd.append('nepcCertificate', nepcCertificateFile);
+    if (invoiceDocId) append('invoiceDocId', invoiceDocId);
+    if (signatureDocId) append('signatureDocId', signatureDocId);
+    if (cacCertificateDocId) append('cacCertificateDocId', cacCertificateDocId);
+    if (nepcCertificateDocId) append('nepcCertificateDocId', nepcCertificateDocId);
+
+    return { isFormData: true as const, body: fd };
   };
 
   const handleSaveDraft = async () => {
@@ -206,10 +359,10 @@ export function EcoApplyPage() {
     try {
       const { isFormData, body } = buildFormDataOrJson();
       if (currentDraftId) {
-        const res = await updateDraft({ certId: currentDraftId, body: isFormData ? body as FormData : body }).unwrap();
+        const res = await updateDraft({ certId: currentDraftId, body: isFormData ? body : body }).unwrap();
         setCurrentDraftId(res.id);
       } else {
-        const res = await saveDraftEco(isFormData ? body as FormData : body as NewECertPayload).unwrap();
+        const res = await saveDraftEco(isFormData ? body : body).unwrap();
         setCurrentDraftId(res.id);
       }
       setDraftSaved(true);
@@ -221,12 +374,20 @@ export function EcoApplyPage() {
 
   const handleSubmit = async () => {
     setError(null);
+    if (form.invoiceTotal && Number(form.invoiceTotal) <= 0) {
+      setError('Invoice Total must be greater than zero.');
+      return;
+    }
+    if (!canContinueStep4) {
+      setError('Invoice, Signature, CAC Certificate, and NEPC Certificate are all required to submit.');
+      return;
+    }
     const { isFormData, body } = buildFormDataOrJson();
     try {
       if (currentDraftId) {
-        await submitDraft({ certId: currentDraftId, body: isFormData ? body as FormData : body as NewECertPayload }).unwrap();
+        await submitDraft({ certId: currentDraftId, body: isFormData ? body : body as NewECertPayload }).unwrap();
       } else if (isFormData) {
-        await createEcoWithFiles(body as FormData).unwrap();
+        await createEcoWithFiles(body).unwrap();
       } else {
         await createEco(body as NewECertPayload).unwrap();
       }
@@ -237,8 +398,40 @@ export function EcoApplyPage() {
   };
 
   const isRevisionRequested = existingCert?.status === 'revision_requested';
-  const canContinueStep0 = !!(form.hsCode && form.cargoDescription && form.cargoWeight);
-  const canContinueStep1 = !!(form.destinationCountry && form.exporterName && form.exporterAddress);
+
+  const canContinueStep0 = !!(
+    form.tenantId && form.solidMineralId && form.descriptionOfGoods && form.numberAndKindOfPackages
+    && form.quantity && form.originStates.length > 0 && form.destinationCountry
+  );
+  const canContinueStep1 = !!(
+    form.companyName && form.companyAddress && form.companyCountry && form.companyEmail && form.companyPhone
+    && form.consigneeName && form.consigneeAddress
+    && (!form.isLicenseOwner || form.miningLicenseNo)
+    && (!form.selfDeclaredIsMember || form.selfDeclaredMembershipId)
+  );
+  const canContinueStep2 = !!(
+    form.departureDate && form.meansOfTransport && form.vesselFlightVehicleNameVoyageNo
+    && form.portOfLoading && form.portOfDischarge
+  );
+  const canContinueStep3 = !!(form.invoiceDate && form.invoiceTotal && Number(form.invoiceTotal) > 0);
+  // All four documents are compulsory — an existing draft's already-saved key
+  // (invoiceFileKey etc. via existingCert) also counts, not just a file/docId
+  // picked in this session.
+  const canContinueStep4 = !!(
+    (invoiceFile || invoiceDocId || existingCert?.invoiceFileKey)
+    && (signatureFile || signatureDocId || existingCert?.signatureKey)
+    && (cacCertificateFile || cacCertificateDocId || existingCert?.cacCertificateKey)
+    && (nepcCertificateFile || nepcCertificateDocId || existingCert?.nepcCertificateKey)
+  );
+
+  const canContinue = [canContinueStep0, canContinueStep1, canContinueStep2, canContinueStep3, canContinueStep4, true];
+
+  const feeEstimate = form.invoiceTotal
+    ? {
+      verified: Number(form.invoiceTotal) * 0.0011,
+      unverified: Number(form.invoiceTotal) * 0.00125,
+    }
+    : null;
 
   return (
     <div className="p-6 max-w-2xl">
@@ -267,16 +460,16 @@ export function EcoApplyPage() {
       )}
 
       {/* Step indicator */}
-      <div className="flex items-center gap-0 mb-8">
+      <div className="flex items-center gap-0 mb-8 overflow-x-auto">
         {STEPS.map((label, i) => (
           <div key={label} className="flex items-center flex-1 last:flex-none">
             <div className="flex flex-col items-center">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${i <= step ? 'bg-[#023293] text-white' : 'bg-[#bec9bf]/30 text-[#8A7E6E]'}`}>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium flex-shrink-0 ${i <= step ? 'bg-[#023293] text-white' : 'bg-[#bec9bf]/30 text-[#8A7E6E]'}`}>
                 {i < step ? '✓' : i + 1}
               </div>
               <span className={`text-xs mt-1 whitespace-nowrap ${i === step ? 'text-[#023293] font-medium' : 'text-[#8A7E6E]'}`}>{label}</span>
             </div>
-            {i < STEPS.length - 1 && <div className={`flex-1 h-px mx-2 mb-5 ${i < step ? 'bg-[#023293]' : 'bg-[#bec9bf]/40'}`} />}
+            {i < STEPS.length - 1 && <div className={`flex-1 h-px mx-2 mb-5 min-w-[16px] ${i < step ? 'bg-[#023293]' : 'bg-[#bec9bf]/40'}`} />}
           </div>
         ))}
       </div>
@@ -286,86 +479,349 @@ export function EcoApplyPage() {
       <div className="bg-white rounded-xl border border-[#bec9bf]/40 p-6">
         {step === 0 && (
           <div className="space-y-4">
-            <h2 className="font-medium text-[#221a0f] mb-4">Cargo Details</h2>
-            <Input label="HS Code *" placeholder="e.g. 0901.21" value={form.hsCode} onChange={(e) => set('hsCode', e.target.value)} />
+            <h2 className="font-medium text-[#221a0f] mb-4">Product & Goods Details</h2>
+
             <div>
-              <label className="block text-sm font-medium text-[#221a0f] mb-1.5">Cargo Description *</label>
-              <textarea rows={3} className="w-full rounded-lg border border-[#bec9bf]/60 px-3 py-2.5 text-sm text-[#221a0f] placeholder-[#8A7E6E] focus:outline-none focus:ring-2 focus:ring-[#023293]/30 focus:border-[#023293] resize-none"
-                placeholder="Describe the goods being exported" value={form.cargoDescription} onChange={(e) => set('cargoDescription', e.target.value)} />
+              <label className={labelClass}>From which Chamber of Commerce? *</label>
+              {chamberLocked ? (
+                <>
+                  <input
+                    disabled
+                    value={onboardedTenants.find((t) => t.id === form.tenantId)?.name ?? form.tenantId}
+                    className={`${selectClass} bg-[#f7f9f7] text-[#8A7E6E] cursor-not-allowed`}
+                  />
+                  <p className="text-xs text-[#8A7E6E] mt-1">Locked after first submission.</p>
+                </>
+              ) : (
+                <select className={selectClass} value={form.tenantId} onChange={(e) => set('tenantId', e.target.value)}>
+                  <option value="">Select a chamber…</option>
+                  {onboardedTenants.map((t) => (
+                    <option key={t.id} value={t.id}>{t.name}{t.city ? ` — ${t.city}` : ''}</option>
+                  ))}
+                </select>
+              )}
             </div>
-            <Input label="Cargo Weight (kg) *" type="number" placeholder="e.g. 1000" value={form.cargoWeight} onChange={(e) => set('cargoWeight', e.target.value)} />
+
             <div>
-              <label className="block text-sm font-medium text-[#221a0f] mb-1.5">Shipping Method *</label>
-              <select className="w-full rounded-lg border border-[#bec9bf]/60 px-3 py-2.5 text-sm text-[#221a0f] focus:outline-none focus:ring-2 focus:ring-[#023293]/30 focus:border-[#023293]"
-                value={form.shippingMethod} onChange={(e) => set('shippingMethod', e.target.value as NewECertPayload['shippingMethod'])}>
-                {SHIPPING_METHODS.map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
+              <label className={labelClass}>Solid Mineral *</label>
+              <select className={selectClass} value={form.solidMineralId} onChange={(e) => set('solidMineralId', e.target.value)}>
+                <option value="">Select a mineral…</option>
+                {solidMinerals.map((m) => (
+                  <option key={m.id} value={m.id}>{m.name}</option>
+                ))}
+              </select>
+              {selectedMineral && (
+                <div className="mt-1.5">
+                  <label className="block text-xs text-[#8A7E6E] mb-0.5">HS Code (auto-derived)</label>
+                  <input readOnly disabled value={selectedMineral.hsCode} className={`${selectClass} bg-[#f7f9f7] text-[#8A7E6E] cursor-not-allowed`} />
+                </div>
+              )}
+            </div>
+
+            <div>
+              <label className={labelClass}>Description of Goods *</label>
+              <textarea rows={3} className={textareaClass} placeholder="Describe the goods being exported"
+                value={form.descriptionOfGoods} onChange={(e) => set('descriptionOfGoods', e.target.value)} />
+            </div>
+
+            <Input label="Number and Kind of Packages *" placeholder="e.g. 50 sacks" value={form.numberAndKindOfPackages}
+              onChange={(e) => set('numberAndKindOfPackages', e.target.value)} />
+            <Input label="Marks and Numbers" placeholder="Optional shipping marks" value={form.marksAndNumbers}
+              onChange={(e) => set('marksAndNumbers', e.target.value)} />
+
+            <div className="grid grid-cols-2 gap-3">
+              <Input label="Quantity *" type="number" placeholder="e.g. 1000" value={form.quantity}
+                onChange={(e) => set('quantity', e.target.value)} />
+              <div>
+                <label className={labelClass}>Unit *</label>
+                <select className={selectClass} value={form.quantityUnit} onChange={(e) => set('quantityUnit', e.target.value as 'KG' | 'MT')}>
+                  <option value="KG">KG</option>
+                  <option value="MT">MT</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label className={labelClass}>Origin of Goods (Nigerian State) *</label>
+              <select className={selectClass} value={form.originStates[0] ?? ''}
+                onChange={(e) => set('originStates', e.target.value ? [e.target.value] : [])}>
+                <option value="">Select a state…</option>
+                {NIGERIAN_STATES.map((stateName) => (
+                  <option key={stateName} value={stateName}>{stateName}</option>
+                ))}
               </select>
             </div>
-            <label className="flex items-center gap-3 cursor-pointer">
-              <input type="checkbox" checked={form.isExpedited} onChange={(e) => set('isExpedited', e.target.checked)} className="w-4 h-4 rounded border-[#bec9bf] text-[#023293] focus:ring-[#023293]/30" />
-              <span className="text-sm text-[#221a0f]">Expedited processing <span className="text-[#8A7E6E]">(additional fee applies)</span></span>
-            </label>
+
+            <Input label="Destination Country *" placeholder="e.g. United Arab Emirates" value={form.destinationCountry}
+              onChange={(e) => set('destinationCountry', e.target.value)} />
+            <Input label="Destination Port" placeholder="Optional" value={form.destinationPort}
+              onChange={(e) => set('destinationPort', e.target.value)} />
+            <Input label="Batch/ID No." placeholder="Optional" value={form.batchIdNo}
+              onChange={(e) => set('batchIdNo', e.target.value)} />
           </div>
         )}
 
         {step === 1 && (
           <div className="space-y-4">
-            <h2 className="font-medium text-[#221a0f] mb-4">Parties & Route</h2>
-            <Input label="Destination Country *" placeholder="e.g. United States" value={form.destinationCountry} onChange={(e) => set('destinationCountry', e.target.value)} />
-            <Input label="Destination Port" placeholder="e.g. Port of New York" value={form.destinationPort} onChange={(e) => set('destinationPort', e.target.value)} />
-            <Input label="Exporter Name *" placeholder="Your company name" value={form.exporterName} onChange={(e) => set('exporterName', e.target.value)} />
+            <h2 className="font-medium text-[#221a0f] mb-4">Exporter/Company & Consignee Details</h2>
+
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" checked={form.isLicenseOwner} onChange={(e) => set('isLicenseOwner', e.target.checked)}
+                className="w-4 h-4 rounded border-[#bec9bf] text-[#023293] focus:ring-[#023293]/30" />
+              <span className="text-sm text-[#221a0f]">I am the mining license owner</span>
+            </label>
+            {form.isLicenseOwner && (
+              <Input label="Mining License No. *" value={form.miningLicenseNo}
+                onChange={(e) => set('miningLicenseNo', e.target.value)} />
+            )}
+
+            <Input label="Company Name *" value={form.companyName} onChange={(e) => set('companyName', e.target.value)} />
             <div>
-              <label className="block text-sm font-medium text-[#221a0f] mb-1.5">Exporter Address *</label>
-              <textarea rows={2} className="w-full rounded-lg border border-[#bec9bf]/60 px-3 py-2.5 text-sm text-[#221a0f] placeholder-[#8A7E6E] focus:outline-none focus:ring-2 focus:ring-[#023293]/30 focus:border-[#023293] resize-none"
-                placeholder="Full business address" value={form.exporterAddress} onChange={(e) => set('exporterAddress', e.target.value)} />
+              <label className={labelClass}>Company Address *</label>
+              <textarea rows={2} className={textareaClass} value={form.companyAddress} onChange={(e) => set('companyAddress', e.target.value)} />
             </div>
-            <Input label="Consignee Name" placeholder="Recipient company name" value={form.consigneeName} onChange={(e) => set('consigneeName', e.target.value)} />
+            <Input label="Company Country *" value={form.companyCountry} onChange={(e) => set('companyCountry', e.target.value)} />
+            <Input label="Company Email *" type="email" value={form.companyEmail} onChange={(e) => set('companyEmail', e.target.value)} />
+            <Input label="Company Phone *" value={form.companyPhone} onChange={(e) => set('companyPhone', e.target.value)} />
+
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" checked={form.selfDeclaredIsMember} onChange={(e) => set('selfDeclaredIsMember', e.target.checked)}
+                className="w-4 h-4 rounded border-[#bec9bf] text-[#023293] focus:ring-[#023293]/30" />
+              <span className="text-sm text-[#221a0f]">Are you a member of any chamber of commerce?</span>
+            </label>
+            {form.selfDeclaredIsMember && (
+              <div className="pl-4 border-l-2 border-[#bec9bf]/40 space-y-3">
+                <div>
+                  <label className={labelClass}>Which chamber are you a member of? *</label>
+                  <select className={selectClass} value={form.tenantId} onChange={(e) => set('tenantId', e.target.value)} disabled={chamberLocked}>
+                    <option value="">Select a chamber…</option>
+                    {onboardedTenants.map((t) => (
+                      <option key={t.id} value={t.id}>{t.name}{t.city ? ` — ${t.city}` : ''}</option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-[#8A7E6E] mt-1">Same chamber your application is routed to — the one selected in Product &amp; Goods.</p>
+                </div>
+                <Input label="Membership ID *" value={form.selfDeclaredMembershipId}
+                  onChange={(e) => set('selfDeclaredMembershipId', e.target.value)} />
+              </div>
+            )}
+
+            <hr className="border-[#bec9bf]/30" />
+
+            <Input label="Consignee Full Legal Name *" value={form.consigneeName} onChange={(e) => set('consigneeName', e.target.value)} />
             <div>
-              <label className="block text-sm font-medium text-[#221a0f] mb-1.5">Consignee Address</label>
-              <textarea rows={2} className="w-full rounded-lg border border-[#bec9bf]/60 px-3 py-2.5 text-sm text-[#221a0f] placeholder-[#8A7E6E] focus:outline-none focus:ring-2 focus:ring-[#023293]/30 focus:border-[#023293] resize-none"
-                value={form.consigneeAddress} onChange={(e) => set('consigneeAddress', e.target.value)} />
+              <label className={labelClass}>Consignee Address *</label>
+              <textarea rows={2} className={textareaClass} value={form.consigneeAddress} onChange={(e) => set('consigneeAddress', e.target.value)} />
             </div>
           </div>
         )}
 
         {step === 2 && (
           <div className="space-y-4">
-            <div className="mb-4">
-              <h2 className="font-medium text-[#221a0f]">Supporting Documents</h2>
-              <p className="text-xs text-[#8A7E6E] mt-1">Select from your library or upload new files. Both are optional — you can attach documents later.</p>
+            <h2 className="font-medium text-[#221a0f] mb-1">Shipment & Transport</h2>
+            <p className="text-xs text-[#8A7E6E] mb-3">
+              If any of these details aren&apos;t known yet, tick &quot;I don&apos;t know yet&quot; — we&apos;ll record it as unknown ({UNKNOWN_VALUE}).
+            </p>
+
+            <div>
+              <label className={labelClass}>Departure Date *</label>
+              <input type="date" disabled={departureUnknown}
+                className={`${selectClass} ${departureUnknown ? 'bg-[#f7f9f7] text-[#8A7E6E]' : ''}`}
+                value={departureUnknown ? '' : form.departureDate}
+                onChange={(e) => set('departureDate', e.target.value)} />
+              <label className="flex items-center gap-2 mt-1.5 cursor-pointer">
+                <input type="checkbox" checked={departureUnknown}
+                  onChange={(e) => setUnknown('departureDate', setDepartureUnknown, e.target.checked)}
+                  className="w-3.5 h-3.5 rounded border-[#bec9bf] text-[#023293] focus:ring-[#023293]/30" />
+                <span className="text-xs text-[#8A7E6E]">I don&apos;t know yet</span>
+              </label>
             </div>
-            <DocSlot label="Commercial Invoice" filterCategory="commercial_invoice" selectedDocId={commercialInvoiceDocId} selectedFile={commercialInvoiceFile} onSelectDocId={setCommercialInvoiceDocId} onSelectFile={setCommercialInvoiceFile} />
-            <DocSlot label="Packing List" filterCategory="packing_list" selectedDocId={packingListDocId} selectedFile={packingListFile} onSelectDocId={setPackingListDocId} onSelectFile={setPackingListFile} />
-            {(commercialInvoiceDocId || commercialInvoiceFile || packingListDocId || packingListFile) && (
-              <div className="rounded-lg bg-green-50 border border-green-200 px-4 py-3 text-xs text-green-700">
-                {[(commercialInvoiceDocId || commercialInvoiceFile) && 'Commercial Invoice attached', (packingListDocId || packingListFile) && 'Packing List attached'].filter(Boolean).join(' · ')}
-              </div>
-            )}
+
+            <div>
+              <label className={labelClass}>Means of Transport *</label>
+              <select className={selectClass} value={form.meansOfTransport} onChange={(e) => set('meansOfTransport', e.target.value as FormState['meansOfTransport'])}>
+                {MEANS_OF_TRANSPORT.map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
+              </select>
+            </div>
+
+            <div>
+              <Input label="Vessel/Flight/Vehicle Name & Voyage No. *" disabled={vesselUnknown}
+                value={vesselUnknown ? '' : form.vesselFlightVehicleNameVoyageNo}
+                onChange={(e) => set('vesselFlightVehicleNameVoyageNo', e.target.value)} />
+              <label className="flex items-center gap-2 mt-1.5 cursor-pointer">
+                <input type="checkbox" checked={vesselUnknown}
+                  onChange={(e) => setUnknown('vesselFlightVehicleNameVoyageNo', setVesselUnknown, e.target.checked)}
+                  className="w-3.5 h-3.5 rounded border-[#bec9bf] text-[#023293] focus:ring-[#023293]/30" />
+                <span className="text-xs text-[#8A7E6E]">I don&apos;t know yet</span>
+              </label>
+            </div>
+
+            <div>
+              <Input label="Port of Loading *" disabled={loadingPortUnknown}
+                value={loadingPortUnknown ? '' : form.portOfLoading}
+                onChange={(e) => set('portOfLoading', e.target.value)} />
+              <label className="flex items-center gap-2 mt-1.5 cursor-pointer">
+                <input type="checkbox" checked={loadingPortUnknown}
+                  onChange={(e) => setUnknown('portOfLoading', setLoadingPortUnknown, e.target.checked)}
+                  className="w-3.5 h-3.5 rounded border-[#bec9bf] text-[#023293] focus:ring-[#023293]/30" />
+                <span className="text-xs text-[#8A7E6E]">I don&apos;t know yet</span>
+              </label>
+            </div>
+
+            <div>
+              <Input label="Port of Discharge *" disabled={dischargePortUnknown}
+                value={dischargePortUnknown ? '' : form.portOfDischarge}
+                onChange={(e) => set('portOfDischarge', e.target.value)} />
+              <label className="flex items-center gap-2 mt-1.5 cursor-pointer">
+                <input type="checkbox" checked={dischargePortUnknown}
+                  onChange={(e) => setUnknown('portOfDischarge', setDischargePortUnknown, e.target.checked)}
+                  className="w-3.5 h-3.5 rounded border-[#bec9bf] text-[#023293] focus:ring-[#023293]/30" />
+                <span className="text-xs text-[#8A7E6E]">I don&apos;t know yet</span>
+              </label>
+            </div>
           </div>
         )}
 
         {step === 3 && (
           <div className="space-y-4">
-            <h2 className="font-medium text-[#221a0f] mb-4">Review Your Application</h2>
-            <dl className="divide-y divide-[#bec9bf]/30 rounded-lg border border-[#bec9bf]/40 overflow-hidden">
-              {[
-                { label: 'HS Code', value: form.hsCode },
-                { label: 'Cargo Description', value: form.cargoDescription },
-                { label: 'Weight', value: form.cargoWeight ? `${form.cargoWeight} kg` : '—' },
-                { label: 'Shipping Method', value: SHIPPING_METHODS.find((m) => m.value === form.shippingMethod)?.label ?? form.shippingMethod },
-                { label: 'Destination', value: [form.destinationCountry, form.destinationPort].filter(Boolean).join(', ') || '—' },
-                { label: 'Exporter', value: form.exporterName },
-                { label: 'Consignee', value: form.consigneeName || '—' },
-                { label: 'Expedited', value: form.isExpedited ? 'Yes (+₦10,000)' : 'No' },
-                { label: 'Commercial Invoice', value: commercialInvoiceFile?.name ?? (commercialInvoiceDocId ? 'From library' : '—') },
-                { label: 'Packing List', value: packingListFile?.name ?? (packingListDocId ? 'From library' : '—') },
-              ].map((row) => (
-                <div key={row.label} className="grid grid-cols-3 gap-4 px-4 py-3">
-                  <dt className="text-sm text-[#8A7E6E]">{row.label}</dt>
-                  <dd className="col-span-2 text-sm text-[#221a0f]">{row.value}</dd>
-                </div>
-              ))}
-            </dl>
+            <h2 className="font-medium text-[#221a0f] mb-4">Commercial Information</h2>
+            <Input label="Invoice Number" placeholder="Optional" value={form.invoiceNumber} onChange={(e) => set('invoiceNumber', e.target.value)} />
+            <Input label="Invoice Date *" type="date" value={form.invoiceDate} onChange={(e) => set('invoiceDate', e.target.value)} />
+            <Input label="Invoice Total (NGN) *" type="number" min="0.01" step="0.01" placeholder="Amount in Naira, must be greater than 0"
+              value={form.invoiceTotal} onChange={(e) => set('invoiceTotal', e.target.value)} />
+            {form.invoiceTotal !== '' && Number(form.invoiceTotal) <= 0 && (
+              <p className="text-xs text-red-600">Invoice Total must be greater than zero.</p>
+            )}
+            <Input label="Customer Order / LC No." placeholder="Optional" value={form.customerOrderOrLcNo}
+              onChange={(e) => set('customerOrderOrLcNo', e.target.value)} />
+          </div>
+        )}
+
+        {step === 4 && (
+          <div className="space-y-4">
+            <div className="mb-4">
+              <h2 className="font-medium text-[#221a0f]">Compliance / Declaration Documents</h2>
+              <p className="text-xs text-[#8A7E6E] mt-1">All four documents below are required. Select from your library or upload new files.</p>
+            </div>
+            <DocSlot label="Attach Invoice *" filterCategory="commercial_invoice" selectedDocId={invoiceDocId} selectedFile={invoiceFile} onSelectDocId={setInvoiceDocId} onSelectFile={setInvoiceFile} />
+            <DocSlot label="Signature *" filterCategory="signature" selectedDocId={signatureDocId} selectedFile={signatureFile} onSelectDocId={setSignatureDocId} onSelectFile={setSignatureFile} />
+            <DocSlot label="CAC Certificate *" filterCategory="cac_certificate" selectedDocId={cacCertificateDocId} selectedFile={cacCertificateFile} onSelectDocId={setCacCertificateDocId} onSelectFile={setCacCertificateFile} />
+            <DocSlot label="NEPC Certificate *" filterCategory="nepc_certificate" selectedDocId={nepcCertificateDocId} selectedFile={nepcCertificateFile} onSelectDocId={setNepcCertificateDocId} onSelectFile={setNepcCertificateFile} />
+          </div>
+        )}
+
+        {step === 5 && (
+          <div className="space-y-6">
+            <h2 className="font-medium text-[#221a0f]">Review Your Application</h2>
+
+            <div>
+              <h3 className="text-xs font-semibold text-[#8A7E6E] uppercase tracking-wide mb-2">Product & Goods</h3>
+              <dl className="divide-y divide-[#bec9bf]/30 rounded-lg border border-[#bec9bf]/40 overflow-hidden">
+                {[
+                  { label: 'Chamber', value: onboardedTenants.find((t) => t.id === form.tenantId)?.name ?? form.tenantId },
+                  { label: 'Solid Mineral', value: selectedMineral?.name ?? '—' },
+                  { label: 'HS Code', value: selectedMineral?.hsCode ?? '—' },
+                  { label: 'Description', value: form.descriptionOfGoods },
+                  { label: 'Packages', value: form.numberAndKindOfPackages },
+                  { label: 'Marks & Numbers', value: form.marksAndNumbers || '—' },
+                  { label: 'Quantity', value: form.quantity ? `${form.quantity} ${form.quantityUnit}` : '—' },
+                  { label: 'Origin States', value: form.originStates.join(', ') || '—' },
+                  { label: 'Destination', value: [form.destinationCountry, form.destinationPort].filter(Boolean).join(', ') || '—' },
+                  { label: 'Batch/ID No.', value: form.batchIdNo || '—' },
+                ].map((row) => (
+                  <div key={row.label} className="grid grid-cols-3 gap-4 px-4 py-3">
+                    <dt className="text-sm text-[#8A7E6E]">{row.label}</dt>
+                    <dd className="col-span-2 text-sm text-[#221a0f]">{row.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+
+            <div>
+              <h3 className="text-xs font-semibold text-[#8A7E6E] uppercase tracking-wide mb-2">Exporter/Company & Consignee</h3>
+              <dl className="divide-y divide-[#bec9bf]/30 rounded-lg border border-[#bec9bf]/40 overflow-hidden">
+                {[
+                  { label: 'License Owner', value: form.isLicenseOwner ? `Yes (${form.miningLicenseNo || '—'})` : 'No' },
+                  { label: 'Company', value: form.companyName },
+                  { label: 'Company Address', value: form.companyAddress },
+                  { label: 'Company Country', value: form.companyCountry },
+                  { label: 'Company Email', value: form.companyEmail },
+                  { label: 'Company Phone', value: form.companyPhone },
+                  { label: 'Chamber Member', value: form.selfDeclaredIsMember ? `Yes (${form.selfDeclaredMembershipId || '—'})` : 'No' },
+                  { label: 'Consignee', value: form.consigneeName },
+                  { label: 'Consignee Address', value: form.consigneeAddress },
+                ].map((row) => (
+                  <div key={row.label} className="grid grid-cols-3 gap-4 px-4 py-3">
+                    <dt className="text-sm text-[#8A7E6E]">{row.label}</dt>
+                    <dd className="col-span-2 text-sm text-[#221a0f]">{row.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+
+            <div>
+              <h3 className="text-xs font-semibold text-[#8A7E6E] uppercase tracking-wide mb-2">Shipment & Transport</h3>
+              <dl className="divide-y divide-[#bec9bf]/30 rounded-lg border border-[#bec9bf]/40 overflow-hidden">
+                {[
+                  { label: 'Departure Date', value: form.departureDate || '—' },
+                  { label: 'Means of Transport', value: MEANS_OF_TRANSPORT.find((m) => m.value === form.meansOfTransport)?.label ?? form.meansOfTransport },
+                  { label: 'Vessel/Flight/Vehicle & Voyage No.', value: form.vesselFlightVehicleNameVoyageNo || '—' },
+                  { label: 'Port of Loading', value: form.portOfLoading || '—' },
+                  { label: 'Port of Discharge', value: form.portOfDischarge || '—' },
+                ].map((row) => (
+                  <div key={row.label} className="grid grid-cols-3 gap-4 px-4 py-3">
+                    <dt className="text-sm text-[#8A7E6E]">{row.label}</dt>
+                    <dd className="col-span-2 text-sm text-[#221a0f]">{row.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+
+            <div>
+              <h3 className="text-xs font-semibold text-[#8A7E6E] uppercase tracking-wide mb-2">Commercial Information</h3>
+              <dl className="divide-y divide-[#bec9bf]/30 rounded-lg border border-[#bec9bf]/40 overflow-hidden">
+                {[
+                  { label: 'Invoice Number', value: form.invoiceNumber || '—' },
+                  { label: 'Invoice Date', value: form.invoiceDate },
+                  { label: 'Invoice Total', value: form.invoiceTotal ? `₦${Number(form.invoiceTotal).toLocaleString()}` : '—' },
+                  { label: 'Customer Order / LC No.', value: form.customerOrderOrLcNo || '—' },
+                ].map((row) => (
+                  <div key={row.label} className="grid grid-cols-3 gap-4 px-4 py-3">
+                    <dt className="text-sm text-[#8A7E6E]">{row.label}</dt>
+                    <dd className="col-span-2 text-sm text-[#221a0f]">{row.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+
+            <div>
+              <h3 className="text-xs font-semibold text-[#8A7E6E] uppercase tracking-wide mb-2">Compliance Documents</h3>
+              <dl className="divide-y divide-[#bec9bf]/30 rounded-lg border border-[#bec9bf]/40 overflow-hidden">
+                {[
+                  { label: 'Invoice', value: invoiceFile?.name ?? (invoiceDocId ? 'From library' : '—') },
+                  { label: 'Signature', value: signatureFile?.name ?? (signatureDocId ? 'From library' : '—') },
+                  { label: 'CAC Certificate', value: cacCertificateFile?.name ?? (cacCertificateDocId ? 'From library' : '—') },
+                  { label: 'NEPC Certificate', value: nepcCertificateFile?.name ?? (nepcCertificateDocId ? 'From library' : '—') },
+                ].map((row) => (
+                  <div key={row.label} className="grid grid-cols-3 gap-4 px-4 py-3">
+                    <dt className="text-sm text-[#8A7E6E]">{row.label}</dt>
+                    <dd className="col-span-2 text-sm text-[#221a0f]">{row.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+
+            {feeEstimate && (
+              <div className="rounded-lg bg-[#f0faf4] border border-[#023293]/20 px-4 py-3 text-sm text-[#221a0f]">
+                <p className="font-medium mb-1">Estimated Application Fee</p>
+                <p className="text-xs text-[#8A7E6E]">
+                  ₦{feeEstimate.verified.toLocaleString(undefined, { maximumFractionDigits: 2 })} (0.11% — if chamber membership is verified) or{' '}
+                  ₦{feeEstimate.unverified.toLocaleString(undefined, { maximumFractionDigits: 2 })} (0.125% — otherwise).
+                  The final fee is confirmed by the reviewer at approval.
+                </p>
+              </div>
+            )}
+
             <p className="text-xs text-[#8A7E6E]">By submitting, you confirm that all information is accurate and complete.</p>
           </div>
         )}
@@ -377,8 +833,8 @@ export function EcoApplyPage() {
         </Button>
 
         <div className="flex items-center gap-3">
-          {/* Save Draft button — visible on steps 0–2 */}
-          {step < 3 && (
+          {/* Save Draft button — visible on every step except the final one */}
+          {step < STEPS.length - 1 && (
             <Button
               variant="outline"
               loading={isSavingDraft || isUpdating}
@@ -389,8 +845,7 @@ export function EcoApplyPage() {
           )}
 
           {step < STEPS.length - 1 ? (
-            <Button onClick={() => setStep((s) => s + 1)}
-              disabled={(step === 0 && !canContinueStep0) || (step === 1 && !canContinueStep1)}>
+            <Button onClick={() => setStep((s) => s + 1)} disabled={!canContinue[step]}>
               Continue
             </Button>
           ) : (
