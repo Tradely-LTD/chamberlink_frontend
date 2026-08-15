@@ -6,6 +6,7 @@ import {
   useGetEcoCertificateQuery,
   useReIssueCertificateMutation,
   useLazyGetEcoCertDownloadUrlQuery,
+  useLazyGetEcoDocumentUrlQuery,
   type ECertStatus,
 } from '@features/eco/ecoApi';
 import { SkeletonCard } from '@shared/ui/SkeletonCard';
@@ -36,6 +37,46 @@ const Row = ({ label, value }: { label: string; value: ReactNode }) => (
     <span className="text-sm text-[#221a0f] font-medium">{value ?? '—'}</span>
   </div>
 );
+
+// A compliance-document row that's clickable when the doc is actually
+// attached — fetches a fresh signed URL on click rather than storing one,
+// since these S3 URLs expire.
+const DocRow = ({ label, certId, docType, attached }: {
+  label: string; certId: string; docType: 'invoice' | 'signature' | 'cac' | 'nepc'; attached: boolean;
+}) => {
+  const [fetchUrl, { isFetching }] = useLazyGetEcoDocumentUrlQuery();
+  const [error, setError] = useState<string | null>(null);
+
+  const handleView = async () => {
+    setError(null);
+    try {
+      const { url } = await fetchUrl({ certId, docType }).unwrap();
+      window.open(url, '_blank', 'noopener,noreferrer');
+    } catch {
+      setError('Failed to open document');
+    }
+  };
+
+  return (
+    <div className="flex items-start py-3 border-b border-[#bec9bf]/20 last:border-0">
+      <span className="w-56 shrink-0 text-sm text-[#8A7E6E]">{label}</span>
+      {attached ? (
+        <span className="flex items-center gap-2">
+          <button
+            onClick={handleView}
+            disabled={isFetching}
+            className="text-sm font-medium text-[#023293] hover:underline disabled:opacity-60 disabled:no-underline"
+          >
+            {isFetching ? 'Opening…' : 'View Attached'}
+          </button>
+          {error && <span className="text-xs text-red-600">{error}</span>}
+        </span>
+      ) : (
+        <span className="text-sm text-[#221a0f] font-medium">—</span>
+      )}
+    </div>
+  );
+};
 
 export function EcoDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -312,10 +353,10 @@ export function EcoDetailPage() {
           <h2 className="text-xs font-semibold text-[#8A7E6E] uppercase tracking-wide">Compliance / Declaration Documents</h2>
         </div>
         <div className="px-6">
-          <Row label="Invoice" value={cert.invoiceFileKey ? 'Attached' : '—'} />
-          <Row label="Signature" value={cert.signatureKey ? 'Attached' : '—'} />
-          <Row label="CAC Certificate" value={cert.cacCertificateKey ? 'Attached' : '—'} />
-          <Row label="NEPC Certificate" value={cert.nepcCertificateKey ? 'Attached' : '—'} />
+          <DocRow label="Invoice" certId={cert.id} docType="invoice" attached={!!cert.invoiceFileKey} />
+          <DocRow label="Signature" certId={cert.id} docType="signature" attached={!!cert.signatureKey} />
+          <DocRow label="CAC Certificate" certId={cert.id} docType="cac" attached={!!cert.cacCertificateKey} />
+          <DocRow label="NEPC Certificate" certId={cert.id} docType="nepc" attached={!!cert.nepcCertificateKey} />
         </div>
       </div>
 
