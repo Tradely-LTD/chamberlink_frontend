@@ -1,0 +1,39 @@
+{
+  "default_branch": "main",
+  "branches": [
+    "COO-Improvements",
+    "enhancement",
+    "feat-eCoupdate",
+    "feat/mfa-settings-toggle",
+    "feature/chamber-connection-gating",
+    "feature/member-management-api",
+    "feature/multi-chamber-identity-frontend",
+    "integration/enhancement-plus-gating",
+    "main",
+    "origin"
+  ],
+  "parent": {
+    "COO-Improvements": "main",
+    "enhancement": "main",
+    "feat-eCoupdate": "main",
+    "feat/mfa-settings-toggle": "main",
+    "feature/chamber-connection-gating": "main",
+    "feature/member-management-api": "main",
+    "feature/multi-chamber-identity-frontend": "main",
+    "integration/enhancement-plus-gating": "main",
+    "main": null,
+    "origin": "main"
+  },
+  "order": [
+    "main",
+    "COO-Improvements",
+    "enhancement",
+    "feat-eCoupdate",
+    "feat/mfa-settings-toggle",
+    "feature/chamber-connection-gating",
+    "feature/member-management-api",
+    "feature/multi-chamber-identity-frontend",
+    "integration/enhancement-plus-gating",
+    "origin"
+  ]
+}

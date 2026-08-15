@@ -220,11 +220,28 @@ function AdminEcoQueue({ isReadOnly }: { isReadOnly: boolean }) {
     { refetchOnMountOrArgChange: true }
   );
   const [reviewEco, { isLoading: reviewing }] = useReviewEcoCertMutation();
+  const [startingReviewId, setStartingReviewId] = useState<string | null>(null);
 
   const items = data ?? [];
 
-  const handleAction = (item: EcoQueueItem, action: ReviewAction) => {
+  const handleAction = async (item: EcoQueueItem, action: ReviewAction) => {
     setReviewError(null);
+    // start_review is just an internal "move to under_review" transition — no
+    // reason/instructions is meaningful here, so skip the notes modal and fire
+    // it immediately (matches request_revision/reject, which DO need a reason
+    // because that text is shown to the applicant).
+    if (action === 'start_review') {
+      setStartingReviewId(item.id);
+      try {
+        await reviewEco({ id: item.id, action: 'start_review' }).unwrap();
+        refetch();
+      } catch {
+        setReviewError('Action failed. Please try again.');
+      } finally {
+        setStartingReviewId(null);
+      }
+      return;
+    }
     setReviewModal({ item, action });
   };
 
@@ -346,9 +363,10 @@ function AdminEcoQueue({ isReadOnly }: { isReadOnly: boolean }) {
                         {item.status === 'submitted' && !isReadOnly && (
                           <button
                             onClick={() => handleAction(item, 'start_review')}
-                            className="text-xs font-semibold text-white bg-[#023293] hover:bg-[#001533] rounded-md px-2.5 py-1 transition-colors"
+                            disabled={startingReviewId === item.id}
+                            className="text-xs font-semibold text-white bg-[#023293] hover:bg-[#001533] disabled:opacity-60 rounded-md px-2.5 py-1 transition-colors"
                           >
-                            Start Review
+                            {startingReviewId === item.id ? 'Starting…' : 'Start Review'}
                           </button>
                         )}
                         {item.status === 'submitted' && isReadOnly && (

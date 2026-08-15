@@ -285,6 +285,10 @@ export const ecoApi = emptyApi.injectEndpoints({
       query: (certId) => `/eco/${certId}/download`,
       transformResponse: (res: ApiResponse<{ url: string; certId: string; status: string }>) => res.data,
     }),
+    getEcoDocumentUrl: builder.query<{ url: string }, { certId: string; docType: 'invoice' | 'signature' | 'cac' | 'nepc' }>({
+      query: ({ certId, docType }) => `/eco/${certId}/documents/${docType}`,
+      transformResponse: (res: ApiResponse<{ url: string }>) => res.data,
+    }),
     initiateEcoPayment: builder.mutation<{ authorizationUrl: string; reference: string; gateway: string }, { certificateId: string; callbackUrl?: string }>({
       query: (body) => ({ url: '/eco/payment/initiate', method: 'POST', body }),
       transformResponse: (res: ApiResponse<{ authorizationUrl: string; reference: string; gateway: string }>) => res.data,
@@ -314,6 +318,7 @@ export const {
   useReIssueCertificateMutation,
   useGetEcoCertDownloadUrlQuery,
   useLazyGetEcoCertDownloadUrlQuery,
+  useLazyGetEcoDocumentUrlQuery,
   useInitiateEcoPaymentMutation,
   useConfirmEcoPaymentMutation,
 } = ecoApi;
