@@ -12,6 +12,7 @@ import { OverviewPage } from '@pages/dashboard/OverviewPage';
 import { ProfilePage } from '@pages/dashboard/ProfilePage';
 import { MembershipPage } from '@pages/dashboard/MembershipPage';
 import { MyConnectionsPage } from '@pages/dashboard/MyConnectionsPage';
+import { ChamberNetworkPage } from '@pages/dashboard/ChamberNetworkPage';
 import { EcoPage } from '@pages/dashboard/EcoPage';
 import { EcoApplyPage } from '@pages/dashboard/EcoApplyPage';
 import { EcoDetailPage } from '@pages/dashboard/EcoDetailPage';
@@ -51,6 +52,7 @@ export const router = createBrowserRouter([
           // the backend; e.g. a staff_operator can also personally be a member of
           // a different chamber).
           { path: '/dashboard/connections', element: <MyConnectionsPage /> },
+          { path: '/dashboard/chamber-network', element: <ChamberNetworkPage /> },
 
           // Member-only routes (members + patron members)
           {

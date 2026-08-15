@@ -25,6 +25,7 @@ const memberNavItems: NavItem[] = [
   { label: 'Trade Corridors',     to: '/dashboard/trade-corridors',     icon: 'route' },
   { label: 'Exporter Visibility', to: '/dashboard/exporter-visibility', icon: 'visibility' },
   { label: 'My Chambers',         to: '/dashboard/connections',         icon: 'corporate_fare' },
+  { label: 'Chamber Network',     to: '/dashboard/chamber-network',     icon: 'travel_explore' },
   { label: 'My Profile',          to: '/dashboard/profile',             icon: 'manage_accounts' },
 ];
 

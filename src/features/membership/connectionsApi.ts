@@ -37,6 +37,18 @@ export interface OnboardedChamber {
   city?: string | null;
 }
 
+export interface RosterPreview {
+  firstNameMasked: string;
+  businessName: string | null;
+  tierName: string | null;
+  memberSince: string | null;
+}
+
+export interface RosterCheckResult {
+  matched: boolean;
+  preview?: RosterPreview;
+}
+
 export const connectionsApi = emptyApi.injectEndpoints({
   endpoints: (builder) => ({
     getMyConnections: builder.query<ChamberConnection[], void>({
@@ -88,25 +100,29 @@ export const connectionsApi = emptyApi.injectEndpoints({
     }),
 
     // Public, unauthenticated-safe list of active tenants for the "connect a new
-    // chamber" picker.
-    //
-    // NOTE (frontend-builder, multi-chamber identity feature): as of this
-    // writing the backend (branch feature/multi-chamber-identity) does NOT
-    // expose this endpoint anywhere — neither reused from `GET
-    // /tenants/public/:slug` (that's a single-tenant lookup by slug, not a
-    // list) nor as a new route. Verified by reading
-    // chamberlink_backend/src/modules/tenants/route.ts and
-    // chamberlink_backend/src/modules/membership/route.ts directly; neither
-    // has anything resembling a public multi-tenant listing endpoint. This is
-    // a real API-contract gap, not an assumption — see handoff notes.
-    //
-    // Wired to the path implied by the brief and consistent with the existing
-    // `/tenants/public/:slug` naming so this flips on with zero frontend
-    // changes once the backend adds it. Until then this 404s and the modal
-    // shows its existing error state with Retry.
+    // chamber" picker. Live on the backend at GET /tenants/public/onboarded
+    // (chamberlink_backend/src/modules/tenants/route.ts) — confirmed by the
+    // backend-builder for the Chamber Network feature.
     getOnboardedChambers: builder.query<OnboardedChamber[], void>({
       query: () => '/tenants/public/onboarded',
       transformResponse: (res: ApiResponse<OnboardedChamber[]>) => res.data,
+    }),
+
+    // Chamber Network — connect via a known/legacy roster ID, checked against
+    // a chamber's uploaded roster (chamber_roster_entries). Two-step flow:
+    // 1) checkRoster (read-only preview, no invalidation) 2) connectViaRoster
+    // (the actual claim). The preview intentionally does NOT guarantee the
+    // claim will succeed — someone else may claim the same row in between, so
+    // the claim step still needs to handle its own 404/409s.
+    checkRoster: builder.mutation<RosterCheckResult, { tenantId: string; legacyMemberId: string }>({
+      query: (body) => ({ url: '/membership/connections/roster/check', method: 'POST', body }),
+      transformResponse: (res: ApiResponse<RosterCheckResult>) => res.data,
+    }),
+
+    connectViaRoster: builder.mutation<ConnectionResult, { tenantId: string; legacyMemberId: string }>({
+      query: (body) => ({ url: '/membership/connections/roster', method: 'POST', body }),
+      transformResponse: (res: ApiResponse<ConnectionResult>) => res.data,
+      invalidatesTags: ['ChamberConnections', 'Membership'],
     }),
   }),
 });
@@ -117,4 +133,6 @@ export const {
   useSwitchActiveChamberMutation,
   useRemoveConnectionMutation,
   useGetOnboardedChambersQuery,
+  useCheckRosterMutation,
+  useConnectViaRosterMutation,
 } = connectionsApi;

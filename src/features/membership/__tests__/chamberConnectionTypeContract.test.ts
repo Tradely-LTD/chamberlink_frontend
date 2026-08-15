@@ -60,7 +60,6 @@ describe('ChamberConnection type shape matches the backend contract (cross-repo)
   });
 
   it('the status enum values match exactly (order-independent) between backend and frontend', () => {
-    const backendSrc = fs.readFileSync(BACKEND_SERVICE_PATH, 'utf-8');
     const frontendSrc = fs.readFileSync(FRONTEND_TYPES_PATH, 'utf-8');
 
     // Frontend declares the literal union directly on the `status` field.

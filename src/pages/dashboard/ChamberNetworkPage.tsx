@@ -1,0 +1,115 @@
+import { useState } from 'react';
+import { useGetOnboardedChambersQuery, useGetMyConnectionsQuery } from '@features/membership/connectionsApi';
+import { ConnectViaRosterModal } from '@features/membership/components/ConnectViaRosterModal';
+import { SkeletonCard } from '@shared/ui/SkeletonCard';
+import { ErrorBanner } from '@shared/ui/ErrorBanner';
+import { EmptyState } from '@shared/ui/EmptyState';
+import { Button } from '@shared/ui/Button';
+import { Toast } from '@shared/ui/Toast';
+
+/**
+ * Chamber Network — discover onboarded chambers this ChamberLink identity is
+ * NOT yet connected to, and connect using a legacy/existing member ID (for
+ * members who were part of a chamber before ChamberLink existed). Distinct
+ * from MyConnectionsPage ("My Chambers", which manages EXISTING connections)
+ * and from ConnectChamberModal ("Connect a chamber", which mints a brand-new
+ * member ID with no ID input).
+ *
+ * Member-only nav item by design — staff_operator accounts don't hold
+ * memberships, they're added directly by their chamber's admin.
+ */
+export function ChamberNetworkPage() {
+  const {
+    data: chambers,
+    isLoading: isLoadingChambers,
+    isError: isChambersError,
+    refetch: refetchChambers,
+  } = useGetOnboardedChambersQuery();
+  const {
+    data: connections,
+    isLoading: isLoadingConnections,
+    isError: isConnectionsError,
+    refetch: refetchConnections,
+  } = useGetMyConnectionsQuery();
+
+  const [activeModalTenant, setActiveModalTenant] = useState<{ id: string; name: string } | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const isLoading = isLoadingChambers || isLoadingConnections;
+  const isError = isChambersError || isConnectionsError;
+
+  const connectedTenantIds = new Set((connections ?? []).map((c) => c.tenantId));
+  const availableChambers = (chambers ?? []).filter((chamber) => !connectedTenantIds.has(chamber.id));
+
+  const handleRetry = () => {
+    if (isChambersError) refetchChambers();
+    if (isConnectionsError) refetchConnections();
+  };
+
+  return (
+    <div className="p-6 max-w-4xl">
+      <div className="mb-6">
+        <h1 className="text-2xl font-semibold text-[#221a0f] mb-1">Chamber Network</h1>
+        <p className="text-sm text-[#8A7E6E]">
+          Already a member of one of these chambers? Connect with your existing member ID to link your records.
+        </p>
+      </div>
+
+      {isLoading && (
+        <div className="space-y-3">
+          <SkeletonCard className="h-20" />
+          <SkeletonCard className="h-20" />
+        </div>
+      )}
+
+      {isError && !isLoading && (
+        <div className="space-y-3">
+          <ErrorBanner message="Failed to load the chamber network." />
+          <Button variant="outline" onClick={handleRetry}>Retry</Button>
+        </div>
+      )}
+
+      {!isLoading && !isError && availableChambers.length === 0 && (
+        <EmptyState
+          icon="travel_explore"
+          title="You're connected to every onboarded chamber"
+          message="There's no other chamber left to connect to right now — check back as more chambers onboard."
+        />
+      )}
+
+      {!isLoading && !isError && availableChambers.length > 0 && (
+        <ul className="space-y-3">
+          {availableChambers.map((chamber) => (
+            <li
+              key={chamber.id}
+              className="flex items-center justify-between gap-4 bg-white rounded-xl border border-[#bec9bf]/40 px-6 py-4"
+            >
+              <div className="min-w-0">
+                <p className="font-medium text-[#221a0f] truncate">{chamber.name}</p>
+                {chamber.city && <p className="text-xs text-[#8A7E6E] truncate">{chamber.city}</p>}
+              </div>
+              <Button
+                variant="outline"
+                className="flex-shrink-0"
+                onClick={() => setActiveModalTenant({ id: chamber.id, name: chamber.name })}
+              >
+                Connect with existing ID
+              </Button>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {activeModalTenant && (
+        <ConnectViaRosterModal
+          tenantId={activeModalTenant.id}
+          tenantName={activeModalTenant.name}
+          onClose={() => setActiveModalTenant(null)}
+          onConnected={(message) => setToast({ message, type: 'success' })}
+        />
+      )}
+
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+    </div>
+  );
+}

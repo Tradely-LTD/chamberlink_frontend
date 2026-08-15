@@ -8,6 +8,7 @@ const pageTitles: Record<string, string> = {
   '/dashboard': 'Overview',
   '/dashboard/profile': 'My Profile',
   '/dashboard/connections': 'My Chambers',
+  '/dashboard/chamber-network': 'Chamber Network',
   '/dashboard/membership': 'Membership',
   '/dashboard/eco': 'eCO Certificates',
   '/dashboard/eco/apply': 'New eCO Application',

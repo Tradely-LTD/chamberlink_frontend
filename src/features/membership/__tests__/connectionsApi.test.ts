@@ -8,7 +8,7 @@
  */
 
 import type { ChamberConnection } from '@entities/user/types';
-import type { ConnectAction, ConnectionResult, OnboardedChamber } from '../connectionsApi';
+import type { ConnectAction, ConnectionResult, OnboardedChamber, RosterCheckResult } from '../connectionsApi';
 
 // ── transformResponse helpers (mirroring connectionsApi.ts logic) ──────────
 
@@ -32,6 +32,14 @@ function transformSwitch(raw: { success: boolean; message?: string }): { message
 }
 
 function transformOnboardedChambers(raw: { success: boolean; data: OnboardedChamber[] }): OnboardedChamber[] {
+  return raw.data;
+}
+
+function transformCheckRoster(raw: { success: boolean; data: RosterCheckResult }): RosterCheckResult {
+  return raw.data;
+}
+
+function transformConnectViaRoster(raw: { success: boolean; data: ConnectionResult }): ConnectionResult {
   return raw.data;
 }
 
@@ -124,6 +132,44 @@ describe('connectionsApi transformResponse helpers', () => {
       const result = transformOnboardedChambers({ success: true, data: chambers });
       expect(result).toHaveLength(1);
       expect(result[0].slug).toBe('chamber-a');
+    });
+  });
+
+  describe('transformCheckRoster (Chamber Network — POST /membership/connections/roster/check)', () => {
+    it('unwraps a matched preview', () => {
+      const data: RosterCheckResult = {
+        matched: true,
+        preview: {
+          firstNameMasked: 'Amina B.',
+          businessName: 'Acme Traders Ltd',
+          tierName: 'Ordinary',
+          memberSince: '2019-01-01T00:00:00Z',
+        },
+      };
+      const result = transformCheckRoster({ success: true, data });
+      expect(result.matched).toBe(true);
+      expect(result.preview?.firstNameMasked).toBe('Amina B.');
+    });
+
+    it('unwraps a no-match result with no preview field (not treated as an error)', () => {
+      const result = transformCheckRoster({ success: true, data: { matched: false } });
+      expect(result.matched).toBe(false);
+      expect(result.preview).toBeUndefined();
+    });
+  });
+
+  describe('transformConnectViaRoster (Chamber Network — POST /membership/connections/roster)', () => {
+    it('unwraps the created connection (raw member_profiles row, same shape as connectToChamber)', () => {
+      const connection: ConnectionResult = {
+        id: 'conn-1',
+        tenantId: 'tenant-a',
+        status: 'pending_payment',
+        memberId: 'TENANT-A-2019-0042',
+        tierId: 't1',
+      };
+      const result = transformConnectViaRoster({ success: true, data: connection });
+      expect(result.tenantId).toBe('tenant-a');
+      expect(result.memberId).toBe('TENANT-A-2019-0042');
     });
   });
 });
