@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@shared/hooks/useAppDispatch';
 import { useGetMemberProfileQuery } from '@features/dashboard/dashboardApi';
 import { useGetMembershipStatusQuery } from '@features/membership/membershipApi';
+import { ConnectChamberModal } from '@features/membership/components/ConnectChamberModal';
 import { useGetMyTenantQuery, useUpdateMyTenantMutation } from '@features/white-label';
 import {
   useEnableMfaMutation,
@@ -11,9 +12,12 @@ import {
 import { updateUser } from '@features/auth/authSlice';
 import { PageLoader } from '@shared/ui/PageLoader';
 import { ErrorBanner } from '@shared/ui/ErrorBanner';
+import { EmptyState } from '@shared/ui/EmptyState';
 import { Button } from '@shared/ui/Button';
 import { Input } from '@shared/ui/Input';
+import { Toast } from '@shared/ui/Toast';
 import { emptyApi } from '@shared/api/emptyApi';
+import { isNoActiveChamberError } from '@shared/utils';
 
 function errorMessage(err: unknown, fallback: string): string {
   return (err as { data?: { message?: string } })?.data?.message ?? fallback;
@@ -165,7 +169,7 @@ export function ProfilePage() {
   const isTenantAdmin = role === 'chamber_admin' || role === 'staff_operator' || role === 'chamber_executive';
 
   // ALL hooks must be declared unconditionally, before any early returns
-  const { data: profile, isLoading, isError, refetch } = useGetMemberProfileQuery();
+  const { data: profile, isLoading, isError, error, refetch } = useGetMemberProfileQuery();
   const { data: membership } = useGetMembershipStatusQuery();
   const [updateProfile, { isLoading: isSaving }] = useUpdateProfileMutation();
   const [patchProfile, { isLoading: isPatchSaving }] = usePatchProfileMutation();
@@ -175,6 +179,8 @@ export function ProfilePage() {
 
   const [editing, setEditing] = useState(false);
   const [editingBusiness, setEditingBusiness] = useState(false);
+  const [connectModalOpen, setConnectModalOpen] = useState(false);
+  const [connectToast, setConnectToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [form, setForm] = useState({ firstName: '', lastName: '', businessName: '', phone: '' });
   const [bizForm, setBizForm] = useState({ registrationNumber: '', industry: '', address: '', city: '', state: '', website: '' });
   const [saved, setSaved] = useState(false);
@@ -274,7 +280,53 @@ export function ProfilePage() {
 
   // Early returns — all hooks are already declared above
   if (isLoading) return <PageLoader />;
-  if (isError && isMember) return <div className="p-6"><ErrorBanner message="Failed to load profile." /></div>;
+
+  if (isError && isMember) {
+    if (isNoActiveChamberError(error)) {
+      return (
+        <div className="p-6 max-w-2xl">
+          <h1 className="text-2xl font-semibold text-[#221a0f] mb-1">My Profile</h1>
+          <p className="text-sm text-[#8A7E6E] mb-6">Manage your personal and business information.</p>
+
+          {/* Basic ChamberLink identity is global, not chamber-scoped — always available. */}
+          <div className="bg-white rounded-xl border border-[#bec9bf]/40 overflow-hidden mb-6">
+            <div className="px-6 py-4 border-b border-[#bec9bf]/40">
+              <h2 className="font-medium text-[#221a0f]">Account Details</h2>
+            </div>
+            <dl className="divide-y divide-[#bec9bf]/30">
+              {[
+                { label: 'Full Name', value: `${user?.firstName ?? '—'} ${user?.lastName ?? ''}`.trim() },
+                { label: 'Email Address', value: user?.email ?? '—' },
+              ].map((row) => (
+                <div key={row.label} className="grid grid-cols-3 gap-4 px-6 py-4">
+                  <dt className="text-sm font-medium text-[#8A7E6E]">{row.label}</dt>
+                  <dd className="col-span-2 text-sm text-[#221a0f]">{row.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+
+          <EmptyState
+            icon="corporate_fare"
+            title="You're not connected to a chamber yet"
+            message="Business details, membership plan, and document uploads become available once you connect to a chamber."
+            action={<Button onClick={() => setConnectModalOpen(true)}>Connect a chamber</Button>}
+          />
+
+          {connectModalOpen && (
+            <ConnectChamberModal
+              onClose={() => setConnectModalOpen(false)}
+              onConnected={(message) => setConnectToast({ message, type: 'success' })}
+            />
+          )}
+          {connectToast && (
+            <Toast message={connectToast.message} type={connectToast.type} onClose={() => setConnectToast(null)} />
+          )}
+        </div>
+      );
+    }
+    return <div className="p-6"><ErrorBanner message="Failed to load profile." /></div>;
+  }
 
   const logoUrl = profile?.logoUrl;
 

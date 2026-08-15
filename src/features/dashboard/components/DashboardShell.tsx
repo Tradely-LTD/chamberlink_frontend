@@ -2,10 +2,12 @@ import { Link, Outlet, useLocation } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { MobileNav } from './MobileNav';
 import { useAppSelector } from '@shared/hooks/useAppDispatch';
+import { ChamberSwitcher } from '@features/membership/components/ChamberSwitcher';
 
 const pageTitles: Record<string, string> = {
   '/dashboard': 'Overview',
   '/dashboard/profile': 'My Profile',
+  '/dashboard/connections': 'My Chambers',
   '/dashboard/membership': 'Membership',
   '/dashboard/eco': 'eCO Certificates',
   '/dashboard/eco/apply': 'New eCO Application',
@@ -45,6 +47,7 @@ export function DashboardShell() {
         <header className="hidden md:flex items-center justify-between px-6 h-14 bg-white border-b border-[#e0e3e5] flex-shrink-0">
           <h1 className="text-base font-semibold text-[#191c1e]">{pageTitle}</h1>
           <div className="flex items-center gap-2">
+            <ChamberSwitcher />
             <button
               className="p-2 rounded-lg text-[#74777f] hover:bg-[#eceef0] transition-colors"
               title="Notifications"

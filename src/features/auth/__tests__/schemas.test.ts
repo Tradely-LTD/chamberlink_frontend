@@ -60,6 +60,20 @@ describe('registerSchema', () => {
       registerSchema.validate({ ...valid, password: 'Pas1', confirmPassword: 'Pas1' })
     ).rejects.toThrow('at least 8 characters');
   });
+
+  // Multi-chamber ChamberLink identity: self-registration creates a global,
+  // chamber-independent identity — there must be no chamber/tenant picker.
+  it('has no tenantId field — registration never offers a chamber choice', () => {
+    expect(Object.prototype.hasOwnProperty.call(registerSchema.fields, 'tenantId')).toBe(false);
+  });
+
+  it('strips an unexpected tenantId from validated output', async () => {
+    const result = await registerSchema.validate(
+      { ...valid, tenantId: 'some-tenant-id' },
+      { stripUnknown: true }
+    );
+    expect(result).not.toHaveProperty('tenantId');
+  });
 });
 
 describe('forgotPasswordSchema', () => {
