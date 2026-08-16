@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { LoginPage } from '@pages/LoginPage';
 import { RegisterPage } from '@pages/RegisterPage';
+import { SsoHandoffPage } from '@pages/SsoHandoffPage';
 import { VerifyEmailPage } from '@pages/VerifyEmailPage';
 import { MfaVerifyPage } from '@pages/MfaVerifyPage';
 import { ForgotPasswordPage } from '@pages/ForgotPasswordPage';
@@ -34,6 +35,7 @@ import { MemberManagementPage } from '@pages/dashboard/MemberManagementPage';
 export const router = createBrowserRouter([
   { path: '/login', element: <LoginPage /> },
   { path: '/register', element: <RegisterPage /> },
+  { path: '/sso', element: <SsoHandoffPage /> },
   { path: '/auth/verify-email', element: <VerifyEmailPage /> },
   { path: '/auth/mfa-verify', element: <MfaVerifyPage /> },
   { path: '/auth/forgot-password', element: <ForgotPasswordPage /> },
