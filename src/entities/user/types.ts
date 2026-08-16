@@ -4,7 +4,8 @@ export type Role =
   | 'institutional_subscriber'
   | 'chamber_admin'
   | 'chamber_executive'
-  | 'super_admin';
+  | 'super_admin'
+  | 'public';
 
 export const MFA_REQUIRED_ROLES: Role[] = ['chamber_admin', 'chamber_executive', 'super_admin'];
 

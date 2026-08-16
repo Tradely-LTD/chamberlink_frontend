@@ -73,11 +73,11 @@ export function ConnectChamberModal({ onClose, onConnected }: Props) {
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 px-4">
       <div className="w-full max-w-md rounded-xl bg-white shadow-xl">
-        <div className="flex items-center justify-between border-b border-[#e0e3e5] px-5 py-4">
-          <h2 className="text-base font-semibold text-[#191c1e]">Connect a new chamber</h2>
+        <div className="flex items-center justify-between border-b border-border px-5 py-4">
+          <h2 className="text-base font-semibold text-ink">Connect a new chamber</h2>
           <button
             onClick={onClose}
-            className="rounded-lg p-1.5 text-[#74777f] hover:bg-[#eceef0] transition-colors"
+            className="rounded-lg p-1.5 text-ink-subtle hover:bg-surface-alt transition-colors"
             aria-label="Close"
           >
             <span
@@ -106,19 +106,19 @@ export function ConnectChamberModal({ onClose, onConnected }: Props) {
           )}
 
           {!isLoading && !isError && (chambers ?? []).length === 0 && (
-            <p className="py-6 text-center text-sm text-[#8A7E6E]">
+            <p className="py-6 text-center text-sm text-ink-subtle">
               No chambers are available to connect to right now.
             </p>
           )}
 
           {!isLoading && !isError && (chambers ?? []).length > 0 && (
-            <ul className="divide-y divide-[#e0e3e5]">
+            <ul className="divide-y divide-border">
               {(chambers ?? []).map((chamber) => (
                 <li key={chamber.id} className="py-3">
                   <div className="flex items-center justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-[#191c1e]">{chamber.name}</p>
-                      {chamber.city && <p className="truncate text-xs text-[#8A7E6E]">{chamber.city}</p>}
+                      <p className="truncate text-sm font-medium text-ink">{chamber.name}</p>
+                      {chamber.city && <p className="truncate text-xs text-ink-subtle">{chamber.city}</p>}
                     </div>
                     <Button
                       variant="outline"

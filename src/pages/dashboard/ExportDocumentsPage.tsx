@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { SkeletonCard } from '@shared/ui/SkeletonCard';
 import { Button } from '@shared/ui/Button';
 import { ErrorBanner } from '@shared/ui/ErrorBanner';
+import { Select } from '@shared/ui/Select';
 import { useAppSelector } from '@shared/hooks/useAppDispatch';
 import {
   useGetMyExportDocsQuery,
@@ -76,11 +77,11 @@ function CreateDocModal({ onClose }: { onClose: () => void }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg">
-        <div className="border-b border-[#e0e3e5] px-6 py-4 flex items-center justify-between">
-          <h2 className="font-bold text-[#191c1e]">Generate Export Document</h2>
+        <div className="border-b border-border px-6 py-4 flex items-center justify-between">
+          <h2 className="font-bold text-ink">Generate Export Document</h2>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-[#f7f9fb] text-[#74777f]"
+            className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle"
           >
             <span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span>
           </button>
@@ -88,16 +89,15 @@ function CreateDocModal({ onClose }: { onClose: () => void }) {
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {error && <ErrorBanner message={error} />}
           <div>
-            <label className="block text-xs font-semibold text-[#44474e] mb-1">Document Type</label>
-            <select
+            <label className="block text-xs font-semibold text-ink-subtle mb-1">Document Type</label>
+            <Select
+              label="Document Type"
+              hideLabel
               value={form.type}
-              onChange={set('type')}
-              className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none"
-            >
-              {ADMIN_QUEUE_TYPES.map((k) => (
-                <option key={k} value={k}>{docTypeConfig[k].label}</option>
-              ))}
-            </select>
+              onValueChange={(v) => setForm((f) => ({ ...f, type: v as typeof f.type }))}
+              className="focus:outline-none"
+              options={ADMIN_QUEUE_TYPES.map((k) => ({ value: k, label: docTypeConfig[k].label }))}
+            />
           </div>
           {(
             [
@@ -106,25 +106,25 @@ function CreateDocModal({ onClose }: { onClose: () => void }) {
             ] as const
           ).map(({ label, key, placeholder }) => (
             <div key={key}>
-              <label className="block text-xs font-semibold text-[#44474e] mb-1">{label}</label>
+              <label className="block text-xs font-semibold text-ink-subtle mb-1">{label}</label>
               <input
                 required
                 value={form[key]}
                 onChange={set(key)}
                 placeholder={placeholder}
-                className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293]"
+                className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary"
               />
             </div>
           ))}
           <div>
-            <label className="block text-xs font-semibold text-[#44474e] mb-1">Products &amp; Quantities</label>
+            <label className="block text-xs font-semibold text-ink-subtle mb-1">Products &amp; Quantities</label>
             <textarea
               required
               rows={3}
               value={form.products}
               onChange={set('products')}
               placeholder="e.g. Wet Blue Hides (500 pcs), Finished Leather (200 sqm)"
-              className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293] resize-none"
+              className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary resize-none"
             />
           </div>
           <div className="flex gap-3 pt-2">
@@ -183,11 +183,11 @@ function MarkReadyModal({ docId, onClose }: MarkReadyModalProps) {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md">
-        <div className="border-b border-[#e0e3e5] px-6 py-4 flex items-center justify-between">
-          <h2 className="font-bold text-[#191c1e]">Upload &amp; Mark Ready</h2>
+        <div className="border-b border-border px-6 py-4 flex items-center justify-between">
+          <h2 className="font-bold text-ink">Upload &amp; Mark Ready</h2>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-[#f7f9fb] text-[#74777f]"
+            className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle"
             disabled={isLoading}
           >
             <span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span>
@@ -197,22 +197,22 @@ function MarkReadyModal({ docId, onClose }: MarkReadyModalProps) {
           {error && <ErrorBanner message={error} />}
 
           <div>
-            <label className="block text-xs font-semibold text-[#44474e] mb-1">
+            <label className="block text-xs font-semibold text-ink-subtle mb-1">
               Document File <span className="text-red-500">*</span>
             </label>
             <div
-              className="border-2 border-dashed border-[#c4c6cf] rounded-lg p-4 text-center cursor-pointer hover:border-[#023293] transition-colors"
+              className="border-2 border-dashed border-border rounded-lg p-4 text-center cursor-pointer hover:border-primary transition-colors"
               onClick={() => fileInputRef.current?.click()}
             >
               {file ? (
-                <div className="flex items-center justify-center gap-2 text-sm text-[#191c1e]">
+                <div className="flex items-center justify-center gap-2 text-sm text-ink">
                   <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#0b6c4b' }}>check_circle</span>
                   <span className="font-medium truncate max-w-[220px]">{file.name}</span>
                 </div>
               ) : (
                 <div className="flex flex-col items-center gap-1">
-                  <span className="material-symbols-outlined text-[#74777f]" style={{ fontSize: 28 }}>upload_file</span>
-                  <p className="text-sm text-[#74777f]">Click to select file</p>
+                  <span className="material-symbols-outlined text-ink-subtle" style={{ fontSize: 28 }}>upload_file</span>
+                  <p className="text-sm text-ink-subtle">Click to select file</p>
                   <p className="text-xs text-[#9a9da5]">PDF, JPEG, or PNG — max 10 MB</p>
                 </div>
               )}
@@ -227,13 +227,13 @@ function MarkReadyModal({ docId, onClose }: MarkReadyModalProps) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[#44474e] mb-1">Notes (optional)</label>
+            <label className="block text-xs font-semibold text-ink-subtle mb-1">Notes (optional)</label>
             <textarea
               rows={3}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Any notes for the member…"
-              className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293] resize-none"
+              className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary resize-none"
             />
           </div>
 
@@ -326,8 +326,8 @@ function MemberExportDocsView() {
       {/* Page header — stacks on mobile */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <div>
-          <h2 className="text-xl font-semibold text-[#191c1e]">Export Documents</h2>
-          <p className="text-sm text-[#74777f] mt-0.5">Generate trade documents and manage your file library.</p>
+          <h2 className="text-xl font-semibold text-ink">Export Documents</h2>
+          <p className="text-sm text-ink-subtle mt-0.5">Generate trade documents and manage your file library.</p>
         </div>
         {mainTab === 'generated' && (
           <div className="flex flex-wrap gap-2">
@@ -342,7 +342,7 @@ function MemberExportDocsView() {
             </button>
             <button
               onClick={() => setShowCreate(true)}
-              className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold border border-[#c4c6cf] text-[#191c1e] hover:border-[#023293] transition-colors"
+              className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold border border-border text-ink hover:border-primary transition-colors"
             >
               <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>
               <span className="hidden sm:inline">Other Document</span>
@@ -353,7 +353,7 @@ function MemberExportDocsView() {
       </div>
 
       {/* Main tabs: Generated | Document Library */}
-      <div className="flex gap-1 bg-[#f7f9fb] rounded-xl p-1 mb-6 border border-[#e0e3e5] w-full sm:w-fit">
+      <div className="flex gap-1 bg-surface-alt rounded-xl p-1 mb-6 border border-border w-full sm:w-fit">
         {([
           { key: 'generated', label: 'Generated Documents', shortLabel: 'Generated', icon: 'receipt_long' },
           { key: 'library',   label: 'Document Library',    shortLabel: 'My Files',  icon: 'folder_open' },
@@ -363,8 +363,8 @@ function MemberExportDocsView() {
             onClick={() => setMainTab(key)}
             className={`flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               mainTab === key
-                ? 'bg-white text-[#191c1e] shadow-sm'
-                : 'text-[#74777f] hover:text-[#191c1e]'
+                ? 'bg-white text-ink shadow-sm'
+                : 'text-ink-subtle hover:text-ink'
             }`}
           >
             <span className="material-symbols-outlined" style={{ fontSize: 16, fontVariationSettings: mainTab === key ? `'FILL' 1` : `'FILL' 0` }}>{icon}</span>
@@ -378,13 +378,13 @@ function MemberExportDocsView() {
       {mainTab === 'generated' && (
         <>
           {/* Status filter — scrollable on mobile */}
-          <div className="flex gap-1 bg-[#f7f9fb] rounded-lg p-1 mb-5 border border-[#e0e3e5] overflow-x-auto">
+          <div className="flex gap-1 bg-surface-alt rounded-lg p-1 mb-5 border border-border overflow-x-auto">
             {(['all', 'draft', 'processing', 'ready', 'downloaded'] as const).map((s) => (
               <button
                 key={s}
                 onClick={() => setStatusFilter(s)}
                 className={`flex-shrink-0 px-3 py-1.5 rounded-md text-sm font-medium capitalize transition-colors ${
-                  statusFilter === s ? 'bg-white text-[#191c1e] shadow-sm' : 'text-[#74777f] hover:text-[#191c1e]'
+                  statusFilter === s ? 'bg-white text-ink shadow-sm' : 'text-ink-subtle hover:text-ink'
                 }`}
               >
                 {s === 'all' ? 'All' : s.charAt(0).toUpperCase() + s.slice(1)}
@@ -399,8 +399,8 @@ function MemberExportDocsView() {
           ) : (
             <div className="space-y-3">
               {filtered.length === 0 ? (
-                <div className="bg-white rounded-xl border border-[#e0e3e5] p-10 sm:p-12 text-center">
-                  <p className="text-sm text-[#74777f] mb-4">No documents found.</p>
+                <div className="bg-white rounded-xl border border-border p-10 sm:p-12 text-center">
+                  <p className="text-sm text-ink-subtle mb-4">No documents found.</p>
                   <button
                     onClick={() => navigate('/dashboard/export-documents/generate')}
                     className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white"
@@ -415,7 +415,7 @@ function MemberExportDocsView() {
                   const dsc = docStatusConfig[doc.status];
                   const isBusy = downloading && downloadingId === doc.id;
                   return (
-                    <div key={doc.id} className="bg-white rounded-xl border border-[#e0e3e5] p-4 sm:p-5">
+                    <div key={doc.id} className="bg-white rounded-xl border border-border p-4 sm:p-5">
                       <div className="flex items-start gap-3 sm:gap-4">
                         {/* Doc type icon */}
                         <div
@@ -433,20 +433,20 @@ function MemberExportDocsView() {
                           <div className="flex items-start justify-between gap-2">
                             <div className="min-w-0">
                               <div className="flex items-center gap-2 flex-wrap mb-1">
-                                <p className="font-bold text-[#191c1e] text-sm">{dtc.label}</p>
+                                <p className="font-bold text-ink text-sm">{dtc.label}</p>
                                 <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold"
                                   style={{ background: dsc.bg, color: dsc.text }}>
                                   {dsc.label}
                                 </span>
                               </div>
-                              <p className="text-xs font-mono text-[#74777f] mb-0.5">{doc.referenceNo}</p>
-                              <p className="text-xs text-[#74777f] truncate">
+                              <p className="text-xs font-mono text-ink-subtle mb-0.5">{doc.referenceNo}</p>
+                              <p className="text-xs text-ink-subtle truncate">
                                 To: {doc.consignee} · {doc.destinationCountry}
                               </p>
-                              <p className="text-xs text-[#74777f] mt-0.5 truncate">{doc.products}</p>
+                              <p className="text-xs text-ink-subtle mt-0.5 truncate">{doc.products}</p>
                             </div>
                             {/* Date — hidden on smallest screens, shown inline on sm+ */}
-                            <p className="text-xs text-[#74777f] hidden sm:block flex-shrink-0">
+                            <p className="text-xs text-ink-subtle hidden sm:block flex-shrink-0">
                               {new Date(doc.createdAt).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'short', year: 'numeric' })}
                             </p>
                           </div>
@@ -454,7 +454,7 @@ function MemberExportDocsView() {
                           {/* Action buttons — full width row on mobile */}
                           <div className="flex flex-wrap items-center gap-2 mt-3">
                             {/* Date on mobile */}
-                            <span className="text-xs text-[#74777f] sm:hidden mr-auto">
+                            <span className="text-xs text-ink-subtle sm:hidden mr-auto">
                               {new Date(doc.createdAt).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'short', year: 'numeric' })}
                             </span>
 
@@ -462,7 +462,7 @@ function MemberExportDocsView() {
                             {(doc.type === 'commercial_invoice' || doc.type === 'packing_list') && doc.draftId && doc.status !== 'processing' && (
                               <button
                                 onClick={() => navigate(`/dashboard/export-documents/generate/${doc.draftId}`)}
-                                className="flex items-center gap-1 rounded-lg border border-[#c4c6cf] px-2.5 py-1.5 text-xs font-semibold text-[#191c1e] hover:border-[#023293] hover:text-[#023293] transition-colors"
+                                className="flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-xs font-semibold text-ink hover:border-primary hover:text-primary transition-colors"
                               >
                                 <span className="material-symbols-outlined" style={{ fontSize: 13 }}>edit</span>
                                 Edit
@@ -475,7 +475,7 @@ function MemberExportDocsView() {
                                 <button
                                   disabled={isBusy}
                                   onClick={() => handleView(doc)}
-                                  className="flex items-center gap-1 rounded-lg border border-[#c4c6cf] px-2.5 py-1.5 text-xs font-semibold text-[#191c1e] hover:border-[#023293] hover:text-[#023293] transition-colors disabled:opacity-50"
+                                  className="flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-xs font-semibold text-ink hover:border-primary hover:text-primary transition-colors disabled:opacity-50"
                                 >
                                   {isBusy ? '…' : (
                                     <>
@@ -487,7 +487,7 @@ function MemberExportDocsView() {
                                 <button
                                   disabled={isBusy}
                                   onClick={() => handleDownload(doc)}
-                                  className="flex items-center gap-1 rounded-lg border border-[#c4c6cf] px-2.5 py-1.5 text-xs font-semibold text-[#74777f] hover:border-[#023293] hover:text-[#023293] transition-colors disabled:opacity-50"
+                                  className="flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-xs font-semibold text-ink-subtle hover:border-primary hover:text-primary transition-colors disabled:opacity-50"
                                 >
                                   {isBusy ? '…' : (
                                     <>
@@ -503,7 +503,7 @@ function MemberExportDocsView() {
                             {doc.status !== 'processing' && (
                               confirmDeleteId === doc.id ? (
                                 <div className="flex items-center gap-1.5">
-                                  <span className="text-xs text-[#74777f]">Delete?</span>
+                                  <span className="text-xs text-ink-subtle">Delete?</span>
                                   <button
                                     disabled={deletingId === doc.id}
                                     onClick={() => handleDelete(doc.id)}
@@ -514,7 +514,7 @@ function MemberExportDocsView() {
                                   </button>
                                   <button
                                     onClick={() => setConfirmDeleteId(null)}
-                                    className="rounded-lg border border-[#c4c6cf] px-2.5 py-1.5 text-xs font-semibold text-[#191c1e]"
+                                    className="rounded-lg border border-border px-2.5 py-1.5 text-xs font-semibold text-ink"
                                   >
                                     No
                                   </button>
@@ -522,7 +522,7 @@ function MemberExportDocsView() {
                               ) : (
                                 <button
                                   onClick={() => setConfirmDeleteId(doc.id)}
-                                  className="flex items-center gap-1 rounded-lg border border-[#c4c6cf] px-2 py-1.5 text-xs font-semibold text-[#74777f] hover:border-red-300 hover:text-red-600 transition-colors"
+                                  className="flex items-center gap-1 rounded-lg border border-border px-2 py-1.5 text-xs font-semibold text-ink-subtle hover:border-red-300 hover:text-red-600 transition-colors"
                                 >
                                   <span className="material-symbols-outlined" style={{ fontSize: 13 }}>delete</span>
                                 </button>
@@ -587,8 +587,8 @@ function AdminExportDocsView() {
       )}
 
       <div className="mb-6">
-        <h2 className="text-xl font-semibold text-[#191c1e]">Export Documents — Admin</h2>
-        <p className="text-sm text-[#74777f] mt-0.5">
+        <h2 className="text-xl font-semibold text-ink">Export Documents — Admin</h2>
+        <p className="text-sm text-ink-subtle mt-0.5">
           Review and process member export document requests.
         </p>
       </div>
@@ -604,7 +604,7 @@ function AdminExportDocsView() {
         ).map(({ icon, label, value, accent }) => (
           <div
             key={label}
-            className={`rounded-xl border p-4 ${accent ? '' : 'bg-white border-[#e0e3e5]'}`}
+            className={`rounded-xl border p-4 ${accent ? '' : 'bg-white border-border'}`}
             style={accent ? { background: '#023293', borderColor: '#023293' } : {}}
           >
             <div className="flex items-center gap-2 mb-2">
@@ -620,13 +620,13 @@ function AdminExportDocsView() {
               </span>
               <p
                 className={`text-xs font-semibold uppercase tracking-wide ${
-                  accent ? 'text-[#aec7f7]' : 'text-[#74777f]'
+                  accent ? 'text-[#aec7f7]' : 'text-ink-subtle'
                 }`}
               >
                 {label}
               </p>
             </div>
-            <p className={`text-2xl font-bold ${accent ? 'text-white' : 'text-[#191c1e]'}`}>
+            <p className={`text-2xl font-bold ${accent ? 'text-white' : 'text-ink'}`}>
               {value}
             </p>
           </div>
@@ -639,15 +639,15 @@ function AdminExportDocsView() {
           placeholder="Search by ref or member…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="rounded-lg border border-[#c4c6cf] px-4 py-2 text-sm focus:outline-none focus:border-[#023293] w-64"
+          className="rounded-lg border border-border px-4 py-2 text-sm focus:outline-none focus:border-primary w-64"
         />
-        <div className="flex gap-1 bg-[#f7f9fb] rounded-lg p-1 border border-[#e0e3e5]">
+        <div className="flex gap-1 bg-surface-alt rounded-lg p-1 border border-border">
           {(['all', 'draft', 'processing', 'ready', 'downloaded'] as const).map((s) => (
             <button
               key={s}
               onClick={() => setStatusFilter(s)}
               className={`px-3 py-1 rounded-md text-xs font-medium capitalize transition-colors ${
-                statusFilter === s ? 'bg-white shadow-sm text-[#191c1e]' : 'text-[#74777f]'
+                statusFilter === s ? 'bg-white shadow-sm text-ink' : 'text-ink-subtle'
               }`}
             >
               {s === 'all' ? 'All' : s}
@@ -661,20 +661,20 @@ function AdminExportDocsView() {
       ) : isError ? (
         <ErrorBanner message="Failed to load export documents. Please refresh and try again." />
       ) : filtered.length === 0 ? (
-        <div className="bg-white rounded-xl border border-[#e0e3e5] p-12 text-center">
-          <p className="text-sm text-[#74777f]">No documents match the current filters.</p>
+        <div className="bg-white rounded-xl border border-border p-12 text-center">
+          <p className="text-sm text-ink-subtle">No documents match the current filters.</p>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-[#e0e3e5] overflow-hidden">
+        <div className="bg-white rounded-xl border border-border overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-[#f7f9fb] border-b border-[#e0e3e5]">
+                <tr className="bg-surface-alt border-b border-border">
                   {['Document', 'Member', 'Consignee', 'Destination', 'Status', 'Created', 'Actions'].map(
                     (h) => (
                       <th
                         key={h}
-                        className="text-left px-4 py-3 text-xs font-semibold text-[#74777f] uppercase tracking-wide"
+                        className="text-left px-4 py-3 text-xs font-semibold text-ink-subtle uppercase tracking-wide"
                       >
                         {h}
                       </th>
@@ -688,16 +688,16 @@ function AdminExportDocsView() {
                   const dsc = docStatusConfig[doc.status];
                   const isBusy = processingId === doc.id;
                   return (
-                    <tr key={doc.id} className="hover:bg-[#f7f9fb] transition-colors">
+                    <tr key={doc.id} className="hover:bg-surface-alt transition-colors">
                       <td className="px-4 py-3">
-                        <p className="font-semibold text-[#191c1e]">{dtc.label}</p>
-                        <p className="text-xs font-mono text-[#74777f]">{doc.referenceNo}</p>
+                        <p className="font-semibold text-ink">{dtc.label}</p>
+                        <p className="text-xs font-mono text-ink-subtle">{doc.referenceNo}</p>
                       </td>
-                      <td className="px-4 py-3 text-[#74777f]">{doc.memberName ?? '—'}</td>
-                      <td className="px-4 py-3 text-[#74777f] max-w-[140px] truncate">
+                      <td className="px-4 py-3 text-ink-subtle">{doc.memberName ?? '—'}</td>
+                      <td className="px-4 py-3 text-ink-subtle max-w-[140px] truncate">
                         {doc.consignee}
                       </td>
-                      <td className="px-4 py-3 text-[#74777f]">{doc.destinationCountry}</td>
+                      <td className="px-4 py-3 text-ink-subtle">{doc.destinationCountry}</td>
                       <td className="px-4 py-3">
                         <span
                           className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold"
@@ -706,7 +706,7 @@ function AdminExportDocsView() {
                           {dsc.label}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-xs text-[#74777f]">
+                      <td className="px-4 py-3 text-xs text-ink-subtle">
                         {new Date(doc.createdAt).toLocaleDateString('en-NG', {
                           timeZone: 'Africa/Lagos',
                           day: 'numeric',

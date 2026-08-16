@@ -12,6 +12,7 @@ import type { AdminUser, PaymentRecord } from '@features/admin/memberManagementA
 import { SkeletonCard } from '@shared/ui/SkeletonCard';
 import { ErrorBanner } from '@shared/ui/ErrorBanner';
 import { Button } from '@shared/ui/Button';
+import { Select } from '@shared/ui/Select';
 
 // ---------------------------------------------------------------------------
 // Status badge helpers
@@ -131,11 +132,11 @@ function MemberDetailModal({ member, onClose, isChamberAdmin }: MemberDetailModa
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
         {/* Sticky header */}
-        <div className="sticky top-0 bg-white border-b border-[#e0e3e5] px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
-          <h2 className="font-semibold text-[#191c1e]">Member Details</h2>
+        <div className="sticky top-0 bg-white border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
+          <h2 className="font-semibold text-ink">Member Details</h2>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-[#74777f] hover:bg-[#f7f9fb] transition-colors"
+            className="p-1.5 rounded-lg text-ink-subtle hover:bg-surface-alt transition-colors"
             aria-label="Close"
           >
             <span
@@ -155,15 +156,15 @@ function MemberDetailModal({ member, onClose, isChamberAdmin }: MemberDetailModa
           )}
 
           {/* Tabs */}
-          <div className="flex gap-1 bg-[#f7f9fb] rounded-lg p-1 mb-6 w-fit border border-[#e0e3e5]">
+          <div className="flex gap-1 bg-surface-alt rounded-lg p-1 mb-6 w-fit border border-border">
             {(['profile', 'payments'] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors capitalize ${
                   activeTab === tab
-                    ? 'bg-white text-[#191c1e] shadow-sm'
-                    : 'text-[#74777f] hover:text-[#191c1e]'
+                    ? 'bg-white text-ink shadow-sm'
+                    : 'text-ink-subtle hover:text-ink'
                 }`}
               >
                 {tab}
@@ -173,7 +174,7 @@ function MemberDetailModal({ member, onClose, isChamberAdmin }: MemberDetailModa
 
           {/* Profile tab */}
           {activeTab === 'profile' && (
-            <dl className="divide-y divide-[#e0e3e5]">
+            <dl className="divide-y divide-border">
               {[
                 { label: 'Full Name', value: fullName },
                 { label: 'Email', value: member.email },
@@ -208,8 +209,8 @@ function MemberDetailModal({ member, onClose, isChamberAdmin }: MemberDetailModa
                 },
               ].map((row) => (
                 <div key={row.label} className="grid grid-cols-2 gap-4 py-3">
-                  <dt className="text-sm text-[#74777f]">{row.label}</dt>
-                  <dd className="text-sm text-[#191c1e]">
+                  <dt className="text-sm text-ink-subtle">{row.label}</dt>
+                  <dd className="text-sm text-ink">
                     {typeof row.value === 'string' ? row.value : row.value}
                   </dd>
                 </div>
@@ -221,20 +222,20 @@ function MemberDetailModal({ member, onClose, isChamberAdmin }: MemberDetailModa
           {activeTab === 'payments' && (
             <div>
               {!member.memberId ? (
-                <p className="text-sm text-[#74777f] text-center py-8">No payment history available.</p>
+                <p className="text-sm text-ink-subtle text-center py-8">No payment history available.</p>
               ) : paymentsLoading ? (
                 <SkeletonCard className="h-32" />
               ) : !payments || payments.length === 0 ? (
-                <p className="text-sm text-[#74777f] text-center py-8">No payments on record.</p>
+                <p className="text-sm text-ink-subtle text-center py-8">No payments on record.</p>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b border-[#e0e3e5] bg-[#f7f9fb]">
+                      <tr className="border-b border-border bg-surface-alt">
                         {['Date', 'Amount', 'Purpose', 'Gateway', 'Reference', 'Status'].map((h) => (
                           <th
                             key={h}
-                            className="text-left px-3 py-2 text-xs font-semibold uppercase tracking-wide text-[#74777f]"
+                            className="text-left px-3 py-2 text-xs font-semibold uppercase tracking-wide text-ink-subtle"
                           >
                             {h}
                           </th>
@@ -243,16 +244,16 @@ function MemberDetailModal({ member, onClose, isChamberAdmin }: MemberDetailModa
                     </thead>
                     <tbody>
                       {payments.map((p) => (
-                        <tr key={p.id} className="border-b border-[#e0e3e5] hover:bg-[#f7f9fb]">
-                          <td className="px-3 py-2 whitespace-nowrap text-[#74777f]">
+                        <tr key={p.id} className="border-b border-border hover:bg-surface-alt">
+                          <td className="px-3 py-2 whitespace-nowrap text-ink-subtle">
                             {formatDateNG(p.paidAt ?? p.createdAt)}
                           </td>
-                          <td className="px-3 py-2 whitespace-nowrap font-medium text-[#191c1e]">
+                          <td className="px-3 py-2 whitespace-nowrap font-medium text-ink">
                             NGN {p.amount.toLocaleString()}
                           </td>
-                          <td className="px-3 py-2 text-[#191c1e] capitalize">{p.purpose}</td>
-                          <td className="px-3 py-2 capitalize text-[#74777f]">{p.gateway}</td>
-                          <td className="px-3 py-2 font-mono text-xs text-[#74777f]">
+                          <td className="px-3 py-2 text-ink capitalize">{p.purpose}</td>
+                          <td className="px-3 py-2 capitalize text-ink-subtle">{p.gateway}</td>
+                          <td className="px-3 py-2 font-mono text-xs text-ink-subtle">
                             {p.gatewayReference ?? p.reference}
                           </td>
                           <td className="px-3 py-2">
@@ -351,11 +352,11 @@ function BulkImportModal({ onClose }: BulkImportModalProps) {
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
         {/* Sticky header */}
-        <div className="sticky top-0 bg-white border-b border-[#e0e3e5] px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
-          <h2 className="font-semibold text-[#191c1e]">Bulk Import Members</h2>
+        <div className="sticky top-0 bg-white border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
+          <h2 className="font-semibold text-ink">Bulk Import Members</h2>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-[#74777f] hover:bg-[#f7f9fb] transition-colors"
+            className="p-1.5 rounded-lg text-ink-subtle hover:bg-surface-alt transition-colors"
             aria-label="Close"
           >
             <span
@@ -377,15 +378,15 @@ function BulkImportModal({ onClose }: BulkImportModalProps) {
           {!hasResult && (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-[#191c1e] mb-1">
-                  CSV File <span className="text-[#74777f] font-normal">(max 5 MB)</span>
+                <label className="block text-sm font-medium text-ink mb-1">
+                  CSV File <span className="text-ink-subtle font-normal">(max 5 MB)</span>
                 </label>
                 <input
                   ref={fileInputRef}
                   type="file"
                   accept=".csv"
                   onChange={handleFileChange}
-                  className="block w-full text-sm text-[#191c1e] file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:text-white file:cursor-pointer"
+                  className="block w-full text-sm text-ink file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:text-white file:cursor-pointer"
                   style={{ '--tw-file-bg': '#023293' } as React.CSSProperties}
                 />
                 {fileError && (
@@ -428,13 +429,13 @@ function BulkImportModal({ onClose }: BulkImportModalProps) {
                     {importResult.failed.length} row{importResult.failed.length !== 1 ? 's' : ''} failed:
                   </p>
                   <div className="overflow-x-auto">
-                    <table className="w-full text-sm border border-[#e0e3e5] rounded-lg overflow-hidden">
+                    <table className="w-full text-sm border border-border rounded-lg overflow-hidden">
                       <thead>
-                        <tr className="bg-[#f7f9fb] border-b border-[#e0e3e5]">
+                        <tr className="bg-surface-alt border-b border-border">
                           {['Row #', 'Email', 'Reason'].map((h) => (
                             <th
                               key={h}
-                              className="text-left px-3 py-2 text-xs font-semibold uppercase tracking-wide text-[#74777f]"
+                              className="text-left px-3 py-2 text-xs font-semibold uppercase tracking-wide text-ink-subtle"
                             >
                               {h}
                             </th>
@@ -443,9 +444,9 @@ function BulkImportModal({ onClose }: BulkImportModalProps) {
                       </thead>
                       <tbody>
                         {importResult.failed.map((row, idx) => (
-                          <tr key={idx} className="border-b border-[#e0e3e5] last:border-0">
-                            <td className="px-3 py-2 text-[#74777f]">{row.row}</td>
-                            <td className="px-3 py-2 font-mono text-xs text-[#191c1e]">{row.email}</td>
+                          <tr key={idx} className="border-b border-border last:border-0">
+                            <td className="px-3 py-2 text-ink-subtle">{row.row}</td>
+                            <td className="px-3 py-2 font-mono text-xs text-ink">{row.email}</td>
                             <td className="px-3 py-2 text-[#93000a]">{row.reason}</td>
                           </tr>
                         ))}
@@ -509,8 +510,8 @@ export function MemberManagementPage() {
   const total = members?.total ?? 0;
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
-  const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setStatusFilter(e.target.value);
+  const handleStatusChange = (value: string) => {
+    setStatusFilter(value);
     setPage(1);
   };
 
@@ -562,8 +563,8 @@ export function MemberManagementPage() {
       )}
       {showBulkImport && <BulkImportModal onClose={() => setShowBulkImport(false)} />}
 
-      <h1 className="text-2xl font-semibold text-[#191c1e] mb-1">Member Management</h1>
-      <p className="text-sm text-[#74777f] mb-6">
+      <h1 className="text-2xl font-semibold text-ink mb-1">Member Management</h1>
+      <p className="text-sm text-ink-subtle mb-6">
         Browse, search, and manage chamber members.
       </p>
 
@@ -574,26 +575,29 @@ export function MemberManagementPage() {
           placeholder="Search by name, email or business..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full max-w-sm rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293]"
+          className="w-full max-w-sm rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary"
         />
 
-        <select
+        <Select
+          label="Status"
+          hideLabel
           value={statusFilter}
-          onChange={handleStatusChange}
-          className="rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293] bg-white"
-        >
-          <option value="">All</option>
-          <option value="active">Active</option>
-          <option value="pending_payment">Pending Payment</option>
-          <option value="expired">Expired</option>
-          <option value="suspended">Suspended</option>
-        </select>
+          onValueChange={handleStatusChange}
+          className="bg-white"
+          options={[
+            { value: '', label: 'All' },
+            { value: 'active', label: 'Active' },
+            { value: 'pending_payment', label: 'Pending Payment' },
+            { value: 'expired', label: 'Expired' },
+            { value: 'suspended', label: 'Suspended' },
+          ]}
+        />
 
         <div className="flex gap-2 ml-auto">
           <button
             onClick={() => void handleExport()}
             disabled={isExporting}
-            className="rounded-lg border border-[#c4c6cf] bg-white px-4 py-2 text-sm font-semibold text-[#191c1e] hover:border-[#023293] hover:text-[#023293] disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+            className="rounded-lg border border-border bg-white px-4 py-2 text-sm font-semibold text-ink hover:border-primary hover:text-primary disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
           >
             {isExporting ? 'Exporting...' : 'Export CSV'}
           </button>
@@ -617,27 +621,27 @@ export function MemberManagementPage() {
           <ErrorBanner message="Failed to load members." />
           <button
             onClick={() => void refetch()}
-            className="rounded-lg border border-[#c4c6cf] bg-white px-4 py-2 text-sm font-semibold text-[#191c1e] hover:border-[#023293] transition-colors"
+            className="rounded-lg border border-border bg-white px-4 py-2 text-sm font-semibold text-ink hover:border-primary transition-colors"
           >
             Retry
           </button>
         </div>
       ) : !members || members.items.length === 0 ? (
-        <div className="bg-white rounded-xl border border-[#e0e3e5] py-16 text-center">
-          <p className="text-sm text-[#74777f]">No members found.</p>
+        <div className="bg-white rounded-xl border border-border py-16 text-center">
+          <p className="text-sm text-ink-subtle">No members found.</p>
         </div>
       ) : (
         <>
-          <div className="bg-white rounded-xl border border-[#e0e3e5] overflow-hidden">
+          <div className="bg-white rounded-xl border border-border overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-[#e0e3e5] bg-[#f7f9fb]">
+                  <tr className="border-b border-border bg-surface-alt">
                     {['Member ID', 'Full Name / Email', 'Business', 'Tier', 'Status', 'Expiry', 'Actions'].map(
                       (h) => (
                         <th
                           key={h}
-                          className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-[#74777f]"
+                          className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-ink-subtle"
                         >
                           {h}
                         </th>
@@ -649,23 +653,23 @@ export function MemberManagementPage() {
                   {members.items.map((member) => (
                     <tr
                       key={member.id}
-                      className="border-b border-[#e0e3e5] hover:bg-[#f7f9fb] transition-colors"
+                      className="border-b border-border hover:bg-surface-alt transition-colors"
                     >
-                      <td className="px-4 py-3 font-mono text-xs text-[#023293]">
+                      <td className="px-4 py-3 font-mono text-xs text-primary">
                         {member.memberId ?? '—'}
                       </td>
                       <td className="px-4 py-3">
-                        <p className="font-medium text-[#191c1e]">
+                        <p className="font-medium text-ink">
                           {[member.firstName, member.lastName].filter(Boolean).join(' ') || '—'}
                         </p>
-                        <p className="text-xs text-[#74777f]">{member.email}</p>
+                        <p className="text-xs text-ink-subtle">{member.email}</p>
                       </td>
-                      <td className="px-4 py-3 text-[#74777f]">{member.businessName ?? '—'}</td>
-                      <td className="px-4 py-3 text-[#191c1e]">{member.tierName ?? '—'}</td>
+                      <td className="px-4 py-3 text-ink-subtle">{member.businessName ?? '—'}</td>
+                      <td className="px-4 py-3 text-ink">{member.tierName ?? '—'}</td>
                       <td className="px-4 py-3">
                         <StatusBadge status={member.memberStatus} />
                       </td>
-                      <td className="px-4 py-3 text-[#74777f]">
+                      <td className="px-4 py-3 text-ink-subtle">
                         {member.expiresAt
                           ? new Date(member.expiresAt).toLocaleDateString('en-NG', {
                               timeZone: 'Africa/Lagos',
@@ -679,7 +683,7 @@ export function MemberManagementPage() {
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => setViewMember(member)}
-                            className="text-xs font-medium text-[#023293] hover:underline"
+                            className="text-xs font-medium text-primary hover:underline"
                           >
                             View
                           </button>
@@ -710,21 +714,21 @@ export function MemberManagementPage() {
 
           {/* Pagination */}
           <div className="flex items-center justify-between mt-4">
-            <p className="text-sm text-[#74777f]">
+            <p className="text-sm text-ink-subtle">
               Page {page} of {totalPages} &mdash; {total} total member{total !== 1 ? 's' : ''}
             </p>
             <div className="flex gap-2">
               <button
                 disabled={page === 1}
                 onClick={() => setPage((p) => p - 1)}
-                className="rounded-lg border border-[#c4c6cf] bg-white px-3 py-1.5 text-sm font-medium text-[#191c1e] hover:border-[#023293] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="rounded-lg border border-border bg-white px-3 py-1.5 text-sm font-medium text-ink hover:border-primary disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 Prev
               </button>
               <button
                 disabled={page * PAGE_SIZE >= total}
                 onClick={() => setPage((p) => p + 1)}
-                className="rounded-lg border border-[#c4c6cf] bg-white px-3 py-1.5 text-sm font-medium text-[#191c1e] hover:border-[#023293] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="rounded-lg border border-border bg-white px-3 py-1.5 text-sm font-medium text-ink hover:border-primary disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 Next
               </button>

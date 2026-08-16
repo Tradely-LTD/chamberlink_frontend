@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import {
   useCreateEcoCertificateMutation,
-  useCreateEcoCertificateWithFilesMutation,
   useSaveDraftEcoMutation,
   useUpdateEcoDraftMutation,
   useSubmitEcoDraftMutation,
@@ -11,12 +10,15 @@ import {
   useGetOnboardedTenantsQuery,
 } from '@features/eco/ecoApi';
 import type { NewECertPayload } from '@features/eco/ecoApi';
+import { useGetDocumentsQuery, useUploadDocumentMutation } from '@features/documents';
+import type { DocumentCategory } from '@features/documents';
 import { NIGERIAN_STATES } from '@shared/constants/nigerianStates';
 import { Input } from '@shared/ui/Input';
+import { Select } from '@shared/ui/Select';
+import { Textarea } from '@shared/ui/Textarea';
 import { Button } from '@shared/ui/Button';
 import { ErrorBanner } from '@shared/ui/ErrorBanner';
-import { emptyApi } from '@shared/api/emptyApi';
-import type { DocumentCategory } from './DocumentsPage';
+import { Card } from '@shared/ui/Card';
 
 const STEPS = [
   'Product & Goods',
@@ -35,41 +37,81 @@ const MEANS_OF_TRANSPORT: { label: string; value: NewECertPayload['meansOfTransp
 
 const UNKNOWN_VALUE = '***';
 
-// Inline docs API for library picker
-interface LibraryDoc { id: string; name: string; category: DocumentCategory; uploadedAt: string; }
-interface DocsApiResponse { success: boolean; data: LibraryDoc[]; }
-const ecoDocsApi = emptyApi.injectEndpoints({
-  endpoints: (builder) => ({
-    getLibraryDocsForEco: builder.query<LibraryDoc[], void>({
-      query: () => '/membership/me/documents',
-      transformResponse: (res: DocsApiResponse) => res.data ?? [],
-      providesTags: ['Documents'],
-    }),
-  }),
-  overrideExisting: false,
-});
-const { useGetLibraryDocsForEcoQuery } = ecoDocsApi;
+// Preview-only — matches the backend's default USD_TO_NGN_RATE (chamberlink_backend
+// config/env.ts). The real conversion happens server-side using the currently
+// configured rate; this is just so the applicant sees a ballpark fee.
+const APPROX_USD_TO_NGN_RATE = 1400;
+
+// Mirrors the backend's zod constraints (submitECertSchema) so the form catches
+// the same problems before submit instead of round-tripping to the API to find
+// out a field was too short. Only fires once a value is present — emptiness is
+// already handled by the "* required" + disabled-Continue convention.
+const minLenError = (value: string, min: number, label: string): string | undefined =>
+  value !== '' && value.trim().length < min
+    ? `${label} must be at least ${min} character${min === 1 ? '' : 's'}.`
+    : undefined;
+
+const emailFormatError = (value: string): string | undefined =>
+  value !== '' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+    ? 'Enter a valid email address.'
+    : undefined;
+
+const positiveNumberError = (value: string, label: string): string | undefined =>
+  value !== '' && Number(value) <= 0 ? `${label} must be greater than zero.` : undefined;
 
 type SupportingDocMode = 'library' | 'upload';
 
-function DocSlot({ label, filterCategory, selectedDocId, selectedFile, onSelectDocId, onSelectFile }: {
+// "Upload New" never attaches the raw file to the eCO create/draft/submit
+// request — it uploads immediately to the member's document library (the
+// same endpoint the "From Library" tab reads from) and only ever hands the
+// parent a docId, exactly like picking an existing library doc. This keeps
+// eCO submission bodies pure JSON, with no multipart path to maintain.
+function DocSlot({ label, filterCategory, selectedDocId, onSelectDocId }: {
   label: string; filterCategory: DocumentCategory;
-  selectedDocId: string | null; selectedFile: File | null;
-  onSelectDocId: (id: string | null) => void; onSelectFile: (file: File | null) => void;
+  selectedDocId: string | null;
+  onSelectDocId: (id: string | null) => void;
 }) {
-  const { data: allDocs = [] } = useGetLibraryDocsForEcoQuery();
+  const { data: allDocs = [] } = useGetDocumentsQuery();
+  const [uploadDocument, { isLoading: isUploading }] = useUploadDocumentMutation();
   const [mode, setMode] = useState<SupportingDocMode>('library');
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const matchingDocs = allDocs.filter((d) => d.category === filterCategory);
+  const selectedDoc = allDocs.find((d) => d.id === selectedDocId);
+  const isFilled = !!selectedDocId;
+
+  const handleFileSelected = async (file: File | null) => {
+    if (!file) return;
+    setUploadError(null);
+    try {
+      const fd = new FormData();
+      fd.append('document', file);
+      fd.append('category', filterCategory);
+      const doc = await uploadDocument(fd).unwrap();
+      onSelectDocId(doc.id);
+    } catch {
+      setUploadError('Upload failed. Please try again.');
+    } finally {
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
 
   return (
-    <div className="rounded-xl border border-[#bec9bf]/40 overflow-hidden">
-      <div className="px-4 py-3 bg-[#fdf8f3] border-b border-[#bec9bf]/30 flex items-center justify-between">
-        <p className="text-sm font-medium text-[#221a0f]">{label}</p>
-        <div className="flex items-center gap-1 bg-white rounded-lg border border-[#bec9bf]/40 p-0.5">
+    <Card padding="none" className="overflow-hidden">
+      <div className="px-4 py-3 bg-surface-alt border-b border-border flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2 min-w-0">
+          <span
+            className={`material-symbols-outlined flex-shrink-0 ${isFilled ? 'text-success' : 'text-ink-subtle'}`}
+            style={{ fontSize: 18, fontVariationSettings: `'FILL' ${isFilled ? 1 : 0}` }}
+          >
+            {isFilled ? 'check_circle' : 'radio_button_unchecked'}
+          </span>
+          <p className="text-sm font-medium text-ink truncate">{label}</p>
+        </div>
+        <div className="flex items-center gap-1 bg-surface rounded-lg border border-border p-0.5 flex-shrink-0">
           {(['library', 'upload'] as const).map((m) => (
-            <button key={m} onClick={() => { setMode(m); onSelectDocId(null); onSelectFile(null); }}
-              className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${mode === m ? 'bg-[#023293] text-white' : 'text-[#8A7E6E] hover:text-[#221a0f]'}`}>
+            <button key={m} onClick={() => { setMode(m); setUploadError(null); onSelectDocId(null); }}
+              className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${mode === m ? 'bg-primary text-white' : 'text-ink-subtle hover:text-ink'}`}>
               {m === 'library' ? 'From Library' : 'Upload New'}
             </button>
           ))}
@@ -78,50 +120,92 @@ function DocSlot({ label, filterCategory, selectedDocId, selectedFile, onSelectD
       <div className="p-4">
         {mode === 'library' ? (
           matchingDocs.length === 0 ? (
-            <div className="text-center py-4">
-              <p className="text-sm text-[#8A7E6E]">No {label.toLowerCase()} in your library.</p>
-              <button onClick={() => setMode('upload')} className="mt-2 text-xs text-[#023293] hover:underline font-medium">Upload one now</button>
+            <div className="rounded-lg border-2 border-dashed border-border-strong px-4 py-6 text-center">
+              <span className="material-symbols-outlined text-ink-subtle mb-1" style={{ fontSize: 22 }} aria-hidden="true">folder_off</span>
+              <p className="text-sm text-ink-subtle">No {label.toLowerCase()} in your library.</p>
+              <button onClick={() => setMode('upload')} className="mt-2 text-xs text-primary hover:underline font-medium">Upload one now</button>
             </div>
           ) : (
             <div className="space-y-2">
               {matchingDocs.map((doc) => (
-                <label key={doc.id} className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${selectedDocId === doc.id ? 'border-[#023293] bg-[#f0faf4]' : 'border-[#bec9bf]/40 hover:border-[#023293]/40'}`}>
-                  <input type="radio" name={`doc-${filterCategory}`} value={doc.id} checked={selectedDocId === doc.id} onChange={() => onSelectDocId(doc.id)} className="text-[#023293] focus:ring-[#023293]/30" />
+                <label key={doc.id} className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${selectedDocId === doc.id ? 'border-primary bg-success-bg' : 'border-border hover:border-primary/40'}`}>
+                  <input type="radio" name={`doc-${filterCategory}`} value={doc.id} checked={selectedDocId === doc.id} onChange={() => onSelectDocId(doc.id)} className="text-primary focus:ring-primary/30" />
+                  <span className="material-symbols-outlined text-ink-subtle flex-shrink-0" style={{ fontSize: 20 }} aria-hidden="true">description</span>
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-[#221a0f] truncate">{doc.name}</p>
-                    <p className="text-xs text-[#8A7E6E]">{new Date(doc.uploadedAt).toLocaleDateString('en-NG', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                    <p className="text-sm font-medium text-ink truncate">{doc.name}</p>
+                    <p className="text-xs text-ink-subtle">{new Date(doc.uploadedAt).toLocaleDateString('en-NG', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
                   </div>
-                  {selectedDocId === doc.id && <svg className="w-4 h-4 text-[#023293] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>}
+                  {selectedDocId === doc.id && <span className="material-symbols-outlined text-success flex-shrink-0" style={{ fontSize: 18 }} aria-hidden="true">check_circle</span>}
                 </label>
               ))}
-              {selectedDocId && <button onClick={() => onSelectDocId(null)} className="text-xs text-[#8A7E6E] hover:text-[#221a0f]">Clear selection</button>}
+              {selectedDocId && <button onClick={() => onSelectDocId(null)} className="text-xs text-ink-subtle hover:text-ink">Clear selection</button>}
             </div>
           )
         ) : (
           <div>
-            <input ref={fileInputRef} type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={(e) => onSelectFile(e.target.files?.[0] ?? null)} />
-            <button type="button" onClick={() => fileInputRef.current?.click()}
-              className="w-full rounded-lg border-2 border-dashed border-[#bec9bf]/60 px-4 py-5 text-center hover:border-[#023293] transition-colors">
-              {selectedFile ? (
-                <div><p className="text-sm font-medium text-[#221a0f]">{selectedFile.name}</p><p className="text-xs text-[#8A7E6E] mt-0.5">{(selectedFile.size / 1024).toFixed(0)} KB</p></div>
-              ) : (
-                <div>
-                  <svg className="w-5 h-5 mx-auto text-[#8A7E6E] mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
-                  <p className="text-sm text-[#8A7E6E]">Click to select file</p>
-                  <p className="text-xs text-[#8A7E6E] mt-0.5">PDF, JPEG, PNG · Max 10MB</p>
+            <input ref={fileInputRef} type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden"
+              onChange={(e) => handleFileSelected(e.target.files?.[0] ?? null)} />
+            {uploadError && <p className="text-xs text-danger mb-2">{uploadError}</p>}
+            {isUploading ? (
+              <div className="flex items-center justify-center gap-2 rounded-lg border-2 border-dashed border-border-strong px-4 py-6">
+                <span className="material-symbols-outlined animate-spin text-ink-subtle" style={{ fontSize: 20 }} aria-hidden="true">progress_activity</span>
+                <p className="text-sm text-ink-subtle">Uploading…</p>
+              </div>
+            ) : selectedDocId ? (
+              <div className="flex items-center gap-3 rounded-lg border border-primary bg-success-bg p-3">
+                <span className="material-symbols-outlined text-success flex-shrink-0" style={{ fontSize: 24 }} aria-hidden="true">description</span>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium text-ink truncate">{selectedDoc?.name ?? 'Uploaded file'}</p>
+                  <p className="text-xs text-ink-subtle">Uploaded</p>
                 </div>
-              )}
-            </button>
+                <button type="button" onClick={() => fileInputRef.current?.click()} className="text-xs font-medium text-primary hover:underline flex-shrink-0">Replace</button>
+                <button type="button" onClick={() => onSelectDocId(null)} className="text-ink-subtle hover:text-danger flex-shrink-0" aria-label="Remove file">
+                  <span className="material-symbols-outlined" style={{ fontSize: 18 }}>close</span>
+                </button>
+              </div>
+            ) : (
+              <button type="button" onClick={() => fileInputRef.current?.click()}
+                className="w-full rounded-lg border-2 border-dashed border-border-strong px-4 py-6 text-center hover:border-primary hover:bg-primary/5 transition-colors">
+                <span className="material-symbols-outlined text-ink-subtle mb-1" style={{ fontSize: 24 }} aria-hidden="true">upload_file</span>
+                <p className="text-sm text-ink-subtle">Attach or select from library</p>
+                <p className="text-xs text-ink-subtle mt-0.5">PDF, JPEG, PNG · Max 10MB</p>
+              </button>
+            )}
           </div>
         )}
       </div>
-    </div>
+    </Card>
   );
 }
 
-const textareaClass = 'w-full rounded-lg border border-[#bec9bf]/60 px-3 py-2.5 text-sm text-[#221a0f] placeholder-[#8A7E6E] focus:outline-none focus:ring-2 focus:ring-[#023293]/30 focus:border-[#023293] resize-none';
-const selectClass = 'w-full rounded-lg border border-[#bec9bf]/60 px-3 py-2.5 text-sm text-[#221a0f] focus:outline-none focus:ring-2 focus:ring-[#023293]/30 focus:border-[#023293]';
-const labelClass = 'block text-sm font-medium text-[#221a0f] mb-1.5';
+function ReviewSection({ title, onEdit, rows }: {
+  title: string;
+  onEdit: () => void;
+  rows: { label: string; value: string }[];
+}) {
+  return (
+    <Card padding="none">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+        <h3 className="text-xs font-semibold text-ink-subtle uppercase tracking-wide">{title}</h3>
+        <button onClick={onEdit} className="text-xs font-medium text-primary hover:underline flex items-center gap-1">
+          <span className="material-symbols-outlined" style={{ fontSize: 14 }} aria-hidden="true">edit</span>
+          Edit
+        </button>
+      </div>
+      <dl className="divide-y divide-border">
+        {rows.map((row) => (
+          <div key={row.label} className="grid grid-cols-3 gap-4 px-4 py-3">
+            <dt className="text-sm text-ink-subtle">{row.label}</dt>
+            <dd className="col-span-2 text-sm text-ink">{row.value}</dd>
+          </div>
+        ))}
+      </dl>
+    </Card>
+  );
+}
+
+const selectClass = 'w-full rounded-lg border border-border/60 px-3 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary';
+const labelClass = 'block text-sm font-medium text-ink mb-1.5';
 
 interface FormState {
   tenantId: string;
@@ -152,6 +236,7 @@ interface FormState {
   invoiceNumber: string;
   invoiceDate: string;
   invoiceTotal: string;
+  invoiceCurrency: 'NGN' | 'USD';
   customerOrderOrLcNo: string;
   selfDeclaredIsMember: boolean;
   selfDeclaredMembershipId: string;
@@ -164,7 +249,7 @@ const initialForm: FormState = {
   companyName: '', companyAddress: '', companyCountry: 'Nigeria', companyEmail: '', companyPhone: '',
   consigneeName: '', consigneeAddress: '',
   departureDate: '', meansOfTransport: 'sea', vesselFlightVehicleNameVoyageNo: '', portOfLoading: '', portOfDischarge: '',
-  invoiceNumber: '', invoiceDate: '', invoiceTotal: '', customerOrderOrLcNo: '',
+  invoiceNumber: '', invoiceDate: '', invoiceTotal: '', invoiceCurrency: 'NGN', customerOrderOrLcNo: '',
   selfDeclaredIsMember: false, selfDeclaredMembershipId: '',
 };
 
@@ -178,12 +263,12 @@ export function EcoApplyPage() {
   const { data: onboardedTenants = [] } = useGetOnboardedTenantsQuery();
 
   const [createEco, { isLoading: isCreating }] = useCreateEcoCertificateMutation();
-  const [createEcoWithFiles, { isLoading: isCreatingFiles }] = useCreateEcoCertificateWithFilesMutation();
   const [saveDraftEco, { isLoading: isSavingDraft }] = useSaveDraftEcoMutation();
   const [updateDraft, { isLoading: isUpdating }] = useUpdateEcoDraftMutation();
   const [submitDraft, { isLoading: isSubmitting }] = useSubmitEcoDraftMutation();
+  const { data: myDocs = [] } = useGetDocumentsQuery();
 
-  const isLoading = isCreating || isCreatingFiles || isSubmitting;
+  const isLoading = isCreating || isSubmitting;
   const [step, setStep] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [draftSaved, setDraftSaved] = useState(false);
@@ -198,13 +283,9 @@ export function EcoApplyPage() {
   const [dischargePortUnknown, setDischargePortUnknown] = useState(false);
 
   const [invoiceDocId, setInvoiceDocId] = useState<string | null>(null);
-  const [invoiceFile, setInvoiceFile] = useState<File | null>(null);
   const [signatureDocId, setSignatureDocId] = useState<string | null>(null);
-  const [signatureFile, setSignatureFile] = useState<File | null>(null);
   const [cacCertificateDocId, setCacCertificateDocId] = useState<string | null>(null);
-  const [cacCertificateFile, setCacCertificateFile] = useState<File | null>(null);
   const [nepcCertificateDocId, setNepcCertificateDocId] = useState<string | null>(null);
-  const [nepcCertificateFile, setNepcCertificateFile] = useState<File | null>(null);
 
   const chamberLocked = !!existingCert && existingCert.status !== 'draft';
 
@@ -240,6 +321,7 @@ export function EcoApplyPage() {
       invoiceNumber: existingCert.invoiceNumber ?? '',
       invoiceDate: existingCert.invoiceDate ?? '',
       invoiceTotal: existingCert.invoiceTotal != null ? String(existingCert.invoiceTotal) : '',
+      invoiceCurrency: existingCert.invoiceCurrency ?? 'NGN',
       customerOrderOrLcNo: existingCert.customerOrderOrLcNo ?? '',
       selfDeclaredIsMember: existingCert.selfDeclaredIsMember ?? false,
       selfDeclaredMembershipId: existingCert.selfDeclaredMembershipId ?? '',
@@ -264,105 +346,73 @@ export function EcoApplyPage() {
 
   const selectedMineral = solidMinerals.find((m) => m.id === form.solidMineralId);
 
-  const buildFormDataOrJson = () => {
-    const hasFiles = !!(invoiceFile || signatureFile || cacCertificateFile || nepcCertificateFile);
-
-    const jsonBody: Partial<NewECertPayload> = {
-      solidMineralId: form.solidMineralId || undefined,
-      descriptionOfGoods: form.descriptionOfGoods || undefined,
-      numberAndKindOfPackages: form.numberAndKindOfPackages || undefined,
-      marksAndNumbers: form.marksAndNumbers || undefined,
-      quantity: form.quantity ? Number(form.quantity) : undefined,
-      quantityUnit: form.quantityUnit,
-      originStates: form.originStates.length ? form.originStates : undefined,
-      destinationCountry: form.destinationCountry || undefined,
-      destinationPort: form.destinationPort || undefined,
-      batchIdNo: form.batchIdNo || undefined,
-      isLicenseOwner: form.isLicenseOwner,
-      miningLicenseNo: form.isLicenseOwner ? (form.miningLicenseNo || undefined) : undefined,
-      companyName: form.companyName || undefined,
-      companyAddress: form.companyAddress || undefined,
-      companyCountry: form.companyCountry || undefined,
-      companyEmail: form.companyEmail || undefined,
-      companyPhone: form.companyPhone || undefined,
-      consigneeName: form.consigneeName || undefined,
-      consigneeAddress: form.consigneeAddress || undefined,
-      departureDate: form.departureDate || undefined,
-      meansOfTransport: form.meansOfTransport,
-      vesselFlightVehicleNameVoyageNo: form.vesselFlightVehicleNameVoyageNo || undefined,
-      portOfLoading: form.portOfLoading || undefined,
-      portOfDischarge: form.portOfDischarge || undefined,
-      invoiceNumber: form.invoiceNumber || undefined,
-      invoiceDate: form.invoiceDate || undefined,
-      invoiceTotal: form.invoiceTotal ? Number(form.invoiceTotal) : undefined,
-      customerOrderOrLcNo: form.customerOrderOrLcNo || undefined,
-      tenantId: form.tenantId || undefined,
-      selfDeclaredIsMember: form.selfDeclaredIsMember,
-      selfDeclaredMembershipId: form.selfDeclaredIsMember ? (form.selfDeclaredMembershipId || undefined) : undefined,
-      invoiceDocId: invoiceDocId ?? undefined,
-      signatureDocId: signatureDocId ?? undefined,
-      cacCertificateDocId: cacCertificateDocId ?? undefined,
-      nepcCertificateDocId: nepcCertificateDocId ?? undefined,
-    };
-
-    if (!hasFiles) {
-      return { isFormData: false as const, body: jsonBody };
-    }
-
-    const fd = new FormData();
-    const append = (k: string, v: string | boolean | number | undefined) => { if (v !== undefined && v !== '') fd.append(k, String(v)); };
-    append('solidMineralId', form.solidMineralId);
-    append('descriptionOfGoods', form.descriptionOfGoods);
-    append('numberAndKindOfPackages', form.numberAndKindOfPackages);
-    append('marksAndNumbers', form.marksAndNumbers);
-    if (form.quantity) append('quantity', Number(form.quantity));
-    append('quantityUnit', form.quantityUnit);
-    fd.append('originStates', JSON.stringify(form.originStates));
-    append('destinationCountry', form.destinationCountry);
-    append('destinationPort', form.destinationPort);
-    append('batchIdNo', form.batchIdNo);
-    append('isLicenseOwner', form.isLicenseOwner);
-    if (form.isLicenseOwner) append('miningLicenseNo', form.miningLicenseNo);
-    append('companyName', form.companyName);
-    append('companyAddress', form.companyAddress);
-    append('companyCountry', form.companyCountry);
-    append('companyEmail', form.companyEmail);
-    append('companyPhone', form.companyPhone);
-    append('consigneeName', form.consigneeName);
-    append('consigneeAddress', form.consigneeAddress);
-    append('departureDate', form.departureDate);
-    append('meansOfTransport', form.meansOfTransport);
-    append('vesselFlightVehicleNameVoyageNo', form.vesselFlightVehicleNameVoyageNo);
-    append('portOfLoading', form.portOfLoading);
-    append('portOfDischarge', form.portOfDischarge);
-    append('invoiceNumber', form.invoiceNumber);
-    append('invoiceDate', form.invoiceDate);
-    if (form.invoiceTotal) append('invoiceTotal', Number(form.invoiceTotal));
-    append('customerOrderOrLcNo', form.customerOrderOrLcNo);
-    append('tenantId', form.tenantId);
-    append('selfDeclaredIsMember', form.selfDeclaredIsMember);
-    if (form.selfDeclaredIsMember) append('selfDeclaredMembershipId', form.selfDeclaredMembershipId);
-    if (invoiceFile) fd.append('invoice', invoiceFile);
-    if (signatureFile) fd.append('signature', signatureFile);
-    if (cacCertificateFile) fd.append('cacCertificate', cacCertificateFile);
-    if (nepcCertificateFile) fd.append('nepcCertificate', nepcCertificateFile);
-    if (invoiceDocId) append('invoiceDocId', invoiceDocId);
-    if (signatureDocId) append('signatureDocId', signatureDocId);
-    if (cacCertificateDocId) append('cacCertificateDocId', cacCertificateDocId);
-    if (nepcCertificateDocId) append('nepcCertificateDocId', nepcCertificateDocId);
-
-    return { isFormData: true as const, body: fd };
+  // Field-level errors, mirroring submitECertSchema's min-length/format rules.
+  const errors = {
+    descriptionOfGoods: minLenError(form.descriptionOfGoods, 5, 'Description of Goods'),
+    quantity: positiveNumberError(form.quantity, 'Quantity'),
+    destinationCountry: minLenError(form.destinationCountry, 2, 'Destination Country'),
+    companyName: minLenError(form.companyName, 2, 'Company Name'),
+    companyAddress: minLenError(form.companyAddress, 5, 'Company Address'),
+    companyEmail: emailFormatError(form.companyEmail),
+    companyPhone: minLenError(form.companyPhone, 5, 'Company Phone'),
+    consigneeName: minLenError(form.consigneeName, 2, 'Consignee Full Legal Name'),
+    consigneeAddress: minLenError(form.consigneeAddress, 5, 'Consignee Address'),
+    invoiceTotal: positiveNumberError(form.invoiceTotal, 'Invoice Total'),
   };
+
+  // Compliance documents are always attached by reference (invoiceDocId etc.)
+  // — DocSlot uploads new files to the document library up front and hands
+  // back an id, so the eCO create/draft/submit request body is always plain
+  // JSON, never multipart. This avoids re-uploading the file bytes on every
+  // draft save/submit retry, and keeps the create endpoint's payload small.
+  const buildJsonBody = (): Partial<NewECertPayload> => ({
+    solidMineralId: form.solidMineralId || undefined,
+    descriptionOfGoods: form.descriptionOfGoods || undefined,
+    numberAndKindOfPackages: form.numberAndKindOfPackages || undefined,
+    marksAndNumbers: form.marksAndNumbers || undefined,
+    quantity: form.quantity ? Number(form.quantity) : undefined,
+    quantityUnit: form.quantityUnit,
+    originStates: form.originStates.length ? form.originStates : undefined,
+    destinationCountry: form.destinationCountry || undefined,
+    destinationPort: form.destinationPort || undefined,
+    batchIdNo: form.batchIdNo || undefined,
+    isLicenseOwner: form.isLicenseOwner,
+    miningLicenseNo: form.isLicenseOwner ? (form.miningLicenseNo || undefined) : undefined,
+    companyName: form.companyName || undefined,
+    companyAddress: form.companyAddress || undefined,
+    companyCountry: form.companyCountry || undefined,
+    companyEmail: form.companyEmail || undefined,
+    companyPhone: form.companyPhone || undefined,
+    consigneeName: form.consigneeName || undefined,
+    consigneeAddress: form.consigneeAddress || undefined,
+    departureDate: form.departureDate || undefined,
+    meansOfTransport: form.meansOfTransport,
+    vesselFlightVehicleNameVoyageNo: form.vesselFlightVehicleNameVoyageNo || undefined,
+    portOfLoading: form.portOfLoading || undefined,
+    portOfDischarge: form.portOfDischarge || undefined,
+    invoiceNumber: form.invoiceNumber || undefined,
+    invoiceDate: form.invoiceDate || undefined,
+    invoiceTotal: form.invoiceTotal ? Number(form.invoiceTotal) : undefined,
+    invoiceCurrency: form.invoiceCurrency,
+    customerOrderOrLcNo: form.customerOrderOrLcNo || undefined,
+    tenantId: form.tenantId || undefined,
+    selfDeclaredIsMember: form.selfDeclaredIsMember,
+    selfDeclaredMembershipId: form.selfDeclaredIsMember ? (form.selfDeclaredMembershipId || undefined) : undefined,
+    invoiceDocId: invoiceDocId ?? undefined,
+    signatureDocId: signatureDocId ?? undefined,
+    cacCertificateDocId: cacCertificateDocId ?? undefined,
+    nepcCertificateDocId: nepcCertificateDocId ?? undefined,
+  });
 
   const handleSaveDraft = async () => {
     setError(null);
     try {
-      const { isFormData, body } = buildFormDataOrJson();
+      const body = buildJsonBody();
       if (currentDraftId) {
-        const res = await updateDraft({ certId: currentDraftId, body: isFormData ? body : body }).unwrap();
+        const res = await updateDraft({ certId: currentDraftId, body }).unwrap();
         setCurrentDraftId(res.id);
       } else {
-        const res = await saveDraftEco(isFormData ? body : body).unwrap();
+        const res = await saveDraftEco(body).unwrap();
         setCurrentDraftId(res.id);
       }
       setDraftSaved(true);
@@ -382,12 +432,10 @@ export function EcoApplyPage() {
       setError('Invoice, Signature, CAC Certificate, and NEPC Certificate are all required to submit.');
       return;
     }
-    const { isFormData, body } = buildFormDataOrJson();
+    const body = buildJsonBody();
     try {
       if (currentDraftId) {
-        await submitDraft({ certId: currentDraftId, body: isFormData ? body : body as NewECertPayload }).unwrap();
-      } else if (isFormData) {
-        await createEcoWithFiles(body).unwrap();
+        await submitDraft({ certId: currentDraftId, body: body as NewECertPayload }).unwrap();
       } else {
         await createEco(body as NewECertPayload).unwrap();
       }
@@ -402,12 +450,15 @@ export function EcoApplyPage() {
   const canContinueStep0 = !!(
     form.tenantId && form.solidMineralId && form.descriptionOfGoods && form.numberAndKindOfPackages
     && form.quantity && form.originStates.length > 0 && form.destinationCountry
+    && !errors.descriptionOfGoods && !errors.quantity && !errors.destinationCountry
   );
   const canContinueStep1 = !!(
     form.companyName && form.companyAddress && form.companyCountry && form.companyEmail && form.companyPhone
     && form.consigneeName && form.consigneeAddress
     && (!form.isLicenseOwner || form.miningLicenseNo)
     && (!form.selfDeclaredIsMember || form.selfDeclaredMembershipId)
+    && !errors.companyName && !errors.companyAddress && !errors.companyEmail && !errors.companyPhone
+    && !errors.consigneeName && !errors.consigneeAddress
   );
   const canContinueStep2 = !!(
     form.departureDate && form.meansOfTransport && form.vesselFlightVehicleNameVoyageNo
@@ -415,36 +466,42 @@ export function EcoApplyPage() {
   );
   const canContinueStep3 = !!(form.invoiceDate && form.invoiceTotal && Number(form.invoiceTotal) > 0);
   // All four documents are compulsory — an existing draft's already-saved key
-  // (invoiceFileKey etc. via existingCert) also counts, not just a file/docId
+  // (invoiceFileKey etc. via existingCert) also counts, not just a docId
   // picked in this session.
   const canContinueStep4 = !!(
-    (invoiceFile || invoiceDocId || existingCert?.invoiceFileKey)
-    && (signatureFile || signatureDocId || existingCert?.signatureKey)
-    && (cacCertificateFile || cacCertificateDocId || existingCert?.cacCertificateKey)
-    && (nepcCertificateFile || nepcCertificateDocId || existingCert?.nepcCertificateKey)
+    (invoiceDocId || existingCert?.invoiceFileKey)
+    && (signatureDocId || existingCert?.signatureKey)
+    && (cacCertificateDocId || existingCert?.cacCertificateKey)
+    && (nepcCertificateDocId || existingCert?.nepcCertificateKey)
   );
 
   const canContinue = [canContinueStep0, canContinueStep1, canContinueStep2, canContinueStep3, canContinueStep4, true];
 
+  // Fee is always charged in NGN — for a USD invoice this is a rough preview only
+  // (matches the backend's default USD_TO_NGN_RATE; the reviewer's server-side
+  // conversion at approval time is the number that actually gets charged).
+  const feeEstimateNgnTotal = form.invoiceTotal
+    ? Number(form.invoiceTotal) * (form.invoiceCurrency === 'USD' ? APPROX_USD_TO_NGN_RATE : 1)
+    : 0;
   const feeEstimate = form.invoiceTotal
     ? {
-      verified: Number(form.invoiceTotal) * 0.0011,
-      unverified: Number(form.invoiceTotal) * 0.00125,
+      verified: feeEstimateNgnTotal * 0.0011,
+      unverified: feeEstimateNgnTotal * 0.00125,
     }
     : null;
 
   return (
     <div className="p-6 max-w-2xl">
       <div className="flex items-center gap-2 mb-6">
-        <Link to="/dashboard/eco" className="text-sm text-[#8A7E6E] hover:text-[#221a0f]">eCO Certificates</Link>
-        <span className="text-[#8A7E6E]">/</span>
-        <span className="text-sm text-[#221a0f]">{isEditing ? 'Edit Application' : 'New Application'}</span>
+        <Link to="/dashboard/eco" className="text-sm text-ink-subtle hover:text-ink">eCO Certificates</Link>
+        <span className="text-ink-subtle">/</span>
+        <span className="text-sm text-ink">{isEditing ? 'Edit Application' : 'New Application'}</span>
       </div>
 
-      <h1 className="text-2xl font-semibold text-[#221a0f] mb-1">
+      <h1 className="text-2xl font-semibold text-ink mb-1">
         {isRevisionRequested ? 'Resubmit Application' : isEditing ? 'Continue Draft' : 'Apply for Certificate of Origin'}
       </h1>
-      <p className="text-sm text-[#8A7E6E] mb-2">Complete all required fields to submit your eCO application.</p>
+      <p className="text-sm text-ink-subtle mb-2">Complete all required fields to submit your eCO application.</p>
 
       {isRevisionRequested && existingCert?.revisionNotes && (
         <div className="mb-4 rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-800">
@@ -464,65 +521,57 @@ export function EcoApplyPage() {
         {STEPS.map((label, i) => (
           <div key={label} className="flex items-center flex-1 last:flex-none">
             <div className="flex flex-col items-center">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium flex-shrink-0 ${i <= step ? 'bg-[#023293] text-white' : 'bg-[#bec9bf]/30 text-[#8A7E6E]'}`}>
-                {i < step ? '✓' : i + 1}
+              <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-medium flex-shrink-0 transition-colors ${i <= step ? 'bg-primary text-white shadow-sm' : 'bg-surface-alt text-ink-subtle border border-border'}`}>
+                {i < step ? <span className="material-symbols-outlined" style={{ fontSize: 18 }}>check</span> : i + 1}
               </div>
-              <span className={`text-xs mt-1 whitespace-nowrap ${i === step ? 'text-[#023293] font-medium' : 'text-[#8A7E6E]'}`}>{label}</span>
+              <span className={`text-xs mt-1.5 whitespace-nowrap ${i === step ? 'text-primary font-semibold' : 'text-ink-subtle'}`}>{label}</span>
             </div>
-            {i < STEPS.length - 1 && <div className={`flex-1 h-px mx-2 mb-5 min-w-[16px] ${i < step ? 'bg-[#023293]' : 'bg-[#bec9bf]/40'}`} />}
+            {i < STEPS.length - 1 && <div className={`flex-1 mx-2 mb-6 min-w-[16px] border-t-2 rounded-full ${i < step ? 'border-primary' : 'border-border'}`} />}
           </div>
         ))}
       </div>
 
       {error && <ErrorBanner message={error} />}
 
-      <div className="bg-white rounded-xl border border-[#bec9bf]/40 p-6">
+      <Card>
         {step === 0 && (
           <div className="space-y-4">
-            <h2 className="font-medium text-[#221a0f] mb-4">Product & Goods Details</h2>
+            <h2 className="font-medium text-ink mb-4">Product & Goods Details</h2>
 
+            <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide">Chamber & Mineral</p>
             <div>
-              <label className={labelClass}>From which Chamber of Commerce? *</label>
               {chamberLocked ? (
                 <>
+                  <label className={labelClass}>From which Chamber of Commerce? *</label>
                   <input
                     disabled
                     value={onboardedTenants.find((t) => t.id === form.tenantId)?.name ?? form.tenantId}
-                    className={`${selectClass} bg-[#f7f9f7] text-[#8A7E6E] cursor-not-allowed`}
+                    className={`${selectClass} bg-surface-alt text-ink-subtle cursor-not-allowed`}
                   />
-                  <p className="text-xs text-[#8A7E6E] mt-1">Locked after first submission.</p>
+                  <p className="text-xs text-ink-subtle mt-1">Locked after first submission.</p>
                 </>
               ) : (
-                <select className={selectClass} value={form.tenantId} onChange={(e) => set('tenantId', e.target.value)}>
-                  <option value="">Select a chamber…</option>
-                  {onboardedTenants.map((t) => (
-                    <option key={t.id} value={t.id}>{t.name}{t.city ? ` — ${t.city}` : ''}</option>
-                  ))}
-                </select>
+                <Select label="From which Chamber of Commerce? *" value={form.tenantId} onValueChange={(v) => set('tenantId', v)}
+                  placeholder="Select a chamber…"
+                  options={onboardedTenants.map((t) => ({ value: t.id, label: `${t.name}${t.city ? ` — ${t.city}` : ''}` }))} />
               )}
             </div>
 
             <div>
-              <label className={labelClass}>Solid Mineral *</label>
-              <select className={selectClass} value={form.solidMineralId} onChange={(e) => set('solidMineralId', e.target.value)}>
-                <option value="">Select a mineral…</option>
-                {solidMinerals.map((m) => (
-                  <option key={m.id} value={m.id}>{m.name}</option>
-                ))}
-              </select>
+              <Select label="Solid Mineral *" value={form.solidMineralId} onValueChange={(v) => set('solidMineralId', v)}
+                placeholder="Select a mineral…"
+                options={solidMinerals.map((m) => ({ value: m.id, label: m.name }))} />
               {selectedMineral && (
                 <div className="mt-1.5">
-                  <label className="block text-xs text-[#8A7E6E] mb-0.5">HS Code (auto-derived)</label>
-                  <input readOnly disabled value={selectedMineral.hsCode} className={`${selectClass} bg-[#f7f9f7] text-[#8A7E6E] cursor-not-allowed`} />
+                  <label className="block text-xs text-ink-subtle mb-0.5">HS Code (auto-derived)</label>
+                  <input readOnly disabled value={selectedMineral.hsCode} className={`${selectClass} bg-surface-alt text-ink-subtle cursor-not-allowed`} />
                 </div>
               )}
             </div>
 
-            <div>
-              <label className={labelClass}>Description of Goods *</label>
-              <textarea rows={3} className={textareaClass} placeholder="Describe the goods being exported"
-                value={form.descriptionOfGoods} onChange={(e) => set('descriptionOfGoods', e.target.value)} />
-            </div>
+            <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide pt-2">Goods Details</p>
+            <Textarea label="Description of Goods *" rows={3} placeholder="Describe the goods being exported"
+              value={form.descriptionOfGoods} onChange={(e) => set('descriptionOfGoods', e.target.value)} error={errors.descriptionOfGoods} />
 
             <Input label="Number and Kind of Packages *" placeholder="e.g. 50 sacks" value={form.numberAndKindOfPackages}
               onChange={(e) => set('numberAndKindOfPackages', e.target.value)} />
@@ -531,29 +580,20 @@ export function EcoApplyPage() {
 
             <div className="grid grid-cols-2 gap-3">
               <Input label="Quantity *" type="number" placeholder="e.g. 1000" value={form.quantity}
-                onChange={(e) => set('quantity', e.target.value)} />
-              <div>
-                <label className={labelClass}>Unit *</label>
-                <select className={selectClass} value={form.quantityUnit} onChange={(e) => set('quantityUnit', e.target.value as 'KG' | 'MT')}>
-                  <option value="KG">KG</option>
-                  <option value="MT">MT</option>
-                </select>
-              </div>
+                onChange={(e) => set('quantity', e.target.value)} error={errors.quantity} />
+              <Select label="Unit *" value={form.quantityUnit} onValueChange={(v) => set('quantityUnit', v as 'KG' | 'MT')}
+                options={[{ value: 'KG', label: 'KG' }, { value: 'MT', label: 'MT' }]} />
             </div>
 
-            <div>
-              <label className={labelClass}>Origin of Goods (Nigerian State) *</label>
-              <select className={selectClass} value={form.originStates[0] ?? ''}
-                onChange={(e) => set('originStates', e.target.value ? [e.target.value] : [])}>
-                <option value="">Select a state…</option>
-                {NIGERIAN_STATES.map((stateName) => (
-                  <option key={stateName} value={stateName}>{stateName}</option>
-                ))}
-              </select>
-            </div>
+            <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide pt-2">Origin & Destination</p>
+
+            <Select label="Origin of Goods (Nigerian State) *" value={form.originStates[0] ?? ''}
+              onValueChange={(v) => set('originStates', v ? [v] : [])}
+              placeholder="Select a state…"
+              options={NIGERIAN_STATES.map((s) => ({ value: s, label: s }))} />
 
             <Input label="Destination Country *" placeholder="e.g. United Arab Emirates" value={form.destinationCountry}
-              onChange={(e) => set('destinationCountry', e.target.value)} />
+              onChange={(e) => set('destinationCountry', e.target.value)} error={errors.destinationCountry} />
             <Input label="Destination Port" placeholder="Optional" value={form.destinationPort}
               onChange={(e) => set('destinationPort', e.target.value)} />
             <Input label="Batch/ID No." placeholder="Optional" value={form.batchIdNo}
@@ -563,86 +603,72 @@ export function EcoApplyPage() {
 
         {step === 1 && (
           <div className="space-y-4">
-            <h2 className="font-medium text-[#221a0f] mb-4">Exporter/Company & Consignee Details</h2>
+            <h2 className="font-medium text-ink mb-4">Exporter/Company & Consignee Details</h2>
 
             <label className="flex items-center gap-3 cursor-pointer">
               <input type="checkbox" checked={form.isLicenseOwner} onChange={(e) => set('isLicenseOwner', e.target.checked)}
-                className="w-4 h-4 rounded border-[#bec9bf] text-[#023293] focus:ring-[#023293]/30" />
-              <span className="text-sm text-[#221a0f]">I am the mining license owner</span>
+                className="w-4 h-4 rounded border-border text-primary focus:ring-primary/30" />
+              <span className="text-sm text-ink">I am the mining license owner</span>
             </label>
             {form.isLicenseOwner && (
               <Input label="Mining License No. *" value={form.miningLicenseNo}
                 onChange={(e) => set('miningLicenseNo', e.target.value)} />
             )}
 
-            <Input label="Company Name *" value={form.companyName} onChange={(e) => set('companyName', e.target.value)} />
-            <div>
-              <label className={labelClass}>Company Address *</label>
-              <textarea rows={2} className={textareaClass} value={form.companyAddress} onChange={(e) => set('companyAddress', e.target.value)} />
-            </div>
+            <Input label="Company Name *" value={form.companyName} onChange={(e) => set('companyName', e.target.value)} error={errors.companyName} />
+            <Textarea label="Company Address *" rows={2} value={form.companyAddress} onChange={(e) => set('companyAddress', e.target.value)} error={errors.companyAddress} />
             <Input label="Company Country *" value={form.companyCountry} onChange={(e) => set('companyCountry', e.target.value)} />
-            <Input label="Company Email *" type="email" value={form.companyEmail} onChange={(e) => set('companyEmail', e.target.value)} />
-            <Input label="Company Phone *" value={form.companyPhone} onChange={(e) => set('companyPhone', e.target.value)} />
+            <Input label="Company Email *" type="email" value={form.companyEmail} onChange={(e) => set('companyEmail', e.target.value)} error={errors.companyEmail} />
+            <Input label="Company Phone *" value={form.companyPhone} onChange={(e) => set('companyPhone', e.target.value)} error={errors.companyPhone} />
 
+            <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide pt-2">Chamber Membership</p>
             <label className="flex items-center gap-3 cursor-pointer">
               <input type="checkbox" checked={form.selfDeclaredIsMember} onChange={(e) => set('selfDeclaredIsMember', e.target.checked)}
-                className="w-4 h-4 rounded border-[#bec9bf] text-[#023293] focus:ring-[#023293]/30" />
-              <span className="text-sm text-[#221a0f]">Are you a member of any chamber of commerce?</span>
+                className="w-4 h-4 rounded border-border text-primary focus:ring-primary/30" />
+              <span className="text-sm text-ink">Are you a member of any chamber of commerce?</span>
             </label>
             {form.selfDeclaredIsMember && (
-              <div className="pl-4 border-l-2 border-[#bec9bf]/40 space-y-3">
+              <div className="pl-4 border-l-2 border-border space-y-3">
                 <div>
-                  <label className={labelClass}>Which chamber are you a member of? *</label>
-                  <select className={selectClass} value={form.tenantId} onChange={(e) => set('tenantId', e.target.value)} disabled={chamberLocked}>
-                    <option value="">Select a chamber…</option>
-                    {onboardedTenants.map((t) => (
-                      <option key={t.id} value={t.id}>{t.name}{t.city ? ` — ${t.city}` : ''}</option>
-                    ))}
-                  </select>
-                  <p className="text-xs text-[#8A7E6E] mt-1">Same chamber your application is routed to — the one selected in Product &amp; Goods.</p>
+                  <Select label="Which chamber are you a member of? *" value={form.tenantId} onValueChange={(v) => set('tenantId', v)} disabled={chamberLocked}
+                    placeholder="Select a chamber…"
+                    options={onboardedTenants.map((t) => ({ value: t.id, label: `${t.name}${t.city ? ` — ${t.city}` : ''}` }))} />
+                  <p className="text-xs text-ink-subtle mt-1">Same chamber your application is routed to — the one selected in Product &amp; Goods.</p>
                 </div>
                 <Input label="Membership ID *" value={form.selfDeclaredMembershipId}
                   onChange={(e) => set('selfDeclaredMembershipId', e.target.value)} />
               </div>
             )}
 
-            <hr className="border-[#bec9bf]/30" />
-
-            <Input label="Consignee Full Legal Name *" value={form.consigneeName} onChange={(e) => set('consigneeName', e.target.value)} />
-            <div>
-              <label className={labelClass}>Consignee Address *</label>
-              <textarea rows={2} className={textareaClass} value={form.consigneeAddress} onChange={(e) => set('consigneeAddress', e.target.value)} />
-            </div>
+            <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide pt-2">Consignee</p>
+            <Input label="Consignee Full Legal Name *" value={form.consigneeName} onChange={(e) => set('consigneeName', e.target.value)} error={errors.consigneeName} />
+            <Textarea label="Consignee Address *" rows={2} value={form.consigneeAddress} onChange={(e) => set('consigneeAddress', e.target.value)} error={errors.consigneeAddress} />
           </div>
         )}
 
         {step === 2 && (
           <div className="space-y-4">
-            <h2 className="font-medium text-[#221a0f] mb-1">Shipment & Transport</h2>
-            <p className="text-xs text-[#8A7E6E] mb-3">
+            <h2 className="font-medium text-ink mb-1">Shipment & Transport</h2>
+            <p className="text-xs text-ink-subtle mb-3">
               If any of these details aren&apos;t known yet, tick &quot;I don&apos;t know yet&quot; — we&apos;ll record it as unknown ({UNKNOWN_VALUE}).
             </p>
 
             <div>
               <label className={labelClass}>Departure Date *</label>
               <input type="date" disabled={departureUnknown}
-                className={`${selectClass} ${departureUnknown ? 'bg-[#f7f9f7] text-[#8A7E6E]' : ''}`}
+                className={`${selectClass} ${departureUnknown ? 'bg-surface-alt text-ink-subtle' : ''}`}
                 value={departureUnknown ? '' : form.departureDate}
                 onChange={(e) => set('departureDate', e.target.value)} />
               <label className="flex items-center gap-2 mt-1.5 cursor-pointer">
                 <input type="checkbox" checked={departureUnknown}
                   onChange={(e) => setUnknown('departureDate', setDepartureUnknown, e.target.checked)}
-                  className="w-3.5 h-3.5 rounded border-[#bec9bf] text-[#023293] focus:ring-[#023293]/30" />
-                <span className="text-xs text-[#8A7E6E]">I don&apos;t know yet</span>
+                  className="w-3.5 h-3.5 rounded border-border text-primary focus:ring-primary/30" />
+                <span className="text-xs text-ink-subtle">I don&apos;t know yet</span>
               </label>
             </div>
 
-            <div>
-              <label className={labelClass}>Means of Transport *</label>
-              <select className={selectClass} value={form.meansOfTransport} onChange={(e) => set('meansOfTransport', e.target.value as FormState['meansOfTransport'])}>
-                {MEANS_OF_TRANSPORT.map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
-              </select>
-            </div>
+            <Select label="Means of Transport *" value={form.meansOfTransport} onValueChange={(v) => set('meansOfTransport', v as FormState['meansOfTransport'])}
+              options={MEANS_OF_TRANSPORT.map((m) => ({ value: m.value as string, label: m.label }))} />
 
             <div>
               <Input label="Vessel/Flight/Vehicle Name & Voyage No. *" disabled={vesselUnknown}
@@ -651,8 +677,8 @@ export function EcoApplyPage() {
               <label className="flex items-center gap-2 mt-1.5 cursor-pointer">
                 <input type="checkbox" checked={vesselUnknown}
                   onChange={(e) => setUnknown('vesselFlightVehicleNameVoyageNo', setVesselUnknown, e.target.checked)}
-                  className="w-3.5 h-3.5 rounded border-[#bec9bf] text-[#023293] focus:ring-[#023293]/30" />
-                <span className="text-xs text-[#8A7E6E]">I don&apos;t know yet</span>
+                  className="w-3.5 h-3.5 rounded border-border text-primary focus:ring-primary/30" />
+                <span className="text-xs text-ink-subtle">I don&apos;t know yet</span>
               </label>
             </div>
 
@@ -663,8 +689,8 @@ export function EcoApplyPage() {
               <label className="flex items-center gap-2 mt-1.5 cursor-pointer">
                 <input type="checkbox" checked={loadingPortUnknown}
                   onChange={(e) => setUnknown('portOfLoading', setLoadingPortUnknown, e.target.checked)}
-                  className="w-3.5 h-3.5 rounded border-[#bec9bf] text-[#023293] focus:ring-[#023293]/30" />
-                <span className="text-xs text-[#8A7E6E]">I don&apos;t know yet</span>
+                  className="w-3.5 h-3.5 rounded border-border text-primary focus:ring-primary/30" />
+                <span className="text-xs text-ink-subtle">I don&apos;t know yet</span>
               </label>
             </div>
 
@@ -675,8 +701,8 @@ export function EcoApplyPage() {
               <label className="flex items-center gap-2 mt-1.5 cursor-pointer">
                 <input type="checkbox" checked={dischargePortUnknown}
                   onChange={(e) => setUnknown('portOfDischarge', setDischargePortUnknown, e.target.checked)}
-                  className="w-3.5 h-3.5 rounded border-[#bec9bf] text-[#023293] focus:ring-[#023293]/30" />
-                <span className="text-xs text-[#8A7E6E]">I don&apos;t know yet</span>
+                  className="w-3.5 h-3.5 rounded border-border text-primary focus:ring-primary/30" />
+                <span className="text-xs text-ink-subtle">I don&apos;t know yet</span>
               </label>
             </div>
           </div>
@@ -684,13 +710,22 @@ export function EcoApplyPage() {
 
         {step === 3 && (
           <div className="space-y-4">
-            <h2 className="font-medium text-[#221a0f] mb-4">Commercial Information</h2>
+            <h2 className="font-medium text-ink mb-4">Commercial Information</h2>
             <Input label="Invoice Number" placeholder="Optional" value={form.invoiceNumber} onChange={(e) => set('invoiceNumber', e.target.value)} />
             <Input label="Invoice Date *" type="date" value={form.invoiceDate} onChange={(e) => set('invoiceDate', e.target.value)} />
-            <Input label="Invoice Total (NGN) *" type="number" min="0.01" step="0.01" placeholder="Amount in Naira, must be greater than 0"
-              value={form.invoiceTotal} onChange={(e) => set('invoiceTotal', e.target.value)} />
-            {form.invoiceTotal !== '' && Number(form.invoiceTotal) <= 0 && (
-              <p className="text-xs text-red-600">Invoice Total must be greater than zero.</p>
+            <div className="grid grid-cols-3 gap-3 items-start">
+              <div className="col-span-2">
+                <Input label="Invoice Total *" type="number" min="0.01" step="0.01"
+                  placeholder={form.invoiceCurrency === 'USD' ? 'Amount in US Dollars, must be greater than 0' : 'Amount in Naira, must be greater than 0'}
+                  value={form.invoiceTotal} onChange={(e) => set('invoiceTotal', e.target.value)} error={errors.invoiceTotal} />
+              </div>
+              <Select label="Currency *" value={form.invoiceCurrency} onValueChange={(v) => set('invoiceCurrency', v as 'NGN' | 'USD')}
+                options={[{ value: 'NGN', label: 'NGN (₦)' }, { value: 'USD', label: 'USD ($)' }]} />
+            </div>
+            {form.invoiceCurrency === 'USD' && (
+              <p className="text-xs text-ink-subtle -mt-2">
+                The application fee is charged in Naira — your USD amount will be converted at the exchange rate in effect when your application is reviewed.
+              </p>
             )}
             <Input label="Customer Order / LC No." placeholder="Optional" value={form.customerOrderOrLcNo}
               onChange={(e) => set('customerOrderOrLcNo', e.target.value)} />
@@ -700,134 +735,85 @@ export function EcoApplyPage() {
         {step === 4 && (
           <div className="space-y-4">
             <div className="mb-4">
-              <h2 className="font-medium text-[#221a0f]">Compliance / Declaration Documents</h2>
-              <p className="text-xs text-[#8A7E6E] mt-1">All four documents below are required. Select from your library or upload new files.</p>
+              <h2 className="font-medium text-ink">Compliance / Declaration Documents</h2>
+              <p className="text-xs text-ink-subtle mt-1">All four documents below are required. Select from your library or upload new files.</p>
             </div>
-            <DocSlot label="Attach Invoice *" filterCategory="commercial_invoice" selectedDocId={invoiceDocId} selectedFile={invoiceFile} onSelectDocId={setInvoiceDocId} onSelectFile={setInvoiceFile} />
-            <DocSlot label="Signature *" filterCategory="signature" selectedDocId={signatureDocId} selectedFile={signatureFile} onSelectDocId={setSignatureDocId} onSelectFile={setSignatureFile} />
-            <DocSlot label="CAC Certificate *" filterCategory="cac_certificate" selectedDocId={cacCertificateDocId} selectedFile={cacCertificateFile} onSelectDocId={setCacCertificateDocId} onSelectFile={setCacCertificateFile} />
-            <DocSlot label="NEPC Certificate *" filterCategory="nepc_certificate" selectedDocId={nepcCertificateDocId} selectedFile={nepcCertificateFile} onSelectDocId={setNepcCertificateDocId} onSelectFile={setNepcCertificateFile} />
+            <DocSlot label="Attach Invoice *" filterCategory="commercial_invoice" selectedDocId={invoiceDocId} onSelectDocId={setInvoiceDocId} />
+            <DocSlot label="Signature *" filterCategory="signature" selectedDocId={signatureDocId} onSelectDocId={setSignatureDocId} />
+            <DocSlot label="CAC Certificate *" filterCategory="cac_certificate" selectedDocId={cacCertificateDocId} onSelectDocId={setCacCertificateDocId} />
+            <DocSlot label="NEPC Certificate *" filterCategory="nepc_certificate" selectedDocId={nepcCertificateDocId} onSelectDocId={setNepcCertificateDocId} />
           </div>
         )}
 
         {step === 5 && (
           <div className="space-y-6">
-            <h2 className="font-medium text-[#221a0f]">Review Your Application</h2>
+            <h2 className="font-medium text-ink">Review Your Application</h2>
 
-            <div>
-              <h3 className="text-xs font-semibold text-[#8A7E6E] uppercase tracking-wide mb-2">Product & Goods</h3>
-              <dl className="divide-y divide-[#bec9bf]/30 rounded-lg border border-[#bec9bf]/40 overflow-hidden">
-                {[
-                  { label: 'Chamber', value: onboardedTenants.find((t) => t.id === form.tenantId)?.name ?? form.tenantId },
-                  { label: 'Solid Mineral', value: selectedMineral?.name ?? '—' },
-                  { label: 'HS Code', value: selectedMineral?.hsCode ?? '—' },
-                  { label: 'Description', value: form.descriptionOfGoods },
-                  { label: 'Packages', value: form.numberAndKindOfPackages },
-                  { label: 'Marks & Numbers', value: form.marksAndNumbers || '—' },
-                  { label: 'Quantity', value: form.quantity ? `${form.quantity} ${form.quantityUnit}` : '—' },
-                  { label: 'Origin States', value: form.originStates.join(', ') || '—' },
-                  { label: 'Destination', value: [form.destinationCountry, form.destinationPort].filter(Boolean).join(', ') || '—' },
-                  { label: 'Batch/ID No.', value: form.batchIdNo || '—' },
-                ].map((row) => (
-                  <div key={row.label} className="grid grid-cols-3 gap-4 px-4 py-3">
-                    <dt className="text-sm text-[#8A7E6E]">{row.label}</dt>
-                    <dd className="col-span-2 text-sm text-[#221a0f]">{row.value}</dd>
-                  </div>
-                ))}
-              </dl>
-            </div>
+            <ReviewSection title="Product & Goods" onEdit={() => setStep(0)} rows={[
+              { label: 'Chamber', value: onboardedTenants.find((t) => t.id === form.tenantId)?.name ?? form.tenantId },
+              { label: 'Solid Mineral', value: selectedMineral?.name ?? '—' },
+              { label: 'HS Code', value: selectedMineral?.hsCode ?? '—' },
+              { label: 'Description', value: form.descriptionOfGoods },
+              { label: 'Packages', value: form.numberAndKindOfPackages },
+              { label: 'Marks & Numbers', value: form.marksAndNumbers || '—' },
+              { label: 'Quantity', value: form.quantity ? `${form.quantity} ${form.quantityUnit}` : '—' },
+              { label: 'Origin States', value: form.originStates.join(', ') || '—' },
+              { label: 'Destination', value: [form.destinationCountry, form.destinationPort].filter(Boolean).join(', ') || '—' },
+              { label: 'Batch/ID No.', value: form.batchIdNo || '—' },
+            ]} />
 
-            <div>
-              <h3 className="text-xs font-semibold text-[#8A7E6E] uppercase tracking-wide mb-2">Exporter/Company & Consignee</h3>
-              <dl className="divide-y divide-[#bec9bf]/30 rounded-lg border border-[#bec9bf]/40 overflow-hidden">
-                {[
-                  { label: 'License Owner', value: form.isLicenseOwner ? `Yes (${form.miningLicenseNo || '—'})` : 'No' },
-                  { label: 'Company', value: form.companyName },
-                  { label: 'Company Address', value: form.companyAddress },
-                  { label: 'Company Country', value: form.companyCountry },
-                  { label: 'Company Email', value: form.companyEmail },
-                  { label: 'Company Phone', value: form.companyPhone },
-                  { label: 'Chamber Member', value: form.selfDeclaredIsMember ? `Yes (${form.selfDeclaredMembershipId || '—'})` : 'No' },
-                  { label: 'Consignee', value: form.consigneeName },
-                  { label: 'Consignee Address', value: form.consigneeAddress },
-                ].map((row) => (
-                  <div key={row.label} className="grid grid-cols-3 gap-4 px-4 py-3">
-                    <dt className="text-sm text-[#8A7E6E]">{row.label}</dt>
-                    <dd className="col-span-2 text-sm text-[#221a0f]">{row.value}</dd>
-                  </div>
-                ))}
-              </dl>
-            </div>
+            <ReviewSection title="Exporter/Company & Consignee" onEdit={() => setStep(1)} rows={[
+              { label: 'License Owner', value: form.isLicenseOwner ? `Yes (${form.miningLicenseNo || '—'})` : 'No' },
+              { label: 'Company', value: form.companyName },
+              { label: 'Company Address', value: form.companyAddress },
+              { label: 'Company Country', value: form.companyCountry },
+              { label: 'Company Email', value: form.companyEmail },
+              { label: 'Company Phone', value: form.companyPhone },
+              { label: 'Chamber Member', value: form.selfDeclaredIsMember ? `Yes (${form.selfDeclaredMembershipId || '—'})` : 'No' },
+              { label: 'Consignee', value: form.consigneeName },
+              { label: 'Consignee Address', value: form.consigneeAddress },
+            ]} />
 
-            <div>
-              <h3 className="text-xs font-semibold text-[#8A7E6E] uppercase tracking-wide mb-2">Shipment & Transport</h3>
-              <dl className="divide-y divide-[#bec9bf]/30 rounded-lg border border-[#bec9bf]/40 overflow-hidden">
-                {[
-                  { label: 'Departure Date', value: form.departureDate || '—' },
-                  { label: 'Means of Transport', value: MEANS_OF_TRANSPORT.find((m) => m.value === form.meansOfTransport)?.label ?? form.meansOfTransport },
-                  { label: 'Vessel/Flight/Vehicle & Voyage No.', value: form.vesselFlightVehicleNameVoyageNo || '—' },
-                  { label: 'Port of Loading', value: form.portOfLoading || '—' },
-                  { label: 'Port of Discharge', value: form.portOfDischarge || '—' },
-                ].map((row) => (
-                  <div key={row.label} className="grid grid-cols-3 gap-4 px-4 py-3">
-                    <dt className="text-sm text-[#8A7E6E]">{row.label}</dt>
-                    <dd className="col-span-2 text-sm text-[#221a0f]">{row.value}</dd>
-                  </div>
-                ))}
-              </dl>
-            </div>
+            <ReviewSection title="Shipment & Transport" onEdit={() => setStep(2)} rows={[
+              { label: 'Departure Date', value: form.departureDate || '—' },
+              { label: 'Means of Transport', value: MEANS_OF_TRANSPORT.find((m) => m.value === form.meansOfTransport)?.label ?? form.meansOfTransport },
+              { label: 'Vessel/Flight/Vehicle & Voyage No.', value: form.vesselFlightVehicleNameVoyageNo || '—' },
+              { label: 'Port of Loading', value: form.portOfLoading || '—' },
+              { label: 'Port of Discharge', value: form.portOfDischarge || '—' },
+            ]} />
 
-            <div>
-              <h3 className="text-xs font-semibold text-[#8A7E6E] uppercase tracking-wide mb-2">Commercial Information</h3>
-              <dl className="divide-y divide-[#bec9bf]/30 rounded-lg border border-[#bec9bf]/40 overflow-hidden">
-                {[
-                  { label: 'Invoice Number', value: form.invoiceNumber || '—' },
-                  { label: 'Invoice Date', value: form.invoiceDate },
-                  { label: 'Invoice Total', value: form.invoiceTotal ? `₦${Number(form.invoiceTotal).toLocaleString()}` : '—' },
-                  { label: 'Customer Order / LC No.', value: form.customerOrderOrLcNo || '—' },
-                ].map((row) => (
-                  <div key={row.label} className="grid grid-cols-3 gap-4 px-4 py-3">
-                    <dt className="text-sm text-[#8A7E6E]">{row.label}</dt>
-                    <dd className="col-span-2 text-sm text-[#221a0f]">{row.value}</dd>
-                  </div>
-                ))}
-              </dl>
-            </div>
+            <ReviewSection title="Commercial Information" onEdit={() => setStep(3)} rows={[
+              { label: 'Invoice Number', value: form.invoiceNumber || '—' },
+              { label: 'Invoice Date', value: form.invoiceDate },
+              { label: 'Invoice Total', value: form.invoiceTotal ? `${form.invoiceCurrency === 'USD' ? '$' : '₦'}${Number(form.invoiceTotal).toLocaleString()}` : '—' },
+              { label: 'Customer Order / LC No.', value: form.customerOrderOrLcNo || '—' },
+            ]} />
 
-            <div>
-              <h3 className="text-xs font-semibold text-[#8A7E6E] uppercase tracking-wide mb-2">Compliance Documents</h3>
-              <dl className="divide-y divide-[#bec9bf]/30 rounded-lg border border-[#bec9bf]/40 overflow-hidden">
-                {[
-                  { label: 'Invoice', value: invoiceFile?.name ?? (invoiceDocId ? 'From library' : '—') },
-                  { label: 'Signature', value: signatureFile?.name ?? (signatureDocId ? 'From library' : '—') },
-                  { label: 'CAC Certificate', value: cacCertificateFile?.name ?? (cacCertificateDocId ? 'From library' : '—') },
-                  { label: 'NEPC Certificate', value: nepcCertificateFile?.name ?? (nepcCertificateDocId ? 'From library' : '—') },
-                ].map((row) => (
-                  <div key={row.label} className="grid grid-cols-3 gap-4 px-4 py-3">
-                    <dt className="text-sm text-[#8A7E6E]">{row.label}</dt>
-                    <dd className="col-span-2 text-sm text-[#221a0f]">{row.value}</dd>
-                  </div>
-                ))}
-              </dl>
-            </div>
+            <ReviewSection title="Compliance Documents" onEdit={() => setStep(4)} rows={[
+              { label: 'Invoice', value: invoiceDocId ? (myDocs.find((d) => d.id === invoiceDocId)?.name ?? 'Attached') : '—' },
+              { label: 'Signature', value: signatureDocId ? (myDocs.find((d) => d.id === signatureDocId)?.name ?? 'Attached') : '—' },
+              { label: 'CAC Certificate', value: cacCertificateDocId ? (myDocs.find((d) => d.id === cacCertificateDocId)?.name ?? 'Attached') : '—' },
+              { label: 'NEPC Certificate', value: nepcCertificateDocId ? (myDocs.find((d) => d.id === nepcCertificateDocId)?.name ?? 'Attached') : '—' },
+            ]} />
 
             {feeEstimate && (
-              <div className="rounded-lg bg-[#f0faf4] border border-[#023293]/20 px-4 py-3 text-sm text-[#221a0f]">
+              <div className="rounded-lg bg-success-bg border border-primary/20 px-4 py-3 text-sm text-ink">
                 <p className="font-medium mb-1">Estimated Application Fee</p>
-                <p className="text-xs text-[#8A7E6E]">
+                <p className="text-xs text-ink-subtle">
                   ₦{feeEstimate.verified.toLocaleString(undefined, { maximumFractionDigits: 2 })} (0.11% — if chamber membership is verified) or{' '}
                   ₦{feeEstimate.unverified.toLocaleString(undefined, { maximumFractionDigits: 2 })} (0.125% — otherwise).
                   The final fee is confirmed by the reviewer at approval.
+                  {form.invoiceCurrency === 'USD' && ' This estimate converts your USD invoice at an approximate rate — the exact fee is set using the rate in effect when reviewed.'}
                 </p>
               </div>
             )}
 
-            <p className="text-xs text-[#8A7E6E]">By submitting, you confirm that all information is accurate and complete.</p>
+            <p className="text-xs text-ink-subtle">By submitting, you confirm that all information is accurate and complete.</p>
           </div>
         )}
-      </div>
+      </Card>
 
-      <div className="flex items-center justify-between mt-6">
+      <div className="sticky bottom-0 -mx-6 mt-6 flex items-center justify-between bg-surface border-t border-border px-6 py-4">
         <Button variant="outline" onClick={() => step === 0 ? navigate('/dashboard/eco') : setStep((s) => s - 1)}>
           {step === 0 ? 'Cancel' : 'Back'}
         </Button>

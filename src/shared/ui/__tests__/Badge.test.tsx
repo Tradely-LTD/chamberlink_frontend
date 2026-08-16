@@ -9,11 +9,11 @@ describe('Badge', () => {
 
   it('applies default variant styling', () => {
     render(<Badge label="Active" />);
-    expect(screen.getByText('Active')).toHaveClass('bg-[#023293]/10');
+    expect(screen.getByText('Active')).toHaveClass('bg-primary/10');
   });
 
   it('applies coming-soon variant styling', () => {
     render(<Badge label="Soon" variant="coming-soon" />);
-    expect(screen.getByText('Soon')).toHaveClass('bg-amber-100');
+    expect(screen.getByText('Soon')).toHaveClass('bg-warning-bg');
   });
 });

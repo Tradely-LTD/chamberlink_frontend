@@ -94,21 +94,21 @@ export function TradeFairBoothsPage() {
     <div className="p-6 max-w-3xl">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 mb-6 text-sm">
-        <Link to="/dashboard/trade-fair" className="text-[#74777f] hover:text-[#191c1e] flex items-center gap-1">
+        <Link to="/dashboard/trade-fair" className="text-ink-subtle hover:text-ink flex items-center gap-1">
           <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_back</span>
           Trade Fair
         </Link>
-        <span className="material-symbols-outlined text-[#c4c6cf]" style={{ fontSize: 14 }}>chevron_right</span>
-        <span className="text-[#191c1e] font-medium">My Booths</span>
+        <span className="material-symbols-outlined text-ink-subtle" style={{ fontSize: 14 }}>chevron_right</span>
+        <span className="text-ink font-medium">My Booths</span>
       </div>
 
-      <h1 className="text-xl font-semibold text-[#191c1e] mb-1">My Booth Reservations</h1>
-      <p className="text-sm text-[#74777f] mb-6">Your reserved exhibition booths.</p>
+      <h1 className="text-xl font-semibold text-ink mb-1">My Booth Reservations</h1>
+      <p className="text-sm text-ink-subtle mb-6">Your reserved exhibition booths.</p>
 
       {/* Payment verification banner */}
       {verifying && (
-        <div className="mb-4 flex items-center gap-3 rounded-xl border border-[#d6e3ff] bg-[#f0f4ff] px-4 py-3 text-sm text-[#023293]">
-          <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#023293] border-t-transparent flex-shrink-0" />
+        <div className="mb-4 flex items-center gap-3 rounded-xl border border-[#d6e3ff] bg-[#f0f4ff] px-4 py-3 text-sm text-primary">
+          <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent flex-shrink-0" />
           Verifying your payment…
         </div>
       )}
@@ -129,12 +129,12 @@ export function TradeFairBoothsPage() {
       {isLoading && <SkeletonCard />}
 
       {!isLoading && booths.length === 0 ? (
-        <div className="bg-white rounded-xl border border-[#e0e3e5] p-12 text-center">
+        <div className="bg-white rounded-xl border border-border p-12 text-center">
           <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: '#d6e3ff' }}>
             <span className="material-symbols-outlined" style={{ fontSize: 32, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 32`, color: '#023293' }}>storefront</span>
           </div>
-          <h3 className="text-base font-semibold text-[#191c1e] mb-1">No booth reservations yet</h3>
-          <p className="text-sm text-[#74777f] mb-4">Book a booth at an upcoming trade fair event.</p>
+          <h3 className="text-base font-semibold text-ink mb-1">No booth reservations yet</h3>
+          <p className="text-sm text-ink-subtle mb-4">Book a booth at an upcoming trade fair event.</p>
           <Link to="/dashboard/trade-fair">
             <button className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white" style={{ background: '#023293' }}>
               Browse Events
@@ -146,16 +146,16 @@ export function TradeFairBoothsPage() {
           {booths.map((booth) => {
             const cfg = statusConfig[booth.status];
             return (
-              <div key={booth.id} className="bg-white rounded-xl border border-[#e0e3e5] overflow-hidden">
+              <div key={booth.id} className="bg-white rounded-xl border border-border overflow-hidden">
                 <div className="px-6 pt-5 pb-4">
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: '#d6e3ff' }}>
-                        <span className="font-bold text-[#023293] text-sm leading-none text-center">{booth.boothNumber}</span>
+                        <span className="font-bold text-primary text-sm leading-none text-center">{booth.boothNumber}</span>
                       </div>
                       <div>
-                        <p className="font-bold text-[#191c1e]">{booth.boothType} Booth</p>
-                        {booth.zone && <p className="text-xs text-[#74777f] mt-0.5">{booth.zone}</p>}
+                        <p className="font-bold text-ink">{booth.boothType} Booth</p>
+                        {booth.zone && <p className="text-xs text-ink-subtle mt-0.5">{booth.zone}</p>}
                       </div>
                     </div>
                     <span className="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold" style={{ background: cfg.bg, color: cfg.text }}>
@@ -165,29 +165,29 @@ export function TradeFairBoothsPage() {
 
                   <dl className="grid grid-cols-2 gap-3 text-sm mb-4">
                     <div>
-                      <dt className="text-xs text-[#74777f] mb-0.5">Event</dt>
-                      <dd className="font-medium text-[#191c1e]">{booth.eventTitle}</dd>
+                      <dt className="text-xs text-ink-subtle mb-0.5">Event</dt>
+                      <dd className="font-medium text-ink">{booth.eventTitle}</dd>
                     </div>
                     <div>
-                      <dt className="text-xs text-[#74777f] mb-0.5">Event Date</dt>
-                      <dd className="text-[#191c1e]">
+                      <dt className="text-xs text-ink-subtle mb-0.5">Event Date</dt>
+                      <dd className="text-ink">
                         {new Date(booth.eventStartDate).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'long', year: 'numeric' })}
                       </dd>
                     </div>
                     {booth.size && (
                       <div>
-                        <dt className="text-xs text-[#74777f] mb-0.5">Size</dt>
-                        <dd className="text-[#191c1e]">{booth.size}</dd>
+                        <dt className="text-xs text-ink-subtle mb-0.5">Size</dt>
+                        <dd className="text-ink">{booth.size}</dd>
                       </div>
                     )}
                     <div>
-                      <dt className="text-xs text-[#74777f] mb-0.5">Amount Paid</dt>
-                      <dd className="font-bold text-[#191c1e]">₦{booth.amount.toLocaleString()}</dd>
+                      <dt className="text-xs text-ink-subtle mb-0.5">Amount Paid</dt>
+                      <dd className="font-bold text-ink">₦{booth.amount.toLocaleString()}</dd>
                     </div>
                     {booth.paymentRef && (
                       <div>
-                        <dt className="text-xs text-[#74777f] mb-0.5">Payment Ref</dt>
-                        <dd className="font-mono text-xs text-[#191c1e]">{booth.paymentRef}</dd>
+                        <dt className="text-xs text-ink-subtle mb-0.5">Payment Ref</dt>
+                        <dd className="font-mono text-xs text-ink">{booth.paymentRef}</dd>
                       </div>
                     )}
                   </dl>
@@ -209,7 +209,7 @@ export function TradeFairBoothsPage() {
                         href={booth.receiptUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 rounded-lg border border-[#023293] px-4 py-2 text-sm font-medium text-[#023293] hover:bg-[#023293] hover:text-white transition-colors"
+                        className="flex items-center gap-2 rounded-lg border border-primary px-4 py-2 text-sm font-medium text-primary hover:bg-primary hover:text-white transition-colors"
                       >
                         <span className="material-symbols-outlined" style={{ fontSize: 16 }}>download</span>
                         Download Receipt

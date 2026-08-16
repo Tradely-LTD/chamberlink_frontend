@@ -40,12 +40,12 @@ export function MembershipStatusCard({
 
   if (noConnection) {
     return (
-      <div className="rounded-xl border border-dashed border-[#bec9bf]/60 bg-[#f7f9f7] p-5">
-        <p className="text-xs font-medium text-[#8A7E6E] uppercase tracking-wide mb-2">
+      <div className="rounded-xl border border-dashed border-border/60 bg-[#f7f9f7] p-5">
+        <p className="text-xs font-medium text-ink-subtle uppercase tracking-wide mb-2">
           Membership Status
         </p>
-        <p className="text-sm text-[#221a0f] mb-2">You&apos;re not connected to a chamber yet.</p>
-        <Link to="/dashboard/connections" className="text-sm font-medium text-[#023293] hover:underline">
+        <p className="text-sm text-ink mb-2">You&apos;re not connected to a chamber yet.</p>
+        <Link to="/dashboard/connections" className="text-sm font-medium text-primary hover:underline">
           Connect a chamber
         </Link>
       </div>
@@ -61,7 +61,7 @@ export function MembershipStatusCard({
         {onRetry && (
           <button
             onClick={onRetry}
-            className="text-sm text-[#023293] hover:underline"
+            className="text-sm text-primary hover:underline"
           >
             Retry
           </button>
@@ -73,8 +73,8 @@ export function MembershipStatusCard({
   const status = profile?.status ?? 'pending_payment';
 
   return (
-    <div className="rounded-xl border border-[#bec9bf]/40 bg-white p-5">
-      <p className="text-xs font-medium text-[#8A7E6E] uppercase tracking-wide mb-3">
+    <div className="rounded-xl border border-border/40 bg-white p-5">
+      <p className="text-xs font-medium text-ink-subtle uppercase tracking-wide mb-3">
         Membership Status
       </p>
       <div className="flex items-center justify-between">
@@ -87,15 +87,15 @@ export function MembershipStatusCard({
             {statusLabels[status] ?? status}
           </span>
           {profile?.memberId && (
-            <p className="mt-1 text-xs text-[#8A7E6E]">
+            <p className="mt-1 text-xs text-ink-subtle">
               ID: {profile.memberId}
             </p>
           )}
         </div>
         {profile?.membershipExpiresAt && (
           <div className="text-right">
-            <p className="text-xs text-[#8A7E6E]">Expires</p>
-            <p className="text-sm font-medium text-[#221a0f]">
+            <p className="text-xs text-ink-subtle">Expires</p>
+            <p className="text-sm font-medium text-ink">
               {new Date(profile.membershipExpiresAt).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos' })}
             </p>
           </div>

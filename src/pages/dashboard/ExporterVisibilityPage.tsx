@@ -191,16 +191,16 @@ function ProfileFormFields({ form, set }: { form: ProfileFormData; set: (k: keyo
         { label: 'Website (optional)',               key: 'website' as const,        placeholder: 'https://yourcompany.ng', required: false },
       ] as const).map(({ label, key, placeholder, required }) => (
         <div key={key}>
-          <label className="block text-xs font-semibold text-[#44474e] mb-1">{label}</label>
+          <label className="block text-xs font-semibold text-ink-subtle mb-1">{label}</label>
           <input required={required} value={form[key]} onChange={set(key)} placeholder={placeholder}
-            className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293]" />
+            className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary" />
         </div>
       ))}
       <div>
-        <label className="block text-xs font-semibold text-[#44474e] mb-1">Business Description</label>
+        <label className="block text-xs font-semibold text-ink-subtle mb-1">Business Description</label>
         <textarea required rows={3} value={form.description} onChange={set('description')}
           placeholder="Describe your export business…"
-          className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293] resize-none" />
+          className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary resize-none" />
       </div>
     </>
   );
@@ -229,9 +229,9 @@ function CreateProfileModal({ onClose }: { onClose: () => void }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b border-[#e0e3e5] px-6 py-4 flex items-center justify-between rounded-t-2xl">
-          <h2 className="font-bold text-[#191c1e]">Create Exporter Profile</h2>
-          <button onClick={onClose} className="p-2 rounded-lg hover:bg-[#f7f9fb] text-[#74777f]"><span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span></button>
+        <div className="sticky top-0 bg-white border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
+          <h2 className="font-bold text-ink">Create Exporter Profile</h2>
+          <button onClick={onClose} className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle"><span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span></button>
         </div>
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {error && <ErrorBanner message={error} />}
@@ -279,9 +279,9 @@ function EditProfileModal({ profile, onClose }: { profile: ExporterProfile; onCl
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b border-[#e0e3e5] px-6 py-4 flex items-center justify-between rounded-t-2xl">
-          <h2 className="font-bold text-[#191c1e]">Edit Exporter Profile</h2>
-          <button onClick={onClose} className="p-2 rounded-lg hover:bg-[#f7f9fb] text-[#74777f]"><span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span></button>
+        <div className="sticky top-0 bg-white border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
+          <h2 className="font-bold text-ink">Edit Exporter Profile</h2>
+          <button onClick={onClose} className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle"><span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span></button>
         </div>
         {profile.status === 'active' && (
           <div className="mx-6 mt-4 flex items-center gap-2 rounded-lg border border-[#ffdea5] bg-[#fffbf0] px-4 py-3 text-xs text-[#5d4201]">
@@ -324,21 +324,21 @@ function UpgradeModal({ currentTier, onClose }: { currentTier: ExporterProfile['
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md">
-        <div className="border-b border-[#e0e3e5] px-6 py-4 flex items-center justify-between">
-          <h2 className="font-bold text-[#191c1e]">Upgrade Visibility Plan</h2>
-          <button onClick={onClose} className="p-2 rounded-lg hover:bg-[#f7f9fb] text-[#74777f]"><span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span></button>
+        <div className="border-b border-border px-6 py-4 flex items-center justify-between">
+          <h2 className="font-bold text-ink">Upgrade Visibility Plan</h2>
+          <button onClick={onClose} className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle"><span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span></button>
         </div>
         <div className="p-6 space-y-4">
           {error && <ErrorBanner message={error} />}
           {upgradeable.map((t) => {
             const tc = tierConfig[t];
             return (
-              <button key={t} onClick={() => setSelected(t)} className={`w-full rounded-xl border-2 p-4 text-left transition-all ${selected === t ? '' : 'border-[#e0e3e5]'}`} style={selected === t ? { borderColor: tc.accent, background: tc.bg + '40' } : {}}>
+              <button key={t} onClick={() => setSelected(t)} className={`w-full rounded-xl border-2 p-4 text-left transition-all ${selected === t ? '' : 'border-border'}`} style={selected === t ? { borderColor: tc.accent, background: tc.bg + '40' } : {}}>
                 <div className="flex items-center justify-between mb-1">
                   <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ background: tc.bg, color: tc.text }}>{tc.label}</span>
-                  <span className="font-bold text-[#191c1e]">₦{tc.price.toLocaleString()}/yr</span>
+                  <span className="font-bold text-ink">₦{tc.price.toLocaleString()}/yr</span>
                 </div>
-                <p className="text-xs text-[#74777f]">{t === 'premium' ? 'Top placement, trade mission recommendations, quarterly newsletter spotlight.' : 'Featured badge, priority placement, up to 10 product images.'}</p>
+                <p className="text-xs text-ink-subtle">{t === 'premium' ? 'Top placement, trade mission recommendations, quarterly newsletter spotlight.' : 'Featured badge, priority placement, up to 10 product images.'}</p>
               </button>
             );
           })}
@@ -372,39 +372,39 @@ function ExporterDetailModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b border-[#e0e3e5] px-6 py-4 flex items-center justify-between rounded-t-2xl">
-          <h2 className="font-bold text-[#191c1e]">Business Profile Review</h2>
-          <button onClick={onClose} className="p-2 rounded-lg hover:bg-[#f7f9fb] text-[#74777f]">
+        <div className="sticky top-0 bg-white border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
+          <h2 className="font-bold text-ink">Business Profile Review</h2>
+          <button onClick={onClose} className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle">
             <span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span>
           </button>
         </div>
         <div className="p-6 space-y-5">
           <div>
             <div className="flex items-start justify-between gap-2 mb-1">
-              <h3 className="text-lg font-bold text-[#191c1e]">{profile.companyName}</h3>
+              <h3 className="text-lg font-bold text-ink">{profile.companyName}</h3>
               <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold flex-shrink-0" style={{ background: profileStatusConfig[profile.status].bg, color: profileStatusConfig[profile.status].text }}>{profileStatusConfig[profile.status].label}</span>
             </div>
-            {profile.tagline && <p className="text-sm text-[#74777f] italic">{profile.tagline}</p>}
-            <p className="text-sm text-[#74777f] mt-0.5">{profile.memberName}{profile.memberEmail ? ` · ${profile.memberEmail}` : ''}</p>
+            {profile.tagline && <p className="text-sm text-ink-subtle italic">{profile.tagline}</p>}
+            <p className="text-sm text-ink-subtle mt-0.5">{profile.memberName}{profile.memberEmail ? ` · ${profile.memberEmail}` : ''}</p>
           </div>
 
           <div className="grid grid-cols-2 gap-3 text-sm">
-            <div><span className="font-semibold text-[#44474e]">Sector: </span><span className="text-[#191c1e]">{profile.sector}</span></div>
-            <div><span className="font-semibold text-[#44474e]">Tier: </span><span className="text-[#191c1e] capitalize">{profile.tier}</span></div>
-            <div><span className="font-semibold text-[#44474e]">Email: </span><span className="text-[#191c1e]">{profile.contactEmail || '—'}</span></div>
-            {profile.website && <div><span className="font-semibold text-[#44474e]">Website: </span><a href={profile.website} target="_blank" rel="noopener noreferrer" className="text-[#023293] underline text-xs">{profile.website}</a></div>}
+            <div><span className="font-semibold text-ink-subtle">Sector: </span><span className="text-ink">{profile.sector}</span></div>
+            <div><span className="font-semibold text-ink-subtle">Tier: </span><span className="text-ink capitalize">{profile.tier}</span></div>
+            <div><span className="font-semibold text-ink-subtle">Email: </span><span className="text-ink">{profile.contactEmail || '—'}</span></div>
+            {profile.website && <div><span className="font-semibold text-ink-subtle">Website: </span><a href={profile.website} target="_blank" rel="noopener noreferrer" className="text-primary underline text-xs">{profile.website}</a></div>}
           </div>
 
           {profile.description && (
             <div>
-              <p className="text-xs font-semibold text-[#44474e] uppercase tracking-wide mb-1">About</p>
-              <p className="text-sm text-[#191c1e] leading-relaxed">{profile.description}</p>
+              <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide mb-1">About</p>
+              <p className="text-sm text-ink leading-relaxed">{profile.description}</p>
             </div>
           )}
 
           {profile.products.length > 0 && (
             <div>
-              <p className="text-xs font-semibold text-[#44474e] uppercase tracking-wide mb-2">Products & Services</p>
+              <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide mb-2">Products & Services</p>
               <div className="flex flex-wrap gap-2">
                 {profile.products.map((p, i) => <span key={i} className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium" style={{ background: '#f0f4ff', color: '#023293' }}>{p}</span>)}
               </div>
@@ -413,7 +413,7 @@ function ExporterDetailModal({
 
           {profile.certifications.length > 0 && (
             <div>
-              <p className="text-xs font-semibold text-[#44474e] uppercase tracking-wide mb-2">Certifications</p>
+              <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide mb-2">Certifications</p>
               <div className="flex flex-wrap gap-2">
                 {profile.certifications.map((c, i) => <span key={i} className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium" style={{ background: '#e6f5ef', color: '#023293' }}>{c}</span>)}
               </div>
@@ -423,13 +423,13 @@ function ExporterDetailModal({
           {profile.rejectionReason && (
             <div className="rounded-xl border border-[#fce4ec] bg-[#fff5f7] p-3">
               <p className="text-xs font-semibold text-[#880e4f] mb-1">Previous rejection reason</p>
-              <p className="text-sm text-[#44474e]">{profile.rejectionReason}</p>
+              <p className="text-sm text-ink-subtle">{profile.rejectionReason}</p>
             </div>
           )}
 
           <div className="grid grid-cols-2 gap-3 p-4 rounded-xl" style={{ background: '#f7f9fb' }}>
-            <div className="text-center"><p className="text-2xl font-bold text-[#191c1e]">{profile.viewCount.toLocaleString()}</p><p className="text-xs text-[#74777f]">Profile Views</p></div>
-            <div className="text-center"><p className="text-2xl font-bold text-[#191c1e]">{profile.inquiryCount.toLocaleString()}</p><p className="text-xs text-[#74777f]">Inquiries</p></div>
+            <div className="text-center"><p className="text-2xl font-bold text-ink">{profile.viewCount.toLocaleString()}</p><p className="text-xs text-ink-subtle">Profile Views</p></div>
+            <div className="text-center"><p className="text-2xl font-bold text-ink">{profile.inquiryCount.toLocaleString()}</p><p className="text-xs text-ink-subtle">Inquiries</p></div>
           </div>
 
           {/* Reject form inline */}
@@ -444,7 +444,7 @@ function ExporterDetailModal({
                 className="w-full rounded-lg border border-[#ffdad6] px-3 py-2 text-sm focus:outline-none focus:border-[#93000a] resize-none"
               />
               <div className="flex gap-2 mt-2">
-                <button onClick={() => setShowRejectForm(false)} className="rounded-lg border border-[#c4c6cf] px-3 py-1.5 text-xs font-semibold text-[#44474e]">Cancel</button>
+                <button onClick={() => setShowRejectForm(false)} className="rounded-lg border border-border px-3 py-1.5 text-xs font-semibold text-ink-subtle">Cancel</button>
                 <button
                   onClick={() => onAction('reject', rejectReason.trim() || undefined)}
                   className="rounded-lg px-3 py-1.5 text-xs font-semibold text-white"
@@ -457,8 +457,8 @@ function ExporterDetailModal({
           )}
         </div>
 
-        <div className="sticky bottom-0 bg-white border-t border-[#e0e3e5] px-6 py-4 flex gap-2 flex-wrap">
-          <button onClick={onClose} className="rounded-lg border border-[#c4c6cf] px-4 py-2 text-sm font-semibold text-[#191c1e] hover:bg-[#f7f9fb]">Close</button>
+        <div className="sticky bottom-0 bg-white border-t border-border px-6 py-4 flex gap-2 flex-wrap">
+          <button onClick={onClose} className="rounded-lg border border-border px-4 py-2 text-sm font-semibold text-ink hover:bg-surface-alt">Close</button>
 
           {(profile.status === 'pending_review' || profile.status === 'suspended') && (
             <button onClick={() => onAction('approve')} className="flex-1 rounded-lg px-4 py-2 text-sm font-semibold text-white" style={{ background: '#0b6c4b' }}>
@@ -476,7 +476,7 @@ function ExporterDetailModal({
           )}
 
           {profile.status === 'active' && (
-            <button onClick={() => onAction('suspend')} className="rounded-lg border border-[#c4c6cf] px-4 py-2 text-sm font-semibold text-[#93000a] hover:bg-[#ffdad6]">
+            <button onClick={() => onAction('suspend')} className="rounded-lg border border-border px-4 py-2 text-sm font-semibold text-[#93000a] hover:bg-[#ffdad6]">
               Suspend
             </button>
           )}
@@ -535,8 +535,8 @@ function MemberExporterView() {
 
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-xl font-semibold text-[#191c1e]">Exporter Visibility Manager</h2>
-          <p className="text-sm text-[#74777f] mt-0.5">Manage your public exporter profile and boost visibility to international buyers.</p>
+          <h2 className="text-xl font-semibold text-ink">Exporter Visibility Manager</h2>
+          <p className="text-sm text-ink-subtle mt-0.5">Manage your public exporter profile and boost visibility to international buyers.</p>
         </div>
       </div>
 
@@ -557,29 +557,29 @@ function MemberExporterView() {
         </div>
       )}
       {verifying && (
-        <div className="mb-4 flex items-center gap-3 rounded-xl border border-[#d6e3ff] bg-[#f0f4ff] px-4 py-3 text-sm text-[#023293]">
-          <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#023293] border-t-transparent flex-shrink-0" />
+        <div className="mb-4 flex items-center gap-3 rounded-xl border border-[#d6e3ff] bg-[#f0f4ff] px-4 py-3 text-sm text-primary">
+          <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent flex-shrink-0" />
           Verifying your payment…
         </div>
       )}
 
       {!profile ? (
-        <div className="bg-white rounded-xl border border-[#e0e3e5] p-12 text-center">
+        <div className="bg-white rounded-xl border border-border p-12 text-center">
           <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: '#d6e3ff' }}>
             <span className="material-symbols-outlined" style={{ fontSize: 32, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 32`, color: '#023293' }}>storefront</span>
           </div>
-          <h3 className="font-bold text-[#191c1e] mb-2">Get Listed in the Export Directory</h3>
-          <p className="text-sm text-[#74777f] mb-6 max-w-sm mx-auto">Create your free exporter profile to reach international buyers through the NACCIMA trade network.</p>
+          <h3 className="font-bold text-ink mb-2">Get Listed in the Export Directory</h3>
+          <p className="text-sm text-ink-subtle mb-6 max-w-sm mx-auto">Create your free exporter profile to reach international buyers through the NACCIMA trade network.</p>
           <button onClick={() => setShowCreate(true)} className="rounded-lg px-6 py-2.5 text-sm font-semibold text-white" style={{ background: '#023293' }}>Create Exporter Profile</button>
         </div>
       ) : (
         <>
-          <div className="bg-white rounded-xl border border-[#e0e3e5] p-6 mb-6">
+          <div className="bg-white rounded-xl border border-border p-6 mb-6">
             <div className="flex items-start justify-between mb-4">
               <div>
-                <h3 className="text-lg font-bold text-[#191c1e]">{profile.companyName}</h3>
-                {profile.tagline && <p className="text-sm text-[#74777f] italic mt-0.5">{profile.tagline}</p>}
-                <p className="text-sm text-[#74777f] mt-0.5">{profile.sector}</p>
+                <h3 className="text-lg font-bold text-ink">{profile.companyName}</h3>
+                {profile.tagline && <p className="text-sm text-ink-subtle italic mt-0.5">{profile.tagline}</p>}
+                <p className="text-sm text-ink-subtle mt-0.5">{profile.sector}</p>
               </div>
               <div className="flex items-center gap-2 flex-wrap justify-end">
                 <span className="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold" style={{ background: profileStatusConfig[profile.status].bg, color: profileStatusConfig[profile.status].text }}>{profileStatusConfig[profile.status].label}</span>
@@ -593,7 +593,7 @@ function MemberExporterView() {
               </div>
             )}
 
-            <p className="text-sm text-[#74777f] mb-4">{profile.description}</p>
+            <p className="text-sm text-ink-subtle mb-4">{profile.description}</p>
             <div className="flex flex-wrap gap-2 mb-3">
               {profile.products.map((p) => <span key={p} className="rounded-full px-2.5 py-0.5 text-xs font-medium border" style={{ background: '#f7f9fb', borderColor: '#e0e3e5', color: '#44474e' }}>{p}</span>)}
             </div>
@@ -604,21 +604,21 @@ function MemberExporterView() {
                 </span>
               ))}
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-4 border-t border-[#e0e3e5] mb-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-4 border-t border-border mb-4">
               {[
                 { icon: 'visibility',     label: 'Profile Views',  value: profile.viewCount.toLocaleString() },
                 { icon: 'mail',           label: 'Buyer Inquiries', value: profile.inquiryCount.toLocaleString() },
                 { icon: 'calendar_today', label: 'Listed',          value: new Date(profile.listedAt).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'short', year: 'numeric' }) },
               ].map(({ icon, label, value }) => (
                 <div key={label} className="flex items-center gap-3">
-                  <span className="material-symbols-outlined text-[#74777f]" style={{ fontSize: 20, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20` }}>{icon}</span>
-                  <div><p className="text-sm font-bold text-[#191c1e]">{value}</p><p className="text-xs text-[#74777f]">{label}</p></div>
+                  <span className="material-symbols-outlined text-ink-subtle" style={{ fontSize: 20, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20` }}>{icon}</span>
+                  <div><p className="text-sm font-bold text-ink">{value}</p><p className="text-xs text-ink-subtle">{label}</p></div>
                 </div>
               ))}
             </div>
             <button
               onClick={() => setShowEdit(true)}
-              className="flex items-center gap-1.5 rounded-lg border border-[#c4c6cf] px-4 py-2 text-sm font-semibold text-[#44474e] hover:border-[#023293] hover:text-[#023293] transition-colors"
+              className="flex items-center gap-1.5 rounded-lg border border-border px-4 py-2 text-sm font-semibold text-ink-subtle hover:border-primary hover:text-primary transition-colors"
             >
               <span className="material-symbols-outlined" style={{ fontSize: 16 }}>edit</span>
               Edit Profile
@@ -626,9 +626,9 @@ function MemberExporterView() {
           </div>
 
           {profile.tier !== 'premium' && (
-            <div className="bg-white rounded-xl border border-[#e0e3e5] p-6">
-              <h3 className="font-semibold text-[#191c1e] mb-1">Boost Your Visibility</h3>
-              <p className="text-sm text-[#74777f] mb-4">Upgrade to reach more international buyers and get priority placement in the directory.</p>
+            <div className="bg-white rounded-xl border border-border p-6">
+              <h3 className="font-semibold text-ink mb-1">Boost Your Visibility</h3>
+              <p className="text-sm text-ink-subtle mb-4">Upgrade to reach more international buyers and get priority placement in the directory.</p>
               <button onClick={() => setShowUpgrade(true)} className="flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold text-white" style={{ background: '#023293' }}>
                 <span className="material-symbols-outlined" style={{ fontSize: 16 }}>upgrade</span>Upgrade Plan
               </button>
@@ -675,8 +675,8 @@ function AdminExporterView() {
       )}
 
       <div className="mb-6">
-        <h2 className="text-xl font-semibold text-[#191c1e]">Exporter Visibility Management</h2>
-        <p className="text-sm text-[#74777f] mt-0.5">Review and manage member exporter directory listings.</p>
+        <h2 className="text-xl font-semibold text-ink">Exporter Visibility Management</h2>
+        <p className="text-sm text-ink-subtle mt-0.5">Review and manage member exporter directory listings.</p>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
@@ -686,36 +686,36 @@ function AdminExporterView() {
           { icon: 'star',              label: 'Featured',        value: allProfiles.filter((p) => p.tier === 'featured').length },
           { icon: 'pending',           label: 'Pending Review',  value: allProfiles.filter((p) => p.status === 'pending_review').length },
         ].map(({ icon, label, value, accent }) => (
-          <div key={label} className={`rounded-xl border p-4 ${accent ? '' : 'bg-white border-[#e0e3e5]'}`} style={accent ? { background: '#023293', borderColor: '#023293' } : {}}>
+          <div key={label} className={`rounded-xl border p-4 ${accent ? '' : 'bg-white border-border'}`} style={accent ? { background: '#023293', borderColor: '#023293' } : {}}>
             <div className="flex items-center gap-2 mb-2">
               <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`, color: accent ? '#aec7f7' : '#74777f' }}>{icon}</span>
-              <p className={`text-xs font-semibold uppercase tracking-wide ${accent ? 'text-[#aec7f7]' : 'text-[#74777f]'}`}>{label}</p>
+              <p className={`text-xs font-semibold uppercase tracking-wide ${accent ? 'text-[#aec7f7]' : 'text-ink-subtle'}`}>{label}</p>
             </div>
-            <p className={`text-2xl font-bold ${accent ? 'text-white' : 'text-[#191c1e]'}`}>{value}</p>
+            <p className={`text-2xl font-bold ${accent ? 'text-white' : 'text-ink'}`}>{value}</p>
           </div>
         ))}
       </div>
 
       <div className="flex items-center gap-3 mb-4 flex-wrap">
-        <input type="search" placeholder="Search by company or sector…" value={search} onChange={(e) => setSearch(e.target.value)} className="rounded-lg border border-[#c4c6cf] px-4 py-2 text-sm focus:outline-none focus:border-[#023293] w-64" />
-        <div className="flex gap-1 bg-[#f7f9fb] rounded-lg p-1 border border-[#e0e3e5]">
+        <input type="search" placeholder="Search by company or sector…" value={search} onChange={(e) => setSearch(e.target.value)} className="rounded-lg border border-border px-4 py-2 text-sm focus:outline-none focus:border-primary w-64" />
+        <div className="flex gap-1 bg-surface-alt rounded-lg p-1 border border-border">
           {(['all', 'active', 'pending_review', 'suspended', 'rejected'] as const).map((s) => (
-            <button key={s} onClick={() => setStatusFilter(s)} className={`px-3 py-1 rounded-md text-xs font-medium capitalize transition-colors ${statusFilter === s ? 'bg-white shadow-sm text-[#191c1e]' : 'text-[#74777f]'}`}>{s.replace('_', ' ')}</button>
+            <button key={s} onClick={() => setStatusFilter(s)} className={`px-3 py-1 rounded-md text-xs font-medium capitalize transition-colors ${statusFilter === s ? 'bg-white shadow-sm text-ink' : 'text-ink-subtle'}`}>{s.replace('_', ' ')}</button>
           ))}
         </div>
       </div>
 
       {isLoading ? <SkeletonCard /> : (
-        <div className="bg-white rounded-xl border border-[#e0e3e5] overflow-hidden">
+        <div className="bg-white rounded-xl border border-border overflow-hidden">
           {filtered.length === 0 ? (
-            <div className="p-12 text-center"><p className="text-sm text-[#74777f]">No profiles match the current filter.</p></div>
+            <div className="p-12 text-center"><p className="text-sm text-ink-subtle">No profiles match the current filter.</p></div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-[#f7f9fb] border-b border-[#e0e3e5]">
+                  <tr className="bg-surface-alt border-b border-border">
                     {['Company', 'Member', 'Sector', 'Tier', 'Status', 'Views', 'Inquiries', 'Actions'].map((h) => (
-                      <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-[#74777f] uppercase tracking-wide">{h}</th>
+                      <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-ink-subtle uppercase tracking-wide">{h}</th>
                     ))}
                   </tr>
                 </thead>
@@ -724,16 +724,16 @@ function AdminExporterView() {
                     const tc = tierConfig[p.tier];
                     const sc = profileStatusConfig[p.status];
                     return (
-                      <tr key={p.id} className="hover:bg-[#f7f9fb] transition-colors">
-                        <td className="px-4 py-3"><p className="font-semibold text-[#191c1e]">{p.companyName}</p><p className="text-xs text-[#74777f]">{p.contactEmail}</p></td>
-                        <td className="px-4 py-3"><p className="text-[#74777f]">{p.memberName ?? '—'}</p>{p.memberEmail && <p className="text-xs text-[#74777f]">{p.memberEmail}</p>}</td>
-                        <td className="px-4 py-3 text-[#74777f]">{p.sector}</td>
+                      <tr key={p.id} className="hover:bg-surface-alt transition-colors">
+                        <td className="px-4 py-3"><p className="font-semibold text-ink">{p.companyName}</p><p className="text-xs text-ink-subtle">{p.contactEmail}</p></td>
+                        <td className="px-4 py-3"><p className="text-ink-subtle">{p.memberName ?? '—'}</p>{p.memberEmail && <p className="text-xs text-ink-subtle">{p.memberEmail}</p>}</td>
+                        <td className="px-4 py-3 text-ink-subtle">{p.sector}</td>
                         <td className="px-4 py-3"><span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ background: tc.bg, color: tc.text }}>{tc.label}</span></td>
                         <td className="px-4 py-3"><span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ background: sc.bg, color: sc.text }}>{sc.label}</span></td>
-                        <td className="px-4 py-3 font-medium text-[#191c1e]">{p.viewCount.toLocaleString()}</td>
-                        <td className="px-4 py-3 font-medium text-[#191c1e]">{p.inquiryCount.toLocaleString()}</td>
+                        <td className="px-4 py-3 font-medium text-ink">{p.viewCount.toLocaleString()}</td>
+                        <td className="px-4 py-3 font-medium text-ink">{p.inquiryCount.toLocaleString()}</td>
                         <td className="px-4 py-3">
-                          <button onClick={() => setDetailProfile(p)} className="text-xs font-semibold px-3 py-1.5 rounded-md border border-[#023293] text-[#023293] hover:bg-[#023293] hover:text-white transition-colors">
+                          <button onClick={() => setDetailProfile(p)} className="text-xs font-semibold px-3 py-1.5 rounded-md border border-primary text-primary hover:bg-primary hover:text-white transition-colors">
                             Review
                           </button>
                         </td>

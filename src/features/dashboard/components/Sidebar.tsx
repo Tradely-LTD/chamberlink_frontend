@@ -86,6 +86,7 @@ const executiveNavItems: NavItem[] = [
 const superAdminNavItems: NavItem[] = [
   { label: 'Dashboard',           to: '/dashboard',                     icon: 'dashboard',   end: true },
   { label: 'Member Management',   to: '/dashboard/members',             icon: 'manage_accounts' },
+  { label: 'All Users',           to: '/dashboard/all-users',           icon: 'groups' },
   { label: 'Audit Log',           to: '/dashboard/admin',               icon: 'history' },
   { label: 'eCO Queue',           to: '/dashboard/eco',                 icon: 'task_alt' },
   { label: 'Analytics',           to: '/dashboard/analytics',           icon: 'bar_chart' },
@@ -173,7 +174,7 @@ export function Sidebar() {
   }, [visibleItems]);
 
   return (
-    <aside className="flex h-full w-60 flex-col" style={{ background: '#023293' }}>
+    <aside className="flex h-full w-60 flex-col bg-primary">
       {/* Logo — white backdrop plate so the multi-color seal doesn't wash out against the blue nav */}
       <div className="flex items-center gap-3 px-5 pt-6 pb-5 border-b border-white/10">
         <div className="h-10 w-10 rounded-full bg-white flex items-center justify-center flex-shrink-0 shadow-sm">
@@ -201,13 +202,12 @@ export function Sidebar() {
                 to={item.to}
                 end={item.end}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${
+                  `flex items-center gap-3 rounded-lg border-l-2 px-3 py-2.5 text-sm font-medium transition-all ${
                     isActive
-                      ? 'bg-white/15 text-white'
-                      : 'text-white/60 hover:bg-white/8 hover:text-white/90'
+                      ? 'border-white bg-white/15 pl-2.5 text-white'
+                      : 'border-transparent text-white/60 hover:bg-white/8 hover:text-white/90'
                   }`
                 }
-                style={({ isActive }) => isActive ? {} : {}}
               >
                 {({ isActive }) => (
                   <>
@@ -231,10 +231,7 @@ export function Sidebar() {
         </nav>
         {/* Fade indicator — visible only when more items are below the fold */}
         {canScrollMore && (
-          <div
-            className="pointer-events-none absolute bottom-0 left-0 right-0 h-10"
-            style={{ background: 'linear-gradient(to bottom, transparent, #023293)' }}
-          />
+          <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-b from-transparent to-primary" />
         )}
       </div>
 

@@ -102,27 +102,27 @@ function VerificationResultCard({ result, onClear }: { result: VerificationResul
           </div>
           <div>
             <span className="inline-flex items-center rounded-full px-3 py-1 text-sm font-bold" style={{ background: rc.bg, color: rc.text }}>{rc.label}</span>
-            <p className="text-xs text-[#74777f] mt-1">Ref: {result.verificationRef}</p>
+            <p className="text-xs text-ink-subtle mt-1">Ref: {result.verificationRef}</p>
           </div>
         </div>
-        <button onClick={onClear} className="p-2 rounded-lg hover:bg-[#f7f9fb] text-[#74777f]">
+        <button onClick={onClear} className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle">
           <span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span>
         </button>
       </div>
 
       {result.status !== 'not_found' && (
         <div className="grid sm:grid-cols-2 gap-y-3 gap-x-6 text-sm">
-          <div><p className="text-xs text-[#74777f] mb-0.5">Name</p><p className="font-semibold text-[#191c1e]">{result.holderName}</p></div>
-          {result.companyName && <div><p className="text-xs text-[#74777f] mb-0.5">Company</p><p className="font-semibold text-[#191c1e]">{result.companyName}</p></div>}
-          {result.certNumber && <div><p className="text-xs text-[#74777f] mb-0.5">Certificate No.</p><p className="font-mono text-[#191c1e]">{result.certNumber}</p></div>}
-          {result.memberId && <div><p className="text-xs text-[#74777f] mb-0.5">Member ID</p><p className="font-mono text-[#191c1e]">{result.memberId}</p></div>}
-          {result.membershipTier && <div><p className="text-xs text-[#74777f] mb-0.5">Membership Tier</p><p className="text-[#191c1e]">{result.membershipTier}</p></div>}
-          {result.issuedAt && <div><p className="text-xs text-[#74777f] mb-0.5">Issued</p><p className="text-[#191c1e]">{new Date(result.issuedAt).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'long', year: 'numeric' })}</p></div>}
-          {result.expiresAt && <div><p className="text-xs text-[#74777f] mb-0.5">Expires</p><p className="text-[#191c1e]">{new Date(result.expiresAt).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'long', year: 'numeric' })}</p></div>}
-          {result.issuedBy && <div><p className="text-xs text-[#74777f] mb-0.5">Issued By</p><p className="text-[#191c1e]">{result.issuedBy}</p></div>}
+          <div><p className="text-xs text-ink-subtle mb-0.5">Name</p><p className="font-semibold text-ink">{result.holderName}</p></div>
+          {result.companyName && <div><p className="text-xs text-ink-subtle mb-0.5">Company</p><p className="font-semibold text-ink">{result.companyName}</p></div>}
+          {result.certNumber && <div><p className="text-xs text-ink-subtle mb-0.5">Certificate No.</p><p className="font-mono text-ink">{result.certNumber}</p></div>}
+          {result.memberId && <div><p className="text-xs text-ink-subtle mb-0.5">Member ID</p><p className="font-mono text-ink">{result.memberId}</p></div>}
+          {result.membershipTier && <div><p className="text-xs text-ink-subtle mb-0.5">Membership Tier</p><p className="text-ink">{result.membershipTier}</p></div>}
+          {result.issuedAt && <div><p className="text-xs text-ink-subtle mb-0.5">Issued</p><p className="text-ink">{new Date(result.issuedAt).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'long', year: 'numeric' })}</p></div>}
+          {result.expiresAt && <div><p className="text-xs text-ink-subtle mb-0.5">Expires</p><p className="text-ink">{new Date(result.expiresAt).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'long', year: 'numeric' })}</p></div>}
+          {result.issuedBy && <div><p className="text-xs text-ink-subtle mb-0.5">Issued By</p><p className="text-ink">{result.issuedBy}</p></div>}
           {result.products && result.products.length > 0 && (
             <div className="sm:col-span-2">
-              <p className="text-xs text-[#74777f] mb-1">Products Covered</p>
+              <p className="text-xs text-ink-subtle mb-1">Products Covered</p>
               <div className="flex flex-wrap gap-1.5">
                 {result.products.map((p) => <span key={p} className="rounded-full px-2.5 py-0.5 text-xs font-medium border" style={{ background: '#f7f9fb', borderColor: '#e0e3e5', color: '#44474e' }}>{p}</span>)}
               </div>
@@ -165,25 +165,25 @@ function InstitutionalVerificationView() {
   return (
     <div className="p-6 max-w-2xl">
       <div className="mb-6">
-        <h2 className="text-xl font-semibold text-[#191c1e]">Banks & FI Verification Portal</h2>
-        <p className="text-sm text-[#74777f] mt-0.5">Verify the authenticity of NACCIMA eCO certificates and member credentials.</p>
+        <h2 className="text-xl font-semibold text-ink">Banks & FI Verification Portal</h2>
+        <p className="text-sm text-ink-subtle mt-0.5">Verify the authenticity of NACCIMA eCO certificates and member credentials.</p>
       </div>
 
-      <div className="flex gap-1 bg-[#f7f9fb] rounded-lg p-1 mb-6 w-fit border border-[#e0e3e5]">
+      <div className="flex gap-1 bg-surface-alt rounded-lg p-1 mb-6 w-fit border border-border">
         {([['eco', 'eCO Certificate'], ['member', 'Member ID']] as const).map(([t, label]) => (
           <button key={t} onClick={() => { setTab(t); setResult(null); setError(null); }}
-            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === t ? 'bg-white text-[#191c1e] shadow-sm' : 'text-[#74777f] hover:text-[#191c1e]'}`}>{label}</button>
+            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === t ? 'bg-white text-ink shadow-sm' : 'text-ink-subtle hover:text-ink'}`}>{label}</button>
         ))}
       </div>
 
-      <div className="bg-white rounded-xl border border-[#e0e3e5] p-6 mb-6">
+      <div className="bg-white rounded-xl border border-border p-6 mb-6">
         <form onSubmit={handleVerify} className="flex gap-3">
           <input
             required
             value={tab === 'eco' ? certInput : memberInput}
             onChange={(e) => tab === 'eco' ? setCertInput(e.target.value) : setMemberInput(e.target.value)}
             placeholder={tab === 'eco' ? 'e.g. ECO-2025-KAN-004821' : 'e.g. KAC-M-00214'}
-            className="flex-1 rounded-lg border border-[#c4c6cf] px-4 py-2.5 text-sm focus:outline-none focus:border-[#023293] font-mono"
+            className="flex-1 rounded-lg border border-border px-4 py-2.5 text-sm focus:outline-none focus:border-primary font-mono"
           />
           <button type="submit" disabled={isLoading} className="flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50" style={{ background: '#023293' }}>
             {isLoading ? 'Verifying…' : <><span className="material-symbols-outlined" style={{ fontSize: 16 }}>search</span>Verify</>}
@@ -194,10 +194,10 @@ function InstitutionalVerificationView() {
 
       {result && <VerificationResultCard result={result} onClear={() => setResult(null)} />}
 
-      <div className="mt-6 rounded-xl border border-[#e0e3e5] p-4 bg-[#f7f9fb]">
+      <div className="mt-6 rounded-xl border border-border p-4 bg-surface-alt">
         <div className="flex items-start gap-3">
-          <span className="material-symbols-outlined text-[#74777f] flex-shrink-0 mt-0.5" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18` }}>info</span>
-          <div className="text-xs text-[#74777f] space-y-1">
+          <span className="material-symbols-outlined text-ink-subtle flex-shrink-0 mt-0.5" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18` }}>info</span>
+          <div className="text-xs text-ink-subtle space-y-1">
             <p>All verification queries are logged for audit purposes per NACCIMA data governance policy.</p>
             <p>For bulk verification or API access, contact the NACCIMA Secretariat.</p>
           </div>
@@ -224,8 +224,8 @@ function AdminVerificationView() {
   return (
     <div className="p-6 max-w-6xl">
       <div className="mb-6">
-        <h2 className="text-xl font-semibold text-[#191c1e]">Verification Audit Log</h2>
-        <p className="text-sm text-[#74777f] mt-0.5">All eCO certificate and member ID verification queries from banks and institutions.</p>
+        <h2 className="text-xl font-semibold text-ink">Verification Audit Log</h2>
+        <p className="text-sm text-ink-subtle mt-0.5">All eCO certificate and member ID verification queries from banks and institutions.</p>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
@@ -235,27 +235,27 @@ function AdminVerificationView() {
           { icon: 'schedule', label: 'Expired', value: allLogs.filter((l) => l.result === 'expired').length },
           { icon: 'search_off', label: 'Not Found', value: allLogs.filter((l) => l.result === 'not_found').length },
         ].map(({ icon, label, value, accent }) => (
-          <div key={label} className={`rounded-xl border p-4 ${accent ? '' : 'bg-white border-[#e0e3e5]'}`} style={accent ? { background: '#023293', borderColor: '#023293' } : {}}>
+          <div key={label} className={`rounded-xl border p-4 ${accent ? '' : 'bg-white border-border'}`} style={accent ? { background: '#023293', borderColor: '#023293' } : {}}>
             <div className="flex items-center gap-2 mb-2">
               <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`, color: accent ? '#aec7f7' : '#74777f' }}>{icon}</span>
-              <p className={`text-xs font-semibold uppercase tracking-wide ${accent ? 'text-[#aec7f7]' : 'text-[#74777f]'}`}>{label}</p>
+              <p className={`text-xs font-semibold uppercase tracking-wide ${accent ? 'text-[#aec7f7]' : 'text-ink-subtle'}`}>{label}</p>
             </div>
-            <p className={`text-2xl font-bold ${accent ? 'text-white' : 'text-[#191c1e]'}`}>{value}</p>
+            <p className={`text-2xl font-bold ${accent ? 'text-white' : 'text-ink'}`}>{value}</p>
           </div>
         ))}
       </div>
 
       <div className="flex items-center gap-3 mb-4 flex-wrap">
-        <div className="flex gap-1 bg-[#f7f9fb] rounded-lg p-1 border border-[#e0e3e5]">
+        <div className="flex gap-1 bg-surface-alt rounded-lg p-1 border border-border">
           {(['all', 'eco', 'member'] as const).map((t) => (
-            <button key={t} onClick={() => setTypeFilter(t)} className={`px-3 py-1 rounded-md text-xs font-medium capitalize transition-colors ${typeFilter === t ? 'bg-white shadow-sm text-[#191c1e]' : 'text-[#74777f]'}`}>
+            <button key={t} onClick={() => setTypeFilter(t)} className={`px-3 py-1 rounded-md text-xs font-medium capitalize transition-colors ${typeFilter === t ? 'bg-white shadow-sm text-ink' : 'text-ink-subtle'}`}>
               {t === 'all' ? 'All Types' : t === 'eco' ? 'eCO Certs' : 'Member IDs'}
             </button>
           ))}
         </div>
-        <div className="flex gap-1 bg-[#f7f9fb] rounded-lg p-1 border border-[#e0e3e5]">
+        <div className="flex gap-1 bg-surface-alt rounded-lg p-1 border border-border">
           {(['all', 'valid', 'expired', 'not_found'] as const).map((r) => (
-            <button key={r} onClick={() => setResultFilter(r)} className={`px-3 py-1 rounded-md text-xs font-medium capitalize transition-colors ${resultFilter === r ? 'bg-white shadow-sm text-[#191c1e]' : 'text-[#74777f]'}`}>
+            <button key={r} onClick={() => setResultFilter(r)} className={`px-3 py-1 rounded-md text-xs font-medium capitalize transition-colors ${resultFilter === r ? 'bg-white shadow-sm text-ink' : 'text-ink-subtle'}`}>
               {r.replace('_', ' ')}
             </button>
           ))}
@@ -263,13 +263,13 @@ function AdminVerificationView() {
       </div>
 
       {isLoading ? <SkeletonCard /> : (
-        <div className="bg-white rounded-xl border border-[#e0e3e5] overflow-hidden">
+        <div className="bg-white rounded-xl border border-border overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-[#f7f9fb] border-b border-[#e0e3e5]">
+                <tr className="bg-surface-alt border-b border-border">
                   {['Reference Queried', 'Type', 'Institution', 'Result', 'Date & Time'].map((h) => (
-                    <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-[#74777f] uppercase tracking-wide">{h}</th>
+                    <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-ink-subtle uppercase tracking-wide">{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -277,21 +277,21 @@ function AdminVerificationView() {
                 {filtered.map((log) => {
                   const rc = resultConfig[log.result];
                   return (
-                    <tr key={log.id} className="hover:bg-[#f7f9fb] transition-colors">
-                      <td className="px-4 py-3 font-mono text-sm text-[#191c1e]">{log.queriedRef}</td>
+                    <tr key={log.id} className="hover:bg-surface-alt transition-colors">
+                      <td className="px-4 py-3 font-mono text-sm text-ink">{log.queriedRef}</td>
                       <td className="px-4 py-3">
                         <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide" style={{ background: log.queryType === 'eco' ? '#d6e3ff' : '#a0f4ca', color: log.queryType === 'eco' ? '#023293' : '#005137' }}>
                           {log.queryType === 'eco' ? 'eCO' : 'Member'}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-[#74777f]">{log.institutionName ?? log.queriedBy}</td>
+                      <td className="px-4 py-3 text-ink-subtle">{log.institutionName ?? log.queriedBy}</td>
                       <td className="px-4 py-3">
                         <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ background: rc.bg, color: rc.text }}>
                           <span className="material-symbols-outlined" style={{ fontSize: 12, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 12` }}>{rc.icon}</span>
                           {rc.label}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-xs text-[#74777f]">
+                      <td className="px-4 py-3 text-xs text-ink-subtle">
                         {new Date(log.queriedAt).toLocaleString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                       </td>
                     </tr>

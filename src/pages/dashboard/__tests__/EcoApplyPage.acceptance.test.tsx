@@ -10,10 +10,17 @@
  *
  * The only thing mocked is the network boundary (global.fetch) — the same
  * "mock I/O at the edge, exercise everything real in between" convention the
- * backend acceptance tests use for the DB. This directly proves the
- * originStates multipart fix (commit b6592b9) actually survives an end-to-end
- * submission through the real component tree, not just a hand-rolled
- * FormData snippet.
+ * backend acceptance tests use for the DB.
+ *
+ * File-upload optimization: compliance documents are no longer attached to
+ * the /eco create request itself. DocSlot uploads the file up front to
+ * POST /membership/me/documents (the shared document-library endpoint,
+ * which returns a docId + URL) and the /eco POST only ever carries the
+ * resulting invoiceDocId/signatureDocId/etc — always plain JSON, never
+ * multipart. This test proves both halves of that: the upload request
+ * happens when a file is attached, and the eventual /eco POST is JSON
+ * carrying the returned docId (and originStates as a real array, no
+ * JSON-stringification workaround needed once there's no FormData involved).
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor, within, fireEvent } from '@testing-library/react';
@@ -35,16 +42,16 @@ const jsonResponse = (body: unknown, status = 200) =>
     })
   );
 
-let capturedEcoPostRequest: { url: string; method: string; body: FormData } | null;
+interface CapturedEcoPost { url: string; method: string; body: Record<string, unknown> }
+let capturedEcoPostRequest: CapturedEcoPost | null;
+let uploadedDocs: Array<{ id: string; name: string; category: string; type: string; size: number; uploadedAt: string; url: string }>;
 
 // RTK Query's fetchBaseQuery always calls `fetchFn(request)` with a SINGLE,
 // already-constructed `Request` object (method/body/headers all live on the
-// Request itself) — there is no separate `init` argument at call time. A
-// FormData body sent through `new Request(url, { body: formData })` is
-// re-parsable via `request.formData()` (Node 20 / undici's native Request),
-// which is how we recover the actual multipart fields the component sent.
+// Request itself) — there is no separate `init` argument at call time.
 const installFetchMock = () => {
   capturedEcoPostRequest = null;
+  uploadedDocs = [];
   global.fetch = vi.fn(async (input: RequestInfo | URL) => {
     const request = input instanceof Request ? input : new Request(input as string);
     const url = request.url;
@@ -56,12 +63,30 @@ const installFetchMock = () => {
     if (url.includes('/tenants/public/onboarded')) {
       return jsonResponse({ success: true, data: [{ id: 'tenant-a', name: 'Lagos Chamber of Commerce', slug: 'lagos', city: 'Lagos' }] });
     }
+    if (url.includes('/membership/me/documents') && method === 'POST') {
+      // The document-library upload endpoint — this is what DocSlot calls
+      // immediately when a new file is attached, BEFORE any /eco request.
+      const fd = await request.clone().formData();
+      const file = fd.get('document') as unknown as { name: string; size: number } | null;
+      const category = fd.get('category') as string;
+      const doc = {
+        id: `doc-${uploadedDocs.length + 1}`,
+        name: file?.name ?? 'unknown',
+        category,
+        type: 'application/pdf',
+        size: file?.size ?? 0,
+        uploadedAt: new Date().toISOString(),
+        url: 'https://example.com/signed-url',
+      };
+      uploadedDocs.push(doc);
+      return jsonResponse({ success: true, data: doc }, 201);
+    }
     if (url.includes('/membership/me/documents')) {
-      return jsonResponse({ success: true, data: [] });
+      return jsonResponse({ success: true, data: uploadedDocs });
     }
     if (/\/eco(\?.*)?$/.test(url) && method === 'POST') {
-      const fd = await request.clone().formData();
-      capturedEcoPostRequest = { url, method, body: fd };
+      const body = await request.clone().json();
+      capturedEcoPostRequest = { url, method, body };
       return jsonResponse({ success: true, data: { id: 'new-cert-id', status: 'submitted' } }, 201);
     }
     throw new Error(`Unexpected fetch in EcoApplyPage acceptance test: ${method} ${url}`);
@@ -148,8 +173,9 @@ describe("EcoApplyPage — end-to-end submission with an attached file preserves
 
     await user.click(screen.getByRole('button', { name: 'Continue' }));
 
-    // ── Step 4: Compliance Documents — attach a real file (forces the
-    //    multipart/FormData code path, matching the reported bug scenario) ──
+    // ── Step 4: Compliance Documents — attach a real file. This uploads to
+    //    /membership/me/documents immediately (the optimization under test)
+    //    rather than being held as a raw File until the final submit ──────
     const invoiceSlotHeading = screen.getByText('Attach Invoice');
     const invoiceSlotRoot = invoiceSlotHeading.closest('div')!.parentElement as HTMLElement;
     await user.click(within(invoiceSlotRoot).getByRole('button', { name: 'Upload New' }));
@@ -157,6 +183,12 @@ describe("EcoApplyPage — end-to-end submission with an attached file preserves
     const testFile = new File(['%PDF-1.4 test invoice'], 'invoice.pdf', { type: 'application/pdf' });
     await user.upload(fileInput, testFile);
     await waitFor(() => expect(within(invoiceSlotRoot).getByText('invoice.pdf')).toBeInTheDocument());
+
+    // The upload already happened — prove it hit the document-library
+    // endpoint with the right category, before the /eco request exists at all.
+    expect(uploadedDocs).toHaveLength(1);
+    expect(uploadedDocs[0]).toMatchObject({ name: 'invoice.pdf', category: 'commercial_invoice' });
+    expect(capturedEcoPostRequest).toBeNull();
 
     await user.click(screen.getByRole('button', { name: 'Continue' }));
 
@@ -166,32 +198,27 @@ describe("EcoApplyPage — end-to-end submission with an attached file preserves
     await waitFor(() => expect(capturedEcoPostRequest).not.toBeNull());
 
     const req = capturedEcoPostRequest!;
-    const fd = req.body; // reconstructed via the real Request.formData() parser — a genuine multipart round-trip
-    expect(typeof fd.get).toBe('function'); // structurally a FormData (may be a cross-realm instance under Node's undici)
+    const body = req.body; // plain JSON — no FormData/multipart involved in eCO creation anymore
 
-    // The core regression proof: originStates arrives as ONE field, JSON-stringified —
-    // never as repeated originStates[] fields (which the backend's coerceEcoBody
-    // never reads, silently dropping the applicant's selection).
-    expect(fd.getAll('originStates[]')).toHaveLength(0);
-    const rawOriginStates = fd.get('originStates');
-    expect(typeof rawOriginStates).toBe('string');
-    const parsedOriginStates = JSON.parse(rawOriginStates as string);
-    expect(parsedOriginStates.sort()).toEqual(['Kano', 'Lagos']);
+    // The core regression proof, updated for the new transport: originStates
+    // arrives as a genuine JSON array (no stringify-inside-FormData workaround
+    // needed once the whole body is JSON to begin with).
+    expect(Array.isArray(body.originStates)).toBe(true);
+    expect((body.originStates as string[]).slice().sort()).toEqual(['Kano', 'Lagos']);
 
-    // Sanity: the file itself made it into the multipart body under the
-    // "invoice" field the backend's multer config expects.
-    const uploadedInvoice = fd.get('invoice') as unknown as { name: string; size: number };
-    expect(uploadedInvoice).toBeTruthy();
-    expect(uploadedInvoice.name).toBe('invoice.pdf');
+    // The optimization under test: the eCO create body references the
+    // already-uploaded document by id — the raw file is never attached here.
+    expect(body.invoiceDocId).toBe(uploadedDocs[0].id);
+    expect(body.invoice).toBeUndefined();
 
     // And the rest of the Solid Minerals contract made it across too.
-    expect(fd.get('solidMineralId')).toBe('mineral-1');
-    expect(fd.get('tenantId')).toBe('tenant-a');
-    expect(fd.get('destinationCountry')).toBe('United Arab Emirates');
-    expect(fd.get('invoiceTotal')).toBe('5000000');
-    expect(fd.get('consigneeName')).toBe('Global Buyers Co');
+    expect(body.solidMineralId).toBe('mineral-1');
+    expect(body.tenantId).toBe('tenant-a');
+    expect(body.destinationCountry).toBe('United Arab Emirates');
+    expect(body.invoiceTotal).toBe(5000000);
+    expect(body.consigneeName).toBe('Global Buyers Co');
     // hsCode is never sent by the client at all — it is server-derived (criterion A3).
-    expect(fd.get('hsCode')).toBeNull();
+    expect(body.hsCode).toBeUndefined();
   });
 });
 

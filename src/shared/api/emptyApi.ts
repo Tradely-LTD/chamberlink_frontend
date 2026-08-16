@@ -4,6 +4,6 @@ import { baseQueryWithReauth } from './baseQueryWithReauth';
 export const emptyApi = createApi({
   reducerPath: 'api',
   baseQuery: baseQueryWithReauth,
-  tagTypes: ['ECO', 'Members', 'AuditLogs', 'AdminMembers', 'Documents', 'AcademyEnrollments', 'AcademyCourses', 'AcademySections', 'EcoQueue', 'TradeFairBooths', 'TradeFairEvents', 'TradeFairBookings', 'ExportDocuments', 'ExporterProfiles', 'TradeCorridors', 'TradeDataApi', 'WhiteLabel', 'ChamberConnections', 'Membership'],
+  tagTypes: ['ECO', 'Members', 'AuditLogs', 'AdminMembers', 'Documents', 'AcademyEnrollments', 'AcademyCourses', 'AcademySections', 'EcoQueue', 'TradeFairBooths', 'TradeFairEvents', 'TradeFairBookings', 'ExportDocuments', 'ExporterProfiles', 'TradeCorridors', 'TradeDataApi', 'WhiteLabel', 'ChamberConnections', 'Membership', 'AllUsers'],
   endpoints: () => ({}),
 });

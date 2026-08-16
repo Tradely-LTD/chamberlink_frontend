@@ -87,11 +87,11 @@ export function ConnectViaRosterModal({ tenantId, tenantName, onClose, onConnect
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 px-4">
       <div className="w-full max-w-md rounded-xl bg-white shadow-xl">
-        <div className="flex items-center justify-between border-b border-[#e0e3e5] px-5 py-4">
-          <h2 className="text-base font-semibold text-[#191c1e]">Connect with existing ID — {tenantName}</h2>
+        <div className="flex items-center justify-between border-b border-border px-5 py-4">
+          <h2 className="text-base font-semibold text-ink">Connect with existing ID — {tenantName}</h2>
           <button
             onClick={onClose}
-            className="rounded-lg p-1.5 text-[#74777f] hover:bg-[#eceef0] transition-colors"
+            className="rounded-lg p-1.5 text-ink-subtle hover:bg-surface-alt transition-colors"
             aria-label="Close"
           >
             <span
@@ -106,7 +106,7 @@ export function ConnectViaRosterModal({ tenantId, tenantName, onClose, onConnect
         <div className="px-5 py-4">
           {step === 'input' && (
             <form onSubmit={handleCheck} className="space-y-4">
-              <p className="text-sm text-[#8A7E6E]">
+              <p className="text-sm text-ink-subtle">
                 If you were already a member of {tenantName} before joining ChamberLink, enter your existing
                 member ID to link your records.
               </p>
@@ -131,11 +131,11 @@ export function ConnectViaRosterModal({ tenantId, tenantName, onClose, onConnect
 
           {step === 'preview' && preview && (
             <div className="space-y-4">
-              <p className="text-sm font-medium text-[#191c1e]">Is this you?</p>
-              <div className="rounded-lg border border-[#e0e3e5] bg-[#f7f9f7] px-4 py-3 text-sm text-[#221a0f] space-y-1">
+              <p className="text-sm font-medium text-ink">Is this you?</p>
+              <div className="rounded-lg border border-border bg-[#f7f9f7] px-4 py-3 text-sm text-ink space-y-1">
                 <p>{preview.firstNameMasked}</p>
                 {preview.businessName && <p>{preview.businessName}</p>}
-                <p className="text-[#8A7E6E]">
+                <p className="text-ink-subtle">
                   {[preview.tierName, memberSinceYear ? `member since ${memberSinceYear}` : null]
                     .filter(Boolean)
                     .join(' · ')}

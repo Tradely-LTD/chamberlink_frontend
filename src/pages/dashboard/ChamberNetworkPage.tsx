@@ -49,8 +49,8 @@ export function ChamberNetworkPage() {
   return (
     <div className="p-6 max-w-4xl">
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-[#221a0f] mb-1">Chamber Network</h1>
-        <p className="text-sm text-[#8A7E6E]">
+        <h1 className="text-2xl font-semibold text-ink mb-1">Chamber Network</h1>
+        <p className="text-sm text-ink-subtle">
           Already a member of one of these chambers? Connect with your existing member ID to link your records.
         </p>
       </div>
@@ -82,11 +82,11 @@ export function ChamberNetworkPage() {
           {availableChambers.map((chamber) => (
             <li
               key={chamber.id}
-              className="flex items-center justify-between gap-4 bg-white rounded-xl border border-[#bec9bf]/40 px-6 py-4"
+              className="flex items-center justify-between gap-4 bg-white rounded-xl border border-border/40 px-6 py-4"
             >
               <div className="min-w-0">
-                <p className="font-medium text-[#221a0f] truncate">{chamber.name}</p>
-                {chamber.city && <p className="text-xs text-[#8A7E6E] truncate">{chamber.city}</p>}
+                <p className="font-medium text-ink truncate">{chamber.name}</p>
+                {chamber.city && <p className="text-xs text-ink-subtle truncate">{chamber.city}</p>}
               </div>
               <Button
                 variant="outline"

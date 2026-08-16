@@ -7,11 +7,11 @@ interface Props {
 }
 
 const styles: Record<NonNullable<Props['variant']>, string> = {
-  default: 'bg-[#023293]/10 text-[#023293]',
-  'coming-soon': 'bg-amber-100 text-amber-800',
-  success: 'bg-green-100 text-green-800',
-  warning: 'bg-yellow-100 text-yellow-800',
-  error: 'bg-red-100 text-red-700',
+  default: 'bg-primary/10 text-primary',
+  'coming-soon': 'bg-warning-bg text-warning-text',
+  success: 'bg-success-bg text-success-text',
+  warning: 'bg-warning-bg text-warning-text',
+  error: 'bg-danger-bg text-danger-text',
 };
 
 export function Badge({ label, children, variant = 'default' }: Props) {

@@ -4,6 +4,7 @@ import { emptyApi } from '@shared/api/emptyApi';
 import { SkeletonCard } from '@shared/ui/SkeletonCard';
 import { Button } from '@shared/ui/Button';
 import { ErrorBanner } from '@shared/ui/ErrorBanner';
+import { Select } from '@shared/ui/Select';
 import { useAppSelector } from '@shared/hooks/useAppDispatch';
 
 // ── Types ─────────────────────────────────────────────────────────────────
@@ -236,12 +237,12 @@ function SponsorModal({ corridor, onClose }: { corridor: TradeCorridor; onClose:
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md">
-        <div className="border-b border-[#e0e3e5] px-6 py-4 flex items-center justify-between">
+        <div className="border-b border-border px-6 py-4 flex items-center justify-between">
           <div>
-            <h2 className="font-bold text-[#191c1e]">Apply for Sponsorship</h2>
-            <p className="text-xs text-[#74777f] mt-0.5">{corridor.title}</p>
+            <h2 className="font-bold text-ink">Apply for Sponsorship</h2>
+            <p className="text-xs text-ink-subtle mt-0.5">{corridor.title}</p>
           </div>
-          <button onClick={onClose} className="p-2 rounded-lg hover:bg-[#f7f9fb] text-[#74777f]">
+          <button onClick={onClose} className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle">
             <span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span>
           </button>
         </div>
@@ -251,21 +252,21 @@ function SponsorModal({ corridor, onClose }: { corridor: TradeCorridor; onClose:
             const tc = tierConfig[t];
             const p = t === 'gold' ? corridor.sponsorPriceGold : corridor.sponsorPriceSilver;
             return (
-              <button key={t} onClick={() => setTier(t)} className={`w-full rounded-xl border-2 p-4 text-left transition-all ${tier === t ? '' : 'border-[#e0e3e5]'}`}
+              <button key={t} onClick={() => setTier(t)} className={`w-full rounded-xl border-2 p-4 text-left transition-all ${tier === t ? '' : 'border-border'}`}
                 style={tier === t ? { borderColor: tc.accent, background: tc.bg + '50' } : {}}>
                 <div className="flex items-center justify-between mb-1">
                   <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ background: tc.bg, color: tc.text }}>{tc.label} Sponsor</span>
-                  <span className="font-bold text-[#191c1e]">₦{p.toLocaleString()}/yr</span>
+                  <span className="font-bold text-ink">₦{p.toLocaleString()}/yr</span>
                 </div>
-                <p className="text-xs text-[#74777f]">{t === 'gold' ? 'Top placement, featured in newsletters, corridor logo rights.' : 'Secondary listing, directory placement, corridor badge.'}</p>
+                <p className="text-xs text-ink-subtle">{t === 'gold' ? 'Top placement, featured in newsletters, corridor logo rights.' : 'Secondary listing, directory placement, corridor badge.'}</p>
               </button>
             );
           })}
-          <div className="rounded-xl border border-[#e0e3e5] p-4 bg-[#f7f9fb]">
-            <p className="text-xs text-[#74777f]">Sponsorship status is granted on verified payment confirmation only. Annual renewal required.</p>
+          <div className="rounded-xl border border-border p-4 bg-surface-alt">
+            <p className="text-xs text-ink-subtle">Sponsorship status is granted on verified payment confirmation only. Annual renewal required.</p>
             <div className="flex justify-between text-sm font-semibold mt-2">
-              <span className="text-[#74777f]">Amount due</span>
-              <span className="text-[#191c1e]">₦{price.toLocaleString()}</span>
+              <span className="text-ink-subtle">Amount due</span>
+              <span className="text-ink">₦{price.toLocaleString()}</span>
             </div>
           </div>
           <div className="flex gap-3">
@@ -371,8 +372,8 @@ function MemberCorridorsView() {
 
       {/* Payment verification banners */}
       {verifying && (
-        <div className="mb-4 flex items-center gap-3 rounded-xl border border-[#d6e3ff] bg-[#f0f4ff] px-4 py-3 text-sm text-[#023293]">
-          <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#023293] border-t-transparent flex-shrink-0" />
+        <div className="mb-4 flex items-center gap-3 rounded-xl border border-[#d6e3ff] bg-[#f0f4ff] px-4 py-3 text-sm text-primary">
+          <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent flex-shrink-0" />
           Verifying your sponsorship payment…
         </div>
       )}
@@ -396,16 +397,16 @@ function MemberCorridorsView() {
       )}
 
       <div className="mb-6">
-        <h2 className="text-xl font-semibold text-[#191c1e]">Sponsored Trade Corridors</h2>
-        <p className="text-sm text-[#74777f] mt-0.5">Explore active trade routes and sponsor a corridor to boost your business visibility globally.</p>
+        <h2 className="text-xl font-semibold text-ink">Sponsored Trade Corridors</h2>
+        <p className="text-sm text-ink-subtle mt-0.5">Explore active trade routes and sponsor a corridor to boost your business visibility globally.</p>
       </div>
 
       {/* How it works banner */}
-      <div className="rounded-xl border border-[#023293]/20 bg-[#023293]/5 p-4 mb-6 flex items-start gap-3">
+      <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 mb-6 flex items-start gap-3">
         <span className="material-symbols-outlined flex-shrink-0 mt-0.5" style={{ fontSize: 20, color: '#023293', fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20` }}>info</span>
         <div>
-          <p className="text-sm font-semibold text-[#191c1e] mb-1">How sponsorships work</p>
-          <ol className="text-xs text-[#74777f] space-y-0.5 list-decimal list-inside">
+          <p className="text-sm font-semibold text-ink mb-1">How sponsorships work</p>
+          <ol className="text-xs text-ink-subtle space-y-0.5 list-decimal list-inside">
             <li>Pick a corridor below and click <strong>Become a Sponsor</strong>.</li>
             <li>Choose Gold or Silver tier, then proceed to our secure payment gateway (Paystack / Flutterwave).</li>
             <li>Once payment is confirmed your company name and badge appear on the corridor — visible to all NACCIMA members and exporters.</li>
@@ -413,9 +414,9 @@ function MemberCorridorsView() {
         </div>
       </div>
 
-      <div className="flex gap-1 bg-[#f7f9fb] rounded-lg p-1 mb-6 w-fit border border-[#e0e3e5]">
+      <div className="flex gap-1 bg-surface-alt rounded-lg p-1 mb-6 w-fit border border-border">
         {([['corridors', 'All Corridors'], ['my-activity', 'My Activity']] as const).map(([t, label]) => (
-          <button key={t} onClick={() => setTab(t)} className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === t ? 'bg-white text-[#191c1e] shadow-sm' : 'text-[#74777f] hover:text-[#191c1e]'}`}>
+          <button key={t} onClick={() => setTab(t)} className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === t ? 'bg-white text-ink shadow-sm' : 'text-ink-subtle hover:text-ink'}`}>
             {label}
             {t === 'my-activity' && (memberships.length + apps.length) > 0 && <span className="ml-1.5 rounded-full px-1.5 py-0.5 text-xs text-white font-bold" style={{ background: '#023293' }}>{memberships.length + apps.length}</span>}
           </button>
@@ -430,31 +431,31 @@ function MemberCorridorsView() {
               const st = corridorStatusConfig[c.status];
               const canSponsor = c.sponsorSlotsAvailable > 0 && c.status !== 'inactive';
               return (
-                <div key={c.id} className="bg-white rounded-xl border border-[#e0e3e5] overflow-hidden">
+                <div key={c.id} className="bg-white rounded-xl border border-border overflow-hidden">
                   <div className="p-6">
                     <div className="flex items-start justify-between gap-4 mb-3">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 flex-wrap mb-1">
-                          <h3 className="text-base font-bold text-[#191c1e]">{c.title}</h3>
+                          <h3 className="text-base font-bold text-ink">{c.title}</h3>
                           <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ background: st.bg, color: st.text }}>{st.label}</span>
                         </div>
-                        <div className="flex items-center gap-3 text-sm text-[#74777f] flex-wrap">
+                        <div className="flex items-center gap-3 text-sm text-ink-subtle flex-wrap">
                           <span className="flex items-center gap-1"><span className="material-symbols-outlined" style={{ fontSize: 14 }}>route</span>{c.origin} → {c.destination}</span>
                           <span className="flex items-center gap-1"><span className="material-symbols-outlined" style={{ fontSize: 14 }}>category</span>{c.category}</span>
                           {c.tradeVolume && <span className="flex items-center gap-1"><span className="material-symbols-outlined" style={{ fontSize: 14 }}>trending_up</span>{c.tradeVolume}</span>}
                         </div>
                       </div>
                       <div className="text-right flex-shrink-0">
-                        <p className="text-2xl font-bold text-[#023293]">{c.memberCount}</p>
-                        <p className="text-xs text-[#74777f]">members</p>
+                        <p className="text-2xl font-bold text-primary">{c.memberCount}</p>
+                        <p className="text-xs text-ink-subtle">members</p>
                       </div>
                     </div>
-                    <p className="text-sm text-[#74777f] mb-4">{c.description}</p>
+                    <p className="text-sm text-ink-subtle mb-4">{c.description}</p>
 
                     {/* Current sponsors */}
                     {c.sponsors.length > 0 && (
                       <div className="flex items-center gap-2 mb-4 flex-wrap">
-                        <p className="text-xs font-semibold text-[#74777f] uppercase tracking-wide">Current sponsors:</p>
+                        <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide">Current sponsors:</p>
                         {c.sponsors.map((s) => (
                           <span key={s.id} className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ background: tierConfig[s.tier].bg, color: tierConfig[s.tier].text }}>
                             <span className="material-symbols-outlined" style={{ fontSize: 11, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 11` }}>workspace_premium</span>
@@ -471,7 +472,7 @@ function MemberCorridorsView() {
                       <button
                         disabled={leavingId === c.id}
                         onClick={() => handleLeave(c.id)}
-                        className="flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium border border-[#e0e3e5] bg-white text-[#74777f] hover:bg-[#f7f9fb] disabled:opacity-50 transition-colors"
+                        className="flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium border border-border bg-white text-ink-subtle hover:bg-surface-alt disabled:opacity-50 transition-colors"
                       >
                         <span className="material-symbols-outlined" style={{ fontSize: 16 }}>bookmark_remove</span>
                         {leavingId === c.id ? 'Unfollowing…' : 'Unfollow'}
@@ -480,21 +481,21 @@ function MemberCorridorsView() {
                       <button
                         disabled={joiningId === c.id}
                         onClick={() => handleJoin(c.id)}
-                        className="flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium border border-[#023293]/30 bg-[#023293]/5 text-[#023293] hover:bg-[#023293]/10 disabled:opacity-50 transition-colors"
+                        className="flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium border border-primary/30 bg-primary/5 text-primary hover:bg-primary/10 disabled:opacity-50 transition-colors"
                       >
                         <span className="material-symbols-outlined" style={{ fontSize: 16 }}>bookmark_add</span>
                         {joiningId === c.id ? 'Following…' : 'Follow Corridor'}
                       </button>
                     )}
-                    <span className="text-xs text-[#74777f]">{c.memberCount} member{c.memberCount !== 1 ? 's' : ''}</span>
+                    <span className="text-xs text-ink-subtle">{c.memberCount} member{c.memberCount !== 1 ? 's' : ''}</span>
                   </div>
 
                   {/* Sponsor CTA — full-width tinted footer */}
                   {canSponsor && (
-                    <div className="border-t border-[#e0e3e5] bg-[#f7f9fb] px-6 py-4 flex items-center justify-between gap-4">
+                    <div className="border-t border-border bg-surface-alt px-6 py-4 flex items-center justify-between gap-4">
                       <div>
-                        <p className="text-xs font-semibold text-[#191c1e]">{c.sponsorSlotsAvailable} sponsorship slot{c.sponsorSlotsAvailable > 1 ? 's' : ''} open</p>
-                        <p className="text-xs text-[#74777f] mt-0.5">
+                        <p className="text-xs font-semibold text-ink">{c.sponsorSlotsAvailable} sponsorship slot{c.sponsorSlotsAvailable > 1 ? 's' : ''} open</p>
+                        <p className="text-xs text-ink-subtle mt-0.5">
                           Silver ₦{c.sponsorPriceSilver.toLocaleString()}/yr · Gold ₦{c.sponsorPriceGold.toLocaleString()}/yr
                         </p>
                       </div>
@@ -507,7 +508,7 @@ function MemberCorridorsView() {
                     </div>
                   )}
                   {!canSponsor && c.status === 'upcoming' && (
-                    <div className="border-t border-[#e0e3e5] bg-[#ffdea5]/20 px-6 py-3">
+                    <div className="border-t border-border bg-[#ffdea5]/20 px-6 py-3">
                       <p className="text-xs text-[#5d4201]">Sponsorships open when this corridor launches.</p>
                     </div>
                   )}
@@ -522,19 +523,19 @@ function MemberCorridorsView() {
         <div className="space-y-6">
           {/* Corridors I Follow */}
           <div>
-            <p className="text-xs font-semibold text-[#74777f] uppercase tracking-wide mb-3">Corridors I Follow</p>
+            <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide mb-3">Corridors I Follow</p>
             {memberships.length === 0 ? (
-              <div className="bg-white rounded-xl border border-[#e0e3e5] p-10 text-center">
-                <p className="text-sm text-[#74777f] mb-4">You are not following any corridors yet.</p>
+              <div className="bg-white rounded-xl border border-border p-10 text-center">
+                <p className="text-sm text-ink-subtle mb-4">You are not following any corridors yet.</p>
                 <button onClick={() => setTab('corridors')} className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white" style={{ background: '#023293' }}>Browse Corridors</button>
               </div>
             ) : (
               <div className="space-y-2">
                 {memberships.map((m) => (
-                  <div key={m.corridorId} className="bg-white rounded-xl border border-[#e0e3e5] px-5 py-4 flex items-center justify-between gap-4">
+                  <div key={m.corridorId} className="bg-white rounded-xl border border-border px-5 py-4 flex items-center justify-between gap-4">
                     <div>
-                      <p className="font-semibold text-sm text-[#191c1e]">{m.corridorTitle}</p>
-                      <p className="text-xs text-[#74777f] mt-0.5">
+                      <p className="font-semibold text-sm text-ink">{m.corridorTitle}</p>
+                      <p className="text-xs text-ink-subtle mt-0.5">
                         Joined {new Date(m.joinedAt).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'long', year: 'numeric' })}
                       </p>
                     </div>
@@ -550,10 +551,10 @@ function MemberCorridorsView() {
 
           {/* Sponsorship Applications */}
           <div>
-            <p className="text-xs font-semibold text-[#74777f] uppercase tracking-wide mb-3">My Sponsorship Applications</p>
+            <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide mb-3">My Sponsorship Applications</p>
             {apps.length === 0 ? (
-              <div className="bg-white rounded-xl border border-[#e0e3e5] p-10 text-center">
-                <p className="text-sm text-[#74777f] mb-4">No sponsorship applications yet.</p>
+              <div className="bg-white rounded-xl border border-border p-10 text-center">
+                <p className="text-sm text-ink-subtle mb-4">No sponsorship applications yet.</p>
                 <button onClick={() => setTab('corridors')} className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white" style={{ background: '#023293' }}>Browse Corridors</button>
               </div>
             ) : (
@@ -562,18 +563,18 @@ function MemberCorridorsView() {
                   const ac = appStatusConfig[app.status];
                   const tc = tierConfig[app.tier];
                   return (
-                    <div key={app.id} className="bg-white rounded-xl border border-[#e0e3e5] p-5">
+                    <div key={app.id} className="bg-white rounded-xl border border-border p-5">
                       <div className="flex items-start justify-between">
                         <div>
-                          <p className="font-bold text-[#191c1e] text-sm">{app.corridorTitle}</p>
+                          <p className="font-bold text-ink text-sm">{app.corridorTitle}</p>
                           <div className="flex items-center gap-2 mt-1">
                             <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ background: tc.bg, color: tc.text }}>{tc.label} Sponsor</span>
                             <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ background: ac.bg, color: ac.text }}>{ac.label}</span>
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="font-bold text-[#191c1e]">₦{app.amount.toLocaleString()}</p>
-                          <p className="text-xs text-[#74777f]">{new Date(app.createdAt ?? app.appliedAt ?? '').toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                          <p className="font-bold text-ink">₦{app.amount.toLocaleString()}</p>
+                          <p className="text-xs text-ink-subtle">{new Date(app.createdAt ?? app.appliedAt ?? '').toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'short', year: 'numeric' })}</p>
                         </div>
                       </div>
                     </div>
@@ -607,20 +608,20 @@ function ApplicationDetailModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
       <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-lg">
-        <div className="border-b border-[#e0e3e5] px-6 py-4 flex items-center justify-between">
+        <div className="border-b border-border px-6 py-4 flex items-center justify-between">
           <div>
-            <h2 className="font-semibold text-[#191c1e]">Sponsorship Application</h2>
-            <p className="text-xs text-[#74777f] mt-0.5">{app.corridorTitle}</p>
+            <h2 className="font-semibold text-ink">Sponsorship Application</h2>
+            <p className="text-xs text-ink-subtle mt-0.5">{app.corridorTitle}</p>
           </div>
-          <button onClick={onClose} className="p-2 rounded-lg hover:bg-[#f7f9fb] text-[#74777f]">
+          <button onClick={onClose} className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle">
             <span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span>
           </button>
         </div>
         <div className="p-6 space-y-5">
           {/* Applicant */}
           <div>
-            <p className="text-xs font-semibold text-[#74777f] uppercase tracking-wide mb-2">Applicant</p>
-            <div className="rounded-xl border border-[#e0e3e5] divide-y divide-[#f0f2f4]">
+            <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide mb-2">Applicant</p>
+            <div className="rounded-xl border border-border divide-y divide-[#f0f2f4]">
               {[
                 { label: 'Member Name', value: app.memberName ?? '—' },
                 { label: 'Company', value: app.companyName },
@@ -630,8 +631,8 @@ function ApplicationDetailModal({
                 { label: 'Status', value: <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ background: ac.bg, color: ac.text }}>{ac.label}</span> },
               ].map(({ label, value }) => (
                 <div key={label} className="grid grid-cols-2 gap-4 px-4 py-2.5">
-                  <dt className="text-xs text-[#74777f]">{label}</dt>
-                  <dd className="text-xs text-[#191c1e] font-medium">{value}</dd>
+                  <dt className="text-xs text-ink-subtle">{label}</dt>
+                  <dd className="text-xs text-ink font-medium">{value}</dd>
                 </div>
               ))}
             </div>
@@ -640,21 +641,21 @@ function ApplicationDetailModal({
           {/* Corridor detail */}
           {corridor && (
             <div>
-              <p className="text-xs font-semibold text-[#74777f] uppercase tracking-wide mb-2">Corridor</p>
-              <div className="rounded-xl border border-[#e0e3e5] p-4 space-y-2">
+              <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide mb-2">Corridor</p>
+              <div className="rounded-xl border border-border p-4 space-y-2">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-semibold text-sm text-[#191c1e]">{corridor.title}</span>
+                  <span className="font-semibold text-sm text-ink">{corridor.title}</span>
                   <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold"
                     style={{ background: corridorStatusConfig[corridor.status].bg, color: corridorStatusConfig[corridor.status].text }}>
                     {corridorStatusConfig[corridor.status].label}
                   </span>
                 </div>
-                <p className="text-xs text-[#74777f]">{corridor.origin} → {corridor.destination} · {corridor.category}</p>
-                {corridor.tradeVolume && <p className="text-xs text-[#74777f]">Trade volume: <strong>{corridor.tradeVolume}</strong></p>}
-                <p className="text-xs text-[#74777f]">{corridor.description}</p>
+                <p className="text-xs text-ink-subtle">{corridor.origin} → {corridor.destination} · {corridor.category}</p>
+                {corridor.tradeVolume && <p className="text-xs text-ink-subtle">Trade volume: <strong>{corridor.tradeVolume}</strong></p>}
+                <p className="text-xs text-ink-subtle">{corridor.description}</p>
                 {corridor.sponsors.length > 0 && (
                   <div className="flex items-center gap-2 flex-wrap pt-1">
-                    <p className="text-xs text-[#74777f]">Existing sponsors:</p>
+                    <p className="text-xs text-ink-subtle">Existing sponsors:</p>
                     {corridor.sponsors.map((s) => (
                       <span key={s.id} className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold"
                         style={{ background: tierConfig[s.tier].bg, color: tierConfig[s.tier].text }}>{s.companyName}</span>
@@ -707,27 +708,27 @@ function CorridorMembersSection({ corridorId, isExpanded }: { corridorId: string
 
   return (
     <div>
-      <p className="text-xs font-semibold text-[#74777f] uppercase tracking-wide mb-3">Members</p>
+      <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide mb-3">Members</p>
       {items.length === 0 ? (
-        <p className="text-xs text-[#74777f]">No active members in this corridor yet.</p>
+        <p className="text-xs text-ink-subtle">No active members in this corridor yet.</p>
       ) : (
         <>
-          <div className="rounded-xl border border-[#e0e3e5] overflow-hidden mb-3">
+          <div className="rounded-xl border border-border overflow-hidden mb-3">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-[#f7f9fb] border-b border-[#e0e3e5]">
+                <tr className="bg-surface-alt border-b border-border">
                   {['Name', 'Company', 'Member ID', 'Joined', 'Source'].map((h) => (
-                    <th key={h} className="text-left px-4 py-2.5 text-xs font-semibold text-[#74777f] uppercase tracking-wide">{h}</th>
+                    <th key={h} className="text-left px-4 py-2.5 text-xs font-semibold text-ink-subtle uppercase tracking-wide">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#f0f2f4]">
                 {items.map((m) => (
-                  <tr key={m.id} className="hover:bg-[#f7f9fb]">
-                    <td className="px-4 py-2.5 font-medium text-[#191c1e]">{m.name}</td>
-                    <td className="px-4 py-2.5 text-[#74777f]">{m.companyName ?? '—'}</td>
-                    <td className="px-4 py-2.5 font-mono text-xs text-[#74777f]">{m.memberId}</td>
-                    <td className="px-4 py-2.5 text-xs text-[#74777f]">
+                  <tr key={m.id} className="hover:bg-surface-alt">
+                    <td className="px-4 py-2.5 font-medium text-ink">{m.name}</td>
+                    <td className="px-4 py-2.5 text-ink-subtle">{m.companyName ?? '—'}</td>
+                    <td className="px-4 py-2.5 font-mono text-xs text-ink-subtle">{m.memberId}</td>
+                    <td className="px-4 py-2.5 text-xs text-ink-subtle">
                       {new Date(m.joinedAt).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'short', year: 'numeric' })}
                     </td>
                     <td className="px-4 py-2.5">
@@ -741,13 +742,13 @@ function CorridorMembersSection({ corridorId, isExpanded }: { corridorId: string
               </tbody>
             </table>
           </div>
-          <div className="flex items-center justify-between text-xs text-[#74777f]">
+          <div className="flex items-center justify-between text-xs text-ink-subtle">
             <span>Showing {items.length} of {total} members</span>
             <div className="flex gap-2">
               <button disabled={page === 1} onClick={() => setPage(p => p - 1)}
-                className="px-3 py-1.5 rounded-md border border-[#e0e3e5] bg-white disabled:opacity-40 hover:bg-[#f7f9fb]">Previous</button>
+                className="px-3 py-1.5 rounded-md border border-border bg-white disabled:opacity-40 hover:bg-surface-alt">Previous</button>
               <button disabled={items.length < 20} onClick={() => setPage(p => p + 1)}
-                className="px-3 py-1.5 rounded-md border border-[#e0e3e5] bg-white disabled:opacity-40 hover:bg-[#f7f9fb]">Next</button>
+                className="px-3 py-1.5 rounded-md border border-border bg-white disabled:opacity-40 hover:bg-surface-alt">Next</button>
             </div>
           </div>
         </>
@@ -800,15 +801,15 @@ function CreateCorridorModal({ initial, onClose }: { initial?: TradeCorridor; on
     }
   };
 
-  const inputCls = 'w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-[#023293]';
+  const inputCls = 'w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-primary';
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b border-[#e0e3e5] px-6 py-4 flex items-center justify-between rounded-t-2xl">
-          <h2 className="font-bold text-[#191c1e]">{initial ? 'Edit Corridor' : 'Create New Corridor'}</h2>
-          <button onClick={onClose} className="p-2 rounded-lg hover:bg-[#f7f9fb] text-[#74777f]">
+        <div className="sticky top-0 bg-white border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
+          <h2 className="font-bold text-ink">{initial ? 'Edit Corridor' : 'Create New Corridor'}</h2>
+          <button onClick={onClose} className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle">
             <span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span>
           </button>
         </div>
@@ -816,52 +817,59 @@ function CreateCorridorModal({ initial, onClose }: { initial?: TradeCorridor; on
           {error && <ErrorBanner message={error} />}
 
           <div>
-            <label className="block text-xs font-semibold text-[#44474e] mb-1">Title *</label>
+            <label className="block text-xs font-semibold text-ink-subtle mb-1">Title *</label>
             <input required value={form.title} onChange={set('title')} placeholder="e.g. Nigeria → China (Leather & Hides)" className={inputCls} />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-[#44474e] mb-1">Origin *</label>
+              <label className="block text-xs font-semibold text-ink-subtle mb-1">Origin *</label>
               <input required value={form.origin} onChange={set('origin')} placeholder="e.g. Kano, Nigeria" className={inputCls} />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-[#44474e] mb-1">Destination *</label>
+              <label className="block text-xs font-semibold text-ink-subtle mb-1">Destination *</label>
               <input required value={form.destination} onChange={set('destination')} placeholder="e.g. Guangzhou, China" className={inputCls} />
             </div>
           </div>
           <div>
-            <label className="block text-xs font-semibold text-[#44474e] mb-1">Category *</label>
+            <label className="block text-xs font-semibold text-ink-subtle mb-1">Category *</label>
             <input required value={form.category} onChange={set('category')} placeholder="e.g. Agriculture & Food" className={inputCls} />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-[#44474e] mb-1">Description *</label>
+            <label className="block text-xs font-semibold text-ink-subtle mb-1">Description *</label>
             <textarea required rows={3} value={form.description} onChange={set('description')} placeholder="Describe the corridor purpose and opportunities…" className={inputCls + ' resize-none'} />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-[#44474e] mb-1">Status</label>
-              <select value={form.status} onChange={set('status')} className={inputCls}>
-                <option value="upcoming">Upcoming</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-              </select>
+              <label className="block text-xs font-semibold text-ink-subtle mb-1">Status</label>
+              <Select
+                label="Status"
+                hideLabel
+                value={form.status}
+                onValueChange={(v) => setForm((f) => ({ ...f, status: v as typeof f.status }))}
+                className={inputCls}
+                options={[
+                  { value: 'upcoming', label: 'Upcoming' },
+                  { value: 'active', label: 'Active' },
+                  { value: 'inactive', label: 'Inactive' },
+                ]}
+              />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-[#44474e] mb-1">Trade Volume</label>
+              <label className="block text-xs font-semibold text-ink-subtle mb-1">Trade Volume</label>
               <input value={form.tradeVolume} onChange={set('tradeVolume')} placeholder="e.g. ₦2.3B/year" className={inputCls} />
             </div>
           </div>
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-[#44474e] mb-1">Sponsor Slots</label>
+              <label className="block text-xs font-semibold text-ink-subtle mb-1">Sponsor Slots</label>
               <input type="number" min={0} value={form.sponsorSlotsAvailable} onChange={set('sponsorSlotsAvailable')} className={inputCls} />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-[#44474e] mb-1">Gold Price (₦)</label>
+              <label className="block text-xs font-semibold text-ink-subtle mb-1">Gold Price (₦)</label>
               <input type="number" min={0} value={form.sponsorPriceGold} onChange={set('sponsorPriceGold')} className={inputCls} />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-[#44474e] mb-1">Silver Price (₦)</label>
+              <label className="block text-xs font-semibold text-ink-subtle mb-1">Silver Price (₦)</label>
               <input type="number" min={0} value={form.sponsorPriceSilver} onChange={set('sponsorPriceSilver')} className={inputCls} />
             </div>
           </div>
@@ -920,8 +928,8 @@ function AdminCorridorsView() {
 
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-xl font-semibold text-[#191c1e]">Trade Corridors Management</h2>
-          <p className="text-sm text-[#74777f] mt-0.5">Manage trade corridors and sponsorship applications.</p>
+          <h2 className="text-xl font-semibold text-ink">Trade Corridors Management</h2>
+          <p className="text-sm text-ink-subtle mt-0.5">Manage trade corridors and sponsorship applications.</p>
         </div>
         <button
           onClick={() => setShowCreateCorridor(true)}
@@ -940,19 +948,19 @@ function AdminCorridorsView() {
           { icon: 'pending', label: 'Pending Applications', value: pending },
           { icon: 'workspace_premium', label: 'Total Sponsors', value: allCorridors.reduce((s, c) => s + c.sponsors.length, 0) },
         ].map(({ icon, label, value, accent }) => (
-          <div key={label} className={`rounded-xl border p-4 ${accent ? '' : 'bg-white border-[#e0e3e5]'}`} style={accent ? { background: '#023293', borderColor: '#023293' } : {}}>
+          <div key={label} className={`rounded-xl border p-4 ${accent ? '' : 'bg-white border-border'}`} style={accent ? { background: '#023293', borderColor: '#023293' } : {}}>
             <div className="flex items-center gap-2 mb-2">
               <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`, color: accent ? '#aec7f7' : '#74777f' }}>{icon}</span>
-              <p className={`text-xs font-semibold uppercase tracking-wide ${accent ? 'text-[#aec7f7]' : 'text-[#74777f]'}`}>{label}</p>
+              <p className={`text-xs font-semibold uppercase tracking-wide ${accent ? 'text-[#aec7f7]' : 'text-ink-subtle'}`}>{label}</p>
             </div>
-            <p className={`text-2xl font-bold ${accent ? 'text-white' : 'text-[#191c1e]'}`}>{value}</p>
+            <p className={`text-2xl font-bold ${accent ? 'text-white' : 'text-ink'}`}>{value}</p>
           </div>
         ))}
       </div>
 
-      <div className="flex gap-1 bg-[#f7f9fb] rounded-lg p-1 mb-6 w-fit border border-[#e0e3e5]">
+      <div className="flex gap-1 bg-surface-alt rounded-lg p-1 mb-6 w-fit border border-border">
         {([['corridors', 'Corridors'], ['applications', `Applications${pending > 0 ? ` (${pending})` : ''}`]] as const).map(([t, label]) => (
-          <button key={t} onClick={() => setTab(t)} className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === t ? 'bg-white text-[#191c1e] shadow-sm' : 'text-[#74777f] hover:text-[#191c1e]'}`}>{label}</button>
+          <button key={t} onClick={() => setTab(t)} className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === t ? 'bg-white text-ink shadow-sm' : 'text-ink-subtle hover:text-ink'}`}>{label}</button>
         ))}
       </div>
 
@@ -962,45 +970,45 @@ function AdminCorridorsView() {
             const st = corridorStatusConfig[c.status];
             const isExpanded = expandedId === c.id;
             return (
-              <div key={c.id} className="bg-white rounded-xl border border-[#e0e3e5] overflow-hidden">
+              <div key={c.id} className="bg-white rounded-xl border border-border overflow-hidden">
                 <button
                   onClick={() => setExpandedId(isExpanded ? null : c.id)}
-                  className="w-full text-left p-5 flex items-start justify-between hover:bg-[#f7f9fb] transition-colors"
+                  className="w-full text-left p-5 flex items-start justify-between hover:bg-surface-alt transition-colors"
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
-                      <h3 className="font-bold text-[#191c1e]">{c.title}</h3>
+                      <h3 className="font-bold text-ink">{c.title}</h3>
                       <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ background: st.bg, color: st.text }}>{st.label}</span>
                     </div>
-                    <p className="text-sm text-[#74777f]">{c.origin} → {c.destination} · {c.category}</p>
+                    <p className="text-sm text-ink-subtle">{c.origin} → {c.destination} · {c.category}</p>
                   </div>
                   <div className="flex items-center gap-3 flex-shrink-0 ml-4">
                     <button
                       onClick={(e) => { e.stopPropagation(); setEditCorridor(c); }}
-                      className="rounded-lg border border-[#c4c6cf] px-3 py-1.5 text-xs font-semibold text-[#74777f] hover:border-[#023293] hover:text-[#023293] transition-colors"
+                      className="rounded-lg border border-border px-3 py-1.5 text-xs font-semibold text-ink-subtle hover:border-primary hover:text-primary transition-colors"
                     >
                       Edit
                     </button>
                     <div className="text-right">
-                      <p className="font-bold text-[#023293]">{c.memberCount} members</p>
-                      <p className="text-xs text-[#74777f]">{c.sponsors.length} sponsors · {c.sponsorSlotsAvailable} open slots</p>
+                      <p className="font-bold text-primary">{c.memberCount} members</p>
+                      <p className="text-xs text-ink-subtle">{c.sponsors.length} sponsors · {c.sponsorSlotsAvailable} open slots</p>
                     </div>
-                    <span className="material-symbols-outlined text-[#74777f]" style={{ fontSize: 20, transition: 'transform 0.2s', transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)' }}>expand_more</span>
+                    <span className="material-symbols-outlined text-ink-subtle" style={{ fontSize: 20, transition: 'transform 0.2s', transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)' }}>expand_more</span>
                   </div>
                 </button>
 
                 {isExpanded && (
-                  <div className="border-t border-[#e0e3e5] px-5 py-4 space-y-4 bg-[#fafbfc]">
-                    <p className="text-sm text-[#74777f]">{c.description}</p>
+                  <div className="border-t border-border px-5 py-4 space-y-4 bg-[#fafbfc]">
+                    <p className="text-sm text-ink-subtle">{c.description}</p>
                     {c.tradeVolume && (
-                      <p className="text-xs text-[#74777f]">Estimated trade volume: <strong className="text-[#191c1e]">{c.tradeVolume}</strong></p>
+                      <p className="text-xs text-ink-subtle">Estimated trade volume: <strong className="text-ink">{c.tradeVolume}</strong></p>
                     )}
 
                     {/* Sponsors */}
                     <div>
-                      <p className="text-xs font-semibold text-[#74777f] uppercase tracking-wide mb-2">Current Sponsors</p>
+                      <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide mb-2">Current Sponsors</p>
                       {c.sponsors.length === 0 ? (
-                        <p className="text-xs text-[#74777f]">No sponsors yet.</p>
+                        <p className="text-xs text-ink-subtle">No sponsors yet.</p>
                       ) : (
                         <div className="flex flex-wrap gap-2">
                           {c.sponsors.map((s) => (
@@ -1016,7 +1024,7 @@ function AdminCorridorsView() {
 
                     {/* Pricing */}
                     <div>
-                      <p className="text-xs font-semibold text-[#74777f] uppercase tracking-wide mb-2">Sponsorship Pricing (member-facing)</p>
+                      <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide mb-2">Sponsorship Pricing (member-facing)</p>
                       <div className="flex gap-3 flex-wrap">
                         {(['gold', 'silver'] as const).map((t) => {
                           const tc = tierConfig[t];
@@ -1028,14 +1036,14 @@ function AdminCorridorsView() {
                             </div>
                           );
                         })}
-                        <div className="rounded-lg border border-[#e0e3e5] bg-white px-4 py-2.5 flex items-center gap-2">
-                          <span className="text-xs text-[#74777f]">Open slots:</span>
-                          <span className="font-bold text-sm text-[#191c1e]">{c.sponsorSlotsAvailable}</span>
+                        <div className="rounded-lg border border-border bg-white px-4 py-2.5 flex items-center gap-2">
+                          <span className="text-xs text-ink-subtle">Open slots:</span>
+                          <span className="font-bold text-sm text-ink">{c.sponsorSlotsAvailable}</span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="border-t border-[#e0e3e5] pt-4">
+                    <div className="border-t border-border pt-4">
                       <CorridorMembersSection corridorId={c.id} isExpanded={isExpanded} />
                     </div>
                   </div>
@@ -1047,14 +1055,14 @@ function AdminCorridorsView() {
       )}
 
       {tab === 'applications' && (
-        <div className="bg-white rounded-xl border border-[#e0e3e5] overflow-hidden">
+        <div className="bg-white rounded-xl border border-border overflow-hidden">
           {appsLoading ? <div className="p-6"><SkeletonCard /></div> : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-[#f7f9fb] border-b border-[#e0e3e5]">
+                  <tr className="bg-surface-alt border-b border-border">
                     {['Applicant', 'Corridor', 'Tier', 'Amount', 'Applied', 'Status', ''].map((h) => (
-                      <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-[#74777f] uppercase tracking-wide">{h}</th>
+                      <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-ink-subtle uppercase tracking-wide">{h}</th>
                     ))}
                   </tr>
                 </thead>
@@ -1063,18 +1071,18 @@ function AdminCorridorsView() {
                     const ac = appStatusConfig[app.status];
                     const tc = tierConfig[app.tier];
                     return (
-                      <tr key={app.id} className="hover:bg-[#f7f9fb] transition-colors">
+                      <tr key={app.id} className="hover:bg-surface-alt transition-colors">
                         <td className="px-4 py-3">
-                          <p className="font-medium text-[#191c1e]">{app.memberName ?? '—'}</p>
-                          <p className="text-xs text-[#74777f]">{app.companyName}</p>
+                          <p className="font-medium text-ink">{app.memberName ?? '—'}</p>
+                          <p className="text-xs text-ink-subtle">{app.companyName}</p>
                         </td>
-                        <td className="px-4 py-3 text-[#74777f] max-w-[160px] truncate">{app.corridorTitle}</td>
+                        <td className="px-4 py-3 text-ink-subtle max-w-[160px] truncate">{app.corridorTitle}</td>
                         <td className="px-4 py-3"><span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ background: tc.bg, color: tc.text }}>{tc.label}</span></td>
-                        <td className="px-4 py-3 font-semibold text-[#191c1e]">₦{app.amount.toLocaleString()}</td>
-                        <td className="px-4 py-3 text-xs text-[#74777f]">{new Date(app.createdAt).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'short', year: 'numeric' })}</td>
+                        <td className="px-4 py-3 font-semibold text-ink">₦{app.amount.toLocaleString()}</td>
+                        <td className="px-4 py-3 text-xs text-ink-subtle">{new Date(app.createdAt).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'short', year: 'numeric' })}</td>
                         <td className="px-4 py-3"><span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ background: ac.bg, color: ac.text }}>{ac.label}</span></td>
                         <td className="px-4 py-3">
-                          <button onClick={() => setSelectedApp(app)} className="text-xs font-medium text-[#023293] hover:underline">View</button>
+                          <button onClick={() => setSelectedApp(app)} className="text-xs font-medium text-primary hover:underline">View</button>
                         </td>
                       </tr>
                     );
