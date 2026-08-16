@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@shared/ui/Button';
+import { Select } from '@shared/ui/Select';
 import { SkeletonCard } from '@shared/ui/SkeletonCard';
 import { ErrorBanner } from '@shared/ui/ErrorBanner';
 import { useAppSelector } from '@shared/hooks/useAppDispatch';
@@ -104,9 +105,9 @@ function CourseFormModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b border-[#e0e3e5] px-6 py-4 flex items-center justify-between rounded-t-2xl">
-          <h2 className="font-bold text-[#191c1e]">{course ? 'Edit Course' : 'Add New Course'}</h2>
-          <button onClick={onClose} className="p-2 rounded-lg hover:bg-[#f7f9fb] text-[#74777f]">
+        <div className="sticky top-0 bg-white border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
+          <h2 className="font-bold text-ink">{course ? 'Edit Course' : 'Add New Course'}</h2>
+          <button onClick={onClose} className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle">
             <span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span>
           </button>
         </div>
@@ -114,62 +115,58 @@ function CourseFormModal({
           {error && <ErrorBanner message={error} />}
 
           <div>
-            <label className="block text-xs font-semibold text-[#44474e] mb-1">Course Title</label>
-            <input required value={form.title} onChange={set('title')} placeholder="e.g. Export Documentation Fundamentals" className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293]" />
+            <label className="block text-xs font-semibold text-ink-subtle mb-1">Course Title</label>
+            <input required value={form.title} onChange={set('title')} placeholder="e.g. Export Documentation Fundamentals" className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary" />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-[#44474e] mb-1">Description</label>
-            <textarea required rows={3} value={form.description} onChange={set('description')} className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293] resize-none" />
+            <label className="block text-xs font-semibold text-ink-subtle mb-1">Description</label>
+            <textarea required rows={3} value={form.description} onChange={set('description')} className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary resize-none" />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-[#44474e] mb-1">Category</label>
-              <input required value={form.category} onChange={set('category')} placeholder="e.g. Export" className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none" />
+              <label className="block text-xs font-semibold text-ink-subtle mb-1">Category</label>
+              <input required value={form.category} onChange={set('category')} placeholder="e.g. Export" className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none" />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-[#44474e] mb-1">Duration</label>
-              <input required value={form.duration} onChange={set('duration')} placeholder="e.g. 4 hours" className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none" />
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-[#44474e] mb-1">Level</label>
-              <select value={form.level} onChange={set('level')} className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none">
-                <option value="beginner">Beginner</option>
-                <option value="intermediate">Intermediate</option>
-                <option value="advanced">Advanced</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-[#44474e] mb-1">Instructor</label>
-              <input value={form.instructorName} onChange={set('instructorName')} placeholder="e.g. NACCIMA Trade Desk" className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none" />
+              <label className="block text-xs font-semibold text-ink-subtle mb-1">Duration</label>
+              <input required value={form.duration} onChange={set('duration')} placeholder="e.g. 4 hours" className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none" />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-[#44474e] mb-1">Price (&#x20A6;)</label>
-              <input type="number" min="0" value={form.price} onChange={set('price')} className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none" />
+              <Select label="Level" value={form.level} onValueChange={(v) => setForm((f) => ({ ...f, level: v as Course['level'] }))}
+                options={[{ value: 'beginner', label: 'Beginner' }, { value: 'intermediate', label: 'Intermediate' }, { value: 'advanced', label: 'Advanced' }]} />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-ink-subtle mb-1">Instructor</label>
+              <input value={form.instructorName} onChange={set('instructorName')} placeholder="e.g. NACCIMA Trade Desk" className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none" />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-ink-subtle mb-1">Price (&#x20A6;)</label>
+              <input type="number" min="0" value={form.price} onChange={set('price')} className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none" />
             </div>
             <div className="flex flex-col gap-2 pt-5">
               <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" checked={form.isFree} onChange={(e) => setForm((f) => ({ ...f, isFree: e.target.checked }))} className="w-4 h-4 accent-[#023293]" />
-                <span className="text-sm text-[#191c1e]">Free course</span>
+                <input type="checkbox" checked={form.isFree} onChange={(e) => setForm((f) => ({ ...f, isFree: e.target.checked }))} className="w-4 h-4 accent-primary" />
+                <span className="text-sm text-ink">Free course</span>
               </label>
               <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" checked={form.isPublished} onChange={(e) => setForm((f) => ({ ...f, isPublished: e.target.checked }))} className="w-4 h-4 accent-[#023293]" />
-                <span className="text-sm text-[#191c1e]">Published</span>
+                <input type="checkbox" checked={form.isPublished} onChange={(e) => setForm((f) => ({ ...f, isPublished: e.target.checked }))} className="w-4 h-4 accent-primary" />
+                <span className="text-sm text-ink">Published</span>
               </label>
             </div>
           </div>
           <div>
-            <label className="block text-xs font-semibold text-[#44474e] mb-1">
-              Intro Video URL (YouTube/Vimeo) <span className="font-normal text-[#74777f]">— optional, shown before enrollment</span>
+            <label className="block text-xs font-semibold text-ink-subtle mb-1">
+              Intro Video URL (YouTube/Vimeo) <span className="font-normal text-ink-subtle">— optional, shown before enrollment</span>
             </label>
             <input
               value={form.videoUrl}
               onChange={set('videoUrl')}
               placeholder="https://www.youtube.com/watch?v=..."
-              className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293]"
+              className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary"
             />
           </div>
 
@@ -178,13 +175,13 @@ function CourseFormModal({
             <button
               type="button"
               onClick={onManageSections}
-              className="w-full flex items-center justify-between rounded-xl border border-dashed border-[#023293]/30 bg-[#f0f4ff] px-4 py-3 text-sm text-[#023293] hover:bg-[#e8eeff] transition-colors"
+              className="w-full flex items-center justify-between rounded-xl border border-dashed border-primary/30 bg-[#f0f4ff] px-4 py-3 text-sm text-primary hover:bg-[#e8eeff] transition-colors"
             >
               <span className="flex items-center gap-2 font-semibold">
                 <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1` }}>video_library</span>
                 Add / manage course content (sections &amp; videos)
               </span>
-              <span className="material-symbols-outlined text-[#023293]/60" style={{ fontSize: 18 }}>arrow_forward</span>
+              <span className="material-symbols-outlined text-primary/60" style={{ fontSize: 18 }}>arrow_forward</span>
             </button>
           )}
 
@@ -295,10 +292,10 @@ function SectionManagerModal({ course, onClose }: { course: Course; onClose: () 
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
-        <div className="sticky top-0 bg-white border-b border-[#e0e3e5] px-6 py-4 flex items-center justify-between rounded-t-2xl">
+        <div className="sticky top-0 bg-white border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
           <div>
-            <h2 className="font-bold text-[#191c1e]">Course Content</h2>
-            <p className="text-xs text-[#74777f] mt-0.5 max-w-md truncate">{course.title}</p>
+            <h2 className="font-bold text-ink">Course Content</h2>
+            <p className="text-xs text-ink-subtle mt-0.5 max-w-md truncate">{course.title}</p>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -309,7 +306,7 @@ function SectionManagerModal({ course, onClose }: { course: Course; onClose: () 
               <span className="material-symbols-outlined" style={{ fontSize: 14 }}>add</span>
               Add Section
             </button>
-            <button onClick={onClose} className="p-2 rounded-lg hover:bg-[#f7f9fb] text-[#74777f]">
+            <button onClick={onClose} className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle">
               <span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span>
             </button>
           </div>
@@ -319,34 +316,34 @@ function SectionManagerModal({ course, onClose }: { course: Course; onClose: () 
 
           {/* ── PDF Course Materials ─────────────────────────────────────── */}
           <div>
-            <p className="text-xs font-bold text-[#44474e] uppercase tracking-wide mb-2">Course Materials (PDF)</p>
-            <div className="rounded-xl border border-[#e0e3e5] bg-[#f7f9fb] p-4">
+            <p className="text-xs font-bold text-ink-subtle uppercase tracking-wide mb-2">Course Materials (PDF)</p>
+            <div className="rounded-xl border border-border bg-surface-alt p-4">
               {pdfUrl ? (
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: '#ffdad6' }}>
                     <span className="material-symbols-outlined" style={{ fontSize: 22, fontVariationSettings: `'FILL' 1`, color: '#93000a' }}>picture_as_pdf</span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-[#191c1e]">Course material uploaded</p>
-                    <a href={pdfUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-[#023293] underline">Preview PDF</a>
+                    <p className="text-sm font-semibold text-ink">Course material uploaded</p>
+                    <a href={pdfUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-primary underline">Preview PDF</a>
                   </div>
-                  <label className="cursor-pointer rounded-lg border border-[#c4c6cf] px-3 py-1.5 text-xs font-semibold text-[#44474e] hover:border-[#023293] hover:text-[#023293] transition-colors flex-shrink-0">
+                  <label className="cursor-pointer rounded-lg border border-border px-3 py-1.5 text-xs font-semibold text-ink-subtle hover:border-primary hover:text-primary transition-colors flex-shrink-0">
                     {uploading ? 'Uploading…' : 'Replace'}
                     <input type="file" accept="application/pdf" className="sr-only" onChange={handlePdfChange} disabled={uploading} />
                   </label>
                 </div>
               ) : (
-                <label className={`flex flex-col items-center justify-center gap-2 py-6 cursor-pointer rounded-lg border-2 border-dashed transition-colors ${uploading ? 'border-[#023293]/40 bg-[#f0f4ff]' : 'border-[#c4c6cf] hover:border-[#023293]'}`}>
+                <label className={`flex flex-col items-center justify-center gap-2 py-6 cursor-pointer rounded-lg border-2 border-dashed transition-colors ${uploading ? 'border-primary/40 bg-[#f0f4ff]' : 'border-border hover:border-primary'}`}>
                   {uploading ? (
                     <>
-                      <span className="h-6 w-6 animate-spin rounded-full border-2 border-[#023293] border-t-transparent" />
-                      <span className="text-xs text-[#023293] font-medium">Uploading…</span>
+                      <span className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                      <span className="text-xs text-primary font-medium">Uploading…</span>
                     </>
                   ) : (
                     <>
-                      <span className="material-symbols-outlined text-[#74777f]" style={{ fontSize: 28, fontVariationSettings: `'FILL' 1` }}>upload_file</span>
-                      <span className="text-sm font-semibold text-[#44474e]">Click to upload a PDF</span>
-                      <span className="text-xs text-[#74777f]">Handouts, study guides, references — max 10 MB</span>
+                      <span className="material-symbols-outlined text-ink-subtle" style={{ fontSize: 28, fontVariationSettings: `'FILL' 1` }}>upload_file</span>
+                      <span className="text-sm font-semibold text-ink-subtle">Click to upload a PDF</span>
+                      <span className="text-xs text-ink-subtle">Handouts, study guides, references — max 10 MB</span>
                     </>
                   )}
                   <input type="file" accept="application/pdf" className="sr-only" onChange={handlePdfChange} disabled={uploading} />
@@ -358,7 +355,7 @@ function SectionManagerModal({ course, onClose }: { course: Course; onClose: () 
 
           {/* ── Video Sections ───────────────────────────────────────────── */}
           <div>
-            <p className="text-xs font-bold text-[#44474e] uppercase tracking-wide mb-2">Video Sections</p>
+            <p className="text-xs font-bold text-ink-subtle uppercase tracking-wide mb-2">Video Sections</p>
           </div>
 
           {error && <div className="mb-2"><ErrorBanner message={error} /></div>}
@@ -366,10 +363,10 @@ function SectionManagerModal({ course, onClose }: { course: Course; onClose: () 
           {isLoading && <SkeletonCard />}
 
           {!isLoading && sections.length === 0 && !showAddForm && (
-            <div className="rounded-xl border-2 border-dashed border-[#c4c6cf] p-10 text-center">
-              <span className="material-symbols-outlined text-[#74777f] mb-2 block" style={{ fontSize: 32, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 32` }}>video_library</span>
-              <p className="text-sm font-semibold text-[#44474e] mb-1">No sections yet</p>
-              <p className="text-xs text-[#74777f] mb-4">Add YouTube or Vimeo video links as course sections.</p>
+            <div className="rounded-xl border-2 border-dashed border-border p-10 text-center">
+              <span className="material-symbols-outlined text-ink-subtle mb-2 block" style={{ fontSize: 32, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 32` }}>video_library</span>
+              <p className="text-sm font-semibold text-ink-subtle mb-1">No sections yet</p>
+              <p className="text-xs text-ink-subtle mb-4">Add YouTube or Vimeo video links as course sections.</p>
               <button onClick={() => setShowAddForm(true)} className="rounded-lg px-4 py-2 text-xs font-semibold text-white" style={{ background: '#023293' }}>
                 Add First Section
               </button>
@@ -377,29 +374,29 @@ function SectionManagerModal({ course, onClose }: { course: Course; onClose: () 
           )}
 
           {sections.map((s, idx) => (
-            <div key={s.id} className="bg-white rounded-xl border border-[#e0e3e5] overflow-hidden">
+            <div key={s.id} className="bg-white rounded-xl border border-border overflow-hidden">
               {editingId === s.id ? (
                 <div className="p-4 space-y-3">
                   <div className="grid grid-cols-2 gap-3">
                     <div className="col-span-2">
-                      <label className="block text-xs font-semibold text-[#44474e] mb-1">Section Title</label>
-                      <input required value={editForm.title} onChange={setEdit('title')} className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293]" />
+                      <label className="block text-xs font-semibold text-ink-subtle mb-1">Section Title</label>
+                      <input required value={editForm.title} onChange={setEdit('title')} className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary" />
                     </div>
                     <div className="col-span-2">
-                      <label className="block text-xs font-semibold text-[#44474e] mb-1">Video URL (YouTube/Vimeo)</label>
-                      <input required value={editForm.videoUrl} onChange={setEdit('videoUrl')} placeholder="https://www.youtube.com/watch?v=..." className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293]" />
+                      <label className="block text-xs font-semibold text-ink-subtle mb-1">Video URL (YouTube/Vimeo)</label>
+                      <input required value={editForm.videoUrl} onChange={setEdit('videoUrl')} placeholder="https://www.youtube.com/watch?v=..." className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary" />
                     </div>
                     <div className="col-span-2">
-                      <label className="block text-xs font-semibold text-[#44474e] mb-1">Description <span className="font-normal text-[#74777f]">— optional</span></label>
-                      <textarea rows={2} value={editForm.description} onChange={setEdit('description')} className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293] resize-none" />
+                      <label className="block text-xs font-semibold text-ink-subtle mb-1">Description <span className="font-normal text-ink-subtle">— optional</span></label>
+                      <textarea rows={2} value={editForm.description} onChange={setEdit('description')} className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary resize-none" />
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold text-[#44474e] mb-1">Order</label>
-                      <input type="number" min="0" value={editForm.sortOrder} onChange={setEdit('sortOrder')} className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none" />
+                      <label className="block text-xs font-semibold text-ink-subtle mb-1">Order</label>
+                      <input type="number" min="0" value={editForm.sortOrder} onChange={setEdit('sortOrder')} className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none" />
                     </div>
                   </div>
                   <div className="flex gap-2 pt-1">
-                    <button onClick={() => setEditingId(null)} className="rounded-lg px-3 py-1.5 text-xs font-semibold border border-[#c4c6cf] text-[#44474e]">Cancel</button>
+                    <button onClick={() => setEditingId(null)} className="rounded-lg px-3 py-1.5 text-xs font-semibold border border-border text-ink-subtle">Cancel</button>
                     <button onClick={() => handleUpdate(s.id)} disabled={!!updatingId} className="rounded-lg px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50" style={{ background: '#023293' }}>
                       {updatingId ? 'Saving…' : 'Save Changes'}
                     </button>
@@ -411,14 +408,14 @@ function SectionManagerModal({ course, onClose }: { course: Course; onClose: () 
                     {idx + 1}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-[#191c1e] truncate">{s.title}</p>
-                    <p className="text-xs text-[#74777f] truncate">{s.videoUrl}</p>
+                    <p className="text-sm font-semibold text-ink truncate">{s.title}</p>
+                    <p className="text-xs text-ink-subtle truncate">{s.videoUrl}</p>
                   </div>
                   <div className="flex items-center gap-1 flex-shrink-0">
-                    <button onClick={() => startEdit(s)} className="p-1.5 rounded-lg hover:bg-[#f7f9fb] text-[#74777f] hover:text-[#023293]">
+                    <button onClick={() => startEdit(s)} className="p-1.5 rounded-lg hover:bg-surface-alt text-ink-subtle hover:text-primary">
                       <span className="material-symbols-outlined" style={{ fontSize: 16 }}>edit</span>
                     </button>
-                    <button onClick={() => handleDelete(s.id)} className="p-1.5 rounded-lg hover:bg-[#ffdad6] text-[#74777f] hover:text-[#93000a]">
+                    <button onClick={() => handleDelete(s.id)} className="p-1.5 rounded-lg hover:bg-[#ffdad6] text-ink-subtle hover:text-[#93000a]">
                       <span className="material-symbols-outlined" style={{ fontSize: 16 }}>delete</span>
                     </button>
                   </div>
@@ -429,27 +426,27 @@ function SectionManagerModal({ course, onClose }: { course: Course; onClose: () 
 
           {/* Add section form */}
           {showAddForm && (
-            <div className="bg-[#f7f9fb] rounded-xl border border-[#023293]/20 p-4">
-              <p className="text-xs font-bold text-[#023293] mb-3 uppercase tracking-wide">New Section</p>
+            <div className="bg-surface-alt rounded-xl border border-primary/20 p-4">
+              <p className="text-xs font-bold text-primary mb-3 uppercase tracking-wide">New Section</p>
               <form onSubmit={handleAdd} className="space-y-3">
                 <div>
-                  <label className="block text-xs font-semibold text-[#44474e] mb-1">Section Title</label>
-                  <input required value={addForm.title} onChange={setAdd('title')} placeholder="e.g. Introduction to HS Codes" className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293]" />
+                  <label className="block text-xs font-semibold text-ink-subtle mb-1">Section Title</label>
+                  <input required value={addForm.title} onChange={setAdd('title')} placeholder="e.g. Introduction to HS Codes" className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary" />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-[#44474e] mb-1">Video URL (YouTube/Vimeo)</label>
-                  <input required value={addForm.videoUrl} onChange={setAdd('videoUrl')} placeholder="https://www.youtube.com/watch?v=..." className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293]" />
+                  <label className="block text-xs font-semibold text-ink-subtle mb-1">Video URL (YouTube/Vimeo)</label>
+                  <input required value={addForm.videoUrl} onChange={setAdd('videoUrl')} placeholder="https://www.youtube.com/watch?v=..." className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary" />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-[#44474e] mb-1">Description <span className="font-normal text-[#74777f]">— optional</span></label>
-                  <textarea rows={2} value={addForm.description} onChange={setAdd('description')} className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:border-[#023293] resize-none" />
+                  <label className="block text-xs font-semibold text-ink-subtle mb-1">Description <span className="font-normal text-ink-subtle">— optional</span></label>
+                  <textarea rows={2} value={addForm.description} onChange={setAdd('description')} className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary resize-none" />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-[#44474e] mb-1">Order <span className="font-normal text-[#74777f]">— leave blank to add at end</span></label>
-                  <input type="number" min="0" value={addForm.sortOrder} onChange={setAdd('sortOrder')} placeholder={String(sections.length)} className="w-full max-w-[120px] rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none" />
+                  <label className="block text-xs font-semibold text-ink-subtle mb-1">Order <span className="font-normal text-ink-subtle">— leave blank to add at end</span></label>
+                  <input type="number" min="0" value={addForm.sortOrder} onChange={setAdd('sortOrder')} placeholder={String(sections.length)} className="w-full max-w-[120px] rounded-lg border border-border px-3 py-2 text-sm focus:outline-none" />
                 </div>
                 <div className="flex gap-2 pt-1">
-                  <button type="button" onClick={() => { setShowAddForm(false); setAddForm(blank); }} className="rounded-lg px-3 py-1.5 text-xs font-semibold border border-[#c4c6cf] text-[#44474e]">Cancel</button>
+                  <button type="button" onClick={() => { setShowAddForm(false); setAddForm(blank); }} className="rounded-lg px-3 py-1.5 text-xs font-semibold border border-border text-ink-subtle">Cancel</button>
                   <button type="submit" disabled={adding} className="rounded-lg px-4 py-1.5 text-xs font-semibold text-white disabled:opacity-50" style={{ background: '#023293' }}>
                     {adding ? 'Adding…' : 'Add Section'}
                   </button>
@@ -503,8 +500,8 @@ function AdminAcademyView() {
 
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-xl font-semibold text-[#191c1e]">Academy Management</h2>
-          <p className="text-sm text-[#74777f] mt-0.5">Manage courses, content, and track member progress.</p>
+          <h2 className="text-xl font-semibold text-ink">Academy Management</h2>
+          <p className="text-sm text-ink-subtle mt-0.5">Manage courses, content, and track member progress.</p>
         </div>
         {tab === 'courses' && (
           <button
@@ -526,20 +523,20 @@ function AdminAcademyView() {
           { icon: 'verified', label: 'Completed', value: completedCount },
           { icon: 'trending_up', label: 'Avg Progress', value: `${avgProgress}%` },
         ].map(({ icon, label, value, accent }) => (
-          <div key={label} className={`rounded-xl border p-4 ${accent ? '' : 'bg-white border-[#e0e3e5]'}`} style={accent ? { background: '#023293', borderColor: '#023293' } : {}}>
+          <div key={label} className={`rounded-xl border p-4 ${accent ? '' : 'bg-white border-border'}`} style={accent ? { background: '#023293', borderColor: '#023293' } : {}}>
             <div className="flex items-center gap-2 mb-2">
               <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`, color: accent ? '#aec7f7' : '#74777f' }}>{icon}</span>
-              <p className={`text-xs font-semibold uppercase tracking-wide ${accent ? 'text-[#aec7f7]' : 'text-[#74777f]'}`}>{label}</p>
+              <p className={`text-xs font-semibold uppercase tracking-wide ${accent ? 'text-[#aec7f7]' : 'text-ink-subtle'}`}>{label}</p>
             </div>
-            <p className={`text-2xl font-bold ${accent ? 'text-white' : 'text-[#191c1e]'}`}>{value}</p>
+            <p className={`text-2xl font-bold ${accent ? 'text-white' : 'text-ink'}`}>{value}</p>
           </div>
         ))}
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-[#f7f9fb] rounded-lg p-1 mb-6 w-fit border border-[#e0e3e5]">
+      <div className="flex gap-1 bg-surface-alt rounded-lg p-1 mb-6 w-fit border border-border">
         {([['courses', 'Course Catalog'], ['enrollments', 'Member Enrollments']] as const).map(([id, label]) => (
-          <button key={id} onClick={() => setTab(id)} className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === id ? 'bg-white text-[#191c1e] shadow-sm' : 'text-[#74777f] hover:text-[#191c1e]'}`}>
+          <button key={id} onClick={() => setTab(id)} className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === id ? 'bg-white text-ink shadow-sm' : 'text-ink-subtle hover:text-ink'}`}>
             {label}
           </button>
         ))}
@@ -549,22 +546,22 @@ function AdminAcademyView() {
       {tab === 'courses' && (
         <>
           <div className="mb-4">
-            <input type="search" placeholder="Search courses..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-full max-w-sm rounded-lg border border-[#c4c6cf] px-4 py-2 text-sm focus:outline-none focus:border-[#023293]" />
+            <input type="search" placeholder="Search courses..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-full max-w-sm rounded-lg border border-border px-4 py-2 text-sm focus:outline-none focus:border-primary" />
           </div>
           {coursesError && <div className="mb-4"><ErrorBanner message="Failed to load courses. Please refresh." /></div>}
           {coursesLoading ? (
             <SkeletonCard />
           ) : filteredCourses.length === 0 ? (
-            <div className="bg-white rounded-xl border border-[#e0e3e5] p-12 text-center">
-              <p className="text-sm text-[#74777f]">No courses available yet.</p>
+            <div className="bg-white rounded-xl border border-border p-12 text-center">
+              <p className="text-sm text-ink-subtle">No courses available yet.</p>
             </div>
           ) : (
-            <div className="bg-white rounded-xl border border-[#e0e3e5] overflow-hidden">
+            <div className="bg-white rounded-xl border border-border overflow-hidden">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-[#f7f9fb] border-b border-[#e0e3e5]">
+                  <tr className="bg-surface-alt border-b border-border">
                     {['Course', 'Category', 'Level', 'Price', 'Enrolled', 'Status', 'Actions'].map((h) => (
-                      <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-[#74777f] uppercase tracking-wide">{h}</th>
+                      <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-ink-subtle uppercase tracking-wide">{h}</th>
                     ))}
                   </tr>
                 </thead>
@@ -572,17 +569,17 @@ function AdminAcademyView() {
                   {filteredCourses.map((course) => {
                     const lc = levelColor[course.level];
                     return (
-                      <tr key={course.id} className="hover:bg-[#f7f9fb] transition-colors">
+                      <tr key={course.id} className="hover:bg-surface-alt transition-colors">
                         <td className="px-4 py-3">
-                          <p className="font-semibold text-[#191c1e] max-w-[220px]">{course.title}</p>
-                          {course.instructorName && <p className="text-xs text-[#74777f]">{course.instructorName}</p>}
+                          <p className="font-semibold text-ink max-w-[220px]">{course.title}</p>
+                          {course.instructorName && <p className="text-xs text-ink-subtle">{course.instructorName}</p>}
                         </td>
-                        <td className="px-4 py-3 text-[#74777f]">{course.category}</td>
+                        <td className="px-4 py-3 text-ink-subtle">{course.category}</td>
                         <td className="px-4 py-3">
                           <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize" style={{ background: lc.bg, color: lc.text }}>{course.level}</span>
                         </td>
-                        <td className="px-4 py-3 font-medium text-[#191c1e]">{course.isFree ? 'Free' : `₦${course.price.toLocaleString()}`}</td>
-                        <td className="px-4 py-3 text-[#191c1e]">{course.enrolledCount.toLocaleString()}</td>
+                        <td className="px-4 py-3 font-medium text-ink">{course.isFree ? 'Free' : `₦${course.price.toLocaleString()}`}</td>
+                        <td className="px-4 py-3 text-ink">{course.enrolledCount.toLocaleString()}</td>
                         <td className="px-4 py-3">
                           <span
                             className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold"
@@ -595,7 +592,7 @@ function AdminAcademyView() {
                           <div className="flex items-center gap-2">
                             <button
                               onClick={() => setEditCourse(course)}
-                              className="rounded-lg border border-[#c4c6cf] px-2.5 py-1 text-xs font-semibold text-[#44474e] hover:border-[#023293] hover:text-[#023293] transition-colors"
+                              className="rounded-lg border border-border px-2.5 py-1 text-xs font-semibold text-ink-subtle hover:border-primary hover:text-primary transition-colors"
                             >
                               Edit
                             </button>
@@ -621,40 +618,40 @@ function AdminAcademyView() {
 
       {/* Member Enrollments tab */}
       {tab === 'enrollments' && (
-        <div className="bg-white rounded-xl border border-[#e0e3e5] overflow-hidden">
+        <div className="bg-white rounded-xl border border-border overflow-hidden">
           {enrollmentsError && <div className="p-4"><ErrorBanner message="Failed to load enrollments. Please refresh." /></div>}
           {enrollmentsLoading ? (
             <div className="p-6"><SkeletonCard /></div>
           ) : allEnrollments.length === 0 ? (
             <div className="p-12 text-center">
-              <p className="text-sm text-[#74777f]">No enrollments yet.</p>
+              <p className="text-sm text-ink-subtle">No enrollments yet.</p>
             </div>
           ) : (
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-[#f7f9fb] border-b border-[#e0e3e5]">
+                <tr className="bg-surface-alt border-b border-border">
                   {['Member', 'Course', 'Progress', 'Enrolled', 'Status'].map((h) => (
-                    <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-[#74777f] uppercase tracking-wide">{h}</th>
+                    <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-ink-subtle uppercase tracking-wide">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#f0f2f4]">
                 {allEnrollments.map((e) => (
-                  <tr key={e.id} className="hover:bg-[#f7f9fb] transition-colors">
+                  <tr key={e.id} className="hover:bg-surface-alt transition-colors">
                     <td className="px-4 py-3">
-                      <p className="font-medium text-[#191c1e]">{e.memberName ?? '—'}</p>
-                      <p className="text-xs text-[#74777f]">{e.memberEmail ?? '—'}</p>
+                      <p className="font-medium text-ink">{e.memberName ?? '—'}</p>
+                      <p className="text-xs text-ink-subtle">{e.memberEmail ?? '—'}</p>
                     </td>
-                    <td className="px-4 py-3 text-[#191c1e] max-w-[200px]">{e.courseTitle}</td>
+                    <td className="px-4 py-3 text-ink max-w-[200px]">{e.courseTitle}</td>
                     <td className="px-4 py-3 min-w-[120px]">
                       <div className="flex items-center gap-2">
-                        <div className="flex-1 h-1.5 bg-[#e0e3e5] rounded-full overflow-hidden">
+                        <div className="flex-1 h-1.5 bg-border rounded-full overflow-hidden">
                           <div className="h-full rounded-full" style={{ width: `${e.progress}%`, background: e.progress === 100 ? '#0b6c4b' : '#023293' }} />
                         </div>
-                        <span className="text-xs font-semibold text-[#74777f] w-8 text-right">{e.progress}%</span>
+                        <span className="text-xs font-semibold text-ink-subtle w-8 text-right">{e.progress}%</span>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-[#74777f] text-xs">
+                    <td className="px-4 py-3 text-ink-subtle text-xs">
                       {new Date(e.enrolledAt).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'short', year: 'numeric' })}
                     </td>
                     <td className="px-4 py-3">
@@ -690,36 +687,36 @@ function CoursePlayerModal({ enrollment, onClose }: { enrollment: Enrollment; on
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="border-b border-[#e0e3e5] px-6 py-4 flex items-center justify-between flex-shrink-0">
+        <div className="border-b border-border px-6 py-4 flex items-center justify-between flex-shrink-0">
           <div>
-            <h2 className="font-bold text-[#191c1e]">{enrollment.courseTitle}</h2>
-            {active && <p className="text-xs text-[#74777f] mt-0.5">Section {activeIdx + 1} of {sections.length}: {active.title}</p>}
+            <h2 className="font-bold text-ink">{enrollment.courseTitle}</h2>
+            {active && <p className="text-xs text-ink-subtle mt-0.5">Section {activeIdx + 1} of {sections.length}: {active.title}</p>}
           </div>
-          <button onClick={onClose} className="p-2 rounded-lg hover:bg-[#f7f9fb] text-[#74777f]">
+          <button onClick={onClose} className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle">
             <span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span>
           </button>
         </div>
 
         {isLoading ? (
           <div className="flex-1 flex items-center justify-center p-10">
-            <span className="h-8 w-8 animate-spin rounded-full border-2 border-[#023293] border-t-transparent" />
+            <span className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
           </div>
         ) : sections.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center p-10 text-center">
-            <span className="material-symbols-outlined text-[#74777f] mb-3" style={{ fontSize: 48, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48` }}>video_library</span>
-            <p className="text-base font-semibold text-[#191c1e] mb-1">No content yet</p>
-            <p className="text-sm text-[#74777f]">The instructor hasn&apos;t added sections to this course yet. Check back soon.</p>
+            <span className="material-symbols-outlined text-ink-subtle mb-3" style={{ fontSize: 48, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48` }}>video_library</span>
+            <p className="text-base font-semibold text-ink mb-1">No content yet</p>
+            <p className="text-sm text-ink-subtle">The instructor hasn&apos;t added sections to this course yet. Check back soon.</p>
           </div>
         ) : (
           <div className="flex-1 flex overflow-hidden min-h-0">
             {/* Section list sidebar */}
-            <div className="w-64 flex-shrink-0 border-r border-[#e0e3e5] overflow-y-auto">
+            <div className="w-64 flex-shrink-0 border-r border-border overflow-y-auto">
               <div className="p-3 space-y-1">
                 {sections.map((s, i) => (
                   <button
                     key={s.id}
                     onClick={() => setActiveIdx(i)}
-                    className={`w-full text-left rounded-lg px-3 py-2.5 transition-colors ${i === activeIdx ? 'text-white' : 'hover:bg-[#f7f9fb] text-[#191c1e]'}`}
+                    className={`w-full text-left rounded-lg px-3 py-2.5 transition-colors ${i === activeIdx ? 'text-white' : 'hover:bg-surface-alt text-ink'}`}
                     style={i === activeIdx ? { background: '#023293' } : {}}
                   >
                     <div className="flex items-center gap-2.5">
@@ -751,15 +748,15 @@ function CoursePlayerModal({ enrollment, onClose }: { enrollment: Enrollment; on
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center p-8 text-center" style={{ aspectRatio: '16/9' }}>
-                  <span className="material-symbols-outlined text-[#74777f] mb-2" style={{ fontSize: 36 }}>link_off</span>
-                  <p className="text-sm font-semibold text-[#44474e] mb-1">Unsupported video URL</p>
-                  <a href={active?.videoUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-[#023293] underline break-all">{active?.videoUrl}</a>
+                  <span className="material-symbols-outlined text-ink-subtle mb-2" style={{ fontSize: 36 }}>link_off</span>
+                  <p className="text-sm font-semibold text-ink-subtle mb-1">Unsupported video URL</p>
+                  <a href={active?.videoUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-primary underline break-all">{active?.videoUrl}</a>
                 </div>
               )}
               {active?.description && (
-                <div className="px-5 py-4 border-t border-[#e0e3e5] overflow-y-auto">
-                  <p className="text-xs font-semibold text-[#44474e] mb-1 uppercase tracking-wide">About this section</p>
-                  <p className="text-sm text-[#74777f] whitespace-pre-wrap">{active.description}</p>
+                <div className="px-5 py-4 border-t border-border overflow-y-auto">
+                  <p className="text-xs font-semibold text-ink-subtle mb-1 uppercase tracking-wide">About this section</p>
+                  <p className="text-sm text-ink-subtle whitespace-pre-wrap">{active.description}</p>
                 </div>
               )}
             </div>
@@ -768,20 +765,20 @@ function CoursePlayerModal({ enrollment, onClose }: { enrollment: Enrollment; on
 
         {/* Footer navigation */}
         {sections.length > 0 && (
-          <div className="border-t border-[#e0e3e5] px-6 py-3 flex items-center justify-between flex-shrink-0">
+          <div className="border-t border-border px-6 py-3 flex items-center justify-between flex-shrink-0">
             <button
               disabled={activeIdx === 0}
               onClick={() => setActiveIdx((i) => i - 1)}
-              className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold border border-[#c4c6cf] text-[#191c1e] disabled:opacity-40"
+              className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold border border-border text-ink disabled:opacity-40"
             >
               <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_back</span>
               Previous
             </button>
-            <span className="text-xs text-[#74777f]">{activeIdx + 1} / {sections.length}</span>
+            <span className="text-xs text-ink-subtle">{activeIdx + 1} / {sections.length}</span>
             <button
               disabled={activeIdx === sections.length - 1}
               onClick={() => setActiveIdx((i) => i + 1)}
-              className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold border border-[#c4c6cf] text-[#191c1e] disabled:opacity-40"
+              className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold border border-border text-ink disabled:opacity-40"
             >
               Next
               <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_forward</span>
@@ -821,9 +818,9 @@ function EnrolledCourseCard({
   };
 
   return (
-    <div className="bg-white rounded-xl border border-[#e0e3e5] p-5">
+    <div className="bg-white rounded-xl border border-border p-5">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-bold text-[#191c1e]">{enrollment.courseTitle}</h3>
+        <h3 className="text-sm font-bold text-ink">{enrollment.courseTitle}</h3>
         <span
           className="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold"
           style={enrollment.completedAt ? { background: '#a0f4ca', color: '#005137' } : { background: '#ffdea5', color: '#5d4201' }}
@@ -832,8 +829,8 @@ function EnrolledCourseCard({
         </span>
       </div>
       <div className="mb-3">
-        <div className="flex justify-between text-xs text-[#74777f] mb-1"><span>Progress</span><span className="font-semibold">{enrollment.progress}%</span></div>
-        <div className="h-2 bg-[#e0e3e5] rounded-full overflow-hidden">
+        <div className="flex justify-between text-xs text-ink-subtle mb-1"><span>Progress</span><span className="font-semibold">{enrollment.progress}%</span></div>
+        <div className="h-2 bg-border rounded-full overflow-hidden">
           <div className="h-full rounded-full transition-all" style={{ width: `${enrollment.progress}%`, background: enrollment.progress === 100 ? '#0b6c4b' : '#023293' }} />
         </div>
       </div>
@@ -841,14 +838,14 @@ function EnrolledCourseCard({
         <p className="text-xs text-[#93000a] mb-2">{materialError}</p>
       )}
       <div className="flex items-center justify-between gap-2">
-        <p className="text-xs text-[#74777f]">
+        <p className="text-xs text-ink-subtle">
           Enrolled {new Date(enrollment.enrolledAt).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'short', year: 'numeric' })}
         </p>
         <div className="flex items-center gap-2">
           <button
             onClick={handleDownloadMaterial}
             disabled={loadingMaterial}
-            className="flex items-center gap-1.5 rounded-lg border border-[#c4c6cf] px-3 py-1.5 text-xs font-semibold text-[#191c1e] hover:border-[#023293] hover:text-[#023293] transition-colors disabled:opacity-50"
+            className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-semibold text-ink hover:border-primary hover:text-primary transition-colors disabled:opacity-50"
           >
             <span className="material-symbols-outlined" style={{ fontSize: 14, fontVariationSettings: `'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 14` }}>download</span>
             {loadingMaterial ? 'Loading...' : 'PDF Materials'}
@@ -894,9 +891,9 @@ function CourseDetailModal({
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="sticky top-0 bg-white border-b border-[#e0e3e5] px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
-          <h2 className="font-bold text-[#191c1e] pr-8 leading-snug">{course.title}</h2>
-          <button onClick={onClose} className="p-2 rounded-lg hover:bg-[#f7f9fb] text-[#74777f] flex-shrink-0">
+        <div className="sticky top-0 bg-white border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
+          <h2 className="font-bold text-ink pr-8 leading-snug">{course.title}</h2>
+          <button onClick={onClose} className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle flex-shrink-0">
             <span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span>
           </button>
         </div>
@@ -912,17 +909,17 @@ function CourseDetailModal({
               </span>
             )}
             {course.duration && (
-              <span className="inline-flex items-center gap-1 text-xs text-[#74777f]">
+              <span className="inline-flex items-center gap-1 text-xs text-ink-subtle">
                 <span className="material-symbols-outlined" style={{ fontSize: 12, fontVariationSettings: `'FILL' 1` }}>schedule</span>
                 {course.duration}
               </span>
             )}
-            <span className="inline-flex items-center gap-1 text-xs text-[#74777f]">
+            <span className="inline-flex items-center gap-1 text-xs text-ink-subtle">
               <span className="material-symbols-outlined" style={{ fontSize: 12, fontVariationSettings: `'FILL' 1` }}>group</span>
               {course.enrolledCount.toLocaleString()} enrolled
             </span>
             {course.instructorName && (
-              <span className="inline-flex items-center gap-1 text-xs text-[#74777f]">
+              <span className="inline-flex items-center gap-1 text-xs text-ink-subtle">
                 <span className="material-symbols-outlined" style={{ fontSize: 12, fontVariationSettings: `'FILL' 1` }}>person</span>
                 {course.instructorName}
               </span>
@@ -951,14 +948,14 @@ function CourseDetailModal({
 
           {/* Description */}
           <div className="mb-6">
-            <p className="text-xs font-semibold text-[#44474e] uppercase tracking-wide mb-2">About this course</p>
-            <p className="text-sm text-[#44474e] leading-relaxed whitespace-pre-wrap">{course.description}</p>
+            <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide mb-2">About this course</p>
+            <p className="text-sm text-ink-subtle leading-relaxed whitespace-pre-wrap">{course.description}</p>
           </div>
 
           {/* Price + CTA */}
-          <div className="flex items-center justify-between gap-4 pt-4 border-t border-[#e0e3e5]">
+          <div className="flex items-center justify-between gap-4 pt-4 border-t border-border">
             <div>
-              <p className="text-xs text-[#74777f] mb-0.5">Price</p>
+              <p className="text-xs text-ink-subtle mb-0.5">Price</p>
               <p className="text-xl font-bold" style={{ color: course.isFree ? '#0b6c4b' : '#191c1e' }}>
                 {course.isFree ? 'Free' : `₦${course.price.toLocaleString()}`}
               </p>
@@ -1041,14 +1038,14 @@ function MemberAcademyView() {
       )}
 
       <div className="mb-6">
-        <h2 className="text-xl font-semibold text-[#191c1e]">NACCIMA Academy</h2>
-        <p className="text-sm text-[#74777f] mt-0.5">Training and capacity building for chamber members.</p>
+        <h2 className="text-xl font-semibold text-ink">NACCIMA Academy</h2>
+        <p className="text-sm text-ink-subtle mt-0.5">Training and capacity building for chamber members.</p>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-[#f7f9fb] rounded-lg p-1 mb-6 w-fit border border-[#e0e3e5]">
+      <div className="flex gap-1 bg-surface-alt rounded-lg p-1 mb-6 w-fit border border-border">
         {([['catalog', 'Course Catalog'], ['my-courses', 'My Learning']] as const).map(([t, label]) => (
-          <button key={t} onClick={() => setTab(t)} className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === t ? 'bg-white text-[#191c1e] shadow-sm' : 'text-[#74777f] hover:text-[#191c1e]'}`}>
+          <button key={t} onClick={() => setTab(t)} className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === t ? 'bg-white text-ink shadow-sm' : 'text-ink-subtle hover:text-ink'}`}>
             {label}
             {t === 'my-courses' && myEnrollments.length > 0 && (
               <span className="ml-1.5 rounded-full px-1.5 py-0.5 text-xs text-white font-bold" style={{ background: '#023293' }}>{myEnrollments.length}</span>
@@ -1063,14 +1060,14 @@ function MemberAcademyView() {
         <>
           <div className="mb-5">
             <input type="search" placeholder="Search courses..." value={search} onChange={(e) => setSearch(e.target.value)}
-              className="w-full max-w-md rounded-lg border border-[#c4c6cf] px-4 py-2.5 text-sm focus:outline-none focus:border-[#023293]" />
+              className="w-full max-w-md rounded-lg border border-border px-4 py-2.5 text-sm focus:outline-none focus:border-primary" />
           </div>
           {coursesError && <div className="mb-4"><ErrorBanner message="Failed to load courses. Please refresh." /></div>}
           {coursesLoading ? (
             <SkeletonCard />
           ) : filtered.length === 0 ? (
-            <div className="bg-white rounded-xl border border-[#e0e3e5] p-12 text-center">
-              <p className="text-sm text-[#74777f]">No courses available yet.</p>
+            <div className="bg-white rounded-xl border border-border p-12 text-center">
+              <p className="text-sm text-ink-subtle">No courses available yet.</p>
             </div>
           ) : (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -1079,7 +1076,7 @@ function MemberAcademyView() {
                 const isBusy = enrolling && enrollingId === course.id;
                 const lc = levelColor[course.level];
                 return (
-                  <div key={course.id} className="bg-white rounded-xl border border-[#e0e3e5] overflow-hidden hover:shadow-md transition-shadow flex flex-col">
+                  <div key={course.id} className="bg-white rounded-xl border border-border overflow-hidden hover:shadow-md transition-shadow flex flex-col">
                     {/* Clickable banner → opens detail modal */}
                     <button
                       onClick={() => setPreviewCourse(course)}
@@ -1099,14 +1096,14 @@ function MemberAcademyView() {
                     </button>
                     <div className="p-4 flex flex-col flex-1">
                       <button onClick={() => setPreviewCourse(course)} className="text-left">
-                        <h3 className="text-sm font-bold text-[#191c1e] line-clamp-2 mb-1 hover:text-[#023293] transition-colors">{course.title}</h3>
+                        <h3 className="text-sm font-bold text-ink line-clamp-2 mb-1 hover:text-primary transition-colors">{course.title}</h3>
                       </button>
-                      <p className="text-xs text-[#74777f] mb-3 line-clamp-2 flex-1">{course.description}</p>
-                      {course.instructorName && <p className="text-xs text-[#74777f] mb-2">by {course.instructorName}</p>}
+                      <p className="text-xs text-ink-subtle mb-3 line-clamp-2 flex-1">{course.description}</p>
+                      {course.instructorName && <p className="text-xs text-ink-subtle mb-2">by {course.instructorName}</p>}
                       <div className="flex items-center gap-2 mb-3 flex-wrap">
                         <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold capitalize" style={{ background: lc.bg, color: lc.text }}>{course.level}</span>
-                        <span className="text-xs text-[#74777f]">{course.duration}</span>
-                        <span className="text-xs text-[#74777f]">· {course.enrolledCount.toLocaleString()} enrolled</span>
+                        <span className="text-xs text-ink-subtle">{course.duration}</span>
+                        <span className="text-xs text-ink-subtle">· {course.enrolledCount.toLocaleString()} enrolled</span>
                       </div>
                       <div className="flex items-center justify-between gap-2">
                         <span className="text-sm font-bold" style={{ color: course.isFree ? '#0b6c4b' : '#191c1e' }}>
@@ -1115,7 +1112,7 @@ function MemberAcademyView() {
                         <div className="flex items-center gap-1.5">
                           <button
                             onClick={() => setPreviewCourse(course)}
-                            className="rounded-lg px-2.5 py-1.5 text-xs font-semibold border border-[#c4c6cf] text-[#74777f] hover:border-[#023293] hover:text-[#023293] transition-colors"
+                            className="rounded-lg px-2.5 py-1.5 text-xs font-semibold border border-border text-ink-subtle hover:border-primary hover:text-primary transition-colors"
                           >
                             Details
                           </button>
@@ -1147,8 +1144,8 @@ function MemberAcademyView() {
           {enrollmentsLoading ? (
             <SkeletonCard />
           ) : myEnrollments.length === 0 ? (
-            <div className="bg-white rounded-xl border border-[#e0e3e5] p-12 text-center">
-              <p className="text-sm text-[#74777f] mb-4">You haven&apos;t enrolled in any courses yet.</p>
+            <div className="bg-white rounded-xl border border-border p-12 text-center">
+              <p className="text-sm text-ink-subtle mb-4">You haven&apos;t enrolled in any courses yet.</p>
               <button onClick={() => setTab('catalog')} className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white" style={{ background: '#023293' }}>
                 Browse Catalog
               </button>

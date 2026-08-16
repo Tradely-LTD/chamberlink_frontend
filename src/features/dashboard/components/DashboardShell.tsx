@@ -33,7 +33,7 @@ export function DashboardShell() {
   const pageTitle = pageTitles[location.pathname] ?? 'Dashboard';
 
   return (
-    <div className="flex h-screen" style={{ background: '#f7f9fb' }}>
+    <div className="flex h-screen bg-surface-alt">
       {/* Desktop sidebar */}
       <div className="hidden md:flex flex-shrink-0">
         <Sidebar />
@@ -45,12 +45,12 @@ export function DashboardShell() {
         <MobileNav />
 
         {/* Top header bar */}
-        <header className="hidden md:flex items-center justify-between px-6 h-14 bg-white border-b border-[#e0e3e5] flex-shrink-0">
-          <h1 className="text-base font-semibold text-[#191c1e]">{pageTitle}</h1>
+        <header className="hidden md:flex items-center justify-between px-6 h-14 bg-surface border-b border-border flex-shrink-0">
+          <h1 className="text-base font-semibold text-ink">{pageTitle}</h1>
           <div className="flex items-center gap-2">
             <ChamberSwitcher />
             <button
-              className="p-2 rounded-lg text-[#74777f] hover:bg-[#eceef0] transition-colors"
+              className="p-2 rounded-lg text-ink-subtle hover:bg-surface-alt transition-colors"
               title="Notifications"
             >
               <span className="material-symbols-outlined" style={{ fontSize: 20, fontVariationSettings: `'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20` }}>
@@ -58,7 +58,7 @@ export function DashboardShell() {
               </span>
             </button>
             <button
-              className="p-2 rounded-lg text-[#74777f] hover:bg-[#eceef0] transition-colors"
+              className="p-2 rounded-lg text-ink-subtle hover:bg-surface-alt transition-colors"
               title="Help"
             >
               <span className="material-symbols-outlined" style={{ fontSize: 20, fontVariationSettings: `'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20` }}>
@@ -69,15 +69,12 @@ export function DashboardShell() {
               <Link
                 to="/dashboard/profile"
                 title="My Profile"
-                className="ml-1 flex items-center gap-2 pl-3 border-l border-[#e0e3e5] rounded-lg hover:bg-[#eceef0] transition-colors py-1 pr-2"
+                className="ml-1 flex items-center gap-2 pl-3 border-l border-border rounded-lg hover:bg-surface-alt transition-colors py-1 pr-2"
               >
-                <div
-                  className="h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
-                  style={{ background: '#d6e3ff', color: '#023293' }}
-                >
+                <div className="h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 bg-primary/10 text-primary">
                   {[user.firstName?.[0], user.lastName?.[0]].filter(Boolean).join('').toUpperCase() || user.email[0].toUpperCase()}
                 </div>
-                <span className="text-sm font-medium text-[#191c1e]">
+                <span className="text-sm font-medium text-ink">
                   {user.firstName ?? user.email.split('@')[0]}
                 </span>
               </Link>

@@ -86,7 +86,7 @@ export function LoginForm() {
       <div className="flex justify-end">
         <Link
           to="/auth/forgot-password"
-          className="text-sm text-[#023293] hover:underline"
+          className="text-sm text-primary hover:underline"
         >
           Forgot password?
         </Link>
@@ -94,11 +94,11 @@ export function LoginForm() {
       <Button type="submit" loading={isLoading} className="w-full">
         Sign In
       </Button>
-      <p className="text-center text-sm text-[#8A7E6E]">
+      <p className="text-center text-sm text-ink-subtle">
         Don&apos;t have an account?{' '}
         <Link
           to="/register"
-          className="text-[#023293] font-medium hover:underline"
+          className="text-primary font-medium hover:underline"
         >
           Register
         </Link>

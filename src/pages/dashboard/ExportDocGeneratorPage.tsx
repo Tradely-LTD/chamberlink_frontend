@@ -9,6 +9,7 @@ import { Input } from '@shared/ui/Input';
 import { Button } from '@shared/ui/Button';
 import { ErrorBanner } from '@shared/ui/ErrorBanner';
 import { SkeletonCard } from '@shared/ui/SkeletonCard';
+import { Select } from '@shared/ui/Select';
 
 // Steps differ by doc type
 const INVOICE_STEPS  = ['Document Type', 'Parties', 'Line Items', 'Details', 'Review'];
@@ -102,28 +103,28 @@ function totalNetWeight(items: LineItem[])   { return items.reduce((s, i) => s +
 function totalGrossWeight(items: LineItem[]) { return items.reduce((s, i) => s + (i.grossWeight ?? 0), 0); }
 function totalPackages(items: LineItem[])    { return items.reduce((s, i) => s + (i.numberOfPackages ?? i.quantity), 0); }
 
-const inputCls   = 'w-full rounded-lg border border-[#bec9bf]/60 px-3 py-2.5 text-sm text-[#221a0f] placeholder-[#8A7E6E] focus:outline-none focus:ring-2 focus:ring-[#023293]/30 focus:border-[#023293]';
-const inputSmCls = 'w-full rounded-lg border border-[#bec9bf]/60 px-3 py-2 text-sm text-[#221a0f] placeholder-[#8A7E6E] focus:outline-none focus:ring-2 focus:ring-[#023293]/30 focus:border-[#023293]';
+const inputCls   = 'w-full rounded-lg border border-border/60 px-3 py-2.5 text-sm text-ink placeholder-ink-subtle focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary';
+const inputSmCls = 'w-full rounded-lg border border-border/60 px-3 py-2 text-sm text-ink placeholder-ink-subtle focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary';
 
 // ── Step 1: Document Type ──────────────────────────────────────────────────
 
 function StepDocType({ form, setForm }: { form: GeneratorForm; setForm: React.Dispatch<React.SetStateAction<GeneratorForm>> }) {
   return (
     <div className="space-y-4">
-      <h2 className="font-medium text-[#221a0f] mb-4">Select Document Type</h2>
+      <h2 className="font-medium text-ink mb-4">Select Document Type</h2>
       <div className="grid grid-cols-2 gap-4">
         {([
           { value: 'commercial_invoice' as const, label: 'Commercial Invoice', desc: 'Invoice issued to the buyer listing goods, quantities, and agreed prices.', icon: 'receipt_long' },
           { value: 'packing_list' as const,       label: 'Packing List',       desc: 'Shipping manifest — weights, dimensions, marks & numbers. No prices.', icon: 'inventory_2' },
         ]).map((opt) => (
-          <label key={opt.value} className={`flex flex-col gap-2 p-4 rounded-xl border-2 cursor-pointer transition-all ${form.type === opt.value ? 'border-[#023293] bg-[#f0faf4]' : 'border-[#bec9bf]/40 hover:border-[#023293]/40'}`}>
+          <label key={opt.value} className={`flex flex-col gap-2 p-4 rounded-xl border-2 cursor-pointer transition-all ${form.type === opt.value ? 'border-primary bg-[#f0faf4]' : 'border-border/40 hover:border-primary/40'}`}>
             <input type="radio" name="docType" value={opt.value} checked={form.type === opt.value}
               onChange={() => setForm((f) => ({ ...f, type: opt.value }))} className="sr-only" />
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-[#023293]" style={{ fontSize: 20, fontVariationSettings: `'FILL' 1` }}>{opt.icon}</span>
-              <span className="font-semibold text-sm text-[#221a0f]">{opt.label}</span>
+              <span className="material-symbols-outlined text-primary" style={{ fontSize: 20, fontVariationSettings: `'FILL' 1` }}>{opt.icon}</span>
+              <span className="font-semibold text-sm text-ink">{opt.label}</span>
             </div>
-            <p className="text-xs text-[#8A7E6E]">{opt.desc}</p>
+            <p className="text-xs text-ink-subtle">{opt.desc}</p>
           </label>
         ))}
       </div>
@@ -144,32 +145,32 @@ function StepTransport({ form, setForm }: { form: GeneratorForm; setForm: React.
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="font-medium text-[#221a0f] mb-1">Mode of Transport</h2>
-        <p className="text-xs text-[#8A7E6E] mb-4">Choose first — this shapes which fields appear on your line items.</p>
+        <h2 className="font-medium text-ink mb-1">Mode of Transport</h2>
+        <p className="text-xs text-ink-subtle mb-4">Choose first — this shapes which fields appear on your line items.</p>
         <div className="grid grid-cols-4 gap-3">
           {MODE_META.map((m) => (
-            <label key={m.value} className={`flex flex-col items-center gap-1.5 p-4 rounded-xl border-2 cursor-pointer transition-all text-center ${form.shippingMethod === m.value ? 'border-[#023293] bg-[#f0faf4]' : 'border-[#bec9bf]/40 hover:border-[#023293]/40'}`}>
+            <label key={m.value} className={`flex flex-col items-center gap-1.5 p-4 rounded-xl border-2 cursor-pointer transition-all text-center ${form.shippingMethod === m.value ? 'border-primary bg-[#f0faf4]' : 'border-border/40 hover:border-primary/40'}`}>
               <input type="radio" name="shippingMethod" value={m.value} checked={form.shippingMethod === m.value}
                 onChange={() => setForm((f) => ({ ...f, shippingMethod: m.value }))} className="sr-only" />
-              <span className="material-symbols-outlined text-[#023293]" style={{ fontSize: 28, fontVariationSettings: `'FILL' 1` }}>{m.icon}</span>
-              <span className="text-sm font-semibold text-[#221a0f]">{m.label}</span>
-              <span className="text-xs text-[#8A7E6E]">{m.hint}</span>
+              <span className="material-symbols-outlined text-primary" style={{ fontSize: 28, fontVariationSettings: `'FILL' 1` }}>{m.icon}</span>
+              <span className="text-sm font-semibold text-ink">{m.label}</span>
+              <span className="text-xs text-ink-subtle">{m.hint}</span>
             </label>
           ))}
         </div>
       </div>
 
       {/* Booking checkbox */}
-      <div className="rounded-xl border border-[#bec9bf]/40 p-4 bg-[#fdf8f3]">
+      <div className="rounded-xl border border-border/40 p-4 bg-surface-alt">
         <label className="flex items-start gap-3 cursor-pointer">
           <div className="mt-0.5">
             <input type="checkbox" checked={form.hasBooking}
               onChange={(e) => setForm((f) => ({ ...f, hasBooking: e.target.checked }))}
-              className="w-4 h-4 rounded border-[#bec9bf] text-[#023293] focus:ring-[#023293]/30 cursor-pointer" />
+              className="w-4 h-4 rounded border-border text-primary focus:ring-primary/30 cursor-pointer" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-[#221a0f]">I already have a booking confirmation</p>
-            <p className="text-xs text-[#8A7E6E] mt-0.5">
+            <p className="text-sm font-semibold text-ink">I already have a booking confirmation</p>
+            <p className="text-xs text-ink-subtle mt-0.5">
               Check this if you have a {form.shippingMethod === 'air' ? 'flight booking / AWB' : form.shippingMethod === 'sea' ? 'vessel booking / B/L' : form.shippingMethod === 'road' ? 'truck booking' : form.shippingMethod === 'rail' ? 'rail booking' : 'booking confirmation'} and want to fill in those details now.
               If not, leave it unchecked — you can add them later from your document library.
             </p>
@@ -189,18 +190,18 @@ function StepParties({ form, setForm }: { form: GeneratorForm; setForm: React.Di
 
   return (
     <div className="space-y-4">
-      <h2 className="font-medium text-[#221a0f] mb-4">
+      <h2 className="font-medium text-ink mb-4">
         {isPacking ? 'Shipper & Consignee' : 'Seller & Buyer Details'}
       </h2>
 
-      <div className="rounded-lg border border-[#bec9bf]/40 p-4 space-y-3">
-        <p className="text-xs font-semibold text-[#023293] uppercase tracking-wide">
+      <div className="rounded-lg border border-border/40 p-4 space-y-3">
+        <p className="text-xs font-semibold text-primary uppercase tracking-wide">
           {isPacking ? 'Shipper / Exporter (Your Company)' : 'Seller (Your Company)'}
         </p>
         <Input label={`${isPacking ? 'Shipper / Exporter' : 'Seller'} Name *`} value={form.sellerName}
           onChange={set('sellerName')} placeholder="e.g. Kano Leather Exports Ltd" />
         <div>
-          <label className="block text-sm font-medium text-[#221a0f] mb-1.5">
+          <label className="block text-sm font-medium text-ink mb-1.5">
             {isPacking ? 'Shipper' : 'Seller'} Address *
           </label>
           <textarea rows={2} className={inputCls} placeholder="Full business address"
@@ -208,14 +209,14 @@ function StepParties({ form, setForm }: { form: GeneratorForm; setForm: React.Di
         </div>
       </div>
 
-      <div className="rounded-lg border border-[#bec9bf]/40 p-4 space-y-3">
-        <p className="text-xs font-semibold text-[#8A7E6E] uppercase tracking-wide">
+      <div className="rounded-lg border border-border/40 p-4 space-y-3">
+        <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide">
           {isPacking ? 'Consignee (Receiver)' : 'Buyer (Importer / Consignee)'}
         </p>
         <Input label={`${isPacking ? 'Consignee' : 'Buyer'} Name *`} value={form.buyerName}
           onChange={set('buyerName')} placeholder="e.g. Guangzhou Import Co. Ltd" />
         <div>
-          <label className="block text-sm font-medium text-[#221a0f] mb-1.5">
+          <label className="block text-sm font-medium text-ink mb-1.5">
             {isPacking ? 'Consignee' : 'Buyer'} Address *
           </label>
           <textarea rows={2} className={inputCls} placeholder="Full address"
@@ -243,19 +244,19 @@ function PackingLineItemFields({ item, idx, updateItem, mode }: {
     <div className="space-y-3">
       {/* Description + HS Code */}
       <div>
-        <label className="block text-xs font-semibold text-[#44474e] mb-1">Description *</label>
+        <label className="block text-xs font-semibold text-ink-subtle mb-1">Description *</label>
         <input value={item.description} onChange={(e) => updateItem(idx, { description: e.target.value })}
           placeholder="e.g. Wet Blue Hides, Grade A" className={inputSmCls} />
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-xs font-semibold text-[#44474e] mb-1">HS Code</label>
+          <label className="block text-xs font-semibold text-ink-subtle mb-1">HS Code</label>
           <input value={item.hsCode ?? ''} onChange={(e) => updateItem(idx, { hsCode: e.target.value })}
             placeholder="e.g. 4104.11" className={inputSmCls} />
         </div>
         <div>
-          <label className="block text-xs font-semibold text-[#44474e] mb-1">Marks & Numbers</label>
+          <label className="block text-xs font-semibold text-ink-subtle mb-1">Marks & Numbers</label>
           <input value={item.marksAndNumbers ?? ''} onChange={(e) => updateItem(idx, { marksAndNumbers: e.target.value })}
             placeholder="e.g. KLE-001" className={inputSmCls} />
         </div>
@@ -264,31 +265,30 @@ function PackingLineItemFields({ item, idx, updateItem, mode }: {
       {/* Packages */}
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-xs font-semibold text-[#44474e] mb-1">No. of Packages</label>
+          <label className="block text-xs font-semibold text-ink-subtle mb-1">No. of Packages</label>
           <input type="number" min={1} step={1} value={item.numberOfPackages ?? ''}
             onChange={(e) => updateItem(idx, { numberOfPackages: parseInt(e.target.value) || undefined })}
             placeholder="e.g. 20" className={inputSmCls} />
         </div>
         <div>
-          <label className="block text-xs font-semibold text-[#44474e] mb-1">Package Type</label>
-          <select value={item.packageType ?? ''} onChange={(e) => updateItem(idx, { packageType: e.target.value })}
-            className={inputSmCls}>
-            <option value="">— Select —</option>
-            {PKG_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
-          </select>
+          <label className="block text-xs font-semibold text-ink-subtle mb-1">Package Type</label>
+          <Select label="Package Type" hideLabel value={item.packageType ?? ''}
+            onValueChange={(v) => updateItem(idx, { packageType: v })}
+            placeholder="— Select —" className={inputSmCls}
+            options={PKG_TYPES.map((t) => ({ value: t, label: t }))} />
         </div>
       </div>
 
       {/* Weights */}
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-xs font-semibold text-[#44474e] mb-1">Net Weight (kg)</label>
+          <label className="block text-xs font-semibold text-ink-subtle mb-1">Net Weight (kg)</label>
           <input type="number" min={0} step={0.01} value={item.netWeight ?? ''}
             onChange={(e) => updateItem(idx, { netWeight: parseFloat(e.target.value) || undefined })}
             placeholder="e.g. 450.00" className={inputSmCls} />
         </div>
         <div>
-          <label className="block text-xs font-semibold text-[#44474e] mb-1">Gross Weight (kg)</label>
+          <label className="block text-xs font-semibold text-ink-subtle mb-1">Gross Weight (kg)</label>
           <input type="number" min={0} step={0.01} value={item.grossWeight ?? ''}
             onChange={(e) => updateItem(idx, { grossWeight: parseFloat(e.target.value) || undefined })}
             placeholder="e.g. 480.00" className={inputSmCls} />
@@ -297,12 +297,12 @@ function PackingLineItemFields({ item, idx, updateItem, mode }: {
 
       {/* Dimensions — shown for air (required) and sea (optional for CBM); hidden for road/rail */}
       {showDims && (
-        <div className={`rounded-lg p-3 border ${dimsRequired ? 'border-[#023293]/30 bg-[#f0faf4]' : 'border-[#bec9bf]/30 bg-[#fdf8f3]'}`}>
-          <label className="block text-xs font-semibold text-[#44474e] mb-1">
+        <div className={`rounded-lg p-3 border ${dimsRequired ? 'border-primary/30 bg-[#f0faf4]' : 'border-border/30 bg-surface-alt'}`}>
+          <label className="block text-xs font-semibold text-ink-subtle mb-1">
             Dimensions (L × W × H)
             {dimsRequired
-              ? <span className="ml-1 text-[#023293]">— needed for volumetric weight calculation</span>
-              : <span className="ml-1 font-normal text-[#8A7E6E]">— optional, for CBM calculation</span>
+              ? <span className="ml-1 text-primary">— needed for volumetric weight calculation</span>
+              : <span className="ml-1 font-normal text-ink-subtle">— optional, for CBM calculation</span>
             }
           </label>
           <div className="grid grid-cols-4 gap-2">
@@ -315,11 +315,10 @@ function PackingLineItemFields({ item, idx, updateItem, mode }: {
             <input type="number" min={0} step={0.1} value={item.height ?? ''}
               onChange={(e) => updateItem(idx, { height: parseFloat(e.target.value) || undefined })}
               placeholder="H" className={inputSmCls} />
-            <select value={item.dimensionUnit ?? 'cm'}
-              onChange={(e) => updateItem(idx, { dimensionUnit: e.target.value as 'cm' | 'm' | 'in' })}
-              className={inputSmCls}>
-              {DIM_UNITS.map((u) => <option key={u} value={u}>{u}</option>)}
-            </select>
+            <Select label="Dimension Unit" hideLabel value={item.dimensionUnit ?? 'cm'}
+              onValueChange={(v) => updateItem(idx, { dimensionUnit: v as 'cm' | 'm' | 'in' })}
+              className={inputSmCls}
+              options={DIM_UNITS.map((u) => ({ value: u, label: u }))} />
           </div>
         </div>
       )}
@@ -327,14 +326,13 @@ function PackingLineItemFields({ item, idx, updateItem, mode }: {
       {/* Unit + optional unit price */}
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-xs font-semibold text-[#44474e] mb-1">Unit *</label>
-          <select value={item.unit} onChange={(e) => updateItem(idx, { unit: e.target.value })} className={inputSmCls}>
-            {UNITS.map((u) => <option key={u} value={u}>{u}</option>)}
-          </select>
+          <label className="block text-xs font-semibold text-ink-subtle mb-1">Unit *</label>
+          <Select label="Unit" hideLabel value={item.unit} onValueChange={(v) => updateItem(idx, { unit: v })}
+            className={inputSmCls} options={UNITS.map((u) => ({ value: u, label: u }))} />
         </div>
         <div>
-          <label className="block text-xs font-semibold text-[#44474e] mb-1">
-            Unit Price (₦) <span className="font-normal text-[#8A7E6E]">optional</span>
+          <label className="block text-xs font-semibold text-ink-subtle mb-1">
+            Unit Price (₦) <span className="font-normal text-ink-subtle">optional</span>
           </label>
           <input type="number" min={0} step={0.01} value={item.unitPrice || ''}
             onChange={(e) => updateItem(idx, { unitPrice: parseFloat(e.target.value) || 0 })}
@@ -358,25 +356,25 @@ function StepLineItems({ form, setForm }: { form: GeneratorForm; setForm: React.
     <div>
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="font-medium text-[#221a0f]">{isPacking ? 'Package Line Items' : 'Line Items'}</h2>
+          <h2 className="font-medium text-ink">{isPacking ? 'Package Line Items' : 'Line Items'}</h2>
           {isPacking && form.shippingMethod && (
-            <p className="text-xs text-[#8A7E6E] mt-0.5">
-              Mode: <span className="font-semibold capitalize text-[#221a0f]">{form.shippingMethod}</span>
+            <p className="text-xs text-ink-subtle mt-0.5">
+              Mode: <span className="font-semibold capitalize text-ink">{form.shippingMethod}</span>
               {form.shippingMethod === 'air' && ' — dimensions required for vol. weight'}
               {form.shippingMethod === 'sea' && ' — dimensions optional for CBM'}
             </p>
           )}
         </div>
-        <span className="text-xs text-[#8A7E6E]">{items.length} / 50</span>
+        <span className="text-xs text-ink-subtle">{items.length} / 50</span>
       </div>
 
       <div className="space-y-4 mb-4">
         {items.map((item, idx) => (
-          <div key={idx} className="rounded-xl border border-[#bec9bf]/40 p-4 bg-[#fdf8f3]/50">
+          <div key={idx} className="rounded-xl border border-border/40 p-4 bg-surface-alt/50">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-semibold text-[#8A7E6E] uppercase">Item {idx + 1}</span>
+              <span className="text-xs font-semibold text-ink-subtle uppercase">Item {idx + 1}</span>
               {items.length > 1 && (
-                <button onClick={() => removeItem(idx)} className="p-1 rounded-md text-[#8A7E6E] hover:text-red-500 hover:bg-red-50 transition-colors">
+                <button onClick={() => removeItem(idx)} className="p-1 rounded-md text-ink-subtle hover:text-red-500 hover:bg-red-50 transition-colors">
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                   </svg>
@@ -390,18 +388,18 @@ function StepLineItems({ form, setForm }: { form: GeneratorForm; setForm: React.
               /* Invoice line item */
               <div className="space-y-3">
                 <div>
-                  <label className="block text-xs font-semibold text-[#44474e] mb-1">Description *</label>
+                  <label className="block text-xs font-semibold text-ink-subtle mb-1">Description *</label>
                   <input value={item.description} onChange={(e) => updateItem(idx, { description: e.target.value })}
                     placeholder="e.g. Wet Blue Hides, Grade A" className={inputSmCls} />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-[#44474e] mb-1">HS Code</label>
+                    <label className="block text-xs font-semibold text-ink-subtle mb-1">HS Code</label>
                     <input value={item.hsCode ?? ''} onChange={(e) => updateItem(idx, { hsCode: e.target.value })}
                       placeholder="e.g. 4104.11" className={inputSmCls} />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-[#44474e] mb-1">Qty *</label>
+                    <label className="block text-xs font-semibold text-ink-subtle mb-1">Qty *</label>
                     <input type="number" min={1} step={1} value={item.quantity}
                       onChange={(e) => updateItem(idx, { quantity: Math.max(1, parseInt(e.target.value) || 1) })}
                       className={inputSmCls} />
@@ -409,27 +407,26 @@ function StepLineItems({ form, setForm }: { form: GeneratorForm; setForm: React.
                 </div>
                 <div className="grid grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-[#44474e] mb-1">Unit *</label>
-                    <select value={item.unit} onChange={(e) => updateItem(idx, { unit: e.target.value })} className={inputSmCls}>
-                      {UNITS.map((u) => <option key={u} value={u}>{u}</option>)}
-                    </select>
+                    <label className="block text-xs font-semibold text-ink-subtle mb-1">Unit *</label>
+                    <Select label="Unit" hideLabel value={item.unit} onValueChange={(v) => updateItem(idx, { unit: v })}
+                      className={inputSmCls} options={UNITS.map((u) => ({ value: u, label: u }))} />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-[#44474e] mb-1">Unit Price (₦) *</label>
+                    <label className="block text-xs font-semibold text-ink-subtle mb-1">Unit Price (₦) *</label>
                     <input type="number" min={0} step={0.01} value={item.unitPrice || ''}
                       onChange={(e) => updateItem(idx, { unitPrice: parseFloat(e.target.value) || 0 })}
                       placeholder="0.00" className={inputSmCls} />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-[#44474e] mb-1">Net Wt (kg)</label>
+                    <label className="block text-xs font-semibold text-ink-subtle mb-1">Net Wt (kg)</label>
                     <input type="number" min={0} step={0.01} value={item.netWeight ?? ''}
                       onChange={(e) => updateItem(idx, { netWeight: parseFloat(e.target.value) || undefined })}
                       placeholder="optional" className={inputSmCls} />
                   </div>
                 </div>
                 {item.quantity > 0 && item.unitPrice > 0 && (
-                  <p className="text-xs text-[#8A7E6E] text-right">
-                    Line total: <span className="font-semibold text-[#221a0f]">{fmtNaira(lineTotal(item))}</span>
+                  <p className="text-xs text-ink-subtle text-right">
+                    Line total: <span className="font-semibold text-ink">{fmtNaira(lineTotal(item))}</span>
                   </p>
                 )}
               </div>
@@ -440,7 +437,7 @@ function StepLineItems({ form, setForm }: { form: GeneratorForm; setForm: React.
 
       {items.length < 50 && (
         <button onClick={addItem}
-          className="w-full rounded-xl border-2 border-dashed border-[#bec9bf]/60 py-3 text-sm text-[#8A7E6E] hover:border-[#023293] hover:text-[#023293] transition-colors flex items-center justify-center gap-2">
+          className="w-full rounded-xl border-2 border-dashed border-border/60 py-3 text-sm text-ink-subtle hover:border-primary hover:text-primary transition-colors flex items-center justify-center gap-2">
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
@@ -449,17 +446,17 @@ function StepLineItems({ form, setForm }: { form: GeneratorForm; setForm: React.
       )}
 
       {/* Summary footer */}
-      <div className="mt-4 p-3 rounded-lg bg-[#f0faf4] border border-[#023293]/20">
+      <div className="mt-4 p-3 rounded-lg bg-[#f0faf4] border border-primary/20">
         {isPacking ? (
-          <div className="flex flex-wrap gap-4 text-xs text-[#8A7E6E]">
-            <span>Packages: <span className="font-bold text-[#221a0f]">{totalPackages(items)}</span></span>
-            <span>Net Wt: <span className="font-bold text-[#221a0f]">{fmt2(totalNetWeight(items))} kg</span></span>
-            <span>Gross Wt: <span className="font-bold text-[#221a0f]">{fmt2(totalGrossWeight(items))} kg</span></span>
+          <div className="flex flex-wrap gap-4 text-xs text-ink-subtle">
+            <span>Packages: <span className="font-bold text-ink">{totalPackages(items)}</span></span>
+            <span>Net Wt: <span className="font-bold text-ink">{fmt2(totalNetWeight(items))} kg</span></span>
+            <span>Gross Wt: <span className="font-bold text-ink">{fmt2(totalGrossWeight(items))} kg</span></span>
           </div>
         ) : (
           <div className="text-right">
-            <span className="text-xs text-[#8A7E6E]">Grand Total: </span>
-            <span className="text-base font-bold text-[#023293]">{fmtNaira(grandTotal(items))}</span>
+            <span className="text-xs text-ink-subtle">Grand Total: </span>
+            <span className="text-base font-bold text-primary">{fmtNaira(grandTotal(items))}</span>
           </div>
         )}
       </div>
@@ -478,7 +475,7 @@ function StepDetails({ form, setForm }: { form: GeneratorForm; setForm: React.Di
 
   return (
     <div className="space-y-4">
-      <h2 className="font-medium text-[#221a0f] mb-4">
+      <h2 className="font-medium text-ink mb-4">
         {isPacking ? 'Final Details' : 'Document Details'}
       </h2>
 
@@ -486,7 +483,7 @@ function StepDetails({ form, setForm }: { form: GeneratorForm; setForm: React.Di
         value={form.invoiceNumber} onChange={set('invoiceNumber')} />
 
       <div>
-        <label className="block text-sm font-medium text-[#221a0f] mb-1.5">
+        <label className="block text-sm font-medium text-ink mb-1.5">
           {isPacking ? 'Shipment Date *' : 'Invoice Date *'}
         </label>
         <input type="date" value={form.invoiceDate} onChange={set('invoiceDate')} className={inputCls} />
@@ -499,12 +496,12 @@ function StepDetails({ form, setForm }: { form: GeneratorForm; setForm: React.Di
 
           {/* Booking details — gated by checkbox from StepTransport */}
           {form.hasBooking ? (
-            <div className="rounded-xl border border-[#023293]/30 bg-[#f0faf4] p-4 space-y-4">
-              <p className="text-xs font-semibold text-[#023293] uppercase tracking-wide">Booking Details</p>
+            <div className="rounded-xl border border-primary/30 bg-[#f0faf4] p-4 space-y-4">
+              <p className="text-xs font-semibold text-primary uppercase tracking-wide">Booking Details</p>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-[#44474e] mb-1">{tLabels.ref}</label>
+                  <label className="block text-xs font-semibold text-ink-subtle mb-1">{tLabels.ref}</label>
                   <input value={form.vesselOrFlightNo} onChange={set('vesselOrFlightNo')}
                     placeholder={
                       form.shippingMethod === 'air'  ? 'e.g. QR702 / AWB 157-1234 5678' :
@@ -516,7 +513,7 @@ function StepDetails({ form, setForm }: { form: GeneratorForm; setForm: React.Di
                 </div>
                 {form.shippingMethod === 'sea' && (
                   <div>
-                    <label className="block text-xs font-semibold text-[#44474e] mb-1">Container No. / Seal No.</label>
+                    <label className="block text-xs font-semibold text-ink-subtle mb-1">Container No. / Seal No.</label>
                     <input value={form.containerNo} onChange={set('containerNo')}
                       placeholder="e.g. MSCU1234567 / Seal 789012" className={inputCls} />
                   </div>
@@ -525,7 +522,7 @@ function StepDetails({ form, setForm }: { form: GeneratorForm; setForm: React.Di
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-[#44474e] mb-1">{tLabels.origin}</label>
+                  <label className="block text-xs font-semibold text-ink-subtle mb-1">{tLabels.origin}</label>
                   <input value={form.portOfLoading} onChange={set('portOfLoading')}
                     placeholder={
                       form.shippingMethod === 'air'  ? 'e.g. Murtala Muhammed Intl., Lagos' :
@@ -536,7 +533,7 @@ function StepDetails({ form, setForm }: { form: GeneratorForm; setForm: React.Di
                     className={inputCls} />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-[#44474e] mb-1">{tLabels.dest}</label>
+                  <label className="block text-xs font-semibold text-ink-subtle mb-1">{tLabels.dest}</label>
                   <input value={form.portOfDischarge} onChange={set('portOfDischarge')}
                     placeholder={
                       form.shippingMethod === 'air'  ? 'e.g. Guangzhou Baiyun Intl.' :
@@ -550,9 +547,9 @@ function StepDetails({ form, setForm }: { form: GeneratorForm; setForm: React.Di
 
               {form.shippingMethod === 'air' && (
                 <div>
-                  <label className="block text-xs font-semibold text-[#44474e] mb-1">
+                  <label className="block text-xs font-semibold text-ink-subtle mb-1">
                     Chargeable Weight (kg)
-                    <span className="ml-1 font-normal text-[#8A7E6E]">max(actual, vol. wt) — optional</span>
+                    <span className="ml-1 font-normal text-ink-subtle">max(actual, vol. wt) — optional</span>
                   </label>
                   <input type="number" min={0} step={0.01} value={form.chargeableWeight}
                     onChange={set('chargeableWeight')} placeholder="e.g. 125.50" className={inputCls} />
@@ -561,11 +558,11 @@ function StepDetails({ form, setForm }: { form: GeneratorForm; setForm: React.Di
             </div>
           ) : (
             /* No booking yet — friendly nudge */
-            <div className="rounded-xl border border-[#bec9bf]/40 bg-[#fdf8f3] p-4 flex gap-3">
-              <span className="material-symbols-outlined text-[#8A7E6E] flex-shrink-0" style={{ fontSize: 20 }}>info</span>
+            <div className="rounded-xl border border-border/40 bg-surface-alt p-4 flex gap-3">
+              <span className="material-symbols-outlined text-ink-subtle flex-shrink-0" style={{ fontSize: 20 }}>info</span>
               <div>
-                <p className="text-sm font-medium text-[#221a0f]">No booking yet? No problem.</p>
-                <p className="text-xs text-[#8A7E6E] mt-0.5">
+                <p className="text-sm font-medium text-ink">No booking yet? No problem.</p>
+                <p className="text-xs text-ink-subtle mt-0.5">
                   Generate your packing list now. Once you have a {
                     form.shippingMethod === 'air'  ? 'flight booking / AWB' :
                     form.shippingMethod === 'sea'  ? 'vessel booking / Bill of Lading' :
@@ -580,10 +577,10 @@ function StepDetails({ form, setForm }: { form: GeneratorForm; setForm: React.Di
       )}
 
       <div>
-        <label className="block text-sm font-medium text-[#221a0f] mb-1.5">Notes (optional)</label>
+        <label className="block text-sm font-medium text-ink mb-1.5">Notes (optional)</label>
         <textarea rows={3} value={form.notes} onChange={set('notes')}
           placeholder="Any additional notes to appear on the document"
-          className="w-full rounded-lg border border-[#bec9bf]/60 px-3 py-2.5 text-sm text-[#221a0f] placeholder-[#8A7E6E] focus:outline-none focus:ring-2 focus:ring-[#023293]/30 focus:border-[#023293] resize-none" />
+          className="w-full rounded-lg border border-border/60 px-3 py-2.5 text-sm text-ink placeholder-ink-subtle focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none" />
       </div>
     </div>
   );
@@ -621,49 +618,49 @@ function StepReview({ form }: { form: GeneratorForm }) {
 
   return (
     <div className="space-y-4">
-      <h2 className="font-medium text-[#221a0f] mb-4">Review Before Generating</h2>
+      <h2 className="font-medium text-ink mb-4">Review Before Generating</h2>
 
-      <dl className="divide-y divide-[#bec9bf]/30 rounded-xl border border-[#bec9bf]/40 overflow-hidden">
+      <dl className="divide-y divide-border/30 rounded-xl border border-border/40 overflow-hidden">
         {summaryRows.map((row) => (
           <div key={row.label} className="grid grid-cols-3 gap-4 px-4 py-3">
-            <dt className="text-sm text-[#8A7E6E]">{row.label}</dt>
-            <dd className="col-span-2 text-sm text-[#221a0f]">{row.value}</dd>
+            <dt className="text-sm text-ink-subtle">{row.label}</dt>
+            <dd className="col-span-2 text-sm text-ink">{row.value}</dd>
           </div>
         ))}
       </dl>
 
-      <div className="rounded-xl border border-[#bec9bf]/40 overflow-hidden">
-        <div className="px-4 py-2 bg-[#fdf8f3] border-b border-[#bec9bf]/30">
-          <p className="text-xs font-semibold text-[#8A7E6E] uppercase tracking-wide">Line Items</p>
+      <div className="rounded-xl border border-border/40 overflow-hidden">
+        <div className="px-4 py-2 bg-surface-alt border-b border-border/30">
+          <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide">Line Items</p>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
-              <tr className="bg-[#f7f9fb] border-b border-[#bec9bf]/20">
+              <tr className="bg-surface-alt border-b border-border/20">
                 {isPacking
                   ? ['Marks & No.', 'Description', 'HS Code', 'Pkgs / Type', 'Net Wt (kg)', 'Gross Wt (kg)', 'Dimensions'].map((h) => (
-                      <th key={h} className="text-left px-3 py-2 font-semibold text-[#8A7E6E] whitespace-nowrap">{h}</th>
+                      <th key={h} className="text-left px-3 py-2 font-semibold text-ink-subtle whitespace-nowrap">{h}</th>
                     ))
                   : ['Description', 'HS Code', 'Qty', 'Unit', 'Unit Price (₦)', 'Total (₦)'].map((h) => (
-                      <th key={h} className="text-left px-3 py-2 font-semibold text-[#8A7E6E]">{h}</th>
+                      <th key={h} className="text-left px-3 py-2 font-semibold text-ink-subtle">{h}</th>
                     ))
                 }
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#bec9bf]/15">
+            <tbody className="divide-y divide-border/15">
               {form.lineItems.map((item, i) => (
-                <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-[#fdf8f3]/50'}>
+                <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-surface-alt/50'}>
                   {isPacking ? (
                     <>
-                      <td className="px-3 py-2 text-[#8A7E6E]">{item.marksAndNumbers || '—'}</td>
-                      <td className="px-3 py-2 text-[#221a0f]">{item.description}</td>
-                      <td className="px-3 py-2 text-[#8A7E6E]">{item.hsCode || '—'}</td>
-                      <td className="px-3 py-2 text-[#221a0f] whitespace-nowrap">
+                      <td className="px-3 py-2 text-ink-subtle">{item.marksAndNumbers || '—'}</td>
+                      <td className="px-3 py-2 text-ink">{item.description}</td>
+                      <td className="px-3 py-2 text-ink-subtle">{item.hsCode || '—'}</td>
+                      <td className="px-3 py-2 text-ink whitespace-nowrap">
                         {item.numberOfPackages ?? item.quantity}{item.packageType ? ` × ${item.packageType}` : ''}
                       </td>
-                      <td className="px-3 py-2 text-[#221a0f]">{item.netWeight != null ? fmt2(item.netWeight) : '—'}</td>
-                      <td className="px-3 py-2 text-[#221a0f]">{item.grossWeight != null ? fmt2(item.grossWeight) : '—'}</td>
-                      <td className="px-3 py-2 text-[#8A7E6E] whitespace-nowrap">
+                      <td className="px-3 py-2 text-ink">{item.netWeight != null ? fmt2(item.netWeight) : '—'}</td>
+                      <td className="px-3 py-2 text-ink">{item.grossWeight != null ? fmt2(item.grossWeight) : '—'}</td>
+                      <td className="px-3 py-2 text-ink-subtle whitespace-nowrap">
                         {item.length && item.width && item.height
                           ? `${item.length}×${item.width}×${item.height} ${item.dimensionUnit ?? 'cm'}`
                           : '—'}
@@ -671,12 +668,12 @@ function StepReview({ form }: { form: GeneratorForm }) {
                     </>
                   ) : (
                     <>
-                      <td className="px-3 py-2 text-[#221a0f]">{item.description}</td>
-                      <td className="px-3 py-2 text-[#8A7E6E]">{item.hsCode || '—'}</td>
-                      <td className="px-3 py-2 text-[#221a0f]">{item.quantity}</td>
-                      <td className="px-3 py-2 text-[#221a0f]">{item.unit}</td>
-                      <td className="px-3 py-2 text-[#221a0f]">{fmtNaira(item.unitPrice)}</td>
-                      <td className="px-3 py-2 font-semibold text-[#221a0f]">{fmtNaira(lineTotal(item))}</td>
+                      <td className="px-3 py-2 text-ink">{item.description}</td>
+                      <td className="px-3 py-2 text-ink-subtle">{item.hsCode || '—'}</td>
+                      <td className="px-3 py-2 text-ink">{item.quantity}</td>
+                      <td className="px-3 py-2 text-ink">{item.unit}</td>
+                      <td className="px-3 py-2 text-ink">{fmtNaira(item.unitPrice)}</td>
+                      <td className="px-3 py-2 font-semibold text-ink">{fmtNaira(lineTotal(item))}</td>
                     </>
                   )}
                 </tr>
@@ -703,14 +700,14 @@ function SuccessBanner({ referenceNo, downloadUrl, onEcoAttach }: { referenceNo:
           <p className="text-xs text-green-700 mb-3">Saved to your Document Library and ready to download.</p>
           <div className="flex flex-wrap gap-3">
             <a href={downloadUrl} target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-lg bg-[#023293] text-white px-4 py-2 text-sm font-medium hover:bg-[#0267bf] transition-colors">
+              className="inline-flex items-center gap-1.5 rounded-lg bg-primary text-white px-4 py-2 text-sm font-medium hover:bg-primary-hover transition-colors">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
               </svg>
               Download PDF
             </a>
             <button onClick={onEcoAttach}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-[#023293] text-[#023293] px-4 py-2 text-sm font-medium hover:bg-[#f0faf4] transition-colors">
+              className="inline-flex items-center gap-1.5 rounded-lg border border-primary text-primary px-4 py-2 text-sm font-medium hover:bg-[#f0faf4] transition-colors">
               Attach to new eCO application
             </button>
           </div>
@@ -881,15 +878,15 @@ export function ExportDocGeneratorPage() {
   return (
     <div className="p-6 max-w-2xl">
       <div className="flex items-center gap-2 mb-6">
-        <Link to="/dashboard/export-documents" className="text-sm text-[#8A7E6E] hover:text-[#221a0f]">Export Documents</Link>
-        <span className="text-[#8A7E6E]">/</span>
-        <span className="text-sm text-[#221a0f]">{draftId ? 'Edit & Regenerate' : 'Generate Document'}</span>
+        <Link to="/dashboard/export-documents" className="text-sm text-ink-subtle hover:text-ink">Export Documents</Link>
+        <span className="text-ink-subtle">/</span>
+        <span className="text-sm text-ink">{draftId ? 'Edit & Regenerate' : 'Generate Document'}</span>
       </div>
 
-      <h1 className="text-2xl font-semibold text-[#221a0f] mb-1">
+      <h1 className="text-2xl font-semibold text-ink mb-1">
         {draftId ? `Edit ${typeLabel}` : 'Generate Export Document'}
       </h1>
-      <p className="text-sm text-[#8A7E6E] mb-6">
+      <p className="text-sm text-ink-subtle mb-6">
         Your company logo and details from your profile will appear automatically.
       </p>
 
@@ -899,12 +896,12 @@ export function ExportDocGeneratorPage() {
           <div key={label} className="flex items-center flex-1 last:flex-none">
             <div className="flex flex-col items-center">
               <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium transition-colors
-                ${i < step ? 'bg-[#023293] text-white' : i === step ? 'bg-[#023293] text-white ring-2 ring-[#023293]/30 ring-offset-2' : 'bg-[#bec9bf]/30 text-[#8A7E6E]'}`}>
+                ${i < step ? 'bg-primary text-white' : i === step ? 'bg-primary text-white ring-2 ring-primary/30 ring-offset-2' : 'bg-border/30 text-ink-subtle'}`}>
                 {i < step ? '✓' : i + 1}
               </div>
-              <span className={`text-xs mt-1 whitespace-nowrap hidden sm:block ${i === step ? 'text-[#023293] font-medium' : 'text-[#8A7E6E]'}`}>{label}</span>
+              <span className={`text-xs mt-1 whitespace-nowrap hidden sm:block ${i === step ? 'text-primary font-medium' : 'text-ink-subtle'}`}>{label}</span>
             </div>
-            {i < steps.length - 1 && <div className={`flex-1 h-px mx-2 mb-5 ${i < step ? 'bg-[#023293]' : 'bg-[#bec9bf]/40'}`} />}
+            {i < steps.length - 1 && <div className={`flex-1 h-px mx-2 mb-5 ${i < step ? 'bg-primary' : 'bg-border/40'}`} />}
           </div>
         ))}
       </div>
@@ -928,7 +925,7 @@ export function ExportDocGeneratorPage() {
         <>
           {error && <div className="mb-4"><ErrorBanner message={error} /></div>}
 
-          <div className="bg-white rounded-xl border border-[#bec9bf]/40 p-6 mb-6">
+          <div className="bg-white rounded-xl border border-border/40 p-6 mb-6">
             {renderStep()}
           </div>
 

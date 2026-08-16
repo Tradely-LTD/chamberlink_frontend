@@ -11,6 +11,13 @@ export interface AnalyticsSummary {
   tradeFairRegistrations: number;
 }
 
+export interface AnalyticsTrendPoint {
+  month: string; // "YYYY-MM"
+  newMembers: number;
+  revenue: number;
+  ecoIssued: number;
+}
+
 interface ApiResponse<T> { success: boolean; data: T; }
 
 const analyticsApi = emptyApi.injectEndpoints({
@@ -19,8 +26,12 @@ const analyticsApi = emptyApi.injectEndpoints({
       query: () => '/admin/analytics/summary',
       transformResponse: (res: ApiResponse<AnalyticsSummary>) => res.data,
     }),
+    getAnalyticsTrends: builder.query<AnalyticsTrendPoint[], number | void>({
+      query: (months = 6) => `/admin/analytics/trends?months=${months}`,
+      transformResponse: (res: ApiResponse<{ months: AnalyticsTrendPoint[] }>) => res.data.months,
+    }),
   }),
   overrideExisting: false,
 });
 
-export const { useGetAnalyticsSummaryQuery } = analyticsApi;
+export const { useGetAnalyticsSummaryQuery, useGetAnalyticsTrendsQuery } = analyticsApi;

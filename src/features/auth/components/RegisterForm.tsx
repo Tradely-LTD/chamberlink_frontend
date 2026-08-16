@@ -98,11 +98,11 @@ export function RegisterForm() {
       <Button type="submit" loading={isLoading} className="w-full mt-2">
         Create Account
       </Button>
-      <p className="text-center text-sm text-[#8A7E6E]">
+      <p className="text-center text-sm text-ink-subtle">
         Already have an account?{' '}
         <Link
           to="/login"
-          className="text-[#023293] font-medium hover:underline"
+          className="text-primary font-medium hover:underline"
         >
           Sign in
         </Link>

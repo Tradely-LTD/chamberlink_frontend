@@ -95,8 +95,8 @@ export function AppLoader({ children }: Props) {
 
   if (!ready) {
     return (
-      <div className="min-h-screen bg-[#fdf8f3] flex items-center justify-center">
-        <span className="h-8 w-8 animate-spin rounded-full border-2 border-[#023293] border-t-transparent" />
+      <div className="min-h-screen bg-surface-warm flex items-center justify-center">
+        <span className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
       </div>
     );
   }

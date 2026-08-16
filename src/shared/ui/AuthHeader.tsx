@@ -13,7 +13,7 @@ export function AuthHeader({ subtitle }: Props) {
         alt="NACCIMA — Nigerian Association of Chambers of Commerce, Industry, Mines & Agriculture"
         className="h-20 w-20 object-contain"
       />
-      <p className="mt-2 text-sm text-[#8A7E6E]">{subtitle}</p>
+      <p className="mt-2 text-sm text-ink-subtle">{subtitle}</p>
     </div>
   );
 }

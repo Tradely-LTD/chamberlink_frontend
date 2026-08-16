@@ -70,8 +70,8 @@ function MfaSecurityRow() {
     <div>
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium text-[#221a0f]">Multi-Factor Authentication</p>
-          <p className="text-xs text-[#8A7E6E]">
+          <p className="text-sm font-medium text-ink">Multi-Factor Authentication</p>
+          <p className="text-xs text-ink-subtle">
             {user?.isMfaEnabled
               ? 'A verification code is required at login'
               : 'No verification code is required at login'}
@@ -96,7 +96,7 @@ function MfaSecurityRow() {
         </div>
       </div>
       {stage === 'confirm-disable' && (
-        <div className="mt-3 flex items-end gap-3 rounded-lg bg-[#f7f9f7] border border-[#bec9bf]/40 px-4 py-3">
+        <div className="mt-3 flex items-end gap-3 rounded-lg bg-[#f7f9f7] border border-border/40 px-4 py-3">
           <Input
             label="Enter the code we emailed you"
             value={code}
@@ -285,22 +285,22 @@ export function ProfilePage() {
     if (isNoActiveChamberError(error)) {
       return (
         <div className="p-6 max-w-2xl">
-          <h1 className="text-2xl font-semibold text-[#221a0f] mb-1">My Profile</h1>
-          <p className="text-sm text-[#8A7E6E] mb-6">Manage your personal and business information.</p>
+          <h1 className="text-2xl font-semibold text-ink mb-1">My Profile</h1>
+          <p className="text-sm text-ink-subtle mb-6">Manage your personal and business information.</p>
 
           {/* Basic ChamberLink identity is global, not chamber-scoped — always available. */}
-          <div className="bg-white rounded-xl border border-[#bec9bf]/40 overflow-hidden mb-6">
-            <div className="px-6 py-4 border-b border-[#bec9bf]/40">
-              <h2 className="font-medium text-[#221a0f]">Account Details</h2>
+          <div className="bg-white rounded-xl border border-border/40 overflow-hidden mb-6">
+            <div className="px-6 py-4 border-b border-border/40">
+              <h2 className="font-medium text-ink">Account Details</h2>
             </div>
-            <dl className="divide-y divide-[#bec9bf]/30">
+            <dl className="divide-y divide-border/30">
               {[
                 { label: 'Full Name', value: `${user?.firstName ?? '—'} ${user?.lastName ?? ''}`.trim() },
                 { label: 'Email Address', value: user?.email ?? '—' },
               ].map((row) => (
                 <div key={row.label} className="grid grid-cols-3 gap-4 px-6 py-4">
-                  <dt className="text-sm font-medium text-[#8A7E6E]">{row.label}</dt>
-                  <dd className="col-span-2 text-sm text-[#221a0f]">{row.value}</dd>
+                  <dt className="text-sm font-medium text-ink-subtle">{row.label}</dt>
+                  <dd className="col-span-2 text-sm text-ink">{row.value}</dd>
                 </div>
               ))}
             </dl>
@@ -334,8 +334,8 @@ export function ProfilePage() {
   if (!isMember) {
     return (
       <div className="p-6 max-w-2xl">
-        <h1 className="text-2xl font-semibold text-[#221a0f] mb-1">My Profile</h1>
-        <p className="text-sm text-[#8A7E6E] mb-6">Your account and organisation details.</p>
+        <h1 className="text-2xl font-semibold text-ink mb-1">My Profile</h1>
+        <p className="text-sm text-ink-subtle mb-6">Your account and organisation details.</p>
 
         {saved && (
           <div className="mb-4 rounded-lg bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-700">
@@ -345,27 +345,27 @@ export function ProfilePage() {
 
         {/* Platform identity card — super_admin only */}
         {isSuperAdmin ? (
-          <div className="bg-white rounded-xl border border-[#bec9bf]/40 overflow-hidden mb-6">
-            <div className="px-6 py-4 border-b border-[#bec9bf]/40">
-              <h2 className="font-medium text-[#221a0f]">Platform Identity</h2>
+          <div className="bg-white rounded-xl border border-border/40 overflow-hidden mb-6">
+            <div className="px-6 py-4 border-b border-border/40">
+              <h2 className="font-medium text-ink">Platform Identity</h2>
             </div>
-            <dl className="divide-y divide-[#bec9bf]/30">
+            <dl className="divide-y divide-border/30">
               {[
                 { label: 'Platform', value: 'Chamberlink ERP — Chamber Digital Portal' },
                 { label: 'Operated by', value: 'Tradely LTD.' },
                 { label: 'Your Role', value: ROLE_LABELS[user?.role ?? ''] ?? user?.role ?? '—' },
               ].map((row) => (
                 <div key={row.label} className="grid grid-cols-3 gap-4 px-6 py-4">
-                  <dt className="text-sm font-medium text-[#8A7E6E]">{row.label}</dt>
-                  <dd className="col-span-2 text-sm text-[#221a0f]">{row.value}</dd>
+                  <dt className="text-sm font-medium text-ink-subtle">{row.label}</dt>
+                  <dd className="col-span-2 text-sm text-ink">{row.value}</dd>
                 </div>
               ))}
             </dl>
           </div>
         ) : (
-          <div className="bg-white rounded-xl border border-[#bec9bf]/40 overflow-hidden mb-6">
-            <div className="px-6 py-4 border-b border-[#bec9bf]/40 flex items-center justify-between">
-              <h2 className="font-medium text-[#221a0f]">Organisation</h2>
+          <div className="bg-white rounded-xl border border-border/40 overflow-hidden mb-6">
+            <div className="px-6 py-4 border-b border-border/40 flex items-center justify-between">
+              <h2 className="font-medium text-ink">Organisation</h2>
               {user?.role === 'chamber_admin' && !editingOrg && (
                 <Button variant="outline" onClick={startOrgEdit}>Edit</Button>
               )}
@@ -403,7 +403,7 @@ export function ProfilePage() {
                 </div>
               </div>
             ) : (
-              <dl className="divide-y divide-[#bec9bf]/30">
+              <dl className="divide-y divide-border/30">
                 {[
                   { label: 'Organisation', value: myTenant?.name ?? '—' },
                   { label: 'Region', value: myTenant?.region ?? '—' },
@@ -415,8 +415,8 @@ export function ProfilePage() {
                   { label: 'Your Role', value: ROLE_LABELS[user?.role ?? ''] ?? user?.role ?? '—' },
                 ].map((row) => (
                   <div key={row.label} className="grid grid-cols-3 gap-4 px-6 py-4">
-                    <dt className="text-sm font-medium text-[#8A7E6E]">{row.label}</dt>
-                    <dd className="col-span-2 text-sm text-[#221a0f]">{row.value}</dd>
+                    <dt className="text-sm font-medium text-ink-subtle">{row.label}</dt>
+                    <dd className="col-span-2 text-sm text-ink">{row.value}</dd>
                   </div>
                 ))}
               </dl>
@@ -425,9 +425,9 @@ export function ProfilePage() {
         )}
 
         {/* Account card */}
-        <div className="bg-white rounded-xl border border-[#bec9bf]/40 overflow-hidden mb-6">
-          <div className="px-6 py-4 border-b border-[#bec9bf]/40 flex items-center justify-between">
-            <h2 className="font-medium text-[#221a0f]">Account Details</h2>
+        <div className="bg-white rounded-xl border border-border/40 overflow-hidden mb-6">
+          <div className="px-6 py-4 border-b border-border/40 flex items-center justify-between">
+            <h2 className="font-medium text-ink">Account Details</h2>
             {!editing && <Button variant="outline" onClick={startEdit}>Edit</Button>}
           </div>
           {editing ? (
@@ -443,14 +443,14 @@ export function ProfilePage() {
               </div>
             </div>
           ) : (
-            <dl className="divide-y divide-[#bec9bf]/30">
+            <dl className="divide-y divide-border/30">
               {[
                 { label: 'Full Name', value: `${user?.firstName ?? '—'} ${user?.lastName ?? ''}`.trim() },
                 { label: 'Email Address', value: user?.email ?? '—' },
               ].map((row) => (
                 <div key={row.label} className="grid grid-cols-3 gap-4 px-6 py-4">
-                  <dt className="text-sm font-medium text-[#8A7E6E]">{row.label}</dt>
-                  <dd className="col-span-2 text-sm text-[#221a0f]">{row.value}</dd>
+                  <dt className="text-sm font-medium text-ink-subtle">{row.label}</dt>
+                  <dd className="col-span-2 text-sm text-ink">{row.value}</dd>
                 </div>
               ))}
             </dl>
@@ -458,15 +458,15 @@ export function ProfilePage() {
         </div>
 
         {/* Security */}
-        <div className="bg-white rounded-xl border border-[#bec9bf]/40 overflow-hidden">
-          <div className="px-6 py-4 border-b border-[#bec9bf]/40">
-            <h2 className="font-medium text-[#221a0f]">Security</h2>
+        <div className="bg-white rounded-xl border border-border/40 overflow-hidden">
+          <div className="px-6 py-4 border-b border-border/40">
+            <h2 className="font-medium text-ink">Security</h2>
           </div>
           <div className="px-6 py-5 space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-[#221a0f]">Email Verification</p>
-                <p className="text-xs text-[#8A7E6E]">{user?.isEmailVerified ? 'Your email is verified' : 'Email not yet verified'}</p>
+                <p className="text-sm font-medium text-ink">Email Verification</p>
+                <p className="text-xs text-ink-subtle">{user?.isEmailVerified ? 'Your email is verified' : 'Email not yet verified'}</p>
               </div>
               <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${user?.isEmailVerified ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
                 {user?.isEmailVerified ? 'Verified' : 'Pending'}
@@ -482,8 +482,8 @@ export function ProfilePage() {
   // Member profile view
   return (
     <div className="p-6 max-w-2xl">
-      <h1 className="text-2xl font-semibold text-[#221a0f] mb-1">My Profile</h1>
-      <p className="text-sm text-[#8A7E6E] mb-6">Manage your personal and business information.</p>
+      <h1 className="text-2xl font-semibold text-ink mb-1">My Profile</h1>
+      <p className="text-sm text-ink-subtle mb-6">Manage your personal and business information.</p>
 
       {saved && (
         <div className="mb-4 rounded-lg bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-700">
@@ -492,19 +492,19 @@ export function ProfilePage() {
       )}
 
       {/* Logo card */}
-      <div className="mb-6 bg-white rounded-xl border border-[#bec9bf]/40 px-6 py-5 flex items-center gap-5">
+      <div className="mb-6 bg-white rounded-xl border border-border/40 px-6 py-5 flex items-center gap-5">
         <div className="relative flex-shrink-0">
           {isUploadingLogo ? (
-            <div className="w-20 h-20 rounded-xl bg-[#f7f9f7] border border-[#bec9bf]/40 flex items-center justify-center">
-              <svg className="w-5 h-5 animate-spin text-[#023293]" fill="none" viewBox="0 0 24 24">
+            <div className="w-20 h-20 rounded-xl bg-[#f7f9f7] border border-border/40 flex items-center justify-center">
+              <svg className="w-5 h-5 animate-spin text-primary" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
               </svg>
             </div>
           ) : logoUrl ? (
-            <img src={logoUrl} alt="Company logo" className="w-20 h-20 rounded-xl object-contain border border-[#bec9bf]/40 bg-white" />
+            <img src={logoUrl} alt="Company logo" className="w-20 h-20 rounded-xl object-contain border border-border/40 bg-white" />
           ) : (
-            <div className="w-20 h-20 rounded-xl bg-[#f7f9f7] border-2 border-dashed border-[#bec9bf]/60 flex items-center justify-center text-[#8A7E6E]">
+            <div className="w-20 h-20 rounded-xl bg-[#f7f9f7] border-2 border-dashed border-border/60 flex items-center justify-center text-ink-subtle">
               <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21H5a2 2 0 01-2-2V7l7-4h7a2 2 0 012 2v14a2 2 0 01-2 2z" />
               </svg>
@@ -512,14 +512,14 @@ export function ProfilePage() {
           )}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-[#221a0f] mb-0.5">Company Logo</p>
-          <p className="text-xs text-[#8A7E6E] mb-3">Used on generated invoices and packing lists. JPEG or PNG · Compressed automatically.</p>
+          <p className="text-sm font-medium text-ink mb-0.5">Company Logo</p>
+          <p className="text-xs text-ink-subtle mb-3">Used on generated invoices and packing lists. JPEG or PNG · Compressed automatically.</p>
           {logoError && <p className="text-xs text-red-600 mb-2">{logoError}</p>}
           <input ref={logoInputRef} type="file" accept="image/jpeg,image/png" className="hidden" onChange={handleLogoChange} />
           <button
             onClick={() => logoInputRef.current?.click()}
             disabled={isUploadingLogo}
-            className="text-xs font-medium px-3 py-1.5 rounded-lg border border-[#bec9bf]/60 text-[#023293] hover:bg-[#fdf8f3] transition-colors disabled:opacity-50"
+            className="text-xs font-medium px-3 py-1.5 rounded-lg border border-border/60 text-primary hover:bg-surface-alt transition-colors disabled:opacity-50"
           >
             {logoUrl ? 'Replace Logo' : 'Upload Logo'}
           </button>
@@ -527,9 +527,9 @@ export function ProfilePage() {
       </div>
 
       {/* Personal Information */}
-      <div className="bg-white rounded-xl border border-[#bec9bf]/40 overflow-hidden mb-6">
-        <div className="px-6 py-4 border-b border-[#bec9bf]/40 flex items-center justify-between">
-          <h2 className="font-medium text-[#221a0f]">Personal Information</h2>
+      <div className="bg-white rounded-xl border border-border/40 overflow-hidden mb-6">
+        <div className="px-6 py-4 border-b border-border/40 flex items-center justify-between">
+          <h2 className="font-medium text-ink">Personal Information</h2>
           {!editing && <Button variant="outline" onClick={startEdit}>Edit</Button>}
         </div>
 
@@ -547,7 +547,7 @@ export function ProfilePage() {
             </div>
           </div>
         ) : (
-          <dl className="divide-y divide-[#bec9bf]/30">
+          <dl className="divide-y divide-border/30">
             {[
               { label: 'Full Name', value: `${profile?.firstName ?? user?.firstName ?? '—'} ${profile?.lastName ?? user?.lastName ?? ''}`.trim() },
               { label: 'Email Address', value: user?.email ?? '—' },
@@ -556,8 +556,8 @@ export function ProfilePage() {
               { label: 'Account Status', value: profile?.status ? profile.status.replace(/_/g, ' ') : '—' },
             ].map((row) => (
               <div key={row.label} className="grid grid-cols-3 gap-4 px-6 py-4">
-                <dt className="text-sm font-medium text-[#8A7E6E]">{row.label}</dt>
-                <dd className="col-span-2 text-sm text-[#221a0f] capitalize">{row.value}</dd>
+                <dt className="text-sm font-medium text-ink-subtle">{row.label}</dt>
+                <dd className="col-span-2 text-sm text-ink capitalize">{row.value}</dd>
               </div>
             ))}
           </dl>
@@ -565,9 +565,9 @@ export function ProfilePage() {
       </div>
 
       {/* Business Information */}
-      <div className="bg-white rounded-xl border border-[#bec9bf]/40 overflow-hidden mb-6">
-        <div className="px-6 py-4 border-b border-[#bec9bf]/40 flex items-center justify-between">
-          <h2 className="font-medium text-[#221a0f]">Business Information</h2>
+      <div className="bg-white rounded-xl border border-border/40 overflow-hidden mb-6">
+        <div className="px-6 py-4 border-b border-border/40 flex items-center justify-between">
+          <h2 className="font-medium text-ink">Business Information</h2>
           {!editingBusiness && <Button variant="outline" onClick={startBizEdit}>Edit</Button>}
         </div>
 
@@ -607,7 +607,7 @@ export function ProfilePage() {
             </div>
           </div>
         ) : (
-          <dl className="divide-y divide-[#bec9bf]/30">
+          <dl className="divide-y divide-border/30">
             {[
               { label: 'CAC Number', value: profile?.registrationNumber ?? '—' },
               { label: 'Industry', value: profile?.industry ?? '—' },
@@ -615,8 +615,8 @@ export function ProfilePage() {
               { label: 'Website', value: profile?.website ?? '—' },
             ].map((row) => (
               <div key={row.label} className="grid grid-cols-3 gap-4 px-6 py-4">
-                <dt className="text-sm font-medium text-[#8A7E6E]">{row.label}</dt>
-                <dd className="col-span-2 text-sm text-[#221a0f]">{row.value}</dd>
+                <dt className="text-sm font-medium text-ink-subtle">{row.label}</dt>
+                <dd className="col-span-2 text-sm text-ink">{row.value}</dd>
               </div>
             ))}
           </dl>
@@ -625,16 +625,16 @@ export function ProfilePage() {
 
       {/* Membership Plan */}
       {membership && (
-        <div className="bg-white rounded-xl border border-[#bec9bf]/40 overflow-hidden mb-6">
-          <div className="px-6 py-4 border-b border-[#bec9bf]/40 flex items-center justify-between">
-            <h2 className="font-medium text-[#221a0f]">Membership Plan</h2>
+        <div className="bg-white rounded-xl border border-border/40 overflow-hidden mb-6">
+          <div className="px-6 py-4 border-b border-border/40 flex items-center justify-between">
+            <h2 className="font-medium text-ink">Membership Plan</h2>
             {membership.status && (
               <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${membershipStatusColors[membership.status] ?? 'bg-gray-100 text-gray-700'}`}>
                 {membership.status.replace(/_/g, ' ')}
               </span>
             )}
           </div>
-          <dl className="divide-y divide-[#bec9bf]/30">
+          <dl className="divide-y divide-border/30">
             {[
               { label: 'Plan', value: membership.tierName ?? '—' },
               {
@@ -651,8 +651,8 @@ export function ProfilePage() {
               },
             ].map((row) => (
               <div key={row.label} className="grid grid-cols-3 gap-4 px-6 py-4">
-                <dt className="text-sm font-medium text-[#8A7E6E]">{row.label}</dt>
-                <dd className="col-span-2 text-sm text-[#221a0f] capitalize">{row.value}</dd>
+                <dt className="text-sm font-medium text-ink-subtle">{row.label}</dt>
+                <dd className="col-span-2 text-sm text-ink capitalize">{row.value}</dd>
               </div>
             ))}
           </dl>
@@ -660,15 +660,15 @@ export function ProfilePage() {
       )}
 
       {/* Security */}
-      <div className="bg-white rounded-xl border border-[#bec9bf]/40 overflow-hidden">
-        <div className="px-6 py-4 border-b border-[#bec9bf]/40">
-          <h2 className="font-medium text-[#221a0f]">Security</h2>
+      <div className="bg-white rounded-xl border border-border/40 overflow-hidden">
+        <div className="px-6 py-4 border-b border-border/40">
+          <h2 className="font-medium text-ink">Security</h2>
         </div>
         <div className="px-6 py-5 space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-[#221a0f]">Email Verification</p>
-              <p className="text-xs text-[#8A7E6E]">{user?.isEmailVerified ? 'Your email is verified' : 'Email not yet verified'}</p>
+              <p className="text-sm font-medium text-ink">Email Verification</p>
+              <p className="text-xs text-ink-subtle">{user?.isEmailVerified ? 'Your email is verified' : 'Email not yet verified'}</p>
             </div>
             <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${user?.isEmailVerified ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
               {user?.isEmailVerified ? 'Verified' : 'Pending'}
