@@ -3,6 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@shared/hooks/useAppDispatch';
 import { logout } from '@features/auth/authSlice';
 import { tokenStorage } from '@shared/utils/tokenStorage';
+import { returnOrigin } from '@shared/utils/returnOrigin';
 import { useLogoutUserMutation } from '@features/auth/authApi';
 import { useGetMyTenantQuery } from '@features/white-label';
 import type { Role } from '@entities/user/types';
@@ -151,6 +152,17 @@ export function Sidebar() {
     if (refreshToken) logoutUser({ refreshToken });
     dispatch(logout());
     tokenStorage.remove();
+
+    // If this session arrived via the SSO handoff from chamberlink_website,
+    // send the user back there instead of this app's own /login — they
+    // never signed in here directly. Anyone who logged into the portal
+    // directly has no stored origin, so they get the normal /login.
+    const origin = returnOrigin.get();
+    if (origin) {
+      returnOrigin.remove();
+      window.location.href = `${origin}/login`;
+      return;
+    }
     navigate('/login');
   };
 
