@@ -6,6 +6,7 @@ import { tokenStorage } from '@shared/utils/tokenStorage';
 import { returnOrigin } from '@shared/utils/returnOrigin';
 import { useLogoutUserMutation } from '@features/auth/authApi';
 import { useGetMyTenantQuery } from '@features/white-label';
+import { useHasChamberConnection } from '@features/membership';
 import type { Role } from '@entities/user/types';
 
 interface NavItem {
@@ -100,6 +101,21 @@ const superAdminNavItems: NavItem[] = [
   { label: 'My Profile',          to: '/dashboard/profile',             icon: 'manage_accounts' },
 ];
 
+// Modules that assume a chamber relationship — hidden from a `member` with
+// ZERO chamber connections (any status counts as "connected"; see
+// useHasChamberConnection). Dashboard, eCO Certificates, My Chambers,
+// Chamber Network, and My Profile stay visible regardless. Only applies to
+// the member-role nav (default branch below) — institutional/staff/
+// chamber_admin/executive/super_admin never gate on connection count.
+const GATED_LABELS = new Set([
+  'Trade Fair',
+  'Academy',
+  'Export Documents',
+  'Membership',
+  'Trade Corridors',
+  'Exporter Visibility',
+]);
+
 function getNavItems(role: Role | null): NavItem[] {
   switch (role) {
     case 'super_admin':            return superAdminNavItems;
@@ -145,7 +161,14 @@ export function Sidebar() {
 
   const orgName = role === 'super_admin' ? 'Chamberlink ERP' : (myTenant?.name ?? 'NACCIMA');
 
-  const visibleItems = getNavItems(role);
+  // Shares the same RTK Query cache entry ChamberSwitcher (rendered in
+  // DashboardShell's header) already keeps warm — no extra request.
+  const { hasConnection } = useHasChamberConnection();
+  const rawItems = getNavItems(role);
+  const visibleItems =
+    role === 'member' && !hasConnection
+      ? rawItems.filter((item) => !GATED_LABELS.has(item.label))
+      : rawItems;
 
   const handleLogout = () => {
     const refreshToken = tokenStorage.get();
