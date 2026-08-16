@@ -31,7 +31,13 @@ const jsonResponse = (body: unknown, status = 200) =>
     })
   );
 
+// Mutated per-test by the connection-gating describe block below; every
+// other describe block leaves this at its default (0 connections), which is
+// harmless since none of their assertions touch the gated labels.
+let connectionsFixture: unknown[] = [];
+
 beforeEach(() => {
+  connectionsFixture = [];
   // jsdom (this repo's vitest environment) has no ResizeObserver — Sidebar
   // uses one purely for a cosmetic "more items below the fold" scroll-fade
   // indicator, unrelated to what this test verifies. Stubbed here rather
@@ -46,6 +52,9 @@ beforeEach(() => {
     const request = input instanceof Request ? input : new Request(input as string);
     if (request.url.includes('/tenants/me')) {
       return jsonResponse({ success: true, data: { id: 'tenant-a', name: 'Lagos Chamber of Commerce' } });
+    }
+    if (request.url.includes('/membership/connections')) {
+      return jsonResponse({ success: true, data: connectionsFixture });
     }
     throw new Error(`Unexpected fetch in Sidebar acceptance test: ${request.url}`);
   }) as unknown as typeof fetch;
@@ -118,5 +127,42 @@ describe('Sidebar — Chamber Network nav item is member-role-only (AC1)', () =>
       await waitFor(() => expect(screen.getByText('My Chambers')).toBeInTheDocument());
       unmount();
     }
+  });
+});
+
+describe('Sidebar — chamber-scoped modules hidden for a zero-connection member', () => {
+  it('hides Trade Fair/Academy/Membership/Trade Corridors/Exporter Visibility/Export Documents at 0 connections', async () => {
+    connectionsFixture = [];
+    renderSidebarForRole('member');
+    await waitFor(() => expect(screen.getByText('Dashboard')).toBeInTheDocument());
+
+    for (const label of ['Trade Fair', 'Academy', 'Membership', 'Trade Corridors', 'Exporter Visibility', 'Export Documents']) {
+      expect(screen.queryByText(label)).not.toBeInTheDocument();
+    }
+    // Always-visible items stay visible regardless of connection count.
+    for (const label of ['Dashboard', 'eCO Certificates', 'My Chambers', 'Chamber Network', 'My Profile']) {
+      expect(screen.getByText(label)).toBeInTheDocument();
+    }
+  });
+
+  it('shows the gated modules once ≥1 connection exists, even in a non-active status', async () => {
+    connectionsFixture = [{ tenantId: 'tenant-a', status: 'suspended' }];
+    renderSidebarForRole('member');
+    // Dashboard is always visible regardless of query state, so wait on a
+    // GATED item instead — that's the one that depends on the connections
+    // fetch actually resolving before we assert.
+    await waitFor(() => expect(screen.getByText('Trade Fair')).toBeInTheDocument());
+
+    for (const label of ['Academy', 'Membership', 'Trade Corridors', 'Exporter Visibility', 'Export Documents']) {
+      expect(screen.getByText(label)).toBeInTheDocument();
+    }
+  });
+
+  it('does not gate any other role — chamber_admin sees Trade Fair/Academy regardless of connection count', async () => {
+    connectionsFixture = [];
+    renderSidebarForRole('chamber_admin');
+    await waitFor(() => expect(screen.getByText('Dashboard')).toBeInTheDocument());
+    expect(screen.getByText('Trade Fair')).toBeInTheDocument();
+    expect(screen.getByText('Academy')).toBeInTheDocument();
   });
 });

@@ -11,3 +11,5 @@ export {
 export type { ConnectAction, ConnectionResult, OnboardedChamber } from './connectionsApi';
 export { ChamberSwitcher } from './components/ChamberSwitcher';
 export { ConnectChamberModal } from './components/ConnectChamberModal';
+export { useConnectToChamber } from './hooks/useConnectToChamber';
+export { useHasChamberConnection } from './hooks/useHasChamberConnection';

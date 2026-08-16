@@ -1,9 +1,5 @@
-import { useState } from 'react';
-import {
-  useGetOnboardedChambersQuery,
-  useConnectToChamberMutation,
-  useSwitchActiveChamberMutation,
-} from '../connectionsApi';
+import { useGetOnboardedChambersQuery } from '../connectionsApi';
+import { useConnectToChamber } from '../hooks/useConnectToChamber';
 import { Button } from '@shared/ui/Button';
 import { ErrorBanner } from '@shared/ui/ErrorBanner';
 import { Spinner } from '@shared/ui/Spinner';
@@ -16,7 +12,8 @@ interface Props {
 
 /**
  * "Connect a new chamber" picker. Handles all four backend response states
- * distinctly:
+ * distinctly (via useConnectToChamber, shared with ChamberNetworkPage's
+ * per-card Register button):
  *  - 201 created    → success message + switch the workspace to it
  *  - 200 noop        → "you're already connected"
  *  - 200 reactivated → "welcome back" (connection reactivated, dues owing)
@@ -24,51 +21,11 @@ interface Props {
  */
 export function ConnectChamberModal({ onClose, onConnected }: Props) {
   const { data: chambers, isLoading, isError, refetch } = useGetOnboardedChambersQuery();
-  const [connectToChamber, { isLoading: isConnecting }] = useConnectToChamberMutation();
-  const [switchActiveChamber] = useSwitchActiveChamberMutation();
-  const [pendingTenantId, setPendingTenantId] = useState<string | null>(null);
-  const [inlineError, setInlineError] = useState<{ tenantId: string; message: string } | null>(null);
-
-  const handleConnect = async (tenantId: string) => {
-    setInlineError(null);
-    setPendingTenantId(tenantId);
-    try {
-      const { action } = await connectToChamber({ tenantId }).unwrap();
-
-      if (action === 'created') {
-        // A brand-new connection — take the user straight into that workspace.
-        try {
-          await switchActiveChamber({ tenantId }).unwrap();
-        } catch {
-          // Non-fatal — the connection was created either way; the user can
-          // switch manually from the chamber switcher.
-        }
-        onConnected('Connected! Welcome to your new chamber.');
-        onClose();
-      } else if (action === 'noop') {
-        onConnected("You're already connected to this chamber.");
-        onClose();
-      } else {
-        // reactivated
-        onConnected('Welcome back — your connection has been reactivated.');
-        onClose();
-      }
-    } catch (err: unknown) {
-      const e = err as { status?: number; data?: { message?: string } };
-      if (e.status === 409) {
-        setInlineError({
-          tenantId,
-          message: e.data?.message ?? 'Your connection to this chamber is suspended — contact the chamber admin.',
-        });
-      } else if (e.status === 404) {
-        setInlineError({ tenantId, message: 'This chamber is unavailable right now.' });
-      } else {
-        setInlineError({ tenantId, message: 'Something went wrong. Please try again.' });
-      }
-    } finally {
-      setPendingTenantId(null);
-    }
-  };
+  const { connect, isConnecting, pendingTenantId, inlineError } = useConnectToChamber((message) => {
+    onConnected(message);
+    onClose();
+  });
+  const handleConnect = connect;
 
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 px-4">
