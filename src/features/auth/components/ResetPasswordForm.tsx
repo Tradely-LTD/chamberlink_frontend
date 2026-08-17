@@ -47,10 +47,10 @@ export function ResetPasswordForm({ userId, token }: Props) {
   if (success) {
     return (
       <div className="flex flex-col gap-4 text-center">
-        <p className="font-medium text-[#023293]">
+        <p className="font-medium text-primary">
           Password reset successfully!
         </p>
-        <Link to="/login" className="text-sm text-[#023293] hover:underline">
+        <Link to="/login" className="text-sm text-primary hover:underline">
           Sign in with your new password
         </Link>
       </div>
@@ -85,7 +85,7 @@ export function ResetPasswordForm({ userId, token }: Props) {
       </Button>
       <Link
         to="/auth/forgot-password"
-        className="text-center text-sm text-[#023293] hover:underline"
+        className="text-center text-sm text-primary hover:underline"
       >
         Request a new reset link
       </Link>

@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { SkeletonCard } from '@shared/ui/SkeletonCard';
 import { Button } from '@shared/ui/Button';
 import { ErrorBanner } from '@shared/ui/ErrorBanner';
+import { Select } from '@shared/ui/Select';
 import { useAppSelector } from '@shared/hooks/useAppDispatch';
 import { skipToken } from '@reduxjs/toolkit/query/react';
 import {
@@ -92,12 +93,12 @@ function BoothBookingModal({ event, onClose }: { event: TradeFairEvent; onClose:
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="sticky top-0 bg-white border-b border-[#e0e3e5] px-6 py-4 flex items-center justify-between rounded-t-2xl">
+        <div className="sticky top-0 bg-white border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
           <div>
-            <h2 className="font-bold text-[#191c1e] text-base">Select a Booth</h2>
-            <p className="text-sm text-[#74777f] mt-0.5">{event.title}</p>
+            <h2 className="font-bold text-ink text-base">Select a Booth</h2>
+            <p className="text-sm text-ink-subtle mt-0.5">{event.title}</p>
           </div>
-          <button onClick={onClose} className="p-2 rounded-lg hover:bg-[#f7f9fb] text-[#74777f]">
+          <button onClick={onClose} className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle">
             <span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span>
           </button>
         </div>
@@ -110,8 +111,8 @@ function BoothBookingModal({ event, onClose }: { event: TradeFairEvent; onClose:
               {zones.map((zone) => (
                 <div key={zone} className="mb-6">
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="material-symbols-outlined text-[#74777f]" style={{ fontSize: 16, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 16` }}>location_on</span>
-                    <p className="text-xs font-semibold text-[#74777f] uppercase tracking-wide">{zone}</p>
+                    <span className="material-symbols-outlined text-ink-subtle" style={{ fontSize: 16, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 16` }}>location_on</span>
+                    <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide">{zone}</p>
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     {allBooths.filter((b) => b.zone === zone).map((booth) => {
@@ -124,17 +125,17 @@ function BoothBookingModal({ event, onClose }: { event: TradeFairEvent; onClose:
                           onClick={() => isAvailable && setSelected(booth.id)}
                           className={`rounded-xl border p-4 text-left transition-all ${
                             isSelected
-                              ? 'border-[#023293] ring-2 ring-[#023293]/20'
+                              ? 'border-primary ring-2 ring-primary/20'
                               : isAvailable
-                              ? 'border-[#e0e3e5] hover:border-[#023293]/40 bg-white'
-                              : 'border-[#e0e3e5] bg-[#f7f9fb] opacity-50 cursor-not-allowed'
+                              ? 'border-border hover:border-primary/40 bg-white'
+                              : 'border-border bg-surface-alt opacity-50 cursor-not-allowed'
                           }`}
                           style={isSelected ? { background: '#f0f4ff' } : {}}
                         >
-                          <p className="font-bold text-[#023293] text-base">{booth.boothNumber}</p>
-                          <p className="text-xs text-[#74777f] mt-0.5">{booth.boothType}</p>
-                          <p className="text-xs text-[#74777f]">{booth.size}</p>
-                          <p className="text-sm font-bold text-[#191c1e] mt-2">₦{booth.price.toLocaleString()}</p>
+                          <p className="font-bold text-primary text-base">{booth.boothNumber}</p>
+                          <p className="text-xs text-ink-subtle mt-0.5">{booth.boothType}</p>
+                          <p className="text-xs text-ink-subtle">{booth.size}</p>
+                          <p className="text-sm font-bold text-ink mt-2">₦{booth.price.toLocaleString()}</p>
                           {!isAvailable && (
                             <span className="inline-flex items-center mt-1 rounded-full px-2 py-0.5 text-xs font-medium" style={{ background: '#ffdad6', color: '#93000a' }}>Reserved</span>
                           )}
@@ -150,19 +151,19 @@ function BoothBookingModal({ event, onClose }: { event: TradeFairEvent; onClose:
 
               {/* Summary */}
               {selectedBooth && (
-                <div className="rounded-xl border border-[#023293]/20 p-4 mb-6" style={{ background: '#f0f4ff' }}>
-                  <p className="text-xs font-semibold text-[#023293] uppercase tracking-wide mb-3">Booking Summary</p>
+                <div className="rounded-xl border border-primary/20 p-4 mb-6" style={{ background: '#f0f4ff' }}>
+                  <p className="text-xs font-semibold text-primary uppercase tracking-wide mb-3">Booking Summary</p>
                   <div className="grid grid-cols-2 gap-y-2 text-sm">
-                    <span className="text-[#74777f]">Booth</span>
-                    <span className="font-semibold text-[#191c1e]">{selectedBooth.boothNumber} — {selectedBooth.boothType}</span>
-                    <span className="text-[#74777f]">Zone</span>
-                    <span className="text-[#191c1e]">{selectedBooth.zone}</span>
-                    <span className="text-[#74777f]">Size</span>
-                    <span className="text-[#191c1e]">{selectedBooth.size}</span>
-                    <span className="text-[#74777f]">Amount</span>
-                    <span className="font-bold text-[#023293] text-base">₦{selectedBooth.price.toLocaleString()}</span>
+                    <span className="text-ink-subtle">Booth</span>
+                    <span className="font-semibold text-ink">{selectedBooth.boothNumber} — {selectedBooth.boothType}</span>
+                    <span className="text-ink-subtle">Zone</span>
+                    <span className="text-ink">{selectedBooth.zone}</span>
+                    <span className="text-ink-subtle">Size</span>
+                    <span className="text-ink">{selectedBooth.size}</span>
+                    <span className="text-ink-subtle">Amount</span>
+                    <span className="font-bold text-primary text-base">₦{selectedBooth.price.toLocaleString()}</span>
                   </div>
-                  <p className="text-xs text-[#74777f] mt-3">You will be redirected to complete payment. Booth is reserved upon payment confirmation.</p>
+                  <p className="text-xs text-ink-subtle mt-3">You will be redirected to complete payment. Booth is reserved upon payment confirmation.</p>
                 </div>
               )}
 
@@ -217,9 +218,9 @@ function AddBoothModal({ eventId: initialEventId, events, onClose }: { eventId: 
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md">
-        <div className="border-b border-[#e0e3e5] px-6 py-4 flex items-center justify-between">
-          <h2 className="font-bold text-[#191c1e]">Add New Booth</h2>
-          <button onClick={onClose} className="p-2 rounded-lg hover:bg-[#f7f9fb] text-[#74777f]">
+        <div className="border-b border-border px-6 py-4 flex items-center justify-between">
+          <h2 className="font-bold text-ink">Add New Booth</h2>
+          <button onClick={onClose} className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle">
             <span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span>
           </button>
         </div>
@@ -228,18 +229,15 @@ function AddBoothModal({ eventId: initialEventId, events, onClose }: { eventId: 
 
           {/* Event selector */}
           <div>
-            <label className="block text-xs font-semibold text-[#44474e] mb-1">Event</label>
-            <select
-              required
+            <label className="block text-xs font-semibold text-ink-subtle mb-1">Event</label>
+            <Select
+              label="Event"
+              hideLabel
               value={selectedEventId}
-              onChange={(e) => setSelectedEventId(e.target.value)}
-              className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none"
-            >
-              <option value="">— Select event —</option>
-              {events.map((ev) => (
-                <option key={ev.id} value={ev.id}>{ev.title} ({ev.status})</option>
-              ))}
-            </select>
+              onValueChange={setSelectedEventId}
+              placeholder="— Select event —"
+              options={events.map((ev) => ({ value: ev.id, label: `${ev.title} (${ev.status})` }))}
+            />
           </div>
 
           {[
@@ -249,24 +247,26 @@ function AddBoothModal({ eventId: initialEventId, events, onClose }: { eventId: 
             { label: 'Price (₦)', key: 'price' as const, placeholder: 'e.g. 150000' },
           ].map(({ label, key, placeholder }) => (
             <div key={key}>
-              <label className="block text-xs font-semibold text-[#44474e] mb-1">{label}</label>
+              <label className="block text-xs font-semibold text-ink-subtle mb-1">{label}</label>
               <input
                 required
                 value={form[key]}
                 onChange={set(key)}
                 placeholder={placeholder}
-                className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-[#023293]"
+                className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-primary"
                 style={{ '--tw-ring-color': '#023293' } as React.CSSProperties}
               />
             </div>
           ))}
           <div>
-            <label className="block text-xs font-semibold text-[#44474e] mb-1">Booth Type</label>
-            <select value={form.boothType} onChange={set('boothType')} className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none">
-              {['Standard', 'Premium', 'Corner Pavilion', 'Food Court', 'Open Space'].map((t) => (
-                <option key={t}>{t}</option>
-              ))}
-            </select>
+            <label className="block text-xs font-semibold text-ink-subtle mb-1">Booth Type</label>
+            <Select
+              label="Booth Type"
+              hideLabel
+              value={form.boothType}
+              onValueChange={(v) => setForm((f) => ({ ...f, boothType: v }))}
+              options={['Standard', 'Premium', 'Corner Pavilion', 'Food Court', 'Open Space'].map((t) => ({ value: t, label: t }))}
+            />
           </div>
           <div className="flex gap-3 pt-2">
             <Button variant="outline" type="button" onClick={onClose}>Cancel</Button>
@@ -339,84 +339,84 @@ function CreateEventModal({ onClose }: { onClose: () => void }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-        <div className="border-b border-[#e0e3e5] px-6 py-4 flex items-center justify-between">
-          <h2 className="font-bold text-[#191c1e]">Create New Event</h2>
-          <button onClick={onClose} className="p-2 rounded-lg hover:bg-[#f7f9fb] text-[#74777f]">
+        <div className="border-b border-border px-6 py-4 flex items-center justify-between">
+          <h2 className="font-bold text-ink">Create New Event</h2>
+          <button onClick={onClose} className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle">
             <span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span>
           </button>
         </div>
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {error && <ErrorBanner message={error} />}
           <div>
-            <label className="block text-xs font-semibold text-[#44474e] mb-1">Title</label>
+            <label className="block text-xs font-semibold text-ink-subtle mb-1">Title</label>
             <input
               required
               value={form.title}
               onChange={setField('title')}
               placeholder="e.g. NACCIMA Annual Trade Fair 2026"
-              className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-[#023293]"
+              className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-primary"
               style={{ '--tw-ring-color': '#023293' } as React.CSSProperties}
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-[#44474e] mb-1">Venue</label>
+            <label className="block text-xs font-semibold text-ink-subtle mb-1">Venue</label>
             <input
               required
               value={form.venue}
               onChange={setField('venue')}
               placeholder="e.g. Kano Trade Fair Complex, Kano"
-              className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-[#023293]"
+              className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-primary"
               style={{ '--tw-ring-color': '#023293' } as React.CSSProperties}
             />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-[#44474e] mb-1">Start Date</label>
+              <label className="block text-xs font-semibold text-ink-subtle mb-1">Start Date</label>
               <input
                 required
                 type="date"
                 value={form.startDate}
                 onChange={setField('startDate')}
-                className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-[#023293]"
+                className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-primary"
                 style={{ '--tw-ring-color': '#023293' } as React.CSSProperties}
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-[#44474e] mb-1">End Date</label>
+              <label className="block text-xs font-semibold text-ink-subtle mb-1">End Date</label>
               <input
                 required
                 type="date"
                 value={form.endDate}
                 onChange={setField('endDate')}
-                className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-[#023293]"
+                className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-primary"
                 style={{ '--tw-ring-color': '#023293' } as React.CSSProperties}
               />
             </div>
           </div>
           <div>
-            <label className="block text-xs font-semibold text-[#44474e] mb-1">Registration Deadline <span className="font-normal text-[#74777f]">(optional)</span></label>
+            <label className="block text-xs font-semibold text-ink-subtle mb-1">Registration Deadline <span className="font-normal text-ink-subtle">(optional)</span></label>
             <input
               type="date"
               value={form.registrationDeadline}
               onChange={setField('registrationDeadline')}
-              className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-[#023293]"
+              className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-primary"
               style={{ '--tw-ring-color': '#023293' } as React.CSSProperties}
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-[#44474e] mb-1">Description <span className="font-normal text-[#74777f]">(optional)</span></label>
+            <label className="block text-xs font-semibold text-ink-subtle mb-1">Description <span className="font-normal text-ink-subtle">(optional)</span></label>
             <textarea
               value={form.description}
               onChange={setField('description')}
               rows={3}
               placeholder="Brief description of the event…"
-              className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-[#023293] resize-none"
+              className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-primary resize-none"
               style={{ '--tw-ring-color': '#023293' } as React.CSSProperties}
             />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-[#44474e] mb-1">Host Share (%)</label>
+              <label className="block text-xs font-semibold text-ink-subtle mb-1">Host Share (%)</label>
               <input
                 required
                 type="number"
@@ -424,12 +424,12 @@ function CreateEventModal({ onClose }: { onClose: () => void }) {
                 max={100}
                 value={form.hostSharePct}
                 onChange={setField('hostSharePct')}
-                className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-[#023293]"
+                className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-primary"
                 style={{ '--tw-ring-color': '#023293' } as React.CSSProperties}
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-[#44474e] mb-1">Tradely Share (%)</label>
+              <label className="block text-xs font-semibold text-ink-subtle mb-1">Tradely Share (%)</label>
               <input
                 required
                 type="number"
@@ -437,7 +437,7 @@ function CreateEventModal({ onClose }: { onClose: () => void }) {
                 max={100}
                 value={form.tradelySharePct}
                 onChange={setField('tradelySharePct')}
-                className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-[#023293]"
+                className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-primary"
                 style={{ '--tw-ring-color': '#023293' } as React.CSSProperties}
               />
             </div>
@@ -499,11 +499,11 @@ function MemberTradeFairView() {
 
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-xl font-semibold text-[#191c1e]">Trade Fair</h2>
-          <p className="text-sm text-[#74777f] mt-0.5">Upcoming events and booth registrations.</p>
+          <h2 className="text-xl font-semibold text-ink">Trade Fair</h2>
+          <p className="text-sm text-ink-subtle mt-0.5">Upcoming events and booth registrations.</p>
         </div>
         <Link to="/dashboard/trade-fair/booths">
-          <button className="flex items-center gap-2 rounded-lg border border-[#c4c6cf] bg-white px-4 py-2 text-sm font-medium text-[#191c1e] hover:border-[#023293] hover:text-[#023293] transition-colors">
+          <button className="flex items-center gap-2 rounded-lg border border-border bg-white px-4 py-2 text-sm font-medium text-ink hover:border-primary hover:text-primary transition-colors">
             <span className="material-symbols-outlined" style={{ fontSize: 16, fontVariationSettings: `'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 16` }}>storefront</span>
             My Booths
           </button>
@@ -511,9 +511,9 @@ function MemberTradeFairView() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-[#f7f9fb] rounded-lg p-1 mb-6 w-fit border border-[#e0e3e5]">
+      <div className="flex gap-1 bg-surface-alt rounded-lg p-1 mb-6 w-fit border border-border">
         {(['upcoming', 'past'] as const).map((t) => (
-          <button key={t} onClick={() => setTab(t)} className={`px-4 py-1.5 rounded-md text-sm font-medium capitalize transition-colors ${tab === t ? 'bg-white text-[#191c1e] shadow-sm' : 'text-[#74777f] hover:text-[#191c1e]'}`}>
+          <button key={t} onClick={() => setTab(t)} className={`px-4 py-1.5 rounded-md text-sm font-medium capitalize transition-colors ${tab === t ? 'bg-white text-ink shadow-sm' : 'text-ink-subtle hover:text-ink'}`}>
             {t}
           </button>
         ))}
@@ -523,8 +523,8 @@ function MemberTradeFairView() {
 
       <div className="space-y-4">
         {!isLoading && displayed.length === 0 && (
-          <div className="bg-white rounded-xl border border-[#e0e3e5] p-12 text-center">
-            <p className="text-sm text-[#74777f]">No {tab} events at this time.</p>
+          <div className="bg-white rounded-xl border border-border p-12 text-center">
+            <p className="text-sm text-ink-subtle">No {tab} events at this time.</p>
           </div>
         )}
         {displayed.map((event) => {
@@ -538,15 +538,15 @@ function MemberTradeFairView() {
             : null;
 
           return (
-            <div key={event.id} className="bg-white rounded-xl border border-[#e0e3e5] overflow-hidden">
+            <div key={event.id} className="bg-white rounded-xl border border-border overflow-hidden">
               {/* Event header */}
               <div className="px-6 pt-5 pb-4">
                 <div className="flex items-start justify-between gap-4 mb-2">
                   <div>
-                    <h3 className="text-base font-bold text-[#191c1e]">{event.title}</h3>
+                    <h3 className="text-base font-bold text-ink">{event.title}</h3>
                     <div className="flex items-center gap-1.5 mt-1">
-                      <span className="material-symbols-outlined text-[#74777f]" style={{ fontSize: 14, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 14` }}>location_on</span>
-                      <p className="text-sm text-[#74777f]">{event.venue}</p>
+                      <span className="material-symbols-outlined text-ink-subtle" style={{ fontSize: 14, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 14` }}>location_on</span>
+                      <p className="text-sm text-ink-subtle">{event.venue}</p>
                     </div>
                   </div>
                   <span className="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold flex-shrink-0" style={{ background: cfg.bg, color: cfg.text }}>
@@ -554,7 +554,7 @@ function MemberTradeFairView() {
                   </span>
                 </div>
 
-                {event.description && <p className="text-sm text-[#74777f] mb-4">{event.description}</p>}
+                {event.description && <p className="text-sm text-ink-subtle mb-4">{event.description}</p>}
 
                 {/* Countdown timer */}
                 {cd && st !== 'completed' && st !== 'cancelled' && (
@@ -571,19 +571,19 @@ function MemberTradeFairView() {
                 {/* Details row */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm mb-4">
                   <div className="flex items-center gap-1.5">
-                    <span className="material-symbols-outlined text-[#74777f]" style={{ fontSize: 14 }}>calendar_today</span>
-                    <span className="text-[#74777f]">{start} — {end}</span>
+                    <span className="material-symbols-outlined text-ink-subtle" style={{ fontSize: 14 }}>calendar_today</span>
+                    <span className="text-ink-subtle">{start} — {end}</span>
                   </div>
                   {event.boothsAvailable !== undefined && (
                     <div className="flex items-center gap-1.5">
-                      <span className="material-symbols-outlined text-[#74777f]" style={{ fontSize: 14 }}>storefront</span>
-                      <span className="text-[#74777f]">{event.boothsAvailable} booths available</span>
+                      <span className="material-symbols-outlined text-ink-subtle" style={{ fontSize: 14 }}>storefront</span>
+                      <span className="text-ink-subtle">{event.boothsAvailable} booths available</span>
                     </div>
                   )}
                   {deadline && (
                     <div className="flex items-center gap-1.5">
-                      <span className="material-symbols-outlined text-[#74777f]" style={{ fontSize: 14 }}>event_busy</span>
-                      <span className="text-[#74777f]">Deadline: {deadline}</span>
+                      <span className="material-symbols-outlined text-ink-subtle" style={{ fontSize: 14 }}>event_busy</span>
+                      <span className="text-ink-subtle">Deadline: {deadline}</span>
                     </div>
                   )}
                 </div>
@@ -648,12 +648,12 @@ function EditBoothModal({ booth, events, onClose }: { booth: TradeFairBooth; eve
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md">
-        <div className="border-b border-[#e0e3e5] px-6 py-4 flex items-center justify-between">
+        <div className="border-b border-border px-6 py-4 flex items-center justify-between">
           <div>
-            <h2 className="font-bold text-[#191c1e]">Edit Booth</h2>
-            <p className="text-xs text-[#74777f] mt-0.5">ID: {booth.id}</p>
+            <h2 className="font-bold text-ink">Edit Booth</h2>
+            <p className="text-xs text-ink-subtle mt-0.5">ID: {booth.id}</p>
           </div>
-          <button onClick={onClose} className="p-2 rounded-lg hover:bg-[#f7f9fb] text-[#74777f]">
+          <button onClick={onClose} className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle">
             <span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span>
           </button>
         </div>
@@ -661,13 +661,15 @@ function EditBoothModal({ booth, events, onClose }: { booth: TradeFairBooth; eve
           {error && <ErrorBanner message={error} />}
 
           <div>
-            <label className="block text-xs font-semibold text-[#44474e] mb-1">Event *</label>
-            <select required value={form.eventId} onChange={set('eventId')} className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none">
-              <option value="">— Select event —</option>
-              {events.map((ev) => (
-                <option key={ev.id} value={ev.id}>{ev.title} ({ev.status})</option>
-              ))}
-            </select>
+            <label className="block text-xs font-semibold text-ink-subtle mb-1">Event *</label>
+            <Select
+              label="Event"
+              hideLabel
+              value={form.eventId}
+              onValueChange={(v) => setForm((f) => ({ ...f, eventId: v }))}
+              placeholder="— Select event —"
+              options={events.map((ev) => ({ value: ev.id, label: `${ev.title} (${ev.status})` }))}
+            />
           </div>
 
           {[
@@ -677,20 +679,22 @@ function EditBoothModal({ booth, events, onClose }: { booth: TradeFairBooth; eve
             { label: 'Price (₦)', key: 'price' as const, placeholder: 'e.g. 150000' },
           ].map(({ label, key, placeholder }) => (
             <div key={key}>
-              <label className="block text-xs font-semibold text-[#44474e] mb-1">{label}</label>
+              <label className="block text-xs font-semibold text-ink-subtle mb-1">{label}</label>
               <input required value={form[key]} onChange={set(key)} placeholder={placeholder}
-                className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-[#023293]"
+                className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-primary"
                 style={{ '--tw-ring-color': '#023293' } as React.CSSProperties} />
             </div>
           ))}
 
           <div>
-            <label className="block text-xs font-semibold text-[#44474e] mb-1">Booth Type</label>
-            <select value={form.boothType} onChange={set('boothType')} className="w-full rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none">
-              {['Standard', 'Premium', 'Corner Pavilion', 'Food Court', 'Open Space'].map((t) => (
-                <option key={t}>{t}</option>
-              ))}
-            </select>
+            <label className="block text-xs font-semibold text-ink-subtle mb-1">Booth Type</label>
+            <Select
+              label="Booth Type"
+              hideLabel
+              value={form.boothType}
+              onValueChange={(v) => setForm((f) => ({ ...f, boothType: v }))}
+              options={['Standard', 'Premium', 'Corner Pavilion', 'Food Court', 'Open Space'].map((t) => ({ value: t, label: t }))}
+            />
           </div>
 
           <div className="flex gap-3 pt-2">
@@ -768,20 +772,21 @@ function AdminTradeFairView() {
 
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-xl font-semibold text-[#191c1e]">Trade Fair Management</h2>
-          <p className="text-sm text-[#74777f] mt-0.5">Manage events, booth inventory, and member bookings.</p>
+          <h2 className="text-xl font-semibold text-ink">Trade Fair Management</h2>
+          <p className="text-sm text-ink-subtle mt-0.5">Manage events, booth inventory, and member bookings.</p>
         </div>
         <div className="flex items-center gap-3">
-          <select
+          <Select
+            label="Event"
+            hideLabel
             value={selectedEventId}
-            onChange={(e) => setSelectedEventId(e.target.value)}
-            className="rounded-lg border border-[#c4c6cf] px-3 py-2 text-sm focus:outline-none text-[#191c1e]"
-          >
-            {allEvents.map((e) => <option key={e.id} value={e.id}>{e.title}</option>)}
-          </select>
+            onValueChange={setSelectedEventId}
+            className="text-ink"
+            options={allEvents.map((e) => ({ value: e.id, label: e.title }))}
+          />
           <button
             onClick={() => setShowCreateEvent(true)}
-            className="flex items-center gap-2 rounded-lg border border-[#023293] px-4 py-2 text-sm font-semibold text-[#023293] hover:bg-[#023293] hover:text-white transition-colors"
+            className="flex items-center gap-2 rounded-lg border border-primary px-4 py-2 text-sm font-semibold text-primary hover:bg-primary hover:text-white transition-colors"
           >
             <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add_circle</span>
             Create Event
@@ -806,20 +811,20 @@ function AdminTradeFairView() {
           { icon: 'event_available', label: 'Available', value: availableCount, accent: false },
           { icon: 'payments', label: 'Revenue', value: `₦${(revenue / 1000).toFixed(0)}K`, accent: false },
         ].map(({ icon, label, value, accent }) => (
-          <div key={label} className={`rounded-xl border p-4 ${accent ? 'border-[#023293]' : 'bg-white border-[#e0e3e5]'}`} style={accent ? { background: '#023293' } : {}}>
+          <div key={label} className={`rounded-xl border p-4 ${accent ? 'border-primary' : 'bg-white border-border'}`} style={accent ? { background: '#023293' } : {}}>
             <div className="flex items-center gap-2 mb-2">
               <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`, color: accent ? '#aec7f7' : '#74777f' }}>{icon}</span>
-              <p className={`text-xs font-semibold uppercase tracking-wide ${accent ? 'text-[#aec7f7]' : 'text-[#74777f]'}`}>{label}</p>
+              <p className={`text-xs font-semibold uppercase tracking-wide ${accent ? 'text-[#aec7f7]' : 'text-ink-subtle'}`}>{label}</p>
             </div>
-            <p className={`text-2xl font-bold ${accent ? 'text-white' : 'text-[#191c1e]'}`}>{value}</p>
+            <p className={`text-2xl font-bold ${accent ? 'text-white' : 'text-ink'}`}>{value}</p>
           </div>
         ))}
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-[#f7f9fb] rounded-lg p-1 mb-6 w-fit border border-[#e0e3e5]">
+      <div className="flex gap-1 bg-surface-alt rounded-lg p-1 mb-6 w-fit border border-border">
         {([['overview', 'Event Info'], ['booths', 'Booth Inventory'], ['bookings', 'All Bookings']] as const).map(([id, label]) => (
-          <button key={id} onClick={() => setTab(id)} className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === id ? 'bg-white text-[#191c1e] shadow-sm' : 'text-[#74777f] hover:text-[#191c1e]'}`}>
+          <button key={id} onClick={() => setTab(id)} className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === id ? 'bg-white text-ink shadow-sm' : 'text-ink-subtle hover:text-ink'}`}>
             {label}
           </button>
         ))}
@@ -829,8 +834,8 @@ function AdminTradeFairView() {
       {tab === 'overview' && (
         <div className="space-y-4">
           {!eventsLoading && allEvents.length === 0 && (
-            <div className="bg-white rounded-xl border border-[#e0e3e5] p-12 text-center">
-              <p className="text-sm text-[#74777f]">No events found. Create one to get started.</p>
+            <div className="bg-white rounded-xl border border-border p-12 text-center">
+              <p className="text-sm text-ink-subtle">No events found. Create one to get started.</p>
             </div>
           )}
           {allEvents.map((event) => {
@@ -839,18 +844,18 @@ function AdminTradeFairView() {
             const start = new Date(event.startDate).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'long', year: 'numeric' });
             const end = new Date(event.endDate).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'long', year: 'numeric' });
             return (
-              <div key={event.id} className="bg-white rounded-xl border border-[#e0e3e5] p-6">
+              <div key={event.id} className="bg-white rounded-xl border border-border p-6">
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <h3 className="font-bold text-[#191c1e]">{event.title}</h3>
+                    <h3 className="font-bold text-ink">{event.title}</h3>
                     <div className="flex items-center gap-1 mt-1">
-                      <span className="material-symbols-outlined text-[#74777f]" style={{ fontSize: 14, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 14` }}>location_on</span>
-                      <p className="text-sm text-[#74777f]">{event.venue}</p>
+                      <span className="material-symbols-outlined text-ink-subtle" style={{ fontSize: 14, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 14` }}>location_on</span>
+                      <p className="text-sm text-ink-subtle">{event.venue}</p>
                     </div>
                   </div>
                   <span className="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold" style={{ background: cfg.bg, color: cfg.text }}>{cfg.label}</span>
                 </div>
-                {event.description && <p className="text-sm text-[#74777f] mb-4">{event.description}</p>}
+                {event.description && <p className="text-sm text-ink-subtle mb-4">{event.description}</p>}
                 {cd && event.status !== 'completed' && (
                   <div className="flex gap-3 mb-4">
                     {[{ v: cd.days, l: 'Days' }, { v: cd.hours, l: 'Hours' }, { v: cd.mins, l: 'Mins' }].map(({ v, l }) => (
@@ -862,16 +867,16 @@ function AdminTradeFairView() {
                   </div>
                 )}
                 <div className="grid grid-cols-2 gap-2 text-sm mb-4">
-                  <div><span className="text-[#74777f]">Date: </span><span className="text-[#191c1e] font-medium">{start} — {end}</span></div>
+                  <div><span className="text-ink-subtle">Date: </span><span className="text-ink font-medium">{start} — {end}</span></div>
                   {event.boothsAvailable !== undefined && (
-                    <div><span className="text-[#74777f]">Booths: </span><span className="text-[#191c1e] font-medium">{event.boothsAvailable} available</span></div>
+                    <div><span className="text-ink-subtle">Booths: </span><span className="text-ink font-medium">{event.boothsAvailable} available</span></div>
                   )}
                 </div>
 
                 {/* Status transition controls */}
                 {STATUS_NEXT[event.status] && (
                   <div className="flex items-center gap-2 flex-wrap pt-3 border-t border-[#f0f2f4]">
-                    <span className="text-xs text-[#74777f] font-medium">Change status:</span>
+                    <span className="text-xs text-ink-subtle font-medium">Change status:</span>
                     {STATUS_NEXT[event.status]!.map((next) => {
                       const isCancel = next.value === 'cancelled';
                       const isLoading = statusChanging === event.id;
@@ -902,14 +907,14 @@ function AdminTradeFairView() {
       {tab === 'booths' && (
         <div>
           <div className="flex items-center gap-3 mb-4">
-            <div className="flex gap-1 bg-[#f7f9fb] rounded-lg p-1 border border-[#e0e3e5]">
+            <div className="flex gap-1 bg-surface-alt rounded-lg p-1 border border-border">
               {(['all', 'available', 'reserved'] as const).map((f) => (
-                <button key={f} onClick={() => setBoothFilter(f)} className={`px-3 py-1 rounded-md text-xs font-medium capitalize transition-colors ${boothFilter === f ? 'bg-white shadow-sm text-[#191c1e]' : 'text-[#74777f]'}`}>
+                <button key={f} onClick={() => setBoothFilter(f)} className={`px-3 py-1 rounded-md text-xs font-medium capitalize transition-colors ${boothFilter === f ? 'bg-white shadow-sm text-ink' : 'text-ink-subtle'}`}>
                   {f}
                 </button>
               ))}
             </div>
-            <p className="text-sm text-[#74777f]">{filteredBooths.length} booths</p>
+            <p className="text-sm text-ink-subtle">{filteredBooths.length} booths</p>
           </div>
 
           {boothsLoading ? <SkeletonCard /> : (
@@ -923,7 +928,7 @@ function AdminTradeFairView() {
                     style={{ borderColor: booth.status === 'available' ? '#e0e3e5' : booth.status === 'paid' ? '#023293' : '#ffc300' }}
                   >
                     <div className="flex items-start justify-between mb-2">
-                      <p className="font-bold text-[#023293] text-lg leading-none">{booth.boothNumber}</p>
+                      <p className="font-bold text-primary text-lg leading-none">{booth.boothNumber}</p>
                       <span
                         className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold"
                         style={booth.status === 'available'
@@ -935,18 +940,18 @@ function AdminTradeFairView() {
                         {booth.status}
                       </span>
                     </div>
-                    <p className="text-xs font-semibold text-[#44474e]">{booth.boothType}</p>
-                    <p className="text-xs text-[#74777f] mt-0.5">{booth.zone}</p>
-                    <p className="text-xs text-[#74777f]">{booth.size}</p>
-                    <p className="text-sm font-bold text-[#191c1e] mt-1">₦{booth.price.toLocaleString()}</p>
+                    <p className="text-xs font-semibold text-ink-subtle">{booth.boothType}</p>
+                    <p className="text-xs text-ink-subtle mt-0.5">{booth.zone}</p>
+                    <p className="text-xs text-ink-subtle">{booth.size}</p>
+                    <p className="text-sm font-bold text-ink mt-1">₦{booth.price.toLocaleString()}</p>
                     {eventName ? (
-                      <p className="text-xs text-[#74777f] mt-1 truncate" title={eventName}>{eventName}</p>
+                      <p className="text-xs text-ink-subtle mt-1 truncate" title={eventName}>{eventName}</p>
                     ) : (
                       <p className="text-xs font-semibold mt-1" style={{ color: '#93000a' }}>No event assigned</p>
                     )}
                     <button
                       onClick={() => setEditingBooth(booth)}
-                      className="mt-2 w-full rounded-lg border border-[#c4c6cf] px-2 py-1 text-xs font-semibold text-[#74777f] hover:border-[#023293] hover:text-[#023293] transition-colors"
+                      className="mt-2 w-full rounded-lg border border-border px-2 py-1 text-xs font-semibold text-ink-subtle hover:border-primary hover:text-primary transition-colors"
                     >
                       Edit
                     </button>
@@ -956,7 +961,7 @@ function AdminTradeFairView() {
               {/* Add new booth card */}
               <button
                 onClick={() => setShowAddBooth(true)}
-                className="rounded-xl border-2 border-dashed border-[#c4c6cf] p-4 flex flex-col items-center justify-center gap-2 text-[#74777f] hover:border-[#023293] hover:text-[#023293] transition-colors min-h-[120px]"
+                className="rounded-xl border-2 border-dashed border-border p-4 flex flex-col items-center justify-center gap-2 text-ink-subtle hover:border-primary hover:text-primary transition-colors min-h-[120px]"
               >
                 <span className="material-symbols-outlined" style={{ fontSize: 24 }}>add</span>
                 <span className="text-xs font-medium">Add Booth</span>
@@ -968,14 +973,14 @@ function AdminTradeFairView() {
 
       {/* All Bookings tab */}
       {tab === 'bookings' && (
-        <div className="bg-white rounded-xl border border-[#e0e3e5] overflow-hidden">
+        <div className="bg-white rounded-xl border border-border overflow-hidden">
           {bookingsLoading ? <div className="p-6"><SkeletonCard /></div> : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-[#f7f9fb] border-b border-[#e0e3e5]">
+                  <tr className="bg-surface-alt border-b border-border">
                     {['Booth', 'Member', 'Type / Zone', 'Amount', 'Status', 'Payment Ref'].map((h) => (
-                      <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-[#74777f] uppercase tracking-wide">{h}</th>
+                      <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-ink-subtle uppercase tracking-wide">{h}</th>
                     ))}
                   </tr>
                 </thead>
@@ -983,26 +988,26 @@ function AdminTradeFairView() {
                   {allBookings.map((b) => {
                     const bsc = bookingStatusConfig[b.status];
                     return (
-                      <tr key={b.id} className="hover:bg-[#f7f9fb] transition-colors">
+                      <tr key={b.id} className="hover:bg-surface-alt transition-colors">
                         <td className="px-4 py-3">
-                          <p className="font-bold text-[#023293]">{b.boothNumber}</p>
-                          <p className="text-xs text-[#74777f]">{b.size}</p>
+                          <p className="font-bold text-primary">{b.boothNumber}</p>
+                          <p className="text-xs text-ink-subtle">{b.size}</p>
                         </td>
                         <td className="px-4 py-3">
-                          <p className="font-medium text-[#191c1e]">{b.memberName ?? '—'}</p>
-                          <p className="text-xs text-[#74777f]">{b.memberEmail ?? '—'}</p>
+                          <p className="font-medium text-ink">{b.memberName ?? '—'}</p>
+                          <p className="text-xs text-ink-subtle">{b.memberEmail ?? '—'}</p>
                         </td>
                         <td className="px-4 py-3">
-                          <p className="text-[#191c1e]">{b.boothType}</p>
-                          <p className="text-xs text-[#74777f]">{b.zone}</p>
+                          <p className="text-ink">{b.boothType}</p>
+                          <p className="text-xs text-ink-subtle">{b.zone}</p>
                         </td>
-                        <td className="px-4 py-3 font-semibold text-[#191c1e]">₦{b.amount.toLocaleString()}</td>
+                        <td className="px-4 py-3 font-semibold text-ink">₦{b.amount.toLocaleString()}</td>
                         <td className="px-4 py-3">
                           <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ background: bsc.bg, color: bsc.text }}>
                             {bsc.label}
                           </span>
                         </td>
-                        <td className="px-4 py-3 font-mono text-xs text-[#74777f]">{b.paymentRef ?? '—'}</td>
+                        <td className="px-4 py-3 font-mono text-xs text-ink-subtle">{b.paymentRef ?? '—'}</td>
                       </tr>
                     );
                   })}

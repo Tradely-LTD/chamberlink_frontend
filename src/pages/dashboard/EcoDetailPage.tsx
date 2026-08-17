@@ -32,9 +32,9 @@ const MEANS_OF_TRANSPORT_LABEL: Record<string, string> = { sea: 'Sea', air: 'Air
 const ADMIN_ROLES = ['super_admin', 'chamber_admin', 'staff_operator', 'chamber_executive'];
 
 const Row = ({ label, value }: { label: string; value: ReactNode }) => (
-  <div className="flex items-start py-3 border-b border-[#bec9bf]/20 last:border-0">
-    <span className="w-56 shrink-0 text-sm text-[#8A7E6E]">{label}</span>
-    <span className="text-sm text-[#221a0f] font-medium">{value ?? '—'}</span>
+  <div className="flex items-start py-3 border-b border-border/20 last:border-0">
+    <span className="w-56 shrink-0 text-sm text-ink-subtle">{label}</span>
+    <span className="text-sm text-ink font-medium">{value ?? '—'}</span>
   </div>
 );
 
@@ -58,21 +58,21 @@ const DocRow = ({ label, certId, docType, attached }: {
   };
 
   return (
-    <div className="flex items-start py-3 border-b border-[#bec9bf]/20 last:border-0">
-      <span className="w-56 shrink-0 text-sm text-[#8A7E6E]">{label}</span>
+    <div className="flex items-start py-3 border-b border-border/20 last:border-0">
+      <span className="w-56 shrink-0 text-sm text-ink-subtle">{label}</span>
       {attached ? (
         <span className="flex items-center gap-2">
           <button
             onClick={handleView}
             disabled={isFetching}
-            className="text-sm font-medium text-[#023293] hover:underline disabled:opacity-60 disabled:no-underline"
+            className="text-sm font-medium text-primary hover:underline disabled:opacity-60 disabled:no-underline"
           >
             {isFetching ? 'Opening…' : 'View Attached'}
           </button>
           {error && <span className="text-xs text-red-600">{error}</span>}
         </span>
       ) : (
-        <span className="text-sm text-[#221a0f] font-medium">—</span>
+        <span className="text-sm text-ink font-medium">—</span>
       )}
     </div>
   );
@@ -95,7 +95,7 @@ export function EcoDetailPage() {
   if (isError || !cert) return (
     <div className="p-6 max-w-3xl">
       <ErrorBanner message="Failed to load certificate details. You may not have permission to view this certificate." />
-      <Link to="/dashboard/eco" className="inline-block mt-4 text-sm text-[#023293] hover:underline">
+      <Link to="/dashboard/eco" className="inline-block mt-4 text-sm text-primary hover:underline">
         ← Back
       </Link>
     </div>
@@ -151,11 +151,11 @@ export function EcoDetailPage() {
     <div className="p-6 max-w-3xl">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 mb-6">
-        <Link to="/dashboard/eco" className="text-sm text-[#8A7E6E] hover:text-[#023293]">
+        <Link to="/dashboard/eco" className="text-sm text-ink-subtle hover:text-primary">
           {isAdmin ? 'eCO Queue' : 'eCO Certificates'}
         </Link>
-        <span className="text-[#bec9bf]">/</span>
-        <span className="text-sm text-[#221a0f] font-medium">
+        <span className="text-border">/</span>
+        <span className="text-sm text-ink font-medium">
           {cert.certificateNumber ?? cert.id.slice(0, 8).toUpperCase()}
         </span>
       </div>
@@ -163,10 +163,10 @@ export function EcoDetailPage() {
       {/* Header */}
       <div className="flex items-start justify-between mb-4 gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-[#221a0f]">
+          <h1 className="text-2xl font-semibold text-ink">
             {cert.certificateNumber ?? 'Application Details'}
           </h1>
-          <p className="text-sm text-[#8A7E6E] mt-0.5">Certificate of Origin — Solid Minerals</p>
+          <p className="text-sm text-ink-subtle mt-0.5">Certificate of Origin — Solid Minerals</p>
         </div>
         <Badge variant={statusVariant[cert.status]}>{statusLabel[cert.status]}</Badge>
       </div>
@@ -218,7 +218,7 @@ export function EcoDetailPage() {
           <Button
             loading={downloadLoading}
             onClick={() => openSignedUrl('download')}
-            className="bg-[#023293] hover:bg-[#0267bf] text-white"
+            className="bg-primary hover:bg-primary-hover text-white"
           >
             <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -239,7 +239,7 @@ export function EcoDetailPage() {
 
         {/* Admin: re-generate PDF for issued certs missing a document (genuine failure) */}
         {isAdmin && !isReadOnly && isIssuedMissingDoc && (
-          <Button loading={reIssuing} onClick={handleReIssue} className="bg-[#795900] hover:bg-[#5c4300] text-white">
+          <Button loading={reIssuing} onClick={handleReIssue} className="bg-gold hover:bg-gold-hover text-white">
             <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
@@ -259,9 +259,9 @@ export function EcoDetailPage() {
       </div>
 
       {/* Certificate Info */}
-      <div className="bg-white rounded-xl border border-[#bec9bf]/40 overflow-hidden mb-4">
-        <div className="px-6 py-3 border-b border-[#bec9bf]/40">
-          <h2 className="text-xs font-semibold text-[#8A7E6E] uppercase tracking-wide">Certificate Info</h2>
+      <div className="bg-white rounded-xl border border-border/40 overflow-hidden mb-4">
+        <div className="px-6 py-3 border-b border-border/40">
+          <h2 className="text-xs font-semibold text-ink-subtle uppercase tracking-wide">Certificate Info</h2>
         </div>
         <div className="px-6">
           <Row label="Certificate #" value={cert.certificateNumber ?? '—'} />
@@ -276,9 +276,9 @@ export function EcoDetailPage() {
       </div>
 
       {/* Product/Goods Details */}
-      <div className="bg-white rounded-xl border border-[#bec9bf]/40 overflow-hidden mb-4">
-        <div className="px-6 py-3 border-b border-[#bec9bf]/40">
-          <h2 className="text-xs font-semibold text-[#8A7E6E] uppercase tracking-wide">Product / Goods Details</h2>
+      <div className="bg-white rounded-xl border border-border/40 overflow-hidden mb-4">
+        <div className="px-6 py-3 border-b border-border/40">
+          <h2 className="text-xs font-semibold text-ink-subtle uppercase tracking-wide">Product / Goods Details</h2>
         </div>
         <div className="px-6">
           <Row label="Solid Mineral" value={cert.solidMineralName} />
@@ -295,9 +295,9 @@ export function EcoDetailPage() {
       </div>
 
       {/* Exporter/Company Details */}
-      <div className="bg-white rounded-xl border border-[#bec9bf]/40 overflow-hidden mb-4">
-        <div className="px-6 py-3 border-b border-[#bec9bf]/40">
-          <h2 className="text-xs font-semibold text-[#8A7E6E] uppercase tracking-wide">Exporter / Company Details</h2>
+      <div className="bg-white rounded-xl border border-border/40 overflow-hidden mb-4">
+        <div className="px-6 py-3 border-b border-border/40">
+          <h2 className="text-xs font-semibold text-ink-subtle uppercase tracking-wide">Exporter / Company Details</h2>
         </div>
         <div className="px-6">
           <Row label="License Owner" value={cert.isLicenseOwner ? `Yes (${cert.miningLicenseNo ?? '—'})` : 'No'} />
@@ -310,9 +310,9 @@ export function EcoDetailPage() {
       </div>
 
       {/* Consignee Details */}
-      <div className="bg-white rounded-xl border border-[#bec9bf]/40 overflow-hidden mb-4">
-        <div className="px-6 py-3 border-b border-[#bec9bf]/40">
-          <h2 className="text-xs font-semibold text-[#8A7E6E] uppercase tracking-wide">Consignee Details</h2>
+      <div className="bg-white rounded-xl border border-border/40 overflow-hidden mb-4">
+        <div className="px-6 py-3 border-b border-border/40">
+          <h2 className="text-xs font-semibold text-ink-subtle uppercase tracking-wide">Consignee Details</h2>
         </div>
         <div className="px-6">
           <Row label="Consignee Name" value={cert.consigneeName} />
@@ -321,9 +321,9 @@ export function EcoDetailPage() {
       </div>
 
       {/* Shipment & Transport */}
-      <div className="bg-white rounded-xl border border-[#bec9bf]/40 overflow-hidden mb-4">
-        <div className="px-6 py-3 border-b border-[#bec9bf]/40">
-          <h2 className="text-xs font-semibold text-[#8A7E6E] uppercase tracking-wide">Shipment & Transport</h2>
+      <div className="bg-white rounded-xl border border-border/40 overflow-hidden mb-4">
+        <div className="px-6 py-3 border-b border-border/40">
+          <h2 className="text-xs font-semibold text-ink-subtle uppercase tracking-wide">Shipment & Transport</h2>
         </div>
         <div className="px-6">
           <Row label="Departure Date" value={cert.departureDate} />
@@ -335,9 +335,9 @@ export function EcoDetailPage() {
       </div>
 
       {/* Commercial Information */}
-      <div className="bg-white rounded-xl border border-[#bec9bf]/40 overflow-hidden mb-4">
-        <div className="px-6 py-3 border-b border-[#bec9bf]/40">
-          <h2 className="text-xs font-semibold text-[#8A7E6E] uppercase tracking-wide">Commercial Information</h2>
+      <div className="bg-white rounded-xl border border-border/40 overflow-hidden mb-4">
+        <div className="px-6 py-3 border-b border-border/40">
+          <h2 className="text-xs font-semibold text-ink-subtle uppercase tracking-wide">Commercial Information</h2>
         </div>
         <div className="px-6">
           <Row label="Invoice Number" value={cert.invoiceNumber} />
@@ -348,9 +348,9 @@ export function EcoDetailPage() {
       </div>
 
       {/* Compliance / Declaration docs */}
-      <div className="bg-white rounded-xl border border-[#bec9bf]/40 overflow-hidden mb-6">
-        <div className="px-6 py-3 border-b border-[#bec9bf]/40">
-          <h2 className="text-xs font-semibold text-[#8A7E6E] uppercase tracking-wide">Compliance / Declaration Documents</h2>
+      <div className="bg-white rounded-xl border border-border/40 overflow-hidden mb-6">
+        <div className="px-6 py-3 border-b border-border/40">
+          <h2 className="text-xs font-semibold text-ink-subtle uppercase tracking-wide">Compliance / Declaration Documents</h2>
         </div>
         <div className="px-6">
           <DocRow label="Invoice" certId={cert.id} docType="invoice" attached={!!cert.invoiceFileKey} />
@@ -360,7 +360,7 @@ export function EcoDetailPage() {
         </div>
       </div>
 
-      <Link to="/dashboard/eco" className="text-sm text-[#8A7E6E] hover:text-[#023293]">
+      <Link to="/dashboard/eco" className="text-sm text-ink-subtle hover:text-primary">
         ← Back to {isAdmin ? 'queue' : 'all applications'}
       </Link>
     </div>

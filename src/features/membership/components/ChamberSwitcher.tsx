@@ -74,18 +74,18 @@ export function ChamberSwitcher() {
     <div className="relative" ref={containerRef}>
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium text-[#191c1e] hover:bg-[#eceef0] transition-colors"
+        className="flex items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium text-ink hover:bg-surface-alt transition-colors"
         title="Switch chamber"
       >
         {activeConnection?.tenantLogoUrl ? (
           <img
             src={activeConnection.tenantLogoUrl}
             alt=""
-            className="h-6 w-6 rounded-full object-contain border border-[#e0e3e5] bg-white flex-shrink-0"
+            className="h-6 w-6 rounded-full object-contain border border-border bg-white flex-shrink-0"
           />
         ) : (
           <span
-            className="material-symbols-outlined flex-shrink-0 text-[#74777f]"
+            className="material-symbols-outlined flex-shrink-0 text-ink-subtle"
             style={{ fontSize: 20, fontVariationSettings: `'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20` }}
           >
             corporate_fare
@@ -95,7 +95,7 @@ export function ChamberSwitcher() {
           {isLoading ? 'Loading…' : (activeConnection?.tenantName ?? 'No chamber selected')}
         </span>
         <span
-          className="material-symbols-outlined text-[#74777f]"
+          className="material-symbols-outlined text-ink-subtle"
           style={{ fontSize: 18, fontVariationSettings: `'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 18` }}
         >
           expand_more
@@ -103,13 +103,13 @@ export function ChamberSwitcher() {
       </button>
 
       {open && (
-        <div className="absolute right-0 z-30 mt-2 w-72 rounded-xl border border-[#e0e3e5] bg-white shadow-lg overflow-hidden">
-          <div className="px-4 py-3 border-b border-[#e0e3e5]">
-            <p className="text-xs font-semibold uppercase tracking-wide text-[#74777f]">Your Chambers</p>
+        <div className="absolute right-0 z-30 mt-2 w-72 rounded-xl border border-border bg-white shadow-lg overflow-hidden">
+          <div className="px-4 py-3 border-b border-border">
+            <p className="text-xs font-semibold uppercase tracking-wide text-ink-subtle">Your Chambers</p>
           </div>
 
           {isLoading ? (
-            <div className="px-4 py-4 text-sm text-[#74777f]">Loading connections…</div>
+            <div className="px-4 py-4 text-sm text-ink-subtle">Loading connections…</div>
           ) : connections && connections.length > 0 ? (
             <ul className="max-h-72 overflow-y-auto py-1">
               {connections.map((c) => (
@@ -117,22 +117,22 @@ export function ChamberSwitcher() {
                   <button
                     onClick={() => handleSwitch(c.tenantId)}
                     disabled={isSwitching && switchingTenantId === c.tenantId}
-                    className={`flex w-full items-center justify-between gap-3 px-4 py-2.5 text-left text-sm hover:bg-[#f7f9fb] transition-colors disabled:opacity-60 ${
+                    className={`flex w-full items-center justify-between gap-3 px-4 py-2.5 text-left text-sm hover:bg-surface-alt transition-colors disabled:opacity-60 ${
                       c.isActive ? 'bg-[#eef3ff]' : ''
                     }`}
                   >
                     <span className="flex items-center gap-2 min-w-0">
                       {c.isActive && (
                         <span
-                          className="material-symbols-outlined text-[#023293] flex-shrink-0"
+                          className="material-symbols-outlined text-primary flex-shrink-0"
                           style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18` }}
                         >
                           check_circle
                         </span>
                       )}
                       <span className="truncate">
-                        <span className="block truncate font-medium text-[#191c1e]">{c.tenantName}</span>
-                        <span className="block truncate text-xs text-[#74777f]">{c.tierName}</span>
+                        <span className="block truncate font-medium text-ink">{c.tenantName}</span>
+                        <span className="block truncate text-xs text-ink-subtle">{c.tierName}</span>
                       </span>
                     </span>
                     <span
@@ -147,18 +147,18 @@ export function ChamberSwitcher() {
               ))}
             </ul>
           ) : (
-            <div className="px-4 py-4 text-sm text-[#8A7E6E]">
+            <div className="px-4 py-4 text-sm text-ink-subtle">
               You&apos;re not connected to a chamber yet.
             </div>
           )}
 
-          <div className="border-t border-[#e0e3e5] p-2">
+          <div className="border-t border-border p-2">
             <button
               onClick={() => {
                 setOpen(false);
                 setModalOpen(true);
               }}
-              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-[#023293] hover:bg-[#eef3ff] transition-colors"
+              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-primary hover:bg-[#eef3ff] transition-colors"
             >
               <span
                 className="material-symbols-outlined"

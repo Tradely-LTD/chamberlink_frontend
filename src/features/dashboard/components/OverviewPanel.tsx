@@ -11,10 +11,10 @@ export function OverviewPanel() {
 
   return (
     <div className="p-6 max-w-4xl">
-      <h1 className="text-2xl font-semibold text-[#221a0f] mb-1">
+      <h1 className="text-2xl font-semibold text-ink mb-1">
         Welcome back, {user?.firstName ?? 'Member'}!
       </h1>
-      <p className="text-sm text-[#8A7E6E] mb-6">
+      <p className="text-sm text-ink-subtle mb-6">
         Here&apos;s an overview of your account.
       </p>
       <div className="grid gap-4 sm:grid-cols-2">

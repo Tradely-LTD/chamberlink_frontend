@@ -27,7 +27,7 @@ export function OtpInput({ length, value, onChange, disabled }: Props) {
         onChange={handleChange}
         disabled={disabled}
         placeholder={'0'.repeat(length)}
-        className="w-full rounded-lg border border-[#bec9bf] px-4 py-3 text-center text-2xl font-mono tracking-[0.5em] outline-none transition focus:ring-2 focus:ring-[#023293]/40"
+        className="w-full rounded-lg border border-border px-4 py-3 text-center text-2xl font-mono tracking-[0.5em] outline-none transition focus:ring-2 focus:ring-primary/40"
       />
     </div>
   );

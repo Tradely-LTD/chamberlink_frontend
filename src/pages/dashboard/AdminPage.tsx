@@ -37,23 +37,23 @@ function AuditLogTab() {
   const entries = data ?? demoAudit;
   if (isLoading) return <SkeletonCard className="h-64" />;
   return (
-    <div className="bg-white rounded-xl border border-[#bec9bf]/40 overflow-hidden">
-      <div className="px-4 py-3 border-b border-[#bec9bf]/40 bg-[#fdf8f3]">
-        <p className="text-xs font-medium text-[#8A7E6E] uppercase tracking-wide">Immutable Audit Trail — append-only log of all financial and document actions</p>
+    <div className="bg-white rounded-xl border border-border/40 overflow-hidden">
+      <div className="px-4 py-3 border-b border-border/40 bg-surface-alt">
+        <p className="text-xs font-medium text-ink-subtle uppercase tracking-wide">Immutable Audit Trail — append-only log of all financial and document actions</p>
       </div>
-      <div className="divide-y divide-[#bec9bf]/20">
+      <div className="divide-y divide-border/20">
         {entries.map((entry) => (
-          <div key={entry.id} className="px-4 py-3 flex items-start gap-4 hover:bg-[#fdf8f3]">
+          <div key={entry.id} className="px-4 py-3 flex items-start gap-4 hover:bg-surface-alt">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-xs font-mono bg-[#023293]/10 text-[#023293] px-2 py-0.5 rounded">{entry.action}</span>
-                <span className="text-sm text-[#221a0f]">{entry.actorName}</span>
-                <span className="text-xs text-[#8A7E6E]">on</span>
-                <span className="text-xs font-mono text-[#8A7E6E]">{entry.resourceType}/{entry.resourceId}</span>
+                <span className="text-xs font-mono bg-primary/10 text-primary px-2 py-0.5 rounded">{entry.action}</span>
+                <span className="text-sm text-ink">{entry.actorName}</span>
+                <span className="text-xs text-ink-subtle">on</span>
+                <span className="text-xs font-mono text-ink-subtle">{entry.resourceType}/{entry.resourceId}</span>
               </div>
-              {entry.ipAddress && <p className="text-xs text-[#bec9bf] mt-0.5">IP: {entry.ipAddress}</p>}
+              {entry.ipAddress && <p className="text-xs text-border mt-0.5">IP: {entry.ipAddress}</p>}
             </div>
-            <span className="text-xs text-[#8A7E6E] flex-shrink-0">
+            <span className="text-xs text-ink-subtle flex-shrink-0">
               {new Date(entry.createdAt).toLocaleString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
             </span>
           </div>
@@ -66,8 +66,8 @@ function AuditLogTab() {
 export function AdminPage() {
   return (
     <div className="p-6 max-w-6xl">
-      <h1 className="text-2xl font-semibold text-[#221a0f] mb-1">Audit Log</h1>
-      <p className="text-sm text-[#8A7E6E] mb-6">Immutable, append-only record of all financial and document actions.</p>
+      <h1 className="text-2xl font-semibold text-ink mb-1">Audit Log</h1>
+      <p className="text-sm text-ink-subtle mb-6">Immutable, append-only record of all financial and document actions.</p>
       <AuditLogTab />
     </div>
   );

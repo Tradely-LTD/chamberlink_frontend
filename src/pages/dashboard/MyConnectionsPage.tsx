@@ -85,8 +85,8 @@ export function MyConnectionsPage() {
     <div className="p-6 max-w-4xl">
       <div className="flex items-start justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-semibold text-[#221a0f] mb-1">My Chambers</h1>
-          <p className="text-sm text-[#8A7E6E]">
+          <h1 className="text-2xl font-semibold text-ink mb-1">My Chambers</h1>
+          <p className="text-sm text-ink-subtle">
             Every chamber your ChamberLink identity is connected to — each with its own status, tier, and dues.
           </p>
         </div>
@@ -124,32 +124,32 @@ export function MyConnectionsPage() {
             const isBusy = busyTenantId === c.tenantId && (isSwitching || isRemoving);
             const needsAttention = c.status === 'pending_payment' || c.status === 'expired';
             return (
-              <li key={c.tenantId} className="bg-white rounded-xl border border-[#bec9bf]/40 overflow-hidden">
+              <li key={c.tenantId} className="bg-white rounded-xl border border-border/40 overflow-hidden">
                 <div className="flex flex-wrap items-start justify-between gap-4 px-6 py-4">
                   <div className="flex items-center gap-3 min-w-0">
                     {c.tenantLogoUrl ? (
                       <img
                         src={c.tenantLogoUrl}
                         alt=""
-                        className="h-10 w-10 rounded-lg object-contain border border-[#bec9bf]/40 bg-white flex-shrink-0"
+                        className="h-10 w-10 rounded-lg object-contain border border-border/40 bg-white flex-shrink-0"
                       />
                     ) : (
-                      <div className="h-10 w-10 rounded-lg bg-[#f7f9f7] border border-[#bec9bf]/40 flex items-center justify-center flex-shrink-0">
-                        <span className="material-symbols-outlined text-[#8A7E6E]" style={{ fontSize: 20 }}>
+                      <div className="h-10 w-10 rounded-lg bg-[#f7f9f7] border border-border/40 flex items-center justify-center flex-shrink-0">
+                        <span className="material-symbols-outlined text-ink-subtle" style={{ fontSize: 20 }}>
                           corporate_fare
                         </span>
                       </div>
                     )}
                     <div className="min-w-0">
-                      <p className="font-medium text-[#221a0f] truncate flex items-center gap-2">
+                      <p className="font-medium text-ink truncate flex items-center gap-2">
                         {c.tenantName}
                         {c.isActive && (
-                          <span className="inline-flex items-center rounded-full bg-[#d6e3ff] px-2 py-0.5 text-[11px] font-medium text-[#023293]">
+                          <span className="inline-flex items-center rounded-full bg-[#d6e3ff] px-2 py-0.5 text-[11px] font-medium text-primary">
                             Active workspace
                           </span>
                         )}
                       </p>
-                      <p className="text-xs text-[#8A7E6E] truncate">
+                      <p className="text-xs text-ink-subtle truncate">
                         {c.tierName} · Member ID: {c.memberId}
                       </p>
                     </div>
@@ -161,18 +161,18 @@ export function MyConnectionsPage() {
                   </span>
                 </div>
 
-                <dl className="grid grid-cols-2 gap-4 px-6 py-3 border-t border-[#bec9bf]/30 text-sm">
+                <dl className="grid grid-cols-2 gap-4 px-6 py-3 border-t border-border/30 text-sm">
                   <div>
-                    <dt className="text-xs text-[#8A7E6E]">Member Since</dt>
-                    <dd className="text-[#221a0f]">{formatDate(c.memberSince)}</dd>
+                    <dt className="text-xs text-ink-subtle">Member Since</dt>
+                    <dd className="text-ink">{formatDate(c.memberSince)}</dd>
                   </div>
                   <div>
-                    <dt className="text-xs text-[#8A7E6E]">Expires</dt>
-                    <dd className="text-[#221a0f]">{formatDate(c.expiresAt)}</dd>
+                    <dt className="text-xs text-ink-subtle">Expires</dt>
+                    <dd className="text-ink">{formatDate(c.expiresAt)}</dd>
                   </div>
                 </dl>
 
-                <div className="flex flex-wrap items-center gap-2 px-6 py-3 border-t border-[#bec9bf]/30">
+                <div className="flex flex-wrap items-center gap-2 px-6 py-3 border-t border-border/30">
                   {!c.isActive && (
                     <Button
                       variant="outline"
@@ -192,7 +192,7 @@ export function MyConnectionsPage() {
                   )}
                   {confirmingTenantId === c.tenantId ? (
                     <div className="flex items-center gap-2">
-                      <span className="text-xs text-[#8A7E6E]">Disconnect from {c.tenantName}?</span>
+                      <span className="text-xs text-ink-subtle">Disconnect from {c.tenantName}?</span>
                       <Button
                         variant="outline"
                         className="border-red-300 text-red-700 hover:border-red-500"
