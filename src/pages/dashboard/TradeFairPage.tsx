@@ -467,8 +467,12 @@ function CreateEventModal({ onClose }: { onClose: () => void }) {
 function MemberTradeFairView() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const tenantId = useAppSelector((s) => s.auth.user?.tenantId);
-  const { data: events, isLoading } = useGetTradeFairEventsQuery(tenantId ?? skipToken);
+  // activeTenantId, not tenantId — tenantId is the staff/admin employer field
+  // and is always null for a member (see AuthUser). Members browse trade fair
+  // events for whichever chamber is currently their active workspace, and the
+  // query re-keys automatically when that changes (ChamberSwitcher).
+  const activeTenantId = useAppSelector((s) => s.auth.user?.activeTenantId);
+  const { data: events, isLoading } = useGetTradeFairEventsQuery(activeTenantId ?? skipToken);
   const [tab, setTab] = useState<'upcoming' | 'past'>('upcoming');
   const [bookingEvent, setBookingEvent] = useState<TradeFairEvent | null>(null);
 

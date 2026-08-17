@@ -130,14 +130,21 @@ function getNavItems(role: Role | null): NavItem[] {
   }
 }
 
+// "Member Portal" paired with the chamber's own name (e.g. "NACCIMA") read as
+// "NACCIMA's Member Portal" — implying the signed-in user is a NACCIMA member
+// even when they belong to a different chamber entirely (chamberlink_frontend
+// is one shared deployment for every tenant's members). "Chamberlink" is the
+// product's own name, not any one chamber's, so it carries no such claim.
 const portalLabel: Record<string, string> = {
-  member: 'Member Portal',
+  member: 'Chamberlink',
   staff_operator: 'Staff Console',
   chamber_admin: 'Admin Console',
   chamber_executive: 'Executive Portal',
   super_admin: 'Super Admin',
   institutional_subscriber: 'Institutional Portal',
 };
+
+const SIDEBAR_COLLAPSED_KEY = 'sidebarCollapsed';
 
 const roleLabels: Record<string, string> = {
   member: 'Member',
@@ -210,6 +217,15 @@ export function Sidebar() {
     || user?.email?.[0]?.toUpperCase()
     || '?';
 
+  // Manual expand/collapse — separate from the md: breakpoint hide/show in
+  // DashboardShell, which only reacts to viewport width. This is the user
+  // choosing to narrow the sidebar on a desktop-sized screen; persisted so it
+  // survives a refresh/new tab.
+  const [collapsed, setCollapsed] = useState(() => localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === '1');
+  useEffect(() => {
+    localStorage.setItem(SIDEBAR_COLLAPSED_KEY, collapsed ? '1' : '0');
+  }, [collapsed]);
+
   const navRef = useRef<HTMLElement>(null);
   const [canScrollMore, setCanScrollMore] = useState(false);
 
@@ -225,9 +241,26 @@ export function Sidebar() {
   }, [visibleItems]);
 
   return (
-    <aside className="flex h-full w-60 flex-col bg-primary">
+    <aside
+      className={`relative flex h-full flex-col bg-primary transition-[width] duration-200 ${collapsed ? 'w-[72px]' : 'w-60'}`}
+    >
+      {/* Collapse/expand toggle — floats on the sidebar's edge, Notion/Slack-style */}
+      <button
+        onClick={() => setCollapsed((v) => !v)}
+        title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        className="absolute -right-3 top-16 z-10 h-6 w-6 rounded-full border border-border bg-white shadow-sm flex items-center justify-center text-ink-subtle hover:text-primary transition-colors"
+      >
+        <span
+          className="material-symbols-outlined"
+          style={{ fontSize: 16, fontVariationSettings: `'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 16` }}
+        >
+          {collapsed ? 'chevron_right' : 'chevron_left'}
+        </span>
+      </button>
+
       {/* Logo — white backdrop plate so the multi-color seal doesn't wash out against the blue nav */}
-      <div className="flex items-center gap-3 px-5 pt-6 pb-5 border-b border-white/10">
+      <div className={`flex items-center gap-3 pt-6 pb-5 border-b border-white/10 ${collapsed ? 'justify-center px-2' : 'px-5'}`}>
         <div className="h-10 w-10 rounded-full bg-white flex items-center justify-center flex-shrink-0 shadow-sm">
           <img
             src="/naccima-seal.png"
@@ -235,12 +268,14 @@ export function Sidebar() {
             className="h-9 w-9 object-contain"
           />
         </div>
-        <div className="min-w-0">
-          <p className="text-white font-bold text-sm leading-tight truncate">{orgName}</p>
-          <p className="text-white/50 text-xs mt-0.5 font-medium truncate">
-            {role ? (portalLabel[role] ?? 'Portal') : 'Digital Gateway'}
-          </p>
-        </div>
+        {!collapsed && (
+          <div className="min-w-0">
+            <p className="text-white font-bold text-sm leading-tight truncate">{orgName}</p>
+            <p className="text-white/50 text-xs mt-0.5 font-medium truncate">
+              {role ? (portalLabel[role] ?? 'Portal') : 'Digital Gateway'}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Nav — relative wrapper enables the fade overlay */}
@@ -252,8 +287,9 @@ export function Sidebar() {
               <NavLink
                 to={item.to}
                 end={item.end}
+                title={collapsed ? item.label : undefined}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${
+                  `flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${collapsed ? 'justify-center' : 'gap-3'} ${
                     isActive
                       ? 'bg-white/15 text-white'
                       : 'text-white/60 hover:bg-white/8 hover:text-white/90'
@@ -272,7 +308,7 @@ export function Sidebar() {
                     >
                       {item.icon}
                     </span>
-                    <span className={isActive ? 'text-white' : 'text-white/60'}>{item.label}</span>
+                    {!collapsed && <span className={isActive ? 'text-white' : 'text-white/60'}>{item.label}</span>}
                   </>
                 )}
               </NavLink>
@@ -289,26 +325,29 @@ export function Sidebar() {
       {/* User + Logout */}
       <div className="px-3 pb-4 border-t border-white/10 pt-4">
         {user && (
-          <div className="flex items-center gap-3 px-3 mb-3">
+          <div className={`flex items-center mb-3 ${collapsed ? 'justify-center' : 'gap-3 px-3'}`} title={collapsed ? `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() : undefined}>
             <div
               className="h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
               style={{ background: '#1b365d', color: '#aec7f7' }}
             >
               {initials}
             </div>
-            <div className="min-w-0">
-              <p className="text-white text-xs font-semibold truncate">
-                {user.firstName} {user.lastName}
-              </p>
-              <p className="text-white/50 text-xs truncate">
-                {role ? (roleLabels[role] ?? role) : ''}
-              </p>
-            </div>
+            {!collapsed && (
+              <div className="min-w-0">
+                <p className="text-white text-xs font-semibold truncate">
+                  {user.firstName} {user.lastName}
+                </p>
+                <p className="text-white/50 text-xs truncate">
+                  {role ? (roleLabels[role] ?? role) : ''}
+                </p>
+              </div>
+            )}
           </div>
         )}
         <button
           onClick={handleLogout}
-          className="w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-white/50 hover:bg-white/8 hover:text-white transition-all"
+          title={collapsed ? 'Sign Out' : undefined}
+          className={`w-full flex items-center rounded-lg px-3 py-2.5 text-sm font-medium text-white/50 hover:bg-white/8 hover:text-white transition-all ${collapsed ? 'justify-center' : 'gap-3'}`}
         >
           <span
             className="material-symbols-outlined flex-shrink-0"
@@ -316,7 +355,7 @@ export function Sidebar() {
           >
             logout
           </span>
-          Sign Out
+          {!collapsed && 'Sign Out'}
         </button>
       </div>
     </aside>

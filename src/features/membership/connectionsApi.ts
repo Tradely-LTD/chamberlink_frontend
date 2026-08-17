@@ -77,7 +77,13 @@ export const connectionsApi = emptyApi.injectEndpoints({
       transformResponse: (res: ApiResponse<undefined>) => ({
         message: res.message ?? 'Active chamber switched',
       }),
-      invalidatesTags: ['ChamberConnections', 'Membership'],
+      // ExportDocuments is fetched with no query arg (`void`) and is scoped
+      // server-side to req.user.activeTenantId — without this it keeps
+      // showing the PREVIOUS chamber's documents after a switch until
+      // something else happens to invalidate the cache. Trade Fair events
+      // don't need this: that query is keyed by tenantId directly, so
+      // switching naturally moves it to a different cache entry.
+      invalidatesTags: ['ChamberConnections', 'Membership', 'ExportDocuments'],
       onQueryStarted: async ({ tenantId }, { dispatch, queryFulfilled }) => {
         try {
           await queryFulfilled;
