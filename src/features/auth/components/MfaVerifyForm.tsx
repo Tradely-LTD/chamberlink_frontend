@@ -35,7 +35,7 @@ export function MfaVerifyForm() {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-      <p className="text-sm text-[#8A7E6E]">
+      <p className="text-sm text-ink-subtle">
         Enter the 6-digit authentication code sent to your registered contact.
       </p>
       {localError && <ErrorBanner message={localError} />}

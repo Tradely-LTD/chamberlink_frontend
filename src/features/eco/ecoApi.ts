@@ -75,6 +75,7 @@ export interface ECertificate {
   invoiceNumber: string | null;
   invoiceDate: string | null;
   invoiceTotal: number | null;
+  invoiceCurrency: 'NGN' | 'USD';
   invoiceFileKey: string | null;
   customerOrderOrLcNo: string | null;
   selfDeclaredIsMember: boolean;
@@ -139,6 +140,7 @@ export interface NewECertPayload {
   invoiceNumber?: string;
   invoiceDate: string;
   invoiceTotal: number;
+  invoiceCurrency: 'NGN' | 'USD';
   customerOrderOrLcNo?: string;
   tenantId: string;
   selfDeclaredIsMember: boolean;
@@ -206,7 +208,11 @@ export const ecoApi = emptyApi.injectEndpoints({
       transformResponse: (res: ApiResponse<ECertificate>) => res.data,
       invalidatesTags: ['ECO'],
     }),
-    // Used when the member is uploading files (multipart/form-data)
+    // Used for a guest/non-member applicant's FIRST submission with raw
+    // uploaded files (no chamber connection => no document library to
+    // reference by docId — see DocSlot in EcoApplyPage.tsx). Multipart/
+    // form-data; the backend's ecoUpload middleware (multer.fields) parses
+    // it, no-ops for a plain JSON body on this same route otherwise.
     createEcoCertificateWithFiles: builder.mutation<ECertificate, FormData>({
       query: (formData) => ({
         url: '/eco',
@@ -217,7 +223,12 @@ export const ecoApi = emptyApi.injectEndpoints({
       transformResponse: (res: ApiResponse<ECertificate>) => res.data,
       invalidatesTags: ['ECO'],
     }),
-    // Save a draft (partial fields, no validation)
+    // Save a draft (partial fields, no validation). Compliance documents are
+    // attached by reference (invoiceDocId etc.) for a connected member, via
+    // documentsApi's uploadDocument — or, for a zero-connection guest
+    // applicant with no document library to upload into, as a raw multipart
+    // file directly on this same request (see DocSlot/buildFormDataOrJson in
+    // EcoApplyPage.tsx). Both shapes hit the same backend route.
     saveDraftEco: builder.mutation<ECertificate, FormData | Partial<NewECertPayload>>({
       query: (body) => body instanceof FormData
         ? { url: '/eco/draft', method: 'POST', body, formData: true }

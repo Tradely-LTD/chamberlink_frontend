@@ -15,12 +15,12 @@ describe('Input', () => {
 
   it('applies error border class when error is provided', () => {
     render(<Input label="Email" error="Required" />);
-    expect(screen.getByRole('textbox')).toHaveClass('border-red-500');
+    expect(screen.getByRole('textbox')).toHaveClass('border-danger');
   });
 
   it('applies normal border class when no error', () => {
     render(<Input label="Email" />);
-    expect(screen.getByRole('textbox')).toHaveClass('border-[#bec9bf]');
+    expect(screen.getByRole('textbox')).toHaveClass('border-border');
   });
 
   it('passes through additional props', () => {

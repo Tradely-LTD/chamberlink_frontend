@@ -6,6 +6,7 @@ import { tokenStorage } from '@shared/utils/tokenStorage';
 import { returnOrigin } from '@shared/utils/returnOrigin';
 import { useLogoutUserMutation } from '@features/auth/authApi';
 import { useGetMyTenantQuery } from '@features/white-label';
+import { useHasChamberConnection } from '@features/membership';
 import type { Role } from '@entities/user/types';
 
 interface NavItem {
@@ -87,6 +88,7 @@ const executiveNavItems: NavItem[] = [
 const superAdminNavItems: NavItem[] = [
   { label: 'Dashboard',           to: '/dashboard',                     icon: 'dashboard',   end: true },
   { label: 'Member Management',   to: '/dashboard/members',             icon: 'manage_accounts' },
+  { label: 'All Users',           to: '/dashboard/all-users',           icon: 'groups' },
   { label: 'Audit Log',           to: '/dashboard/admin',               icon: 'history' },
   { label: 'eCO Queue',           to: '/dashboard/eco',                 icon: 'task_alt' },
   { label: 'Analytics',           to: '/dashboard/analytics',           icon: 'bar_chart' },
@@ -99,6 +101,21 @@ const superAdminNavItems: NavItem[] = [
   { label: 'My Chambers',         to: '/dashboard/connections',         icon: 'corporate_fare' },
   { label: 'My Profile',          to: '/dashboard/profile',             icon: 'manage_accounts' },
 ];
+
+// Modules that assume a chamber relationship — hidden from a `member` with
+// ZERO chamber connections (any status counts as "connected"; see
+// useHasChamberConnection). Dashboard, eCO Certificates, My Chambers,
+// Chamber Network, and My Profile stay visible regardless. Only applies to
+// the member-role nav (default branch below) — institutional/staff/
+// chamber_admin/executive/super_admin never gate on connection count.
+const GATED_LABELS = new Set([
+  'Trade Fair',
+  'Academy',
+  'Export Documents',
+  'Membership',
+  'Trade Corridors',
+  'Exporter Visibility',
+]);
 
 function getNavItems(role: Role | null): NavItem[] {
   switch (role) {
@@ -145,7 +162,14 @@ export function Sidebar() {
 
   const orgName = role === 'super_admin' ? 'Chamberlink ERP' : (myTenant?.name ?? 'NACCIMA');
 
-  const visibleItems = getNavItems(role);
+  // Shares the same RTK Query cache entry ChamberSwitcher (rendered in
+  // DashboardShell's header) already keeps warm — no extra request.
+  const { hasConnection } = useHasChamberConnection();
+  const rawItems = getNavItems(role);
+  const visibleItems =
+    role === 'member' && !hasConnection
+      ? rawItems.filter((item) => !GATED_LABELS.has(item.label))
+      : rawItems;
 
   const handleLogout = () => {
     const refreshToken = tokenStorage.get();
@@ -185,7 +209,7 @@ export function Sidebar() {
   }, [visibleItems]);
 
   return (
-    <aside className="flex h-full w-60 flex-col" style={{ background: '#023293' }}>
+    <aside className="flex h-full w-60 flex-col bg-primary">
       {/* Logo — white backdrop plate so the multi-color seal doesn't wash out against the blue nav */}
       <div className="flex items-center gap-3 px-5 pt-6 pb-5 border-b border-white/10">
         <div className="h-10 w-10 rounded-full bg-white flex items-center justify-center flex-shrink-0 shadow-sm">
@@ -219,7 +243,6 @@ export function Sidebar() {
                       : 'text-white/60 hover:bg-white/8 hover:text-white/90'
                   }`
                 }
-                style={({ isActive }) => isActive ? {} : {}}
               >
                 {({ isActive }) => (
                   <>
@@ -243,10 +266,7 @@ export function Sidebar() {
         </nav>
         {/* Fade indicator — visible only when more items are below the fold */}
         {canScrollMore && (
-          <div
-            className="pointer-events-none absolute bottom-0 left-0 right-0 h-10"
-            style={{ background: 'linear-gradient(to bottom, transparent, #023293)' }}
-          />
+          <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-b from-transparent to-primary" />
         )}
       </div>
 

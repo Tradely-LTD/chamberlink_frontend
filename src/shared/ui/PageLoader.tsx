@@ -6,7 +6,7 @@ export function PageLoader() {
           className="inline-block h-8 w-8 animate-spin rounded-full border-[3px] border-t-transparent"
           style={{ borderColor: '#023293', borderTopColor: 'transparent' }}
         />
-        <p className="text-sm text-[#74777f]">Loading…</p>
+        <p className="text-sm text-ink-subtle">Loading…</p>
       </div>
     </div>
   );

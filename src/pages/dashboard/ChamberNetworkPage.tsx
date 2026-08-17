@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useGetOnboardedChambersQuery, useGetMyConnectionsQuery } from '@features/membership/connectionsApi';
+import { useConnectToChamber } from '@features/membership/hooks/useConnectToChamber';
 import { ConnectViaRosterModal } from '@features/membership/components/ConnectViaRosterModal';
 import { SkeletonCard } from '@shared/ui/SkeletonCard';
 import { ErrorBanner } from '@shared/ui/ErrorBanner';
@@ -9,11 +10,12 @@ import { Toast } from '@shared/ui/Toast';
 
 /**
  * Chamber Network — discover onboarded chambers this ChamberLink identity is
- * NOT yet connected to, and connect using a legacy/existing member ID (for
- * members who were part of a chamber before ChamberLink existed). Distinct
- * from MyConnectionsPage ("My Chambers", which manages EXISTING connections)
- * and from ConnectChamberModal ("Connect a chamber", which mints a brand-new
- * member ID with no ID input).
+ * NOT yet connected to. Each card offers two independent actions:
+ *  - "Connect with existing ID" (ConnectViaRosterModal) — for members who
+ *    were part of that chamber before ChamberLink existed.
+ *  - "Register" (useConnectToChamber, same mint-new-membership flow
+ *    ConnectChamberModal's generic picker uses) — for anyone with no prior
+ *    ID at that chamber. Both always show together; the user self-selects.
  *
  * Member-only nav item by design — staff_operator accounts don't hold
  * memberships, they're added directly by their chamber's admin.
@@ -34,6 +36,9 @@ export function ChamberNetworkPage() {
 
   const [activeModalTenant, setActiveModalTenant] = useState<{ id: string; name: string } | null>(null);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const { connect, isConnecting, pendingTenantId, inlineError } = useConnectToChamber((message) =>
+    setToast({ message, type: 'success' })
+  );
 
   const isLoading = isLoadingChambers || isLoadingConnections;
   const isError = isChambersError || isConnectionsError;
@@ -49,8 +54,8 @@ export function ChamberNetworkPage() {
   return (
     <div className="p-6 max-w-4xl">
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-[#221a0f] mb-1">Chamber Network</h1>
-        <p className="text-sm text-[#8A7E6E]">
+        <h1 className="text-2xl font-semibold text-ink mb-1">Chamber Network</h1>
+        <p className="text-sm text-ink-subtle">
           Already a member of one of these chambers? Connect with your existing member ID to link your records.
         </p>
       </div>
@@ -82,19 +87,30 @@ export function ChamberNetworkPage() {
           {availableChambers.map((chamber) => (
             <li
               key={chamber.id}
-              className="flex items-center justify-between gap-4 bg-white rounded-xl border border-[#bec9bf]/40 px-6 py-4"
+              className="flex flex-wrap items-center justify-between gap-4 bg-white rounded-xl border border-border/40 px-6 py-4"
             >
               <div className="min-w-0">
-                <p className="font-medium text-[#221a0f] truncate">{chamber.name}</p>
-                {chamber.city && <p className="text-xs text-[#8A7E6E] truncate">{chamber.city}</p>}
+                <p className="font-medium text-ink truncate">{chamber.name}</p>
+                {chamber.city && <p className="text-xs text-ink-subtle truncate">{chamber.city}</p>}
+                {inlineError?.tenantId === chamber.id && (
+                  <p className="mt-1 text-xs text-red-600">{inlineError.message}</p>
+                )}
               </div>
-              <Button
-                variant="outline"
-                className="flex-shrink-0"
-                onClick={() => setActiveModalTenant({ id: chamber.id, name: chamber.name })}
-              >
-                Connect with existing ID
-              </Button>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <Button
+                  variant="outline"
+                  onClick={() => setActiveModalTenant({ id: chamber.id, name: chamber.name })}
+                >
+                  Connect with existing ID
+                </Button>
+                <Button
+                  loading={isConnecting && pendingTenantId === chamber.id}
+                  disabled={isConnecting && pendingTenantId !== chamber.id}
+                  onClick={() => connect(chamber.id)}
+                >
+                  Register
+                </Button>
+              </div>
             </li>
           ))}
         </ul>

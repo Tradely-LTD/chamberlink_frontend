@@ -48,12 +48,21 @@ const CONNECTIONS = [
 
 let checkRosterCalls: { tenantId: string; legacyMemberId: string }[];
 let connectRosterCalls: { tenantId: string; legacyMemberId: string }[];
+let connectCalls: { tenantId: string }[];
 let checkRosterResponse: { status: number; body: unknown };
 let connectRosterResponse: { status: number; body: unknown };
+let connectResponse: { status: number; body: unknown };
+// Mutable so a "created" POST /membership/connections response is reflected
+// on the NEXT GET — mirrors the real backend's state change, so the
+// invalidatesTags-driven refetch actually shows a chamber disappearing from
+// availableChambers instead of the GET stub always returning a fixed list.
+let currentConnections: typeof CONNECTIONS;
 
 const installFetchMock = () => {
   checkRosterCalls = [];
   connectRosterCalls = [];
+  connectCalls = [];
+  currentConnections = [...CONNECTIONS];
   global.fetch = vi.fn(async (input: RequestInfo | URL) => {
     const request = input instanceof Request ? input : new Request(input as string);
     const url = request.url;
@@ -62,8 +71,35 @@ const installFetchMock = () => {
     if (url.includes('/tenants/public/onboarded')) {
       return jsonResponse({ success: true, data: CHAMBERS });
     }
+    if (url.includes('/membership/connections/active') && method === 'PATCH') {
+      return jsonResponse({ success: true, message: 'Active chamber switched' });
+    }
     if (url.includes('/membership/connections') && !url.includes('/roster') && method === 'GET') {
-      return jsonResponse({ success: true, data: CONNECTIONS });
+      return jsonResponse({ success: true, data: currentConnections });
+    }
+    if (url.includes('/membership/connections') && !url.includes('/roster') && method === 'POST') {
+      const body = await request.clone().json();
+      connectCalls.push(body);
+      if (connectResponse.status === 201) {
+        const chamber = CHAMBERS.find((c) => c.id === body.tenantId);
+        currentConnections = [
+          ...currentConnections,
+          {
+            tenantId: body.tenantId,
+            tenantName: chamber?.name ?? body.tenantId,
+            tenantSlug: chamber?.slug ?? '',
+            tenantLogoUrl: null,
+            memberId: 'NEW-0001',
+            status: 'pending_payment',
+            tierId: 't1',
+            tierName: 'Ordinary',
+            memberSince: new Date().toISOString(),
+            expiresAt: null,
+            isActive: false,
+          },
+        ];
+      }
+      return jsonResponse(connectResponse.body, connectResponse.status);
     }
     if (url.includes('/membership/connections/roster/check') && method === 'POST') {
       const body = await request.clone().json();
@@ -99,6 +135,7 @@ beforeEach(() => {
   installFetchMock();
   checkRosterResponse = { status: 200, body: { success: true, data: { matched: false } } };
   connectRosterResponse = { status: 201, body: { success: true, data: {}, message: 'created' } };
+  connectResponse = { status: 201, body: { success: true, data: {}, message: 'created' } };
 });
 afterEach(() => {
   vi.restoreAllMocks();
@@ -204,6 +241,52 @@ describe('ChamberNetworkPage — race condition: claimed by someone else between
     );
     // Still on the preview step — no auto-retry, no crash.
     expect(screen.getByText('Is this you?')).toBeInTheDocument();
+  });
+});
+
+describe('ChamberNetworkPage — Register button (mint a brand-new membership, no legacy ID)', () => {
+  it('shows Register alongside Connect for a not-yet-connected chamber, and a successful click moves it into My Chambers', async () => {
+    const user = userEvent.setup();
+    renderPage();
+    await waitFor(() => expect(screen.getByText('Lagos Chamber of Commerce')).toBeInTheDocument());
+
+    expect(screen.getByRole('button', { name: 'Connect with existing ID' })).toBeInTheDocument();
+    const registerButton = screen.getByRole('button', { name: 'Register' });
+    expect(registerButton).toBeInTheDocument();
+
+    await user.click(registerButton);
+
+    expect(connectCalls).toEqual([{ tenantId: 'tenant-a' }]);
+    // 'created' outcome drops the chamber out of availableChambers once
+    // getMyConnections refetches — same invalidation path Connect uses.
+    await waitFor(() => expect(screen.queryByText('Lagos Chamber of Commerce')).not.toBeInTheDocument());
+  });
+
+  it('surfaces the noop message inline when already connected (race with another tab)', async () => {
+    connectResponse = { status: 200, body: { success: true, data: {}, message: 'noop' } };
+    const user = userEvent.setup();
+    renderPage();
+    await waitFor(() => expect(screen.getByText('Lagos Chamber of Commerce')).toBeInTheDocument());
+
+    await user.click(screen.getByRole('button', { name: 'Register' }));
+    await waitFor(() => expect(screen.getByText("You're already connected to this chamber.")).toBeInTheDocument());
+  });
+
+  it('shows the inline suspended message on a 409, no toast', async () => {
+    connectResponse = {
+      status: 409,
+      body: { success: false, message: 'Your connection to this chamber is suspended — contact the chamber admin.' },
+    };
+    const user = userEvent.setup();
+    renderPage();
+    await waitFor(() => expect(screen.getByText('Lagos Chamber of Commerce')).toBeInTheDocument());
+
+    await user.click(screen.getByRole('button', { name: 'Register' }));
+    await waitFor(() =>
+      expect(
+        screen.getByText('Your connection to this chamber is suspended — contact the chamber admin.')
+      ).toBeInTheDocument()
+    );
   });
 });
 

@@ -8,6 +8,7 @@ import { ForgotPasswordPage } from '@pages/ForgotPasswordPage';
 import { ResetPasswordPage } from '@pages/ResetPasswordPage';
 import { UnauthorizedPage } from '@pages/UnauthorizedPage';
 import { ProtectedRoute } from '@shared/guards/ProtectedRoute';
+import { RequireChamberConnection } from '@shared/guards/RequireChamberConnection';
 import { DashboardShell } from '@features/dashboard/components/DashboardShell';
 import { OverviewPage } from '@pages/dashboard/OverviewPage';
 import { ProfilePage } from '@pages/dashboard/ProfilePage';
@@ -30,6 +31,7 @@ import { ExportDocumentsPage } from '@pages/dashboard/ExportDocumentsPage';
 import { ExportDocGeneratorPage } from '@pages/dashboard/ExportDocGeneratorPage';
 import { TradeDataApiPage } from '@pages/dashboard/TradeDataApiPage';
 import { WhiteLabelPage } from '@pages/dashboard/WhiteLabelPage';
+import { AllUsersPage } from '@pages/dashboard/AllUsersPage';
 import { MemberManagementPage } from '@pages/dashboard/MemberManagementPage';
 
 export const router = createBrowserRouter([
@@ -61,7 +63,9 @@ export const router = createBrowserRouter([
             path: '/dashboard/membership',
             element: (
               <ProtectedRoute allowedRoles={['member']}>
-                <MembershipPage />
+                <RequireChamberConnection>
+                  <MembershipPage />
+                </RequireChamberConnection>
               </ProtectedRoute>
             ),
           },
@@ -69,7 +73,9 @@ export const router = createBrowserRouter([
             path: '/dashboard/documents',
             element: (
               <ProtectedRoute allowedRoles={['member']}>
-                <DocumentsPage />
+                <RequireChamberConnection>
+                  <DocumentsPage />
+                </RequireChamberConnection>
               </ProtectedRoute>
             ),
           },
@@ -93,7 +99,9 @@ export const router = createBrowserRouter([
             path: '/dashboard/trade-fair/booths',
             element: (
               <ProtectedRoute allowedRoles={['member']}>
-                <TradeFairBoothsPage />
+                <RequireChamberConnection>
+                  <TradeFairBoothsPage />
+                </RequireChamberConnection>
               </ProtectedRoute>
             ),
           },
@@ -120,18 +128,38 @@ export const router = createBrowserRouter([
             ),
           },
 
-          // Shared routes (members + admins)
-          { path: '/dashboard/trade-fair', element: <TradeFairPage /> },
-          { path: '/dashboard/academy', element: <AcademyPage /> },
-          { path: '/dashboard/trade-corridors', element: <TradeCorrridorsPage /> },
-          { path: '/dashboard/exporter-visibility', element: <ExporterVisibilityPage /> },
-          { path: '/dashboard/export-documents', element: <ExportDocumentsPage /> },
+          // Shared routes (members + admins) — RequireChamberConnection only
+          // blocks role==='member' with zero connections; every other role
+          // (institutional_subscriber, staff_operator, etc.) passes through
+          // unconditionally, mirroring the backend's requireChamberConnection.
+          {
+            path: '/dashboard/trade-fair',
+            element: <RequireChamberConnection><TradeFairPage /></RequireChamberConnection>,
+          },
+          {
+            path: '/dashboard/academy',
+            element: <RequireChamberConnection><AcademyPage /></RequireChamberConnection>,
+          },
+          {
+            path: '/dashboard/trade-corridors',
+            element: <RequireChamberConnection><TradeCorrridorsPage /></RequireChamberConnection>,
+          },
+          {
+            path: '/dashboard/exporter-visibility',
+            element: <RequireChamberConnection><ExporterVisibilityPage /></RequireChamberConnection>,
+          },
+          {
+            path: '/dashboard/export-documents',
+            element: <RequireChamberConnection><ExportDocumentsPage /></RequireChamberConnection>,
+          },
           // Generator routes — BEFORE /:id patterns (more-specific paths first)
           {
             path: '/dashboard/export-documents/generate',
             element: (
               <ProtectedRoute allowedRoles={['member']}>
-                <ExportDocGeneratorPage />
+                <RequireChamberConnection>
+                  <ExportDocGeneratorPage />
+                </RequireChamberConnection>
               </ProtectedRoute>
             ),
           },
@@ -139,7 +167,9 @@ export const router = createBrowserRouter([
             path: '/dashboard/export-documents/generate/:draftId',
             element: (
               <ProtectedRoute allowedRoles={['member']}>
-                <ExportDocGeneratorPage />
+                <RequireChamberConnection>
+                  <ExportDocGeneratorPage />
+                </RequireChamberConnection>
               </ProtectedRoute>
             ),
           },
@@ -174,6 +204,14 @@ export const router = createBrowserRouter([
             element: (
               <ProtectedRoute allowedRoles={['super_admin']}>
                 <WhiteLabelPage />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: '/dashboard/all-users',
+            element: (
+              <ProtectedRoute allowedRoles={['super_admin']}>
+                <AllUsersPage />
               </ProtectedRoute>
             ),
           },

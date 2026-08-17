@@ -35,11 +35,11 @@ export function VerifyEmailForm() {
   if (success) {
     return (
       <div className="flex flex-col items-center gap-4 text-center">
-        <div className="text-5xl text-[#023293]">&#10003;</div>
-        <h2 className="text-xl font-semibold text-[#023293]">
+        <div className="text-5xl text-primary">&#10003;</div>
+        <h2 className="text-xl font-semibold text-primary">
           Email Verified!
         </h2>
-        <p className="text-sm text-[#8A7E6E]">
+        <p className="text-sm text-ink-subtle">
           Redirecting to login in 3 seconds&hellip;
         </p>
         <Button onClick={() => navigate('/login')}>Go to Login</Button>
@@ -51,7 +51,7 @@ export function VerifyEmailForm() {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-      <p className="text-sm text-[#8A7E6E]">
+      <p className="text-sm text-ink-subtle">
         Enter the 6-digit code sent to your email address.
       </p>
       {errMsg && <ErrorBanner message={errMsg} />}
