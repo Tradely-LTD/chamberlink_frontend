@@ -227,7 +227,13 @@ describe('AC-2: Login Flow', () => {
   });
 
   it('AC-2.9 — "Register" link navigates to /register', () => {
-    const code = readSrc('features', 'auth', 'components', 'LoginForm.tsx');
+    // The link itself now lives in AuthShell (rendered by LoginPage with
+    // secondaryLinkTo="/register") rather than inside LoginForm — the two
+    // pages' "New to Chamberlink? / Already have an account?" navigation
+    // moved to the shared shell so it isn't duplicated by the form AND the
+    // page wrapper. The behavior this criterion cares about (a reachable
+    // /register link from the login screen) is unchanged.
+    const code = readSrc('pages', 'LoginPage.tsx');
     expect(code).toContain('/register');
   });
 });

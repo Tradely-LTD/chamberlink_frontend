@@ -94,15 +94,6 @@ export function LoginForm() {
       <Button type="submit" loading={isLoading} className="w-full">
         Sign In
       </Button>
-      <p className="text-center text-sm text-ink-subtle">
-        Don&apos;t have an account?{' '}
-        <Link
-          to="/register"
-          className="text-primary font-medium hover:underline"
-        >
-          Register
-        </Link>
-      </p>
     </form>
   );
 }
