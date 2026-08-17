@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { emptyApi } from '@shared/api/emptyApi';
 import { SkeletonCard } from '@shared/ui/SkeletonCard';
 import { Button } from '@shared/ui/Button';
 import { ErrorBanner } from '@shared/ui/ErrorBanner';
 import { useAppSelector } from '@shared/hooks/useAppDispatch';
+import { useHasActiveConnection } from '@features/membership';
 
 // ── Types ─────────────────────────────────────────────────────────────────
 
@@ -496,7 +497,9 @@ function ExporterDetailModal({
 // ── Member View ────────────────────────────────────────────────────────────
 
 function MemberExporterView() {
+  const navigate = useNavigate();
   const { data: profileData, isLoading, isError, error } = useGetMyExporterProfileQuery();
+  const { hasActiveConnection } = useHasActiveConnection();
   const [verifyUpgrade, { isLoading: verifying }] = useVerifyTierUpgradeMutation();
 
   const [showCreate, setShowCreate] = useState(false);
@@ -572,12 +575,32 @@ function MemberExporterView() {
 
       {!profile ? (
         <div className="bg-white rounded-xl border border-border p-12 text-center">
-          <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: '#d6e3ff' }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 32, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 32`, color: '#023293' }}>storefront</span>
+          <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: hasActiveConnection ? '#d6e3ff' : '#ffdea5' }}>
+            <span
+              className="material-symbols-outlined"
+              style={{ fontSize: 32, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 32`, color: hasActiveConnection ? '#023293' : '#5d4201' }}
+            >
+              {hasActiveConnection ? 'storefront' : 'lock'}
+            </span>
           </div>
-          <h3 className="font-bold text-ink mb-2">Get Listed in the Export Directory</h3>
-          <p className="text-sm text-ink-subtle mb-6 max-w-sm mx-auto">Create your free exporter profile to reach international buyers through the NACCIMA trade network.</p>
-          <button onClick={() => setShowCreate(true)} className="rounded-lg px-6 py-2.5 text-sm font-semibold text-white" style={{ background: '#023293' }}>Create Exporter Profile</button>
+          {hasActiveConnection ? (
+            <>
+              <h3 className="font-bold text-ink mb-2">Get Listed in the Export Directory</h3>
+              <p className="text-sm text-ink-subtle mb-6 max-w-sm mx-auto">Create your free exporter profile to reach international buyers through the NACCIMA trade network.</p>
+              <button onClick={() => setShowCreate(true)} className="rounded-lg px-6 py-2.5 text-sm font-semibold text-white" style={{ background: '#023293' }}>Create Exporter Profile</button>
+            </>
+          ) : (
+            <>
+              {/* Blocked BEFORE the create form ever opens — no point letting a
+                  member fill out a whole profile only to reject it at submit.
+                  Matches requireActiveMembership on the backend. */}
+              <h3 className="font-bold text-ink mb-2">Active Membership Required</h3>
+              <p className="text-sm text-ink-subtle mb-6 max-w-sm mx-auto">
+                Creating an exporter profile requires an active, paid membership — complete your dues payment first.
+              </p>
+              <Button onClick={() => navigate('/dashboard/membership')}>Go to Membership</Button>
+            </>
+          )}
         </div>
       ) : (
         <>
