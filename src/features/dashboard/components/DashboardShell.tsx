@@ -25,6 +25,7 @@ const pageTitles: Record<string, string> = {
   '/dashboard/trade-data-api': 'Trade Data API',
   '/dashboard/members': 'Member Management',
   '/dashboard/white-label': 'White-Label Console',
+  '/dashboard/settings': 'Platform Settings',
 };
 
 export function DashboardShell() {

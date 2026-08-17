@@ -99,6 +99,7 @@ const superAdminNavItems: NavItem[] = [
   { label: 'Export Documents',    to: '/dashboard/export-documents',    icon: 'receipt_long' },
   { label: 'Academy',             to: '/dashboard/academy',             icon: 'school' },
   { label: 'White-Label',         to: '/dashboard/white-label',         icon: 'corporate_fare' },
+  { label: 'Settings',            to: '/dashboard/settings',            icon: 'tune' },
   { label: 'My Chambers',         to: '/dashboard/connections',         icon: 'corporate_fare' },
   { label: 'My Profile',          to: '/dashboard/profile',             icon: 'manage_accounts' },
 ];

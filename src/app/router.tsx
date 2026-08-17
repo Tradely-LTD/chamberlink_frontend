@@ -32,6 +32,7 @@ import { ExportDocGeneratorPage } from '@pages/dashboard/ExportDocGeneratorPage'
 import { TradeDataApiPage } from '@pages/dashboard/TradeDataApiPage';
 import { WhiteLabelPage } from '@pages/dashboard/WhiteLabelPage';
 import { AllUsersPage } from '@pages/dashboard/AllUsersPage';
+import { SettingsPage } from '@pages/dashboard/SettingsPage';
 import { MemberManagementPage } from '@pages/dashboard/MemberManagementPage';
 
 export const router = createBrowserRouter([
@@ -212,6 +213,14 @@ export const router = createBrowserRouter([
             element: (
               <ProtectedRoute allowedRoles={['super_admin']}>
                 <AllUsersPage />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: '/dashboard/settings',
+            element: (
+              <ProtectedRoute allowedRoles={['super_admin']}>
+                <SettingsPage />
               </ProtectedRoute>
             ),
           },
