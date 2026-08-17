@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { store } from './store';
 import { tokenStorage } from '@shared/utils/tokenStorage';
 import { setCredentials, logout } from '@features/auth/authSlice';
+import { emptyApi } from '@shared/api/emptyApi';
 
 interface Props {
   children: React.ReactNode;
@@ -38,6 +39,7 @@ async function restoreSession(): Promise<void> {
       // over that. Just don't authenticate this particular page load.
       if (refreshRes.status === 401) tokenStorage.remove();
       store.dispatch(logout());
+      store.dispatch(emptyApi.util.resetApiState());
       return;
     }
 

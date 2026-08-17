@@ -7,6 +7,7 @@ import { returnOrigin } from '@shared/utils/returnOrigin';
 import { useLogoutUserMutation } from '@features/auth/authApi';
 import { useGetMyTenantQuery } from '@features/white-label';
 import { useHasChamberConnection } from '@features/membership';
+import { emptyApi } from '@shared/api/emptyApi';
 import type { Role } from '@entities/user/types';
 
 interface NavItem {
@@ -175,6 +176,13 @@ export function Sidebar() {
     const refreshToken = tokenStorage.get();
     if (refreshToken) logoutUser({ refreshToken });
     dispatch(logout());
+    // Client-side navigation to /login keeps the SPA (and its RTK Query
+    // cache) alive in memory — without this, a different account logging in
+    // afterward in the same tab briefly renders the PREVIOUS account's
+    // cached profile/membership/connections data on first paint, before the
+    // real fetch for the new account corrects it. Reported live as "My
+    // Profile shows real info, then drops to just Account Details."
+    dispatch(emptyApi.util.resetApiState());
     tokenStorage.remove();
 
     // If this session arrived via the SSO handoff from chamberlink_website,
