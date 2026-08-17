@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import {
   useCreateEcoCertificateMutation,
+  useCreateEcoCertificateWithFilesMutation,
   useSaveDraftEcoMutation,
   useUpdateEcoDraftMutation,
   useSubmitEcoDraftMutation,
@@ -12,6 +13,7 @@ import {
 import type { NewECertPayload } from '@features/eco/ecoApi';
 import { useGetDocumentsQuery, useUploadDocumentMutation } from '@features/documents';
 import type { DocumentCategory } from '@features/documents';
+import { useHasChamberConnection } from '@features/membership';
 import { NIGERIAN_STATES } from '@shared/constants/nigerianStates';
 import { Input } from '@shared/ui/Input';
 import { Select } from '@shared/ui/Select';
@@ -61,28 +63,43 @@ const positiveNumberError = (value: string, label: string): string | undefined =
 
 type SupportingDocMode = 'library' | 'upload';
 
-// "Upload New" never attaches the raw file to the eCO create/draft/submit
-// request — it uploads immediately to the member's document library (the
-// same endpoint the "From Library" tab reads from) and only ever hands the
-// parent a docId, exactly like picking an existing library doc. This keeps
-// eCO submission bodies pure JSON, with no multipart path to maintain.
-function DocSlot({ label, filterCategory, selectedDocId, onSelectDocId }: {
+// "Upload New" behavior depends on whether this applicant has a chamber
+// connection:
+//  - Connected member: uploads immediately to their document library (POST
+//    /membership/me/documents — same endpoint "From Library" reads from) and
+//    hands the parent a docId. Reusable across applications, no re-upload on
+//    every draft save/submit retry.
+//  - Zero-connection GUEST applicant: the document-library endpoint requires
+//    an active chamber connection server-side and 404s for a guest, so there
+//    is no library to upload into (and "From Library" would always be empty
+//    for them anyway — hidden entirely). Instead the raw File is held in
+//    local state and handed to the parent via onSelectFile, to be attached
+//    directly to the eCO create/draft/submit request as multipart/form-data
+//    — exactly the guest/non-member CoO path this module exists to serve.
+function DocSlot({ label, filterCategory, selectedDocId, onSelectDocId, selectedFile, onSelectFile, hasConnection }: {
   label: string; filterCategory: DocumentCategory;
   selectedDocId: string | null;
   onSelectDocId: (id: string | null) => void;
+  selectedFile: File | null;
+  onSelectFile: (file: File | null) => void;
+  hasConnection: boolean;
 }) {
-  const { data: allDocs = [] } = useGetDocumentsQuery();
+  const { data: allDocs = [] } = useGetDocumentsQuery(undefined, { skip: !hasConnection });
   const [uploadDocument, { isLoading: isUploading }] = useUploadDocumentMutation();
-  const [mode, setMode] = useState<SupportingDocMode>('library');
+  const [mode, setMode] = useState<SupportingDocMode>(hasConnection ? 'library' : 'upload');
   const [uploadError, setUploadError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const matchingDocs = allDocs.filter((d) => d.category === filterCategory);
   const selectedDoc = allDocs.find((d) => d.id === selectedDocId);
-  const isFilled = !!selectedDocId;
+  const isFilled = !!selectedDocId || !!selectedFile;
 
   const handleFileSelected = async (file: File | null) => {
     if (!file) return;
     setUploadError(null);
+    if (!hasConnection) {
+      onSelectFile(file);
+      return;
+    }
     try {
       const fd = new FormData();
       fd.append('document', file);
@@ -94,6 +111,11 @@ function DocSlot({ label, filterCategory, selectedDocId, onSelectDocId }: {
     } finally {
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
+  };
+
+  const handleRemove = () => {
+    onSelectDocId(null);
+    onSelectFile(null);
   };
 
   return (
@@ -108,14 +130,17 @@ function DocSlot({ label, filterCategory, selectedDocId, onSelectDocId }: {
           </span>
           <p className="text-sm font-medium text-ink truncate">{label}</p>
         </div>
-        <div className="flex items-center gap-1 bg-surface rounded-lg border border-border p-0.5 flex-shrink-0">
-          {(['library', 'upload'] as const).map((m) => (
-            <button key={m} onClick={() => { setMode(m); setUploadError(null); onSelectDocId(null); }}
-              className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${mode === m ? 'bg-primary text-white' : 'text-ink-subtle hover:text-ink'}`}>
-              {m === 'library' ? 'From Library' : 'Upload New'}
-            </button>
-          ))}
-        </div>
+        {/* No library to switch to for a zero-connection guest applicant — see comment above. */}
+        {hasConnection && (
+          <div className="flex items-center gap-1 bg-surface rounded-lg border border-border p-0.5 flex-shrink-0">
+            {(['library', 'upload'] as const).map((m) => (
+              <button key={m} onClick={() => { setMode(m); setUploadError(null); onSelectDocId(null); }}
+                className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${mode === m ? 'bg-primary text-white' : 'text-ink-subtle hover:text-ink'}`}>
+                {m === 'library' ? 'From Library' : 'Upload New'}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
       <div className="p-4">
         {mode === 'library' ? (
@@ -151,15 +176,15 @@ function DocSlot({ label, filterCategory, selectedDocId, onSelectDocId }: {
                 <span className="material-symbols-outlined animate-spin text-ink-subtle" style={{ fontSize: 20 }} aria-hidden="true">progress_activity</span>
                 <p className="text-sm text-ink-subtle">Uploading…</p>
               </div>
-            ) : selectedDocId ? (
+            ) : (selectedDocId || selectedFile) ? (
               <div className="flex items-center gap-3 rounded-lg border border-primary bg-success-bg p-3">
                 <span className="material-symbols-outlined text-success flex-shrink-0" style={{ fontSize: 24 }} aria-hidden="true">description</span>
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-ink truncate">{selectedDoc?.name ?? 'Uploaded file'}</p>
-                  <p className="text-xs text-ink-subtle">Uploaded</p>
+                  <p className="text-sm font-medium text-ink truncate">{selectedFile?.name ?? selectedDoc?.name ?? 'Uploaded file'}</p>
+                  <p className="text-xs text-ink-subtle">{selectedFile ? `${(selectedFile.size / 1024).toFixed(0)} KB` : 'Uploaded'}</p>
                 </div>
                 <button type="button" onClick={() => fileInputRef.current?.click()} className="text-xs font-medium text-primary hover:underline flex-shrink-0">Replace</button>
-                <button type="button" onClick={() => onSelectDocId(null)} className="text-ink-subtle hover:text-danger flex-shrink-0" aria-label="Remove file">
+                <button type="button" onClick={handleRemove} className="text-ink-subtle hover:text-danger flex-shrink-0" aria-label="Remove file">
                   <span className="material-symbols-outlined" style={{ fontSize: 18 }}>close</span>
                 </button>
               </div>
@@ -167,7 +192,7 @@ function DocSlot({ label, filterCategory, selectedDocId, onSelectDocId }: {
               <button type="button" onClick={() => fileInputRef.current?.click()}
                 className="w-full rounded-lg border-2 border-dashed border-border-strong px-4 py-6 text-center hover:border-primary hover:bg-primary/5 transition-colors">
                 <span className="material-symbols-outlined text-ink-subtle mb-1" style={{ fontSize: 24 }} aria-hidden="true">upload_file</span>
-                <p className="text-sm text-ink-subtle">Attach or select from library</p>
+                <p className="text-sm text-ink-subtle">{hasConnection ? 'Attach or select from library' : 'Attach a file'}</p>
                 <p className="text-xs text-ink-subtle mt-0.5">PDF, JPEG, PNG · Max 10MB</p>
               </button>
             )}
@@ -263,12 +288,14 @@ export function EcoApplyPage() {
   const { data: onboardedTenants = [] } = useGetOnboardedTenantsQuery();
 
   const [createEco, { isLoading: isCreating }] = useCreateEcoCertificateMutation();
+  const [createEcoWithFiles, { isLoading: isCreatingWithFiles }] = useCreateEcoCertificateWithFilesMutation();
   const [saveDraftEco, { isLoading: isSavingDraft }] = useSaveDraftEcoMutation();
   const [updateDraft, { isLoading: isUpdating }] = useUpdateEcoDraftMutation();
   const [submitDraft, { isLoading: isSubmitting }] = useSubmitEcoDraftMutation();
-  const { data: myDocs = [] } = useGetDocumentsQuery();
+  const { hasConnection } = useHasChamberConnection();
+  const { data: myDocs = [] } = useGetDocumentsQuery(undefined, { skip: !hasConnection });
 
-  const isLoading = isCreating || isSubmitting;
+  const isLoading = isCreating || isCreatingWithFiles || isSubmitting;
   const [step, setStep] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [draftSaved, setDraftSaved] = useState(false);
@@ -286,6 +313,14 @@ export function EcoApplyPage() {
   const [signatureDocId, setSignatureDocId] = useState<string | null>(null);
   const [cacCertificateDocId, setCacCertificateDocId] = useState<string | null>(null);
   const [nepcCertificateDocId, setNepcCertificateDocId] = useState<string | null>(null);
+
+  // Populated only for a zero-connection guest applicant (see DocSlot) —
+  // attached directly to the request as multipart/form-data instead of a
+  // docId reference, since they have no document library to upload into.
+  const [invoiceFile, setInvoiceFile] = useState<File | null>(null);
+  const [signatureFile, setSignatureFile] = useState<File | null>(null);
+  const [cacCertificateFile, setCacCertificateFile] = useState<File | null>(null);
+  const [nepcCertificateFile, setNepcCertificateFile] = useState<File | null>(null);
 
   const chamberLocked = !!existingCert && existingCert.status !== 'draft';
 
@@ -360,11 +395,13 @@ export function EcoApplyPage() {
     invoiceTotal: positiveNumberError(form.invoiceTotal, 'Invoice Total'),
   };
 
-  // Compliance documents are always attached by reference (invoiceDocId etc.)
-  // — DocSlot uploads new files to the document library up front and hands
-  // back an id, so the eCO create/draft/submit request body is always plain
-  // JSON, never multipart. This avoids re-uploading the file bytes on every
-  // draft save/submit retry, and keeps the create endpoint's payload small.
+  // Compliance documents are attached by reference (invoiceDocId etc.) for a
+  // connected member — DocSlot uploads new files to their document library
+  // up front and hands back an id, keeping the eCO request body plain JSON.
+  // A zero-connection GUEST applicant has no document library to upload
+  // into, so any raw File they attached (invoiceFile etc.) is sent directly
+  // on THIS SAME request as multipart/form-data instead — the backend's
+  // ecoUpload middleware accepts either shape on the same routes.
   const buildJsonBody = (): Partial<NewECertPayload> => ({
     solidMineralId: form.solidMineralId || undefined,
     descriptionOfGoods: form.descriptionOfGoods || undefined,
@@ -404,15 +441,35 @@ export function EcoApplyPage() {
     nepcCertificateDocId: nepcCertificateDocId ?? undefined,
   });
 
+  const hasRawFiles = !!(invoiceFile || signatureFile || cacCertificateFile || nepcCertificateFile);
+
+  const buildFormDataOrJson = (): { isFormData: false; body: Partial<NewECertPayload> } | { isFormData: true; body: FormData } => {
+    const jsonBody = buildJsonBody();
+    if (!hasRawFiles) return { isFormData: false, body: jsonBody };
+
+    const fd = new FormData();
+    const append = (k: string, v: string | boolean | number | undefined) => { if (v !== undefined && v !== '') fd.append(k, String(v)); };
+    for (const [key, value] of Object.entries(jsonBody)) {
+      if (value === undefined) continue;
+      if (key === 'originStates') { fd.append('originStates', JSON.stringify(value)); continue; }
+      append(key, value as string | boolean | number);
+    }
+    if (invoiceFile) fd.append('invoice', invoiceFile);
+    if (signatureFile) fd.append('signature', signatureFile);
+    if (cacCertificateFile) fd.append('cacCertificate', cacCertificateFile);
+    if (nepcCertificateFile) fd.append('nepcCertificate', nepcCertificateFile);
+    return { isFormData: true, body: fd };
+  };
+
   const handleSaveDraft = async () => {
     setError(null);
     try {
-      const body = buildJsonBody();
+      const { isFormData, body } = buildFormDataOrJson();
       if (currentDraftId) {
-        const res = await updateDraft({ certId: currentDraftId, body }).unwrap();
+        const res = await updateDraft({ certId: currentDraftId, body: isFormData ? body : body }).unwrap();
         setCurrentDraftId(res.id);
       } else {
-        const res = await saveDraftEco(body).unwrap();
+        const res = await saveDraftEco(isFormData ? body : body).unwrap();
         setCurrentDraftId(res.id);
       }
       setDraftSaved(true);
@@ -432,10 +489,12 @@ export function EcoApplyPage() {
       setError('Invoice, Signature, CAC Certificate, and NEPC Certificate are all required to submit.');
       return;
     }
-    const body = buildJsonBody();
+    const { isFormData, body } = buildFormDataOrJson();
     try {
       if (currentDraftId) {
-        await submitDraft({ certId: currentDraftId, body: body as NewECertPayload }).unwrap();
+        await submitDraft({ certId: currentDraftId, body: isFormData ? body : body as NewECertPayload }).unwrap();
+      } else if (isFormData) {
+        await createEcoWithFiles(body).unwrap();
       } else {
         await createEco(body as NewECertPayload).unwrap();
       }
@@ -466,13 +525,13 @@ export function EcoApplyPage() {
   );
   const canContinueStep3 = !!(form.invoiceDate && form.invoiceTotal && Number(form.invoiceTotal) > 0);
   // All four documents are compulsory — an existing draft's already-saved key
-  // (invoiceFileKey etc. via existingCert) also counts, not just a docId
-  // picked in this session.
+  // (invoiceFileKey etc. via existingCert) also counts, not just a docId/file
+  // picked in this session. A raw File (guest applicant, no docId) counts too.
   const canContinueStep4 = !!(
-    (invoiceDocId || existingCert?.invoiceFileKey)
-    && (signatureDocId || existingCert?.signatureKey)
-    && (cacCertificateDocId || existingCert?.cacCertificateKey)
-    && (nepcCertificateDocId || existingCert?.nepcCertificateKey)
+    (invoiceDocId || invoiceFile || existingCert?.invoiceFileKey)
+    && (signatureDocId || signatureFile || existingCert?.signatureKey)
+    && (cacCertificateDocId || cacCertificateFile || existingCert?.cacCertificateKey)
+    && (nepcCertificateDocId || nepcCertificateFile || existingCert?.nepcCertificateKey)
   );
 
   const canContinue = [canContinueStep0, canContinueStep1, canContinueStep2, canContinueStep3, canContinueStep4, true];
@@ -738,10 +797,10 @@ export function EcoApplyPage() {
               <h2 className="font-medium text-ink">Compliance / Declaration Documents</h2>
               <p className="text-xs text-ink-subtle mt-1">All four documents below are required. Select from your library or upload new files.</p>
             </div>
-            <DocSlot label="Attach Invoice *" filterCategory="commercial_invoice" selectedDocId={invoiceDocId} onSelectDocId={setInvoiceDocId} />
-            <DocSlot label="Signature *" filterCategory="signature" selectedDocId={signatureDocId} onSelectDocId={setSignatureDocId} />
-            <DocSlot label="CAC Certificate *" filterCategory="cac_certificate" selectedDocId={cacCertificateDocId} onSelectDocId={setCacCertificateDocId} />
-            <DocSlot label="NEPC Certificate *" filterCategory="nepc_certificate" selectedDocId={nepcCertificateDocId} onSelectDocId={setNepcCertificateDocId} />
+            <DocSlot label="Attach Invoice *" filterCategory="commercial_invoice" selectedDocId={invoiceDocId} onSelectDocId={setInvoiceDocId} selectedFile={invoiceFile} onSelectFile={setInvoiceFile} hasConnection={hasConnection} />
+            <DocSlot label="Signature *" filterCategory="signature" selectedDocId={signatureDocId} onSelectDocId={setSignatureDocId} selectedFile={signatureFile} onSelectFile={setSignatureFile} hasConnection={hasConnection} />
+            <DocSlot label="CAC Certificate *" filterCategory="cac_certificate" selectedDocId={cacCertificateDocId} onSelectDocId={setCacCertificateDocId} selectedFile={cacCertificateFile} onSelectFile={setCacCertificateFile} hasConnection={hasConnection} />
+            <DocSlot label="NEPC Certificate *" filterCategory="nepc_certificate" selectedDocId={nepcCertificateDocId} onSelectDocId={setNepcCertificateDocId} selectedFile={nepcCertificateFile} onSelectFile={setNepcCertificateFile} hasConnection={hasConnection} />
           </div>
         )}
 
@@ -790,10 +849,10 @@ export function EcoApplyPage() {
             ]} />
 
             <ReviewSection title="Compliance Documents" onEdit={() => setStep(4)} rows={[
-              { label: 'Invoice', value: invoiceDocId ? (myDocs.find((d) => d.id === invoiceDocId)?.name ?? 'Attached') : '—' },
-              { label: 'Signature', value: signatureDocId ? (myDocs.find((d) => d.id === signatureDocId)?.name ?? 'Attached') : '—' },
-              { label: 'CAC Certificate', value: cacCertificateDocId ? (myDocs.find((d) => d.id === cacCertificateDocId)?.name ?? 'Attached') : '—' },
-              { label: 'NEPC Certificate', value: nepcCertificateDocId ? (myDocs.find((d) => d.id === nepcCertificateDocId)?.name ?? 'Attached') : '—' },
+              { label: 'Invoice', value: invoiceFile?.name ?? (invoiceDocId ? (myDocs.find((d) => d.id === invoiceDocId)?.name ?? 'Attached') : '—') },
+              { label: 'Signature', value: signatureFile?.name ?? (signatureDocId ? (myDocs.find((d) => d.id === signatureDocId)?.name ?? 'Attached') : '—') },
+              { label: 'CAC Certificate', value: cacCertificateFile?.name ?? (cacCertificateDocId ? (myDocs.find((d) => d.id === cacCertificateDocId)?.name ?? 'Attached') : '—') },
+              { label: 'NEPC Certificate', value: nepcCertificateFile?.name ?? (nepcCertificateDocId ? (myDocs.find((d) => d.id === nepcCertificateDocId)?.name ?? 'Attached') : '—') },
             ]} />
 
             {feeEstimate && (

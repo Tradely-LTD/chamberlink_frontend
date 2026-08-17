@@ -237,10 +237,10 @@ export function Sidebar() {
                 to={item.to}
                 end={item.end}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 rounded-lg border-l-2 px-3 py-2.5 text-sm font-medium transition-all ${
+                  `flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${
                     isActive
-                      ? 'border-white bg-white/15 pl-2.5 text-white'
-                      : 'border-transparent text-white/60 hover:bg-white/8 hover:text-white/90'
+                      ? 'bg-white/15 text-white'
+                      : 'text-white/60 hover:bg-white/8 hover:text-white/90'
                   }`
                 }
               >
