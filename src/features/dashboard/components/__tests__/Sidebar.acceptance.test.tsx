@@ -35,9 +35,14 @@ const jsonResponse = (body: unknown, status = 200) =>
 // other describe block leaves this at its default (0 connections), which is
 // harmless since none of their assertions touch the gated labels.
 let connectionsFixture: unknown[] = [];
+// When set, GET /membership/connections hangs until this resolves instead of
+// responding immediately — lets a test inspect the DOM WHILE the query is
+// still loading (the exact window the nav-flash regression lived in).
+let connectionsGate: Promise<void> | null = null;
 
 beforeEach(() => {
   connectionsFixture = [];
+  connectionsGate = null;
   // jsdom (this repo's vitest environment) has no ResizeObserver — Sidebar
   // uses one purely for a cosmetic "more items below the fold" scroll-fade
   // indicator, unrelated to what this test verifies. Stubbed here rather
@@ -54,6 +59,7 @@ beforeEach(() => {
       return jsonResponse({ success: true, data: { id: 'tenant-a', name: 'Lagos Chamber of Commerce' } });
     }
     if (request.url.includes('/membership/connections')) {
+      if (connectionsGate) await connectionsGate;
       return jsonResponse({ success: true, data: connectionsFixture });
     }
     throw new Error(`Unexpected fetch in Sidebar acceptance test: ${request.url}`);
@@ -134,9 +140,13 @@ describe('Sidebar — chamber-scoped modules hidden for a zero-connection member
   it('hides Trade Fair/Academy/Membership/Trade Corridors/Exporter Visibility/Export Documents at 0 connections', async () => {
     connectionsFixture = [];
     renderSidebarForRole('member');
-    await waitFor(() => expect(screen.getByText('Dashboard')).toBeInTheDocument());
+    // The connections query defaults to the FULL list while loading (see the
+    // nav-flash regression test below) — wait for it to actually resolve
+    // before asserting the gated items are gone, rather than asserting
+    // immediately on the pre-resolution render.
+    await waitFor(() => expect(screen.queryByText('Trade Fair')).not.toBeInTheDocument());
 
-    for (const label of ['Trade Fair', 'Academy', 'Membership', 'Trade Corridors', 'Exporter Visibility', 'Export Documents']) {
+    for (const label of ['Academy', 'Membership', 'Trade Corridors', 'Exporter Visibility', 'Export Documents']) {
       expect(screen.queryByText(label)).not.toBeInTheDocument();
     }
     // Always-visible items stay visible regardless of connection count.
@@ -163,6 +173,25 @@ describe('Sidebar — chamber-scoped modules hidden for a zero-connection member
     renderSidebarForRole('chamber_admin');
     await waitFor(() => expect(screen.getByText('Dashboard')).toBeInTheDocument());
     expect(screen.getByText('Trade Fair')).toBeInTheDocument();
+    expect(screen.getByText('Academy')).toBeInTheDocument();
+  });
+
+  it('regression: does NOT flash the gated (narrowed) nav while the connections query is still loading for a connected member — shows the full list until the answer is known, then stays full', async () => {
+    let releaseGate: () => void = () => {};
+    connectionsGate = new Promise((resolve) => { releaseGate = resolve; });
+    connectionsFixture = [{ tenantId: 'tenant-a', status: 'active' }];
+
+    renderSidebarForRole('member');
+    // While the connections fetch is still in flight, the gated items must
+    // already be present — the old behavior defaulted to the NARROWED list
+    // during loading, so a connected member saw the nav shrink then expand.
+    await waitFor(() => expect(screen.getByText('Dashboard')).toBeInTheDocument());
+    expect(screen.getByText('Trade Fair')).toBeInTheDocument();
+    expect(screen.getByText('Academy')).toBeInTheDocument();
+
+    // Resolve the fetch — for a connected member the list should stay exactly as-is.
+    releaseGate();
+    await waitFor(() => expect(screen.getByText('Trade Fair')).toBeInTheDocument());
     expect(screen.getByText('Academy')).toBeInTheDocument();
   });
 });

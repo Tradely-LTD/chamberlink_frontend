@@ -13,3 +13,4 @@ export { ChamberSwitcher } from './components/ChamberSwitcher';
 export { ConnectChamberModal } from './components/ConnectChamberModal';
 export { useConnectToChamber } from './hooks/useConnectToChamber';
 export { useHasChamberConnection } from './hooks/useHasChamberConnection';
+export { useHasActiveConnection } from './hooks/useHasActiveConnection';

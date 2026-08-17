@@ -165,10 +165,17 @@ export function Sidebar() {
 
   // Shares the same RTK Query cache entry ChamberSwitcher (rendered in
   // DashboardShell's header) already keeps warm — no extra request.
-  const { hasConnection } = useHasChamberConnection();
+  const { hasConnection, isLoading: isLoadingConnections } = useHasChamberConnection();
   const rawItems = getNavItems(role);
+  // While the connections query is still in flight (every fresh session
+  // load), default to the FULL list rather than the gated one — the
+  // opposite default flashed "limited nav, then expands" for every
+  // connected member on load, which read as a bug even though it was just
+  // loading state resolving. Optimistically showing everything and
+  // narrowing once we KNOW the member has zero connections is a smaller,
+  // rarer flash (only zero-connection members see anything narrow at all).
   const visibleItems =
-    role === 'member' && !hasConnection
+    role === 'member' && !isLoadingConnections && !hasConnection
       ? rawItems.filter((item) => !GATED_LABELS.has(item.label))
       : rawItems;
 

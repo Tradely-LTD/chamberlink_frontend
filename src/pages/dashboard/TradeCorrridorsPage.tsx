@@ -6,6 +6,7 @@ import { Button } from '@shared/ui/Button';
 import { ErrorBanner } from '@shared/ui/ErrorBanner';
 import { Select } from '@shared/ui/Select';
 import { useAppSelector } from '@shared/hooks/useAppDispatch';
+import { useHasActiveConnection } from '@features/membership';
 
 // ── Types ─────────────────────────────────────────────────────────────────
 
@@ -292,6 +293,7 @@ function MemberCorridorsView() {
   const [join] = useJoinCorridorMutation();
   const [leave] = useLeaveCorridorMutation();
   const [verifyCorridorSponsor, { isLoading: verifying }] = useVerifyCorridorSponsorMutation();
+  const { hasActiveConnection } = useHasActiveConnection();
 
   const [tab, setTab] = useState<'corridors' | 'my-activity'>('corridors');
   const [sponsorCorridor, setSponsorCorridor] = useState<TradeCorridor | null>(null);
@@ -320,6 +322,13 @@ function MemberCorridorsView() {
 
   const handleJoin = async (corridorId: string) => {
     setFollowError(null);
+    // Blocked BEFORE the request round-trips — no point letting the click
+    // fire and fail when we already know it will. Matches
+    // requireActiveMembership on the backend.
+    if (!hasActiveConnection) {
+      setFollowError('Following a trade corridor requires an active, paid membership — complete your dues payment first.');
+      return;
+    }
     setJoiningId(corridorId);
     try {
       await join(corridorId).unwrap();
@@ -483,9 +492,16 @@ function MemberCorridorsView() {
                       <button
                         disabled={joiningId === c.id}
                         onClick={() => handleJoin(c.id)}
-                        className="flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium border border-primary/30 bg-primary/5 text-primary hover:bg-primary/10 disabled:opacity-50 transition-colors"
+                        title={hasActiveConnection ? undefined : 'Requires an active, paid membership'}
+                        className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium border transition-colors disabled:opacity-50 ${
+                          hasActiveConnection
+                            ? 'border-primary/30 bg-primary/5 text-primary hover:bg-primary/10'
+                            : 'border-border bg-surface-alt text-ink-subtle hover:bg-border/20'
+                        }`}
                       >
-                        <span className="material-symbols-outlined" style={{ fontSize: 16 }}>bookmark_add</span>
+                        <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
+                          {hasActiveConnection ? 'bookmark_add' : 'lock'}
+                        </span>
                         {joiningId === c.id ? 'Following…' : 'Follow Corridor'}
                       </button>
                     )}

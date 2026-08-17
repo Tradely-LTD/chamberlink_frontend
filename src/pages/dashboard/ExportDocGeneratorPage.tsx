@@ -9,7 +9,9 @@ import { Input } from '@shared/ui/Input';
 import { Button } from '@shared/ui/Button';
 import { ErrorBanner } from '@shared/ui/ErrorBanner';
 import { SkeletonCard } from '@shared/ui/SkeletonCard';
+import { EmptyState } from '@shared/ui/EmptyState';
 import { Select } from '@shared/ui/Select';
+import { useHasActiveConnection } from '@features/membership';
 
 // Steps differ by doc type
 const INVOICE_STEPS  = ['Document Type', 'Parties', 'Line Items', 'Details', 'Review'];
@@ -729,6 +731,7 @@ export function ExportDocGeneratorPage() {
 
   const [generateDoc, { isLoading }] = useGenerateExportDocumentMutation();
   const { data: draft, isLoading: isLoadingDraft } = useGetExportDocDraftQuery(draftId ?? '', { skip: !draftId });
+  const { hasActiveConnection, isLoading: isLoadingConnection } = useHasActiveConnection();
 
   // When type changes reset to step 0 so step indices stay valid
   useEffect(() => {
@@ -841,7 +844,24 @@ export function ExportDocGeneratorPage() {
     }
   };
 
-  if (isLoadingDraft) return <div className="p-6"><SkeletonCard /></div>;
+  if (isLoadingDraft || isLoadingConnection) return <div className="p-6"><SkeletonCard /></div>;
+
+  // Blocked BEFORE the multi-step form ever renders — no point letting a
+  // member fill out invoice/packing-list details across several steps only
+  // to reject them at the final "Generate" click. Matches
+  // requireActiveMembership on the backend.
+  if (!hasActiveConnection) {
+    return (
+      <div className="p-6 max-w-2xl">
+        <EmptyState
+          icon="lock"
+          title="Active Membership Required"
+          message="Generating export documents requires an active, paid membership — complete your dues payment first."
+          action={<Button onClick={() => navigate('/dashboard/membership')}>Go to Membership</Button>}
+        />
+      </div>
+    );
+  }
 
   const typeLabel = isPacking ? 'Packing List' : 'Commercial Invoice';
 
