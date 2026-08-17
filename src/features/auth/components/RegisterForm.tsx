@@ -1,6 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '@shared/hooks/useAppDispatch';
 import { setPendingVerify } from '../authSlice';
 import { useRegisterMutation } from '../authApi';
@@ -98,15 +98,6 @@ export function RegisterForm() {
       <Button type="submit" loading={isLoading} className="w-full mt-2">
         Create Account
       </Button>
-      <p className="text-center text-sm text-ink-subtle">
-        Already have an account?{' '}
-        <Link
-          to="/login"
-          className="text-primary font-medium hover:underline"
-        >
-          Sign in
-        </Link>
-      </p>
     </form>
   );
 }

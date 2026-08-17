@@ -50,6 +50,11 @@ export default {
       },
       fontFamily: {
         sans: ['Inter', ...defaultTheme.fontFamily.sans],
+        // AuthShell only (login/register) — the rest of the app stays on
+        // font-sans (Inter). Not a global rebrand, just the auth pages'
+        // distinct, warmer treatment.
+        manrope: ['Manrope', ...defaultTheme.fontFamily.sans],
+        display: ['"Playfair Display"', ...defaultTheme.fontFamily.serif],
       },
       boxShadow: {
         card: '0 1px 2px 0 rgb(0 0 0 / 0.04), 0 1px 3px 0 rgb(0 0 0 / 0.06)',

@@ -190,6 +190,24 @@ export function Sidebar() {
   const handleLogout = () => {
     const refreshToken = tokenStorage.get();
     if (refreshToken) logoutUser({ refreshToken });
+
+    // If this session arrived via the SSO handoff from chamberlink_website,
+    // send the user back there instead of this app's own /login — they
+    // never signed in here directly. Checked BEFORE touching Redux: clearing
+    // auth state (dispatch(logout())) makes ProtectedRoute redirect to this
+    // app's OWN /login instantly, client-side — and since window.location.href
+    // is an async navigation, that redirect briefly wins the race and this
+    // app's plain /login flashes on screen before the external one takes
+    // over. Skipping the local state clear here (the tab is about to fully
+    // unload anyway) removes the render that would have caused the flash.
+    const origin = returnOrigin.get();
+    if (origin) {
+      returnOrigin.remove();
+      tokenStorage.remove();
+      window.location.href = `${origin}/login`;
+      return;
+    }
+
     dispatch(logout());
     // Client-side navigation to /login keeps the SPA (and its RTK Query
     // cache) alive in memory — without this, a different account logging in
@@ -199,17 +217,6 @@ export function Sidebar() {
     // Profile shows real info, then drops to just Account Details."
     dispatch(emptyApi.util.resetApiState());
     tokenStorage.remove();
-
-    // If this session arrived via the SSO handoff from chamberlink_website,
-    // send the user back there instead of this app's own /login — they
-    // never signed in here directly. Anyone who logged into the portal
-    // directly has no stored origin, so they get the normal /login.
-    const origin = returnOrigin.get();
-    if (origin) {
-      returnOrigin.remove();
-      window.location.href = `${origin}/login`;
-      return;
-    }
     navigate('/login');
   };
 
