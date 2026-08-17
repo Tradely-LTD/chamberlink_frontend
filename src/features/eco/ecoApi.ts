@@ -208,24 +208,47 @@ export const ecoApi = emptyApi.injectEndpoints({
       transformResponse: (res: ApiResponse<ECertificate>) => res.data,
       invalidatesTags: ['ECO'],
     }),
+    // Used for a guest/non-member applicant's FIRST submission with raw
+    // uploaded files (no chamber connection => no document library to
+    // reference by docId — see DocSlot in EcoApplyPage.tsx). Multipart/
+    // form-data; the backend's ecoUpload middleware (multer.fields) parses
+    // it, no-ops for a plain JSON body on this same route otherwise.
+    createEcoCertificateWithFiles: builder.mutation<ECertificate, FormData>({
+      query: (formData) => ({
+        url: '/eco',
+        method: 'POST',
+        body: formData,
+        formData: true,
+      }),
+      transformResponse: (res: ApiResponse<ECertificate>) => res.data,
+      invalidatesTags: ['ECO'],
+    }),
     // Save a draft (partial fields, no validation). Compliance documents are
-    // always attached by reference (invoiceDocId etc., uploaded up front via
-    // documentsApi's uploadDocument) — these bodies are always plain JSON,
-    // never multipart/form-data.
-    saveDraftEco: builder.mutation<ECertificate, Partial<NewECertPayload>>({
-      query: (body) => ({ url: '/eco/draft', method: 'POST', body }),
+    // attached by reference (invoiceDocId etc.) for a connected member, via
+    // documentsApi's uploadDocument — or, for a zero-connection guest
+    // applicant with no document library to upload into, as a raw multipart
+    // file directly on this same request (see DocSlot/buildFormDataOrJson in
+    // EcoApplyPage.tsx). Both shapes hit the same backend route.
+    saveDraftEco: builder.mutation<ECertificate, FormData | Partial<NewECertPayload>>({
+      query: (body) => body instanceof FormData
+        ? { url: '/eco/draft', method: 'POST', body, formData: true }
+        : { url: '/eco/draft', method: 'POST', body },
       transformResponse: (res: ApiResponse<ECertificate>) => res.data,
       invalidatesTags: ['ECO'],
     }),
     // Update a draft or revision_requested cert
-    updateEcoDraft: builder.mutation<ECertificate, { certId: string; body: Partial<NewECertPayload> }>({
-      query: ({ certId, body }) => ({ url: `/eco/${certId}`, method: 'PATCH', body }),
+    updateEcoDraft: builder.mutation<ECertificate, { certId: string; body: FormData | Partial<NewECertPayload> }>({
+      query: ({ certId, body }) => body instanceof FormData
+        ? { url: `/eco/${certId}`, method: 'PATCH', body, formData: true }
+        : { url: `/eco/${certId}`, method: 'PATCH', body },
       transformResponse: (res: ApiResponse<ECertificate>) => res.data,
       invalidatesTags: ['ECO'],
     }),
     // Submit a draft or revision_requested cert
-    submitEcoDraft: builder.mutation<ECertificate, { certId: string; body: NewECertPayload }>({
-      query: ({ certId, body }) => ({ url: `/eco/${certId}/submit`, method: 'POST', body }),
+    submitEcoDraft: builder.mutation<ECertificate, { certId: string; body: FormData | NewECertPayload }>({
+      query: ({ certId, body }) => body instanceof FormData
+        ? { url: `/eco/${certId}/submit`, method: 'POST', body, formData: true }
+        : { url: `/eco/${certId}/submit`, method: 'POST', body },
       transformResponse: (res: ApiResponse<ECertificate>) => res.data,
       invalidatesTags: ['ECO'],
     }),
@@ -297,6 +320,7 @@ export const {
   useGetEcoCertificatesQuery,
   useGetEcoCertificateQuery,
   useCreateEcoCertificateMutation,
+  useCreateEcoCertificateWithFilesMutation,
   useSaveDraftEcoMutation,
   useUpdateEcoDraftMutation,
   useSubmitEcoDraftMutation,
