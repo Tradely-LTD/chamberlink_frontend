@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAppSelector } from '@shared/hooks/useAppDispatch';
 import {
@@ -10,6 +10,7 @@ import {
   type ECertStatus,
   type EcoQueueItem,
 } from '@features/eco/ecoApi';
+import { useGetMyConnectionsQuery } from '@features/membership';
 import { SkeletonCard } from '@shared/ui/SkeletonCard';
 import { ErrorBanner } from '@shared/ui/ErrorBanner';
 import { Button } from '@shared/ui/Button';
@@ -537,6 +538,22 @@ function VerifyPaymentButton({ certRef, onConfirmed }: { certRef: string; onConf
 function MemberEcoView() {
   const { data: certs, isLoading, isError, isFetching, refetch } = useGetEcoCertificatesQuery();
 
+  // A member's certificate history spans every chamber they've ever applied
+  // through (getMyCertificates is scoped by userId, not by chamber) — so
+  // switching the active chamber needs a filter here, not a server refetch,
+  // to show "certs from the chamber I'm currently in" without losing the rest.
+  const activeTenantId = useAppSelector((s) => s.auth.user?.activeTenantId);
+  const { data: connections } = useGetMyConnectionsQuery();
+  const tenantNameById = useMemo(
+    () => new Map((connections ?? []).map((c) => [c.tenantId, c.tenantName])),
+    [connections]
+  );
+  const [chamberFilter, setChamberFilter] = useState<'active' | 'all'>('active');
+  const canFilterByChamber = !!activeTenantId;
+  const displayedCerts = chamberFilter === 'active' && activeTenantId
+    ? (certs ?? []).filter((c) => c.tenantId === activeTenantId)
+    : (certs ?? []);
+
   // hasCachedData: a previous successful load exists — show stale data rather than a hard error
   const hasCachedData = Array.isArray(certs);
 
@@ -551,6 +568,25 @@ function MemberEcoView() {
           <Button>+ New Application</Button>
         </Link>
       </div>
+
+      {canFilterByChamber && (
+        <div className="flex gap-1 bg-surface-alt rounded-lg p-1 mb-4 w-fit border border-border">
+          {([
+            ['active', tenantNameById.get(activeTenantId!) ?? 'Current Chamber'],
+            ['all', 'All Chambers'],
+          ] as const).map(([value, label]) => (
+            <button
+              key={value}
+              onClick={() => setChamberFilter(value)}
+              className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                chamberFilter === value ? 'bg-white text-ink shadow-sm' : 'text-ink-subtle hover:text-ink'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      )}
 
       {isLoading && <SkeletonCard />}
 
@@ -568,7 +604,7 @@ function MemberEcoView() {
         </div>
       )}
 
-      {!isLoading && !isError && (certs ?? []).length === 0 && (
+      {!isLoading && !isError && displayedCerts.length === 0 && (certs ?? []).length === 0 && (
         <div className="bg-white rounded-xl border border-border/40 p-12 text-center">
           <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
             <svg className="w-8 h-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -581,9 +617,18 @@ function MemberEcoView() {
         </div>
       )}
 
-      {!isLoading && !isError && (certs ?? []).length > 0 && (
+      {/* Filtered-to-empty: certs exist, just none for the selected chamber */}
+      {!isLoading && !isError && displayedCerts.length === 0 && (certs ?? []).length > 0 && (
+        <div className="bg-white rounded-xl border border-border/40 p-12 text-center">
+          <h3 className="text-base font-medium text-ink mb-1">No certificates for this chamber</h3>
+          <p className="text-sm text-ink-subtle mb-4">You have certificates from other chambers — switch the filter above to see them.</p>
+          <button onClick={() => setChamberFilter('all')} className="text-sm text-primary hover:underline">Show All Chambers</button>
+        </div>
+      )}
+
+      {!isLoading && !isError && displayedCerts.length > 0 && (
         <div className="space-y-3">
-          {(certs ?? []).map((cert) => {
+          {displayedCerts.map((cert) => {
             const isEditableDraft = cert.status === 'draft' || cert.status === 'revision_requested';
             const isPayable = cert.status === 'approved' || (cert.status === 'pending_payment' && !cert.paymentRef);
             const isAwaitingReview = cert.status === 'submitted' || cert.status === 'under_review';
@@ -640,6 +685,11 @@ function MemberEcoView() {
                   <span className="text-xs text-ink-subtle truncate max-w-xs">
                     <span className="font-medium text-ink-subtle">Mineral:</span> {cert.solidMineralName || '—'}
                   </span>
+                  {chamberFilter === 'all' && cert.tenantId && (
+                    <span className="text-xs text-ink-subtle">
+                      <span className="font-medium text-ink-subtle">Chamber:</span> {tenantNameById.get(cert.tenantId) ?? '—'}
+                    </span>
+                  )}
                   {cert.applicationFee != null && cert.applicationFee > 0 && (
                     <span className="text-xs text-ink-subtle">
                       <span className="font-medium text-ink-subtle">Fee:</span> ₦{cert.applicationFee.toLocaleString()}
