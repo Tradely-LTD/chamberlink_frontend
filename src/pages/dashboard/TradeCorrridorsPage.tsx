@@ -327,6 +327,8 @@ function MemberCorridorsView() {
       const e = err as { status?: number | string; data?: { message?: string } };
       if (e?.status === 409) {
         // Already following — ignore, list will refresh
+      } else if (e?.status === 403 && e?.data?.message === 'MEMBERSHIP_NOT_ACTIVE') {
+        setFollowError('Following a trade corridor requires an active, paid membership — complete your dues payment first.');
       } else if (e?.status === 403) {
         setFollowError('Permission denied (403). Make sure your account has member role.');
       } else if (e?.status === 404) {

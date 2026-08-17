@@ -832,7 +832,12 @@ export function ExportDocGeneratorPage() {
       const res = await generateDoc(payload).unwrap();
       setResult({ referenceNo: res.referenceNo, downloadUrl: res.downloadUrl });
     } catch (err: unknown) {
-      setError((err as { data?: { message?: string } })?.data?.message ?? 'Failed to generate document. Please try again.');
+      const message = (err as { data?: { message?: string } })?.data?.message;
+      setError(
+        message === 'MEMBERSHIP_NOT_ACTIVE'
+          ? 'Generating export documents requires an active, paid membership — complete your dues payment first.'
+          : message ?? 'Failed to generate document. Please try again.'
+      );
     }
   };
 

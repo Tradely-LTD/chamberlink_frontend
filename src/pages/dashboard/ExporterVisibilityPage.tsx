@@ -222,7 +222,14 @@ function CreateProfileModal({ onClose }: { onClose: () => void }) {
         certifications: form.certifications.split(',').map((c) => c.trim()).filter(Boolean),
       }).unwrap();
       onClose();
-    } catch { setError('Failed to create profile. Please try again.'); }
+    } catch (err: unknown) {
+      const message = (err as { data?: { message?: string } })?.data?.message;
+      setError(
+        message === 'MEMBERSHIP_NOT_ACTIVE'
+          ? 'Creating an exporter profile requires an active, paid membership — complete your dues payment first.'
+          : 'Failed to create profile. Please try again.'
+      );
+    }
   };
 
   return (
