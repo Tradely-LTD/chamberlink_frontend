@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from '@shared/hooks/useAppDispatch';
 import { MfaVerifyForm } from '@features/auth/components/MfaVerifyForm';
-import { AuthHeader } from '@shared/ui/AuthHeader';
+import { AuthShell } from '@features/auth/components/AuthShell';
 
 export function MfaVerifyPage() {
   const navigate = useNavigate();
@@ -15,16 +15,23 @@ export function MfaVerifyPage() {
   if (!userId) return null;
 
   return (
-    <div className="min-h-screen bg-surface-warm flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <AuthHeader subtitle="Two-Factor Authentication" />
-        <div className="rounded-2xl bg-white p-8 shadow-sm border border-border/40">
-          <h2 className="mb-2 text-xl font-semibold text-ink">
-            Enter verification code
-          </h2>
-          <MfaVerifyForm />
-        </div>
-      </div>
-    </div>
+    <AuthShell
+      kicker="One more step"
+      heading={<>Confirm it&apos;s<br /><em className="font-display italic font-semibold text-primary">really you.</em></>}
+      lede="Two-factor authentication keeps your chamber account, certificate history, and payments secure."
+      benefits={[
+        'Protects certificate approvals and payments',
+        'Required for Admin and Institutional accounts',
+        'Codes expire quickly for your safety',
+      ]}
+      cardIcon="password"
+      cardTitle="Enter verification code"
+      cardLede="Enter the 6-digit authentication code sent to your registered contact to finish signing in."
+      dividerLabel="Wrong account?"
+      secondaryLinkTo="/login"
+      secondaryLinkLabel="Back to Login"
+    >
+      <MfaVerifyForm />
+    </AuthShell>
   );
 }

@@ -1,18 +1,25 @@
 import { ForgotPasswordForm } from '@features/auth/components/ForgotPasswordForm';
-import { AuthHeader } from '@shared/ui/AuthHeader';
+import { AuthShell } from '@features/auth/components/AuthShell';
 
 export function ForgotPasswordPage() {
   return (
-    <div className="min-h-screen bg-surface-warm flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <AuthHeader subtitle="Password Recovery" />
-        <div className="rounded-2xl bg-white p-8 shadow-sm border border-border/40">
-          <h2 className="mb-6 text-xl font-semibold text-ink">
-            Forgot your password?
-          </h2>
-          <ForgotPasswordForm />
-        </div>
-      </div>
-    </div>
+    <AuthShell
+      kicker="Password recovery"
+      heading={<>Let&apos;s get you<br /><em className="font-display italic font-semibold text-primary">back in.</em></>}
+      lede="Enter the email on your Chamberlink account and we'll send you a reset link."
+      benefits={[
+        'Works for every chamber you’re connected to',
+        'Reset links expire for your security',
+        'No account lockouts — just request a new link',
+      ]}
+      cardIcon="lock_reset"
+      cardTitle="Forgot your password?"
+      cardLede="Enter your email address and we'll send you a reset code."
+      dividerLabel="Remembered it?"
+      secondaryLinkTo="/login"
+      secondaryLinkLabel="Back to Login"
+    >
+      <ForgotPasswordForm />
+    </AuthShell>
   );
 }

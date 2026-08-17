@@ -51,9 +51,6 @@ export function VerifyEmailForm() {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-      <p className="text-sm text-ink-subtle">
-        Enter the 6-digit code sent to your email address.
-      </p>
       {errMsg && <ErrorBanner message={errMsg} />}
       <OtpInput
         length={6}
