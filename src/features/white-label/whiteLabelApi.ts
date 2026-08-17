@@ -27,6 +27,7 @@ export interface Tenant {
   phone: string | null;
   email: string | null;
   logoKey: string | null;
+  logoUrl: string | null;
   website: string | null;
   primaryColor: string | null;
   secondaryColor: string | null;
@@ -142,6 +143,15 @@ export const whiteLabelApi = emptyApi.injectEndpoints({
       transformResponse: (res: { success: boolean; data: Tenant }) => res.data,
       invalidatesTags: ['WhiteLabel'],
     }),
+
+    // Mirrors membershipApi's uploadLogo pattern (multipart, "logo" field) —
+    // chamber_admin/super_admin self-service branding, called from
+    // ProfilePage's "Organisation" card.
+    uploadMyTenantLogo: builder.mutation<{ logoUrl: string }, FormData>({
+      query: (body) => ({ url: '/tenants/me/logo', method: 'POST', body, formData: true }),
+      transformResponse: (res: { success: boolean; data: { logoUrl: string } }) => res.data,
+      invalidatesTags: ['WhiteLabel'],
+    }),
   }),
   overrideExisting: false,
 });
@@ -152,4 +162,5 @@ export const {
   useUpdateTenantMutation,
   useGetMyTenantQuery,
   useUpdateMyTenantMutation,
+  useUploadMyTenantLogoMutation,
 } = whiteLabelApi;

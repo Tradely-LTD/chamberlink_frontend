@@ -73,9 +73,24 @@ export function ConnectChamberModal({ onClose, onConnected }: Props) {
               {(chambers ?? []).map((chamber) => (
                 <li key={chamber.id} className="py-3">
                   <div className="flex items-center justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-ink">{chamber.name}</p>
-                      {chamber.city && <p className="truncate text-xs text-ink-subtle">{chamber.city}</p>}
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      {chamber.logoUrl ? (
+                        <img
+                          src={chamber.logoUrl}
+                          alt=""
+                          className="h-8 w-8 rounded-md object-contain border border-border/40 bg-white flex-shrink-0"
+                        />
+                      ) : (
+                        <div className="h-8 w-8 rounded-md bg-surface-alt border border-border/40 flex items-center justify-center flex-shrink-0">
+                          <span className="material-symbols-outlined text-ink-subtle" style={{ fontSize: 16 }}>
+                            corporate_fare
+                          </span>
+                        </div>
+                      )}
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-medium text-ink">{chamber.name}</p>
+                        {chamber.city && <p className="truncate text-xs text-ink-subtle">{chamber.city}</p>}
+                      </div>
                     </div>
                     <Button
                       variant="outline"

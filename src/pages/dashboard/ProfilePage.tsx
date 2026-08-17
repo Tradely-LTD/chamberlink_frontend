@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from '@shared/hooks/useAppDispatch';
 import { useGetMemberProfileQuery } from '@features/dashboard/dashboardApi';
 import { useGetMembershipStatusQuery } from '@features/membership/membershipApi';
 import { ConnectChamberModal } from '@features/membership/components/ConnectChamberModal';
-import { useGetMyTenantQuery, useUpdateMyTenantMutation } from '@features/white-label';
+import { useGetMyTenantQuery, useUpdateMyTenantMutation, useUploadMyTenantLogoMutation } from '@features/white-label';
 import {
   useEnableMfaMutation,
   useRequestMfaDisableMutation,
@@ -176,6 +176,7 @@ export function ProfilePage() {
   const [uploadLogo, { isLoading: isUploadingLogo }] = useUploadLogoMutation();
   const { data: myTenant, refetch: refetchTenant } = useGetMyTenantQuery(undefined, { skip: !isTenantAdmin });
   const [updateMyTenant, { isLoading: isTenantSaving }] = useUpdateMyTenantMutation();
+  const [uploadMyTenantLogo, { isLoading: isUploadingOrgLogo }] = useUploadMyTenantLogoMutation();
 
   const [editing, setEditing] = useState(false);
   const [editingBusiness, setEditingBusiness] = useState(false);
@@ -188,7 +189,9 @@ export function ProfilePage() {
   const [editingOrg, setEditingOrg] = useState(false);
   const [orgForm, setOrgForm] = useState({ address: '', phone: '', email: '', website: '' });
   const [orgError, setOrgError] = useState<string | null>(null);
+  const [orgLogoError, setOrgLogoError] = useState<string | null>(null);
   const logoInputRef = useRef<HTMLInputElement>(null);
+  const orgLogoInputRef = useRef<HTMLInputElement>(null);
 
   const startEdit = () => {
     setForm({
@@ -249,6 +252,25 @@ export function ProfilePage() {
       refetch();
     } catch (err: unknown) {
       setLogoError((err as { data?: { message?: string } })?.data?.message ?? 'Logo upload failed. Please try again.');
+    }
+    e.target.value = '';
+  };
+
+  const handleOrgLogoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!['image/jpeg', 'image/png'].includes(file.type)) {
+      setOrgLogoError('Only JPEG and PNG images are allowed.');
+      return;
+    }
+    setOrgLogoError(null);
+    const fd = new FormData();
+    fd.append('logo', file);
+    try {
+      await uploadMyTenantLogo(fd).unwrap();
+      refetchTenant();
+    } catch (err: unknown) {
+      setOrgLogoError((err as { data?: { message?: string } })?.data?.message ?? 'Logo upload failed. Please try again.');
     }
     e.target.value = '';
   };
@@ -370,6 +392,48 @@ export function ProfilePage() {
                 <Button variant="outline" onClick={startOrgEdit}>Edit</Button>
               )}
             </div>
+
+            {/* Chamber logo — separate from any personal identity, shown as a
+                storefront placeholder (not an avatar) when empty. Upload only
+                available to chamber_admin, matching the Edit button above. */}
+            <div className="px-6 py-5 border-b border-border/30 flex items-center gap-5">
+              <div className="relative flex-shrink-0">
+                {isUploadingOrgLogo ? (
+                  <div className="w-16 h-16 rounded-xl bg-surface-alt border border-border/40 flex items-center justify-center">
+                    <svg className="w-5 h-5 animate-spin text-primary" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                    </svg>
+                  </div>
+                ) : myTenant?.logoUrl ? (
+                  <img src={myTenant.logoUrl} alt="Chamber logo" className="w-16 h-16 rounded-xl object-contain border border-border/40 bg-white" />
+                ) : (
+                  <div className="w-16 h-16 rounded-xl bg-surface-alt border-2 border-dashed border-border/60 flex items-center justify-center text-ink-subtle">
+                    <span className="material-symbols-outlined" style={{ fontSize: 28 }}>storefront</span>
+                  </div>
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-ink mb-0.5">Chamber Logo</p>
+                <p className="text-xs text-ink-subtle mb-3">
+                  Shown on your chamber's public listing and Chamber Network cards. JPEG or PNG, compressed automatically.
+                </p>
+                {orgLogoError && <p className="text-xs text-red-600 mb-2">{orgLogoError}</p>}
+                {user?.role === 'chamber_admin' && (
+                  <>
+                    <input ref={orgLogoInputRef} type="file" accept="image/jpeg,image/png" className="hidden" onChange={handleOrgLogoChange} />
+                    <button
+                      onClick={() => orgLogoInputRef.current?.click()}
+                      disabled={isUploadingOrgLogo}
+                      className="text-xs font-medium px-3 py-1.5 rounded-lg border border-border/60 text-primary hover:bg-surface-alt transition-colors disabled:opacity-50"
+                    >
+                      {myTenant?.logoUrl ? 'Replace Logo' : 'Upload Logo'}
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+
             {editingOrg ? (
               <div className="px-6 py-5 space-y-4">
                 {orgError && <ErrorBanner message={orgError} />}
@@ -491,41 +555,6 @@ export function ProfilePage() {
         </div>
       )}
 
-      {/* Logo card */}
-      <div className="mb-6 bg-white rounded-xl border border-border/40 px-6 py-5 flex items-center gap-5">
-        <div className="relative flex-shrink-0">
-          {isUploadingLogo ? (
-            <div className="w-20 h-20 rounded-xl bg-[#f7f9f7] border border-border/40 flex items-center justify-center">
-              <svg className="w-5 h-5 animate-spin text-primary" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-              </svg>
-            </div>
-          ) : logoUrl ? (
-            <img src={logoUrl} alt="Company logo" className="w-20 h-20 rounded-xl object-contain border border-border/40 bg-white" />
-          ) : (
-            <div className="w-20 h-20 rounded-xl bg-[#f7f9f7] border-2 border-dashed border-border/60 flex items-center justify-center text-ink-subtle">
-              <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21H5a2 2 0 01-2-2V7l7-4h7a2 2 0 012 2v14a2 2 0 01-2 2z" />
-              </svg>
-            </div>
-          )}
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-ink mb-0.5">Company Logo</p>
-          <p className="text-xs text-ink-subtle mb-3">Used on generated invoices and packing lists. JPEG or PNG · Compressed automatically.</p>
-          {logoError && <p className="text-xs text-red-600 mb-2">{logoError}</p>}
-          <input ref={logoInputRef} type="file" accept="image/jpeg,image/png" className="hidden" onChange={handleLogoChange} />
-          <button
-            onClick={() => logoInputRef.current?.click()}
-            disabled={isUploadingLogo}
-            className="text-xs font-medium px-3 py-1.5 rounded-lg border border-border/60 text-primary hover:bg-surface-alt transition-colors disabled:opacity-50"
-          >
-            {logoUrl ? 'Replace Logo' : 'Upload Logo'}
-          </button>
-        </div>
-      </div>
-
       {/* Personal Information */}
       <div className="bg-white rounded-xl border border-border/40 overflow-hidden mb-6">
         <div className="px-6 py-4 border-b border-border/40 flex items-center justify-between">
@@ -569,6 +598,41 @@ export function ProfilePage() {
         <div className="px-6 py-4 border-b border-border/40 flex items-center justify-between">
           <h2 className="font-medium text-ink">Business Information</h2>
           {!editingBusiness && <Button variant="outline" onClick={startBizEdit}>Edit</Button>}
+        </div>
+
+        {/* Company logo — deliberately distinct from the personal identity in
+            Personal Information above: a storefront placeholder, not an
+            avatar, since this is your business's mark, not a photo of you. */}
+        <div className="px-6 py-5 border-b border-border/30 flex items-center gap-5">
+          <div className="relative flex-shrink-0">
+            {isUploadingLogo ? (
+              <div className="w-16 h-16 rounded-xl bg-surface-alt border border-border/40 flex items-center justify-center">
+                <svg className="w-5 h-5 animate-spin text-primary" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                </svg>
+              </div>
+            ) : logoUrl ? (
+              <img src={logoUrl} alt="Company logo" className="w-16 h-16 rounded-xl object-contain border border-border/40 bg-white" />
+            ) : (
+              <div className="w-16 h-16 rounded-xl bg-surface-alt border-2 border-dashed border-border/60 flex items-center justify-center text-ink-subtle">
+                <span className="material-symbols-outlined" style={{ fontSize: 28 }}>storefront</span>
+              </div>
+            )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-ink mb-0.5">Company Logo</p>
+            <p className="text-xs text-ink-subtle mb-3">Used on generated invoices and packing lists. JPEG or PNG · Compressed automatically.</p>
+            {logoError && <p className="text-xs text-red-600 mb-2">{logoError}</p>}
+            <input ref={logoInputRef} type="file" accept="image/jpeg,image/png" className="hidden" onChange={handleLogoChange} />
+            <button
+              onClick={() => logoInputRef.current?.click()}
+              disabled={isUploadingLogo}
+              className="text-xs font-medium px-3 py-1.5 rounded-lg border border-border/60 text-primary hover:bg-surface-alt transition-colors disabled:opacity-50"
+            >
+              {logoUrl ? 'Replace Logo' : 'Upload Logo'}
+            </button>
+          </div>
         </div>
 
         {editingBusiness ? (

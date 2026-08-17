@@ -89,12 +89,27 @@ export function ChamberNetworkPage() {
               key={chamber.id}
               className="flex flex-wrap items-center justify-between gap-4 bg-white rounded-xl border border-border/40 px-6 py-4"
             >
-              <div className="min-w-0">
-                <p className="font-medium text-ink truncate">{chamber.name}</p>
-                {chamber.city && <p className="text-xs text-ink-subtle truncate">{chamber.city}</p>}
-                {inlineError?.tenantId === chamber.id && (
-                  <p className="mt-1 text-xs text-red-600">{inlineError.message}</p>
+              <div className="flex items-center gap-3 min-w-0">
+                {chamber.logoUrl ? (
+                  <img
+                    src={chamber.logoUrl}
+                    alt=""
+                    className="h-11 w-11 rounded-lg object-contain border border-border/40 bg-white flex-shrink-0"
+                  />
+                ) : (
+                  <div className="h-11 w-11 rounded-lg bg-surface-alt border border-border/40 flex items-center justify-center flex-shrink-0">
+                    <span className="material-symbols-outlined text-ink-subtle" style={{ fontSize: 22 }}>
+                      corporate_fare
+                    </span>
+                  </div>
                 )}
+                <div className="min-w-0">
+                  <p className="font-medium text-ink truncate">{chamber.name}</p>
+                  {chamber.city && <p className="text-xs text-ink-subtle truncate">{chamber.city}</p>}
+                  {inlineError?.tenantId === chamber.id && (
+                    <p className="mt-1 text-xs text-red-600">{inlineError.message}</p>
+                  )}
+                </div>
               </div>
               <div className="flex items-center gap-2 flex-shrink-0">
                 <Button

@@ -35,6 +35,7 @@ export interface OnboardedChamber {
   name: string;
   slug: string;
   city?: string | null;
+  logoUrl?: string | null;
 }
 
 export interface RosterPreview {

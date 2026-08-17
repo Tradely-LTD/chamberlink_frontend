@@ -5,6 +5,7 @@ export {
   useUpdateTenantMutation,
   useGetMyTenantQuery,
   useUpdateMyTenantMutation,
+  useUploadMyTenantLogoMutation,
   MODULE_KEYS,
 } from './whiteLabelApi';
 
