@@ -1,6 +1,6 @@
 import { Navigate, useSearchParams } from 'react-router-dom';
 import { ResetPasswordForm } from '@features/auth/components/ResetPasswordForm';
-import { AuthHeader } from '@shared/ui/AuthHeader';
+import { AuthShell } from '@features/auth/components/AuthShell';
 
 export function ResetPasswordPage() {
   const [searchParams] = useSearchParams();
@@ -11,16 +11,23 @@ export function ResetPasswordPage() {
     return <Navigate to="/auth/forgot-password" replace />;
 
   return (
-    <div className="min-h-screen bg-surface-warm flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <AuthHeader subtitle="Password Reset" />
-        <div className="rounded-2xl bg-white p-8 shadow-sm border border-border/40">
-          <h2 className="mb-6 text-xl font-semibold text-ink">
-            Reset your password
-          </h2>
-          <ResetPasswordForm userId={userId} token={token} />
-        </div>
-      </div>
-    </div>
+    <AuthShell
+      kicker="Password reset"
+      heading={<>Choose a new<br /><em className="font-display italic font-semibold text-primary">password.</em></>}
+      lede="Set a new password to finish recovering access to your Chamberlink account."
+      benefits={[
+        'Use at least 8 characters',
+        'Avoid reusing an old password',
+        'You’ll stay signed in on this device',
+      ]}
+      cardIcon="key"
+      cardTitle="Reset your password"
+      cardLede="Choose a new password for your account."
+      dividerLabel="Changed your mind?"
+      secondaryLinkTo="/login"
+      secondaryLinkLabel="Back to Login"
+    >
+      <ResetPasswordForm userId={userId} token={token} />
+    </AuthShell>
   );
 }
