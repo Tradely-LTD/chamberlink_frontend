@@ -15,6 +15,8 @@ import { useGetDocumentsQuery, useUploadDocumentMutation } from '@features/docum
 import type { DocumentCategory } from '@features/documents';
 import { useHasChamberConnection } from '@features/membership';
 import { NIGERIAN_STATES } from '@shared/constants/nigerianStates';
+import { COUNTRIES } from '@shared/constants/countries';
+import { PACKAGE_TYPES } from '@shared/constants/packageTypes';
 import { Input } from '@shared/ui/Input';
 import { Select } from '@shared/ui/Select';
 import { Textarea } from '@shared/ui/Textarea';
@@ -60,6 +62,15 @@ const emailFormatError = (value: string): string | undefined =>
 
 const positiveNumberError = (value: string, label: string): string | undefined =>
   value !== '' && Number(value) <= 0 ? `${label} must be greater than zero.` : undefined;
+
+// Splits an existing "500 Bags"-style combined string (from a draft created
+// before the count/type fields were separated, or just the backend's single
+// free-text column) back into its two parts for editing. Falls back to
+// putting the whole thing in packageType if it doesn't start with a number.
+const splitPackages = (combined: string | null | undefined): { count: string; type: string } => {
+  const match = (combined ?? '').trim().match(/^(\d+)\s*(.*)$/);
+  return match ? { count: match[1], type: match[2].trim() } : { count: '', type: combined ?? '' };
+};
 
 type SupportingDocMode = 'library' | 'upload';
 
@@ -236,7 +247,12 @@ interface FormState {
   tenantId: string;
   solidMineralId: string;
   descriptionOfGoods: string;
-  numberAndKindOfPackages: string;
+  // Number and package type are captured separately in the UI (e.g. "500" +
+  // "Bags") and combined into one string for the backend/PDF, which still
+  // expects a single free-text "Number and Kind of Packages" field.
+  packageCount: string;
+  packageType: string;
+  packageTypeOther: string;
   marksAndNumbers: string;
   quantity: string;
   quantityUnit: 'KG' | 'MT';
@@ -268,7 +284,7 @@ interface FormState {
 }
 
 const initialForm: FormState = {
-  tenantId: '', solidMineralId: '', descriptionOfGoods: '', numberAndKindOfPackages: '', marksAndNumbers: '',
+  tenantId: '', solidMineralId: '', descriptionOfGoods: '', packageCount: '', packageType: '', packageTypeOther: '', marksAndNumbers: '',
   quantity: '', quantityUnit: 'KG', originStates: [], destinationCountry: '', destinationPort: '', batchIdNo: '',
   isLicenseOwner: false, miningLicenseNo: '',
   companyName: '', companyAddress: '', companyCountry: 'Nigeria', companyEmail: '', companyPhone: '',
@@ -327,11 +343,15 @@ export function EcoApplyPage() {
   // Pre-populate form when editing existing draft/revision_requested
   useEffect(() => {
     if (!existingCert) return;
+    const { count: existingPackageCount, type: existingPackageType } = splitPackages(existingCert.numberAndKindOfPackages);
+    const knownPackageType = PACKAGE_TYPES.includes(existingPackageType) ? existingPackageType : (existingPackageType ? 'Other' : '');
     setForm({
       tenantId: existingCert.tenantId ?? '',
       solidMineralId: existingCert.solidMineralId ?? '',
       descriptionOfGoods: existingCert.descriptionOfGoods ?? '',
-      numberAndKindOfPackages: existingCert.numberAndKindOfPackages ?? '',
+      packageCount: existingPackageCount,
+      packageType: knownPackageType,
+      packageTypeOther: knownPackageType === 'Other' ? existingPackageType : '',
       marksAndNumbers: existingCert.marksAndNumbers ?? '',
       quantity: existingCert.quantity != null ? String(existingCert.quantity) : '',
       quantityUnit: existingCert.quantityUnit ?? 'KG',
@@ -381,6 +401,11 @@ export function EcoApplyPage() {
 
   const selectedMineral = solidMinerals.find((m) => m.id === form.solidMineralId);
 
+  // Combines the separate count + type inputs back into the single
+  // "500 Bags"-style string the backend/PDF field expects.
+  const resolvedPackageType = form.packageType === 'Other' ? form.packageTypeOther : form.packageType;
+  const combinedPackages = [form.packageCount, resolvedPackageType].filter(Boolean).join(' ');
+
   // Field-level errors, mirroring submitECertSchema's min-length/format rules.
   const errors = {
     descriptionOfGoods: minLenError(form.descriptionOfGoods, 5, 'Description of Goods'),
@@ -405,7 +430,7 @@ export function EcoApplyPage() {
   const buildJsonBody = (): Partial<NewECertPayload> => ({
     solidMineralId: form.solidMineralId || undefined,
     descriptionOfGoods: form.descriptionOfGoods || undefined,
-    numberAndKindOfPackages: form.numberAndKindOfPackages || undefined,
+    numberAndKindOfPackages: combinedPackages || undefined,
     marksAndNumbers: form.marksAndNumbers || undefined,
     quantity: form.quantity ? Number(form.quantity) : undefined,
     quantityUnit: form.quantityUnit,
@@ -507,7 +532,8 @@ export function EcoApplyPage() {
   const isRevisionRequested = existingCert?.status === 'revision_requested';
 
   const canContinueStep0 = !!(
-    form.tenantId && form.solidMineralId && form.descriptionOfGoods && form.numberAndKindOfPackages
+    form.tenantId && form.solidMineralId && form.descriptionOfGoods
+    && form.packageCount && form.packageType && (form.packageType !== 'Other' || form.packageTypeOther)
     && form.quantity && form.originStates.length > 0 && form.destinationCountry
     && !errors.descriptionOfGoods && !errors.quantity && !errors.destinationCountry
   );
@@ -632,8 +658,18 @@ export function EcoApplyPage() {
             <Textarea label="Description of Goods *" rows={3} placeholder="Describe the goods being exported"
               value={form.descriptionOfGoods} onChange={(e) => set('descriptionOfGoods', e.target.value)} error={errors.descriptionOfGoods} />
 
-            <Input label="Number and Kind of Packages *" placeholder="e.g. 50 sacks" value={form.numberAndKindOfPackages}
-              onChange={(e) => set('numberAndKindOfPackages', e.target.value)} />
+            <p className={labelClass}>Number and Kind of Packages *</p>
+            <div className="grid grid-cols-2 gap-3">
+              <Input label="Number of Packages" type="number" min="1" placeholder="e.g. 500" value={form.packageCount}
+                onChange={(e) => set('packageCount', e.target.value)} />
+              <Select label="Package Type" value={form.packageType} onValueChange={(v) => set('packageType', v)}
+                placeholder="Select a type…"
+                options={PACKAGE_TYPES.map((p) => ({ value: p, label: p }))} />
+            </div>
+            {form.packageType === 'Other' && (
+              <Input label="Specify Package Type" placeholder="e.g. Super Sacks" value={form.packageTypeOther}
+                onChange={(e) => set('packageTypeOther', e.target.value)} />
+            )}
             <Input label="Marks and Numbers" placeholder="Optional shipping marks" value={form.marksAndNumbers}
               onChange={(e) => set('marksAndNumbers', e.target.value)} />
 
@@ -651,8 +687,11 @@ export function EcoApplyPage() {
               placeholder="Select a state…"
               options={NIGERIAN_STATES.map((s) => ({ value: s, label: s }))} />
 
-            <Input label="Destination Country *" placeholder="e.g. United Arab Emirates" value={form.destinationCountry}
-              onChange={(e) => set('destinationCountry', e.target.value)} error={errors.destinationCountry} />
+            <Select label="Destination Country *" value={form.destinationCountry}
+              onValueChange={(v) => set('destinationCountry', v)}
+              placeholder="Select a country…"
+              error={errors.destinationCountry}
+              options={COUNTRIES.map((c) => ({ value: c, label: c }))} />
             <Input label="Destination Port" placeholder="Optional" value={form.destinationPort}
               onChange={(e) => set('destinationPort', e.target.value)} />
             <Input label="Batch/ID No." placeholder="Optional" value={form.batchIdNo}
@@ -813,7 +852,7 @@ export function EcoApplyPage() {
               { label: 'Solid Mineral', value: selectedMineral?.name ?? '—' },
               { label: 'HS Code', value: selectedMineral?.hsCode ?? '—' },
               { label: 'Description', value: form.descriptionOfGoods },
-              { label: 'Packages', value: form.numberAndKindOfPackages },
+              { label: 'Packages', value: combinedPackages || '—' },
               { label: 'Marks & Numbers', value: form.marksAndNumbers || '—' },
               { label: 'Quantity', value: form.quantity ? `${form.quantity} ${form.quantityUnit}` : '—' },
               { label: 'Origin States', value: form.originStates.join(', ') || '—' },
