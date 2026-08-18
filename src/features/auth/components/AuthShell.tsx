@@ -1,6 +1,14 @@
 import { Link } from 'react-router-dom';
 import type { ReactNode } from 'react';
 
+// chamberlink_frontend has no public homepage of its own — "/" here is just
+// a redirect straight back to /login (see app/router.tsx). The real "home"
+// this app's brand mark should point to is the corporate marketing site,
+// which lives in a separate repo/deployment entirely. Matches the constant
+// chamberlink_website itself uses for the reverse direction
+// (PORTAL_URL in chamberlink_website/lib/content/homeCopy.ts).
+const WEBSITE_URL = 'https://chamberlink.ng';
+
 interface Props {
   /** Small uppercase label above the heading, e.g. "Welcome back". */
   kicker: string;
@@ -41,14 +49,14 @@ export function AuthShell({
     <div className="min-h-screen font-manrope text-ink bg-[linear-gradient(135deg,#f7f9fc_35%,#eef6f4_100%)] px-5 sm:px-8 py-8">
       {/* Brand row */}
       <div className="flex items-center justify-between max-w-[1180px] mx-auto mb-10 sm:mb-16">
-        <Link to="/" className="flex items-center gap-2.5" aria-label="Chamberlink home">
+        <a href={WEBSITE_URL} className="flex items-center gap-2.5" aria-label="Chamberlink home">
           <span className="h-11 w-11 rounded-[10px] bg-white flex items-center justify-center flex-shrink-0 shadow-[0_7px_18px_rgba(0,71,171,0.12)]">
             <img src="/naccima-seal.png" alt="" className="h-9 w-9 object-contain" />
           </span>
           <span className="leading-tight">
             <span className="block text-[17px] font-extrabold text-primary tracking-tight">Chamberlink</span>
           </span>
-        </Link>
+        </a>
         <span className="hidden sm:inline text-[10px] font-extrabold uppercase tracking-[0.1em] text-ink-subtle">
           Solid Minerals Export Platform
         </span>
