@@ -3,11 +3,13 @@ import type { ReactNode } from 'react';
 
 // chamberlink_frontend has no public homepage of its own — "/" here is just
 // a redirect straight back to /login (see app/router.tsx). The real "home"
-// this app's brand mark should point to is the corporate marketing site,
-// which lives in a separate repo/deployment entirely. Matches the constant
-// chamberlink_website itself uses for the reverse direction
-// (PORTAL_URL in chamberlink_website/lib/content/homeCopy.ts).
-const WEBSITE_URL = 'https://chamberlink.ng';
+// this app's brand mark should point to is the corporate marketing site
+// (chamberlink_website), a separate repo/deployment — currently live on its
+// Netlify subdomain, same pattern as this app's own chamberlinkadmin.netlify.app
+// (chamberlink.ng is the custom domain the site's own code defaults to, but
+// isn't the one actually serving traffic yet — confirmed against the live
+// deployment, not inferred from source).
+const WEBSITE_URL = 'https://chamberlink.netlify.app';
 
 interface Props {
   /** Small uppercase label above the heading, e.g. "Welcome back". */
