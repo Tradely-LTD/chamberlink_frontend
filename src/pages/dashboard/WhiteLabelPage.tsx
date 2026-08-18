@@ -83,7 +83,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
       await createTenant(payload).unwrap();
       onClose();
     } catch {
-      setError('Failed to create tenant. Please try again.');
+      setError('Failed to create chamber. Please try again.');
     }
   };
 
@@ -92,7 +92,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 bg-white border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
-          <h2 className="font-bold text-ink">Create New Tenant</h2>
+          <h2 className="font-bold text-ink">Create New Chamber</h2>
           <button
             onClick={onClose}
             className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle"
@@ -296,7 +296,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
               className="flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
               style={{ background: '#023293' }}
             >
-              {isLoading ? 'Creating…' : 'Create Tenant'}
+              {isLoading ? 'Creating…' : 'Create Chamber'}
             </button>
           </div>
         </form>
@@ -363,7 +363,7 @@ function EditTenantModal({ tenant, onClose }: { tenant: Tenant; onClose: () => v
       }).unwrap();
       onClose();
     } catch {
-      setError('Failed to update tenant. Please try again.');
+      setError('Failed to update chamber. Please try again.');
     }
   };
 
@@ -373,7 +373,7 @@ function EditTenantModal({ tenant, onClose }: { tenant: Tenant; onClose: () => v
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 bg-white border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
           <div>
-            <h2 className="font-bold text-ink">Edit Tenant</h2>
+            <h2 className="font-bold text-ink">Edit Chamber</h2>
             <p className="text-xs text-ink-subtle mt-0.5 font-mono">/{tenant.slug}</p>
           </div>
           <button
@@ -655,10 +655,10 @@ function WhiteLabelView() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-xl font-semibold text-ink">
-            Multi-Tenant White-Label Console
+            Multi-Chamber White-Label Console
           </h2>
           <p className="text-sm text-ink-subtle mt-0.5">
-            Manage Chamberlink ERP tenants, branding, and module access.
+            Manage Chamberlink ERP chambers, branding, and module access.
           </p>
         </div>
         <button
@@ -667,7 +667,7 @@ function WhiteLabelView() {
           style={{ background: '#023293' }}
         >
           <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>
-          New Tenant
+          New Chamber
         </button>
       </div>
 
@@ -676,7 +676,7 @@ function WhiteLabelView() {
         {[
           {
             icon: 'corporate_fare',
-            label: 'Total Tenants',
+            label: 'Total Chambers',
             value: tenantsData?.pagination.total ?? tenants.length,
             accent: true,
           },
@@ -729,7 +729,7 @@ function WhiteLabelView() {
         <SkeletonCard className="h-64" />
       ) : isError ? (
         <div className="rounded-xl border border-red-200 bg-red-50 p-6">
-          <p className="text-sm font-semibold text-red-700 mb-1">Failed to load tenants</p>
+          <p className="text-sm font-semibold text-red-700 mb-1">Failed to load chambers</p>
           <p className="text-xs text-red-600 mb-4">
             {(error as { data?: { message?: string } })?.data?.message ?? 'Could not reach /white-label/tenants — check the API and your network.'}
           </p>
@@ -742,7 +742,7 @@ function WhiteLabelView() {
         </div>
       ) : tenants.length === 0 ? (
         <div className="text-center py-16 text-gray-400">
-          No tenants yet. Create the first chamber above.
+          No chambers yet. Create the first chamber above.
         </div>
       ) : (
         <div className="space-y-4">
