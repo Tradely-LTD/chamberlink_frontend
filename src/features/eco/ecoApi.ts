@@ -22,6 +22,29 @@ export interface SolidMineral {
   hsCode: string;
 }
 
+/**
+ * A certificate type the applicant can apply for, from GET /eco/certificate-types.
+ * `goodsSource` decides which goods picker the form shows — a mineral dropdown
+ * or the HS classification lookup. Do not branch on `code`: NACCIMA can add
+ * types administratively, so the form must key off the capability flag, not a
+ * hardcoded list of known codes.
+ */
+export interface CertificateTypeOption {
+  code: string;
+  slug: string;
+  name: string;
+  description: string | null;
+  goodsSource: 'solid_minerals_lookup' | 'hs_code_lookup';
+  requiresMiningLicence: boolean;
+}
+
+export interface HsCode {
+  id: string;
+  code: string;
+  description: string;
+  category: string | null;
+}
+
 export interface OnboardedTenant {
   id: string;
   name: string;
@@ -36,9 +59,12 @@ export interface ECertificate {
   tenantId: string | null;
   memberId: string | null;
 
+  certificateTypeCode: string;
+
   // Product/Goods Details
   solidMineralId: string | null;
   solidMineralName: string | null;
+  hsCodeId: string | null;
   hsCode: string | null;
   descriptionOfGoods: string | null;
   numberAndKindOfPackages: string | null;
@@ -113,7 +139,11 @@ export interface ECertificate {
 }
 
 export interface NewECertPayload {
-  solidMineralId: string;
+  certificateTypeCode: string;
+  /** Required when the chosen type's goodsSource is solid_minerals_lookup. */
+  solidMineralId?: string;
+  /** Required when the chosen type's goodsSource is hs_code_lookup. */
+  hsCodeId?: string;
   descriptionOfGoods: string;
   numberAndKindOfPackages: string;
   marksAndNumbers?: string;
@@ -181,6 +211,14 @@ export const ecoApi = emptyApi.injectEndpoints({
     getSolidMinerals: builder.query<SolidMineral[], void>({
       query: () => '/eco/solid-minerals',
       transformResponse: (res: ApiResponse<SolidMineral[]>) => res.data,
+    }),
+    getCertificateTypes: builder.query<CertificateTypeOption[], void>({
+      query: () => '/eco/certificate-types',
+      transformResponse: (res: ApiResponse<CertificateTypeOption[]>) => res.data,
+    }),
+    getHsCodes: builder.query<HsCode[], string | void>({
+      query: (search) => (search ? `/eco/hs-codes?search=${encodeURIComponent(search)}` : '/eco/hs-codes'),
+      transformResponse: (res: ApiResponse<HsCode[]>) => res.data,
     }),
     getOnboardedTenants: builder.query<OnboardedTenant[], void>({
       query: () => '/tenants/public/onboarded',
@@ -316,6 +354,8 @@ export const ecoApi = emptyApi.injectEndpoints({
 
 export const {
   useGetSolidMineralsQuery,
+  useGetCertificateTypesQuery,
+  useGetHsCodesQuery,
   useGetOnboardedTenantsQuery,
   useGetEcoCertificatesQuery,
   useGetEcoCertificateQuery,

@@ -8,6 +8,8 @@ import {
   useSubmitEcoDraftMutation,
   useGetEcoCertificateQuery,
   useGetSolidMineralsQuery,
+  useGetCertificateTypesQuery,
+  useGetHsCodesQuery,
   useGetOnboardedTenantsQuery,
 } from '@features/eco/ecoApi';
 import type { NewECertPayload } from '@features/eco/ecoApi';
@@ -245,7 +247,11 @@ const labelClass = 'block text-sm font-medium text-ink mb-1.5';
 
 interface FormState {
   tenantId: string;
+  /** Which certificate type is being applied for. Drives which goods picker shows. */
+  certificateTypeCode: string;
   solidMineralId: string;
+  /** Used instead of solidMineralId when the type classifies goods by HS heading. */
+  hsCodeId: string;
   descriptionOfGoods: string;
   // Number and package type are captured separately in the UI (e.g. "500" +
   // "Bags") and combined into one string for the backend/PDF, which still
@@ -284,7 +290,7 @@ interface FormState {
 }
 
 const initialForm: FormState = {
-  tenantId: '', solidMineralId: '', descriptionOfGoods: '', packageCount: '', packageType: '', packageTypeOther: '', marksAndNumbers: '',
+  tenantId: '', certificateTypeCode: '', solidMineralId: '', hsCodeId: '', descriptionOfGoods: '', packageCount: '', packageType: '', packageTypeOther: '', marksAndNumbers: '',
   quantity: '', quantityUnit: 'KG', originStates: [], destinationCountry: '', destinationPort: '', batchIdNo: '',
   isLicenseOwner: false, miningLicenseNo: '',
   companyName: '', companyAddress: '', companyCountry: 'Nigeria', companyEmail: '', companyPhone: '',
@@ -301,6 +307,8 @@ export function EcoApplyPage() {
 
   const { data: existingCert } = useGetEcoCertificateQuery(certId ?? '', { skip: !certId });
   const { data: solidMinerals = [] } = useGetSolidMineralsQuery();
+  const { data: certificateTypes = [] } = useGetCertificateTypesQuery();
+  const { data: hsCodes = [] } = useGetHsCodesQuery();
   const { data: onboardedTenants = [] } = useGetOnboardedTenantsQuery();
 
   const [createEco, { isLoading: isCreating }] = useCreateEcoCertificateMutation();
@@ -347,7 +355,9 @@ export function EcoApplyPage() {
     const knownPackageType = PACKAGE_TYPES.includes(existingPackageType) ? existingPackageType : (existingPackageType ? 'Other' : '');
     setForm({
       tenantId: existingCert.tenantId ?? '',
+      certificateTypeCode: existingCert.certificateTypeCode ?? '',
       solidMineralId: existingCert.solidMineralId ?? '',
+      hsCodeId: existingCert.hsCodeId ?? '',
       descriptionOfGoods: existingCert.descriptionOfGoods ?? '',
       packageCount: existingPackageCount,
       packageType: knownPackageType,
@@ -400,6 +410,15 @@ export function EcoApplyPage() {
   };
 
   const selectedMineral = solidMinerals.find((m) => m.id === form.solidMineralId);
+  const selectedHsCode = hsCodes.find((h) => h.id === form.hsCodeId);
+  const selectedType = certificateTypes.find((t) => t.code === form.certificateTypeCode);
+
+  // Branch on the type's capability flag, never on its code — NACCIMA can add
+  // types administratively, so a hardcoded code list would go stale silently.
+  const usesMineralLookup = selectedType?.goodsSource === 'solid_minerals_lookup';
+  const showMiningLicence = selectedType?.requiresMiningLicence ?? false;
+  const goodsChosen = usesMineralLookup ? !!form.solidMineralId : !!form.hsCodeId;
+  const derivedHsCode = usesMineralLookup ? selectedMineral?.hsCode : selectedHsCode?.code;
 
   // Combines the separate count + type inputs back into the single
   // "500 Bags"-style string the backend/PDF field expects.
@@ -428,7 +447,12 @@ export function EcoApplyPage() {
   // on THIS SAME request as multipart/form-data instead — the backend's
   // ecoUpload middleware accepts either shape on the same routes.
   const buildJsonBody = (): Partial<NewECertPayload> => ({
-    solidMineralId: form.solidMineralId || undefined,
+    certificateTypeCode: form.certificateTypeCode || undefined,
+    // Send only the identifier that belongs to the chosen type's goods source.
+    // Sending both would let a stale selection from a type the applicant
+    // switched away from reach the server.
+    solidMineralId: usesMineralLookup ? form.solidMineralId || undefined : undefined,
+    hsCodeId: !usesMineralLookup ? form.hsCodeId || undefined : undefined,
     descriptionOfGoods: form.descriptionOfGoods || undefined,
     numberAndKindOfPackages: combinedPackages || undefined,
     marksAndNumbers: form.marksAndNumbers || undefined,
@@ -532,7 +556,7 @@ export function EcoApplyPage() {
   const isRevisionRequested = existingCert?.status === 'revision_requested';
 
   const canContinueStep0 = !!(
-    form.tenantId && form.solidMineralId && form.descriptionOfGoods
+    form.tenantId && form.certificateTypeCode && goodsChosen && form.descriptionOfGoods
     && form.packageCount && form.packageType && (form.packageType !== 'Other' || form.packageTypeOther)
     && form.quantity && form.originStates.length > 0 && form.destinationCountry
     && !errors.descriptionOfGoods && !errors.quantity && !errors.destinationCountry
@@ -623,7 +647,25 @@ export function EcoApplyPage() {
           <div className="space-y-4">
             <h2 className="font-medium text-ink mb-4">Product & Goods Details</h2>
 
-            <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide">Chamber & Mineral</p>
+            <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide">Certificate & Chamber</p>
+
+            <div>
+              <Select label="Certificate Type *" value={form.certificateTypeCode}
+                onValueChange={(v) => {
+                  // Clear whichever goods selection belonged to the previous
+                  // type — a mineral id is meaningless on an HS-lookup type and
+                  // vice versa, and a leftover value would silently submit.
+                  set('certificateTypeCode', v);
+                  set('solidMineralId', '');
+                  set('hsCodeId', '');
+                }}
+                placeholder="Select a certificate type…"
+                options={certificateTypes.map((t) => ({ value: t.code, label: t.name }))} />
+              {selectedType?.description && (
+                <p className="text-xs text-ink-subtle mt-1">{selectedType.description}</p>
+              )}
+            </div>
+
             <div>
               {chamberLocked ? (
                 <>
@@ -642,17 +684,38 @@ export function EcoApplyPage() {
               )}
             </div>
 
-            <div>
-              <Select label="Solid Mineral *" value={form.solidMineralId} onValueChange={(v) => set('solidMineralId', v)}
-                placeholder="Select a mineral…"
-                options={solidMinerals.map((m) => ({ value: m.id, label: m.name }))} />
-              {selectedMineral && (
-                <div className="mt-1.5">
-                  <label className="block text-xs text-ink-subtle mb-0.5">HS Code (auto-derived)</label>
-                  <input readOnly disabled value={selectedMineral.hsCode} className={`${selectClass} bg-surface-alt text-ink-subtle cursor-not-allowed`} />
-                </div>
-              )}
-            </div>
+            {/*
+              Goods picker is chosen by the certificate type, not hardcoded.
+              Either way the applicant picks a description and the HS code is
+              derived server-side — it is never typed, which is what stops a
+              mismatched classification reaching a certificate.
+            */}
+            {!form.certificateTypeCode ? (
+              <p className="text-sm text-ink-subtle border border-border rounded-md px-3 py-2 bg-surface-alt">
+                Select a certificate type to continue.
+              </p>
+            ) : (
+              <div>
+                {usesMineralLookup ? (
+                  <Select label="Solid Mineral *" value={form.solidMineralId} onValueChange={(v) => set('solidMineralId', v)}
+                    placeholder="Select a mineral…"
+                    options={solidMinerals.map((m) => ({ value: m.id, label: m.name }))} />
+                ) : (
+                  <Select label="Goods Classification *" value={form.hsCodeId} onValueChange={(v) => set('hsCodeId', v)}
+                    placeholder="Select the goods being exported…"
+                    options={hsCodes.map((h) => ({
+                      value: h.id,
+                      label: `${h.description}${h.category ? ` (${h.category})` : ''}`,
+                    }))} />
+                )}
+                {derivedHsCode && (
+                  <div className="mt-1.5">
+                    <label className="block text-xs text-ink-subtle mb-0.5">HS Code (auto-derived)</label>
+                    <input readOnly disabled value={derivedHsCode} className={`${selectClass} bg-surface-alt text-ink-subtle cursor-not-allowed`} />
+                  </div>
+                )}
+              </div>
+            )}
 
             <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide pt-2">Goods Details</p>
             <Textarea label="Description of Goods *" rows={3} placeholder="Describe the goods being exported"
@@ -703,14 +766,21 @@ export function EcoApplyPage() {
           <div className="space-y-4">
             <h2 className="font-medium text-ink mb-4">Exporter/Company & Consignee Details</h2>
 
-            <label className="flex items-center gap-3 cursor-pointer">
-              <input type="checkbox" checked={form.isLicenseOwner} onChange={(e) => set('isLicenseOwner', e.target.checked)}
-                className="w-4 h-4 rounded border-border text-primary focus:ring-primary/30" />
-              <span className="text-sm text-ink">I am the mining license owner</span>
-            </label>
-            {form.isLicenseOwner && (
-              <Input label="Mining License No. *" value={form.miningLicenseNo}
-                onChange={(e) => set('miningLicenseNo', e.target.value)} />
+            {/* Mining-licence questions belong only to types that declare
+                requiresMiningLicence — asking a cocoa exporter for a mining
+                licence is the kind of thing that makes a form feel wrong. */}
+            {showMiningLicence && (
+              <>
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input type="checkbox" checked={form.isLicenseOwner} onChange={(e) => set('isLicenseOwner', e.target.checked)}
+                    className="w-4 h-4 rounded border-border text-primary focus:ring-primary/30" />
+                  <span className="text-sm text-ink">I am the mining license owner</span>
+                </label>
+                {form.isLicenseOwner && (
+                  <Input label="Mining License No. *" value={form.miningLicenseNo}
+                    onChange={(e) => set('miningLicenseNo', e.target.value)} />
+                )}
+              </>
             )}
 
             <Input label="Company Name *" value={form.companyName} onChange={(e) => set('companyName', e.target.value)} error={errors.companyName} />

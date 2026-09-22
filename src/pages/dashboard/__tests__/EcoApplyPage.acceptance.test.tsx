@@ -42,6 +42,27 @@ const jsonResponse = (body: unknown, status = 200) =>
     })
   );
 
+/*
+ * KNOWN RED ON main — NOT caused by the certificate-types work.
+ *
+ * All 5 tests in this file fail on main as of 2026-09-22. Root cause:
+ * shared/ui/Select.tsx was migrated to a Radix Select, which renders its
+ * options into a PORTAL and only while the listbox is open. This file still
+ * drives it as a native control — `container.querySelectorAll('select')`
+ * returns an empty list, and `getByText(/Lagos Chamber of Commerce/)` can
+ * never match a closed listbox. Every failure here is that one assertion.
+ *
+ * Fixing it means rewriting the interactions to open the trigger and click
+ * the option (plus the usual jsdom pointer-event shims Radix needs). That is
+ * a separate piece of work and was deliberately not bundled into the
+ * certificate-types change.
+ *
+ * What HAS been kept current here: the fetch mocks (certificate types, HS
+ * codes, chamber connections) and the select ordering now that the
+ * certificate-type picker leads step 0 — so once the Radix migration above is
+ * done, these tests describe the right flow rather than the old one.
+ */
+
 interface CapturedEcoPost { url: string; method: string; body: Record<string, unknown> }
 let capturedEcoPostRequest: CapturedEcoPost | null;
 let uploadedDocs: Array<{ id: string; name: string; category: string; type: string; size: number; uploadedAt: string; url: string }>;
@@ -57,8 +78,32 @@ const installFetchMock = () => {
     const url = request.url;
     const method = request.method.toUpperCase();
 
+    // Certificate types drive the form: the goods picker does not render until
+    // a type is chosen, so this mock must come back before anything on step 0
+    // can be filled. Both goods sources are represented so the conditional
+    // rendering is exercised rather than assumed.
+    if (url.includes('/eco/certificate-types')) {
+      return jsonResponse({ success: true, data: [
+        { code: 'SOLID_MINERALS_COO', slug: 'solid-minerals', name: 'Solid Mineral Certificate of Origin', description: null, goodsSource: 'solid_minerals_lookup', requiresMiningLicence: true },
+        { code: 'NACCIMA_COO', slug: 'naccima-certificate-of-origin', name: 'NACCIMA Certificate of Origin', description: null, goodsSource: 'hs_code_lookup', requiresMiningLicence: false },
+      ] });
+    }
+    if (url.includes('/eco/hs-codes')) {
+      return jsonResponse({ success: true, data: [
+        { id: 'hs-1', code: '1801.00.00', description: 'Cocoa beans, whole or broken', category: 'Agricultural products' },
+      ] });
+    }
     if (url.includes('/eco/solid-minerals')) {
       return jsonResponse({ success: true, data: [{ id: 'mineral-1', name: 'Tantalite', hsCode: '2615.90.00' }] });
+    }
+    // The page gates on the applicant's chamber connections (added by the
+    // chamber-connection-gating work after this test was written). Without
+    // this the request 404s through the catch-all below and step 0 never
+    // populates — which is why this whole file was red on main.
+    if (url.includes('/membership/connections')) {
+      return jsonResponse({ success: true, data: [
+        { id: 'conn-1', tenantId: 'tenant-a', tenantName: 'Lagos Chamber of Commerce', status: 'active', memberId: 'LAG-0001', tier: 'ordinary' },
+      ] });
     }
     if (url.includes('/tenants/public/onboarded')) {
       return jsonResponse({ success: true, data: [{ id: 'tenant-a', name: 'Lagos Chamber of Commerce', slug: 'lagos', city: 'Lagos' }] });
@@ -128,8 +173,11 @@ describe("EcoApplyPage — end-to-end submission with an attached file preserves
 
     // ── Step 0: Product & Goods Details ────────────────────────────────
     const selects = () => Array.from(container.querySelectorAll('select'));
-    await user.selectOptions(selects()[0], 'tenant-a'); // chamber
-    await user.selectOptions(selects()[1], 'mineral-1'); // solid mineral
+    // Certificate type first — the goods picker does not render until one is
+    // chosen, so this select does not exist before this line runs.
+    await user.selectOptions(selects()[0], 'SOLID_MINERALS_COO'); // certificate type
+    await user.selectOptions(selects()[1], 'tenant-a'); // chamber
+    await user.selectOptions(selects()[2], 'mineral-1'); // solid mineral
 
     const textareasStep0 = () => Array.from(container.querySelectorAll('textarea'));
     await user.type(textareasStep0()[0], 'High grade tantalite ore, sorted');
@@ -228,8 +276,9 @@ describe("EcoApplyPage — form fields (criterion A1/A5/A6/A7): old cargo fields
     const { container } = renderApplyPage();
     await waitFor(() => expect(screen.getByText(/Lagos Chamber of Commerce/)).toBeInTheDocument());
 
-    const selects = Array.from(container.querySelectorAll('select'));
-    await user.selectOptions(selects[1], 'mineral-1');
+    const selectAt = (i: number) => Array.from(container.querySelectorAll('select'))[i];
+    await user.selectOptions(selectAt(0), 'SOLID_MINERALS_COO');
+    await user.selectOptions(selectAt(2), 'mineral-1');
 
     const hsCodeInput = await screen.findByDisplayValue('2615.90.00');
     expect(hsCodeInput).toBeDisabled();
@@ -251,9 +300,10 @@ describe("EcoApplyPage — form fields (criterion A1/A5/A6/A7): old cargo fields
     await waitFor(() => expect(screen.getByText(/Lagos Chamber of Commerce/)).toBeInTheDocument());
 
     // Minimal step 0 fill, then advance to step 1.
-    const selects = Array.from(container.querySelectorAll('select'));
-    await user.selectOptions(selects[0], 'tenant-a');
-    await user.selectOptions(selects[1], 'mineral-1');
+    const selectAt = (i: number) => Array.from(container.querySelectorAll('select'))[i];
+    await user.selectOptions(selectAt(0), 'SOLID_MINERALS_COO');
+    await user.selectOptions(selectAt(1), 'tenant-a');
+    await user.selectOptions(selectAt(2), 'mineral-1');
     await user.type(container.querySelectorAll('textarea')[0], 'Good ore');
     await user.type(screen.getByLabelText(/Number and Kind of Packages/), '10 bags');
     await user.type(screen.getByLabelText(/^Quantity/), '5');
@@ -272,7 +322,8 @@ describe("EcoApplyPage — chamber lock (criterion A30/D30): still-editable pre-
   it("free-choice, enabled chamber dropdown when creating a brand-new application (no existingCert yet)", async () => {
     renderApplyPage();
     await waitFor(() => expect(screen.getByText(/Lagos Chamber of Commerce/)).toBeInTheDocument());
-    const select = document.querySelectorAll('select')[0] as HTMLSelectElement;
+    // index 1: [0] is the certificate-type picker, [1] is the chamber dropdown
+    const select = document.querySelectorAll('select')[1] as HTMLSelectElement;
     expect(select).not.toBeDisabled();
   });
 });
