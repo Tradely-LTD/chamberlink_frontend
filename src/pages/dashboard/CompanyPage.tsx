@@ -5,6 +5,7 @@ import {
   useAddCompanySubUserMutation,
   useRemoveCompanySubUserMutation,
   type ExporterCompany,
+  type MyCompanyResponse,
   type TinVerificationStatus,
 } from '@features/companies/companiesApi';
 import { SkeletonCard } from '@shared/ui/SkeletonCard';
@@ -150,7 +151,11 @@ function RegisterCompanyForm() {
   );
 }
 
-function SubUsers({ data }: { data: NonNullable<ReturnType<typeof useGetMyCompanyQuery>['data']> }) {
+// Typed against MyCompanyResponse directly, NOT derived from the query hook's
+// return type. Deriving it made this component's inference depend on the whole
+// injected-endpoint graph, and it silently collapsed to `any` (so `m` below lost
+// its type) as soon as another injectEndpoints call was added elsewhere.
+function SubUsers({ data }: { data: MyCompanyResponse & { company: ExporterCompany } }) {
   const [addSubUser, { isLoading: adding }] = useAddCompanySubUserMutation();
   const [removeSubUser, { isLoading: removing }] = useRemoveCompanySubUserMutation();
   const [email, setEmail] = useState('');
@@ -320,7 +325,8 @@ export function CompanyPage() {
             </div>
           </div>
 
-          <SubUsers data={data} />
+          {/* Inside the `data.company` branch, so the narrowed shape holds. */}
+          <SubUsers data={{ ...data, company: data.company }} />
         </div>
       )}
     </div>

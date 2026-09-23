@@ -10,6 +10,7 @@ import {
   useGetSolidMineralsQuery,
   useGetCertificateTypesQuery,
   useGetHsCodesQuery,
+  useGetDocumentRequirementsQuery,
   useGetFxRateQuery,
   useGetOnboardedTenantsQuery,
 } from '@features/eco/ecoApi';
@@ -52,6 +53,8 @@ const UNKNOWN_VALUE = '***';
 // see useGetFxRateQuery below. Kept in step with the backend's own
 // env.usdToNgnRate default so the two fallbacks agree.
 const FALLBACK_USD_TO_NGN_RATE = 1400;
+
+const MEANS_OF_TRANSPORT_LABEL: Record<string, string> = { sea: 'sea', air: 'air', land: 'land' };
 
 // Mirrors the backend's zod constraints (submitECertSchema) so the form catches
 // the same problems before submit instead of round-tripping to the API to find
@@ -337,6 +340,24 @@ export function EcoApplyPage() {
   // an outbound call to the rate provider.
   const { data: fxRate } = useGetFxRateQuery(undefined, { skip: form.invoiceCurrency !== 'USD' });
 
+  // Which documents this application needs (RFP §4.1.7) — decided server-side
+  // from the certificate type AND the mode of transport, so the form renders
+  // whatever comes back instead of keeping its own list. Re-queries whenever
+  // either changes, which is how choosing "air" swaps the Bill of Lading slot
+  // for an Air Waybill.
+  const { data: docRequirements = [] } = useGetDocumentRequirementsQuery(
+    { certificateTypeCode: form.certificateTypeCode, transportMode: form.meansOfTransport },
+    { skip: !form.certificateTypeCode }
+  );
+  const transportRequirement = docRequirements.find((r) => r.isTransportDocument) ?? null;
+  const requirementFor = (documentType: string) => docRequirements.find((r) => r.documentType === documentType);
+  // Falls back to required when the requirements haven't loaded: briefly showing
+  // an asterisk that turns out to be optional is better than the reverse, where
+  // someone skips a slot the server will then reject.
+  const isDocRequired = (documentType: string) => requirementFor(documentType)?.isRequired ?? true;
+  const docLabel = (documentType: string, fallback: string) =>
+    `${requirementFor(documentType)?.label ?? fallback}${isDocRequired(documentType) ? ' *' : ''}`;
+
   // "I don't know yet" toggles for shipment subfields that accept the literal "***"
   const [departureUnknown, setDepartureUnknown] = useState(false);
   const [vesselUnknown, setVesselUnknown] = useState(false);
@@ -347,6 +368,10 @@ export function EcoApplyPage() {
   const [signatureDocId, setSignatureDocId] = useState<string | null>(null);
   const [cacCertificateDocId, setCacCertificateDocId] = useState<string | null>(null);
   const [nepcCertificateDocId, setNepcCertificateDocId] = useState<string | null>(null);
+  // One slot for the mode-specific transport document (RFP §4.1.7). Not three:
+  // the chosen mode decides whether it is a Bill of Lading, an Air Waybill or a
+  // Road Consignment Note, and a shipment travels one way.
+  const [transportDocumentDocId, setTransportDocumentDocId] = useState<string | null>(null);
 
   // Populated only for a zero-connection guest applicant (see DocSlot) —
   // attached directly to the request as multipart/form-data instead of a
@@ -355,6 +380,7 @@ export function EcoApplyPage() {
   const [signatureFile, setSignatureFile] = useState<File | null>(null);
   const [cacCertificateFile, setCacCertificateFile] = useState<File | null>(null);
   const [nepcCertificateFile, setNepcCertificateFile] = useState<File | null>(null);
+  const [transportDocumentFile, setTransportDocumentFile] = useState<File | null>(null);
 
   const chamberLocked = !!existingCert && existingCert.status !== 'draft';
 
@@ -498,9 +524,10 @@ export function EcoApplyPage() {
     signatureDocId: signatureDocId ?? undefined,
     cacCertificateDocId: cacCertificateDocId ?? undefined,
     nepcCertificateDocId: nepcCertificateDocId ?? undefined,
+    transportDocumentDocId: transportDocumentDocId ?? undefined,
   });
 
-  const hasRawFiles = !!(invoiceFile || signatureFile || cacCertificateFile || nepcCertificateFile);
+  const hasRawFiles = !!(invoiceFile || signatureFile || cacCertificateFile || nepcCertificateFile || transportDocumentFile);
 
   const buildFormDataOrJson = (): { isFormData: false; body: Partial<NewECertPayload> } | { isFormData: true; body: FormData } => {
     const jsonBody = buildJsonBody();
@@ -517,6 +544,7 @@ export function EcoApplyPage() {
     if (signatureFile) fd.append('signature', signatureFile);
     if (cacCertificateFile) fd.append('cacCertificate', cacCertificateFile);
     if (nepcCertificateFile) fd.append('nepcCertificate', nepcCertificateFile);
+    if (transportDocumentFile) fd.append('transportDocument', transportDocumentFile);
     return { isFormData: true, body: fd };
   };
 
@@ -545,7 +573,9 @@ export function EcoApplyPage() {
       return;
     }
     if (!canContinueStep4) {
-      setError('Invoice, Signature, CAC Certificate, and NEPC Certificate are all required to submit.');
+      // Names what is actually missing, from the server's own requirement labels,
+      // rather than reciting a fixed list that may not match this application.
+      setError(`These documents are required to submit: ${missingDocs.map((r) => r.label).join(', ')}.`);
       return;
     }
     const { isFormData, body } = buildFormDataOrJson();
@@ -587,12 +617,25 @@ export function EcoApplyPage() {
   // All four documents are compulsory — an existing draft's already-saved key
   // (invoiceFileKey etc. via existingCert) also counts, not just a docId/file
   // picked in this session. A raw File (guest applicant, no docId) counts too.
-  const canContinueStep4 = !!(
-    (invoiceDocId || invoiceFile || existingCert?.invoiceFileKey)
-    && (signatureDocId || signatureFile || existingCert?.signatureKey)
-    && (cacCertificateDocId || cacCertificateFile || existingCert?.cacCertificateKey)
-    && (nepcCertificateDocId || nepcCertificateFile || existingCert?.nepcCertificateKey)
-  );
+  // Gating follows the SERVER's requirements (RFP §4.1.7), not a fixed list of
+  // four — so a document the configuration has made optional no longer blocks
+  // Continue, and the mode-specific transport document does.
+  const suppliedFor: Record<string, unknown> = {
+    invoice: invoiceDocId || invoiceFile || existingCert?.invoiceFileKey,
+    signature: signatureDocId || signatureFile || existingCert?.signatureKey,
+    cac_certificate: cacCertificateDocId || cacCertificateFile || existingCert?.cacCertificateKey,
+    nepc_certificate: nepcCertificateDocId || nepcCertificateFile || existingCert?.nepcCertificateKey,
+    // All three transport document types read the same slot — only one is ever
+    // required for a given mode.
+    ...(transportRequirement
+      ? {
+          [transportRequirement.documentType]:
+            transportDocumentDocId || transportDocumentFile || existingCert?.transportDocumentKey,
+        }
+      : {}),
+  };
+  const missingDocs = docRequirements.filter((r) => r.isRequired && !suppliedFor[r.documentType]);
+  const canContinueStep4 = missingDocs.length === 0;
 
   const canContinue = [canContinueStep0, canContinueStep1, canContinueStep2, canContinueStep3, canContinueStep4, true];
 
@@ -928,12 +971,35 @@ export function EcoApplyPage() {
           <div className="space-y-4">
             <div className="mb-4">
               <h2 className="font-medium text-ink">Compliance / Declaration Documents</h2>
-              <p className="text-xs text-ink-subtle mt-1">All four documents below are required. Select from your library or upload new files.</p>
+              <p className="text-xs text-ink-subtle mt-1">
+                Select from your library or upload new files. Documents marked * are required
+                {transportRequirement && ` — including the ${transportRequirement.label}, because your goods travel by ${MEANS_OF_TRANSPORT_LABEL[form.meansOfTransport] ?? form.meansOfTransport}`}.
+              </p>
             </div>
-            <DocSlot label="Attach Invoice *" filterCategory="commercial_invoice" selectedDocId={invoiceDocId} onSelectDocId={setInvoiceDocId} selectedFile={invoiceFile} onSelectFile={setInvoiceFile} hasConnection={hasConnection} />
-            <DocSlot label="Signature *" filterCategory="signature" selectedDocId={signatureDocId} onSelectDocId={setSignatureDocId} selectedFile={signatureFile} onSelectFile={setSignatureFile} hasConnection={hasConnection} />
-            <DocSlot label="CAC Certificate *" filterCategory="cac_certificate" selectedDocId={cacCertificateDocId} onSelectDocId={setCacCertificateDocId} selectedFile={cacCertificateFile} onSelectFile={setCacCertificateFile} hasConnection={hasConnection} />
-            <DocSlot label="NEPC Certificate *" filterCategory="nepc_certificate" selectedDocId={nepcCertificateDocId} onSelectDocId={setNepcCertificateDocId} selectedFile={nepcCertificateFile} onSelectFile={setNepcCertificateFile} hasConnection={hasConnection} />
+            <DocSlot label={docLabel('invoice', 'Attach Invoice')} filterCategory="commercial_invoice" selectedDocId={invoiceDocId} onSelectDocId={setInvoiceDocId} selectedFile={invoiceFile} onSelectFile={setInvoiceFile} hasConnection={hasConnection} />
+            <DocSlot label={docLabel('signature', 'Signature')} filterCategory="signature" selectedDocId={signatureDocId} onSelectDocId={setSignatureDocId} selectedFile={signatureFile} onSelectFile={setSignatureFile} hasConnection={hasConnection} />
+            <DocSlot label={docLabel('cac_certificate', 'CAC Certificate')} filterCategory="cac_certificate" selectedDocId={cacCertificateDocId} onSelectDocId={setCacCertificateDocId} selectedFile={cacCertificateFile} onSelectFile={setCacCertificateFile} hasConnection={hasConnection} />
+            <DocSlot label={docLabel('nepc_certificate', 'NEPC Certificate')} filterCategory="nepc_certificate" selectedDocId={nepcCertificateDocId} onSelectDocId={setNepcCertificateDocId} selectedFile={nepcCertificateFile} onSelectFile={setNepcCertificateFile} hasConnection={hasConnection} />
+            {/* The §4.1.7 slot. Rendered only when the chosen mode calls for one,
+                and its label follows the mode — Bill of Lading, Air Waybill or
+                Road Consignment Note. Filed under "other" in the document
+                library, which has no category for transport documents yet. */}
+            {transportRequirement && (
+              <>
+                <DocSlot
+                  label={`${transportRequirement.label}${transportRequirement.isRequired ? ' *' : ''}`}
+                  filterCategory="other"
+                  selectedDocId={transportDocumentDocId}
+                  onSelectDocId={setTransportDocumentDocId}
+                  selectedFile={transportDocumentFile}
+                  onSelectFile={setTransportDocumentFile}
+                  hasConnection={hasConnection}
+                />
+                {transportRequirement.helpText && (
+                  <p className="text-xs text-ink-subtle -mt-2">{transportRequirement.helpText}</p>
+                )}
+              </>
+            )}
           </div>
         )}
 
@@ -986,6 +1052,17 @@ export function EcoApplyPage() {
               { label: 'Signature', value: signatureFile?.name ?? (signatureDocId ? (myDocs.find((d) => d.id === signatureDocId)?.name ?? 'Attached') : '—') },
               { label: 'CAC Certificate', value: cacCertificateFile?.name ?? (cacCertificateDocId ? (myDocs.find((d) => d.id === cacCertificateDocId)?.name ?? 'Attached') : '—') },
               { label: 'NEPC Certificate', value: nepcCertificateFile?.name ?? (nepcCertificateDocId ? (myDocs.find((d) => d.id === nepcCertificateDocId)?.name ?? 'Attached') : '—') },
+              // Only listed when the chosen mode calls for one (RFP §4.1.7), so
+              // the review never shows a row for a document nobody was asked for.
+              ...(transportRequirement
+                ? [{
+                    label: transportRequirement.label,
+                    value: transportDocumentFile?.name
+                      ?? (transportDocumentDocId
+                        ? (myDocs.find((d) => d.id === transportDocumentDocId)?.name ?? 'Attached')
+                        : existingCert?.transportDocumentKey ? 'Attached' : '—'),
+                  }]
+                : []),
             ]} />
 
             {feeEstimate && (

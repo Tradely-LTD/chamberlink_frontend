@@ -64,6 +64,31 @@ export interface FxRateInfo {
   fetchedAt: string;
 }
 
+/**
+ * A document the application must (or may) carry, from
+ * GET /eco/document-requirements (RFP §4.1.7).
+ *
+ * The server decides this from the certificate type AND the mode of transport,
+ * so the form renders whatever comes back rather than keeping its own list.
+ * `isTransportDocument` marks the mode-specific one — Bill of Lading, Air
+ * Waybill or Road Consignment Note — of which at most one ever applies, because
+ * a shipment travels one way.
+ */
+export interface DocumentRequirement {
+  documentType:
+    | 'invoice'
+    | 'signature'
+    | 'cac_certificate'
+    | 'nepc_certificate'
+    | 'bill_of_lading'
+    | 'air_waybill'
+    | 'road_consignment_note';
+  label: string;
+  helpText: string | null;
+  isRequired: boolean;
+  isTransportDocument: boolean;
+}
+
 export interface OnboardedTenant {
   id: string;
   name: string;
@@ -137,6 +162,10 @@ export interface ECertificate {
   signatureKey: string | null;
   cacCertificateKey: string | null;
   nepcCertificateKey: string | null;
+  // The mode-specific transport document (RFP §4.1.7). One pair of fields, not
+  // three: transportDocumentType says which document the key actually is.
+  transportDocumentKey: string | null;
+  transportDocumentType: string | null;
   additionalDocsKeys: string | null;
 
   // Application state
@@ -214,6 +243,8 @@ export interface NewECertPayload {
   signatureDocId?: string;
   cacCertificateDocId?: string;
   nepcCertificateDocId?: string;
+  /** Bill of Lading / Air Waybill / Road Consignment Note — one field, the mode decides which. */
+  transportDocumentDocId?: string;
   additionalDocIds?: string[];
 }
 
@@ -253,6 +284,16 @@ export const ecoApi = emptyApi.injectEndpoints({
     getHsCodes: builder.query<HsCode[], string | void>({
       query: (search) => (search ? `/eco/hs-codes?search=${encodeURIComponent(search)}` : '/eco/hs-codes'),
       transformResponse: (res: ApiResponse<HsCode[]>) => res.data,
+    }),
+    getDocumentRequirements: builder.query<
+      DocumentRequirement[],
+      { certificateTypeCode: string; transportMode?: 'sea' | 'air' | 'land' }
+    >({
+      query: ({ certificateTypeCode, transportMode }) => ({
+        url: '/eco/document-requirements',
+        params: { certificateTypeCode, ...(transportMode ? { transportMode } : {}) },
+      }),
+      transformResponse: (res: ApiResponse<DocumentRequirement[]>) => res.data,
     }),
     getFxRate: builder.query<FxRateInfo, void>({
       query: () => '/eco/fx-rate',
@@ -390,7 +431,10 @@ export const ecoApi = emptyApi.injectEndpoints({
       query: (certId) => `/eco/${certId}/download`,
       transformResponse: (res: ApiResponse<{ url: string; certId: string; status: string }>) => res.data,
     }),
-    getEcoDocumentUrl: builder.query<{ url: string }, { certId: string; docType: 'invoice' | 'signature' | 'cac' | 'nepc' }>({
+    // 'transport' is one docType for all three transport documents (RFP §4.1.7) —
+    // which one it resolves to follows from the certificate's own
+    // transportDocumentType, not from the URL.
+    getEcoDocumentUrl: builder.query<{ url: string }, { certId: string; docType: 'invoice' | 'signature' | 'cac' | 'nepc' | 'transport' }>({
       query: ({ certId, docType }) => `/eco/${certId}/documents/${docType}`,
       transformResponse: (res: ApiResponse<{ url: string }>) => res.data,
     }),
@@ -412,6 +456,7 @@ export const {
   useGetSolidMineralsQuery,
   useGetCertificateTypesQuery,
   useGetHsCodesQuery,
+  useGetDocumentRequirementsQuery,
   useGetFxRateQuery,
   useGetOnboardedTenantsQuery,
   useGetEcoCertificatesQuery,

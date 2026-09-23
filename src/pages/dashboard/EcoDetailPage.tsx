@@ -31,6 +31,15 @@ const statusLabel: Record<ECertStatus, string> = {
 
 const MEANS_OF_TRANSPORT_LABEL: Record<string, string> = { sea: 'Sea', air: 'Air', land: 'Land' };
 
+// Display names for the three mode-specific transport documents (RFP §4.1.7).
+// Read off the certificate's stored transportDocumentType rather than derived
+// from its mode, so the label reflects what was actually filed.
+const TRANSPORT_DOC_LABEL: Record<string, string> = {
+  bill_of_lading: 'Bill of Lading',
+  air_waybill: 'Air Waybill',
+  road_consignment_note: 'Road Consignment Note',
+};
+
 const ADMIN_ROLES = ['super_admin', 'chamber_admin', 'staff_operator', 'chamber_executive'];
 
 const Row = ({ label, value }: { label: string; value: ReactNode }) => (
@@ -44,7 +53,7 @@ const Row = ({ label, value }: { label: string; value: ReactNode }) => (
 // attached — fetches a fresh signed URL on click rather than storing one,
 // since these S3 URLs expire.
 const DocRow = ({ label, certId, docType, attached }: {
-  label: string; certId: string; docType: 'invoice' | 'signature' | 'cac' | 'nepc'; attached: boolean;
+  label: string; certId: string; docType: 'invoice' | 'signature' | 'cac' | 'nepc' | 'transport'; attached: boolean;
 }) => {
   const [fetchUrl, { isFetching }] = useLazyGetEcoDocumentUrlQuery();
   const [error, setError] = useState<string | null>(null);
@@ -531,6 +540,18 @@ export function EcoDetailPage() {
           <DocRow label="Signature" certId={cert.id} docType="signature" attached={!!cert.signatureKey} />
           <DocRow label="CAC Certificate" certId={cert.id} docType="cac" attached={!!cert.cacCertificateKey} />
           <DocRow label="NEPC Certificate" certId={cert.id} docType="nepc" attached={!!cert.nepcCertificateKey} />
+          {/* The mode-specific transport document (RFP §4.1.7). Labelled from
+              transportDocumentType, which records what was actually supplied —
+              not recomputed from today's requirement rules, so a certificate
+              submitted before a rule changed still reads correctly. */}
+          {cert.transportDocumentKey && (
+            <DocRow
+              label={TRANSPORT_DOC_LABEL[cert.transportDocumentType ?? ''] ?? 'Transport Document'}
+              certId={cert.id}
+              docType="transport"
+              attached
+            />
+          )}
         </div>
       </div>
 

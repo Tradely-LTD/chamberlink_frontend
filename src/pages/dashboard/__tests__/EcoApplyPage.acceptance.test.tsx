@@ -96,6 +96,32 @@ const installFetchMock = () => {
     if (url.includes('/eco/solid-minerals')) {
       return jsonResponse({ success: true, data: [{ id: 'mineral-1', name: 'Tantalite', hsCode: '2615.90.00' }] });
     }
+    // Document requirements (RFP §4.1.7) — the wizard's step-4 slots and its
+    // Continue gating are driven by this now, not by a fixed list of four.
+    // Echoes back the requested transportMode so the response is consistent with
+    // what the form asked for, which is what makes the Bill of Lading slot appear
+    // for a sea shipment and an Air Waybill for an air one.
+    if (url.includes('/eco/document-requirements')) {
+      const mode = new URL(url, 'http://localhost').searchParams.get('transportMode');
+      const transportByMode: Record<string, { documentType: string; label: string }> = {
+        sea: { documentType: 'bill_of_lading', label: 'Bill of Lading' },
+        air: { documentType: 'air_waybill', label: 'Air Waybill' },
+        land: { documentType: 'road_consignment_note', label: 'Road Consignment Note' },
+      };
+      const transport = mode ? transportByMode[mode] : undefined;
+      return jsonResponse({ success: true, data: [
+        { documentType: 'invoice', label: 'Commercial Invoice', helpText: null, isRequired: true, isTransportDocument: false },
+        { documentType: 'signature', label: 'Authorised Signature', helpText: null, isRequired: true, isTransportDocument: false },
+        { documentType: 'cac_certificate', label: 'CAC Certificate', helpText: null, isRequired: true, isTransportDocument: false },
+        { documentType: 'nepc_certificate', label: 'NEPC Certificate', helpText: null, isRequired: true, isTransportDocument: false },
+        ...(transport ? [{ ...transport, helpText: null, isRequired: true, isTransportDocument: true }] : []),
+      ] });
+    }
+    if (url.includes('/eco/fx-rate')) {
+      return jsonResponse({ success: true, data: {
+        base: 'USD', quote: 'NGN', rate: 1400, source: 'live:test', isLive: true, fetchedAt: new Date().toISOString(),
+      } });
+    }
     // The page gates on the applicant's chamber connections (added by the
     // chamber-connection-gating work after this test was written). Without
     // this the request 404s through the catch-all below and step 0 never
