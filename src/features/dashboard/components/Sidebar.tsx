@@ -27,6 +27,11 @@ const memberNavItems: NavItem[] = [
   { label: 'Membership',          to: '/dashboard/membership',          icon: 'verified_user' },
   { label: 'Trade Corridors',     to: '/dashboard/trade-corridors',     icon: 'route' },
   { label: 'Exporter Visibility', to: '/dashboard/exporter-visibility', icon: 'visibility' },
+  // Deliberately NOT in GATED_LABELS: an exporter company is a platform-level
+  // identity keyed on its TIN, independent of any chamber relationship (RFP
+  // §6.2). A member with zero connections still needs to register it — it is
+  // what makes their certificates carry a verified exporter name.
+  { label: 'My Company',          to: '/dashboard/company',             icon: 'domain' },
   { label: 'My Chambers',         to: '/dashboard/connections',         icon: 'corporate_fare' },
   { label: 'Chamber Network',     to: '/dashboard/chamber-network',     icon: 'travel_explore' },
   { label: 'My Profile',          to: '/dashboard/profile',             icon: 'manage_accounts' },
@@ -39,6 +44,7 @@ const institutionalNavItems: NavItem[] = [
   { label: 'Exporter Visibility', to: '/dashboard/exporter-visibility', icon: 'visibility' },
   { label: 'Trade Corridors',     to: '/dashboard/trade-corridors',     icon: 'route' },
   { label: 'Trade Data API',      to: '/dashboard/trade-data-api',      icon: 'api' },
+  { label: 'My Company',          to: '/dashboard/company',             icon: 'domain' },
   { label: 'My Chambers',         to: '/dashboard/connections',         icon: 'corporate_fare' },
   { label: 'My Profile',          to: '/dashboard/profile',             icon: 'manage_accounts' },
 ];
@@ -63,6 +69,9 @@ const chamberAdminNavItems: NavItem[] = [
   { label: 'Member Management',   to: '/dashboard/members',             icon: 'manage_accounts' },
   { label: 'Audit Log',           to: '/dashboard/admin',               icon: 'history' },
   { label: 'eCO Queue',           to: '/dashboard/eco',                 icon: 'task_alt' },
+  // Confirming a company's TIN against tax records is a chamber_admin job in the
+  // RFP's role table (§6.1) — absent from the staff_operator nav on purpose.
+  { label: 'Company Verification', to: '/dashboard/company-verification', icon: 'domain_verification' },
   { label: 'Analytics',           to: '/dashboard/analytics',           icon: 'bar_chart' },
   { label: 'Trade Fair',          to: '/dashboard/trade-fair',          icon: 'storefront' },
   { label: 'Trade Corridors',     to: '/dashboard/trade-corridors',     icon: 'route' },
@@ -98,6 +107,7 @@ const superAdminNavItems: NavItem[] = [
   { label: 'Exporter Visibility', to: '/dashboard/exporter-visibility', icon: 'visibility' },
   { label: 'Export Documents',    to: '/dashboard/export-documents',    icon: 'receipt_long' },
   { label: 'Academy',             to: '/dashboard/academy',             icon: 'school' },
+  { label: 'Company Verification', to: '/dashboard/company-verification', icon: 'domain_verification' },
   { label: 'White-Label',         to: '/dashboard/white-label',         icon: 'corporate_fare' },
   { label: 'Settings',            to: '/dashboard/settings',            icon: 'tune' },
   { label: 'My Chambers',         to: '/dashboard/connections',         icon: 'corporate_fare' },

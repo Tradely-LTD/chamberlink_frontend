@@ -22,13 +22,13 @@ const statusVariant: Record<ECertStatus, 'success' | 'warning' | 'error' | 'defa
   issued: 'success', approved: 'warning',
   submitted: 'warning', under_review: 'warning', pending_payment: 'warning',
   draft: 'default',
-  rejected: 'error', revision_requested: 'error',
+  rejected: 'error', revision_requested: 'error', revoked: 'error',
 };
 
 const statusLabel: Record<ECertStatus, string> = {
   draft: 'Draft', submitted: 'Submitted', under_review: 'Under Review',
   pending_payment: 'Awaiting Payment', approved: 'Approved — Awaiting Payment', issued: 'Issued',
-  rejected: 'Rejected', revision_requested: 'Revision Required',
+  rejected: 'Rejected', revision_requested: 'Revision Required', revoked: 'Revoked',
 };
 
 const ADMIN_ROLES = ['super_admin', 'chamber_admin', 'staff_operator', 'chamber_executive'];
@@ -44,6 +44,10 @@ const FILTER_OPTIONS: { label: string; value: string }[] = [
   { label: 'Awaiting Payment', value: 'pending_payment' },
   { label: 'Issued', value: 'issued' },
   { label: 'Rejected', value: 'rejected' },
+  // Revoked certificates need their own filter, not to be folded into Rejected:
+  // an administrator auditing withdrawals is asking a different question from
+  // one reviewing refusals (RFP §4.1.12, §6.7).
+  { label: 'Revoked', value: 'revoked' },
 ];
 
 // ── Review Notes Modal ────────────────────────────────────────────────────

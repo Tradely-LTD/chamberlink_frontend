@@ -14,7 +14,11 @@ export type ECertStatus =
   | 'approved'
   | 'pending_payment'
   | 'issued'
-  | 'rejected';
+  | 'rejected'
+  // An issued certificate withdrawn by a chamber administrator (RFP §4.1.12).
+  // Terminal — the applicant corrects and resubmits as a new application
+  // rather than editing this one. Distinct from 'rejected', which never issued.
+  | 'revoked';
 
 export interface SolidMineral {
   id: string;
@@ -43,6 +47,21 @@ export interface HsCode {
   code: string;
   description: string;
   category: string | null;
+}
+
+/**
+ * Current USD -> NGN rate from GET /eco/fx-rate (RFP §8.5).
+ * `isLive` false means the platform is serving a cached-stale or fallback rate
+ * because the provider was unreachable — surface that rather than presenting it
+ * as a live quote.
+ */
+export interface FxRateInfo {
+  base: 'USD';
+  quote: 'NGN';
+  rate: number;
+  source: string;
+  isLive: boolean;
+  fetchedAt: string;
 }
 
 export interface OnboardedTenant {
@@ -102,6 +121,13 @@ export interface ECertificate {
   invoiceDate: string | null;
   invoiceTotal: number | null;
   invoiceCurrency: 'NGN' | 'USD';
+  // FX audit trail — populated only for a USD invoice (RFP §8.5). Shows which
+  // rate the fee was actually computed from, so a member can see how their
+  // Naira fee was reached rather than having to trust it.
+  invoiceTotalNgn: number | null;
+  fxRateUsed: number | null;
+  fxRateSource: string | null;
+  fxRateAt: string | null;
   invoiceFileKey: string | null;
   customerOrderOrLcNo: string | null;
   selfDeclaredIsMember: boolean;
@@ -130,6 +156,14 @@ export interface ECertificate {
   certificatePdfUrl: string | null;
   qrCodeData: string | null;
   issuedAt: string | null;
+
+  // Revocation (RFP §4.1.12). revokedAt/revocationReason are set together and
+  // never cleared. resubmittedFromCertificateId is set on the REPLACEMENT
+  // draft, pointing back at the certificate it corrects.
+  revokedAt: string | null;
+  revokedByUserId: string | null;
+  revocationReason: string | null;
+  resubmittedFromCertificateId: string | null;
 
   createdAt: string;
   updatedAt: string;
@@ -219,6 +253,10 @@ export const ecoApi = emptyApi.injectEndpoints({
     getHsCodes: builder.query<HsCode[], string | void>({
       query: (search) => (search ? `/eco/hs-codes?search=${encodeURIComponent(search)}` : '/eco/hs-codes'),
       transformResponse: (res: ApiResponse<HsCode[]>) => res.data,
+    }),
+    getFxRate: builder.query<FxRateInfo, void>({
+      query: () => '/eco/fx-rate',
+      transformResponse: (res: ApiResponse<FxRateInfo>) => res.data,
     }),
     getOnboardedTenants: builder.query<OnboardedTenant[], void>({
       query: () => '/tenants/public/onboarded',
@@ -323,6 +361,24 @@ export const ecoApi = emptyApi.injectEndpoints({
       query: ({ id, ...body }) => ({ url: `/eco/${id}/review`, method: 'POST', body }),
       invalidatesTags: (_r, _e, { id }) => [{ type: 'ECO', id }, 'EcoQueue'],
     }),
+    // Revoke an ISSUED certificate (RFP §4.1.12). chamber_admin only — a
+    // staff_operator reviews applications but cannot withdraw a live one.
+    revokeEcoCert: builder.mutation<
+      { status: 'revoked'; revokedAt: string; revocationReason: string },
+      { id: string; reason: string }
+    >({
+      query: ({ id, reason }) => ({ url: `/eco/${id}/revoke`, method: 'POST', body: { reason } }),
+      transformResponse: (res: ApiResponse<{ status: 'revoked'; revokedAt: string; revocationReason: string }>) => res.data,
+      invalidatesTags: (_r, _e, { id }) => [{ type: 'ECO', id }, 'EcoQueue'],
+    }),
+    // The applicant's own correction path after a revocation: creates a NEW
+    // prefilled draft and leaves the revoked certificate intact. Returns the
+    // draft so the caller can navigate straight into editing it.
+    resubmitRevokedEcoCert: builder.mutation<ECertificate, string>({
+      query: (id) => ({ url: `/eco/${id}/resubmit`, method: 'POST' }),
+      transformResponse: (res: ApiResponse<ECertificate>) => res.data,
+      invalidatesTags: ['ECO'],
+    }),
     // Not covered by the new contract (unchanged endpoint) — kept for the
     // "Re-generate Certificate" / "Re-issue (Replacement Copy)" admin actions.
     reIssueCertificate: builder.mutation<{ certNumber: string; pdfUrl: string }, string>({
@@ -356,6 +412,7 @@ export const {
   useGetSolidMineralsQuery,
   useGetCertificateTypesQuery,
   useGetHsCodesQuery,
+  useGetFxRateQuery,
   useGetOnboardedTenantsQuery,
   useGetEcoCertificatesQuery,
   useGetEcoCertificateQuery,
@@ -366,6 +423,8 @@ export const {
   useSubmitEcoDraftMutation,
   useGetAdminEcoQueueQuery,
   useReviewEcoCertMutation,
+  useRevokeEcoCertMutation,
+  useResubmitRevokedEcoCertMutation,
   useReIssueCertificateMutation,
   useGetEcoCertDownloadUrlQuery,
   useLazyGetEcoCertDownloadUrlQuery,

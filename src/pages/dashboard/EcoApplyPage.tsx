@@ -10,6 +10,7 @@ import {
   useGetSolidMineralsQuery,
   useGetCertificateTypesQuery,
   useGetHsCodesQuery,
+  useGetFxRateQuery,
   useGetOnboardedTenantsQuery,
 } from '@features/eco/ecoApi';
 import type { NewECertPayload } from '@features/eco/ecoApi';
@@ -46,7 +47,11 @@ const UNKNOWN_VALUE = '***';
 // Preview-only — matches the backend's default USD_TO_NGN_RATE (chamberlink_backend
 // config/env.ts). The real conversion happens server-side using the currently
 // configured rate; this is just so the applicant sees a ballpark fee.
-const APPROX_USD_TO_NGN_RATE = 1400;
+// Last-resort rate for the on-screen fee preview, used only if GET /eco/fx-rate
+// has not answered yet or failed. The live rate (RFP §8.5) is the normal path —
+// see useGetFxRateQuery below. Kept in step with the backend's own
+// env.usdToNgnRate default so the two fallbacks agree.
+const FALLBACK_USD_TO_NGN_RATE = 1400;
 
 // Mirrors the backend's zod constraints (submitECertSchema) so the form catches
 // the same problems before submit instead of round-tripping to the API to find
@@ -327,6 +332,11 @@ export function EcoApplyPage() {
 
   const [form, setForm] = useState<FormState>(initialForm);
 
+  // Live USD -> NGN rate for the fee preview (RFP §8.5). Skipped entirely for an
+  // NGN invoice: nothing is converted, and a cache miss on this endpoint costs
+  // an outbound call to the rate provider.
+  const { data: fxRate } = useGetFxRateQuery(undefined, { skip: form.invoiceCurrency !== 'USD' });
+
   // "I don't know yet" toggles for shipment subfields that accept the literal "***"
   const [departureUnknown, setDepartureUnknown] = useState(false);
   const [vesselUnknown, setVesselUnknown] = useState(false);
@@ -586,11 +596,14 @@ export function EcoApplyPage() {
 
   const canContinue = [canContinueStep0, canContinueStep1, canContinueStep2, canContinueStep3, canContinueStep4, true];
 
-  // Fee is always charged in NGN — for a USD invoice this is a rough preview only
-  // (matches the backend's default USD_TO_NGN_RATE; the reviewer's server-side
-  // conversion at approval time is the number that actually gets charged).
+  // Fee is always charged in NGN. For a USD invoice the preview now uses the
+  // same live rate the server will use (RFP §8.5) instead of a hardcoded 1400,
+  // so the estimate an applicant sees matches the order of magnitude they will
+  // actually be charged. Still an estimate: the fee is recomputed at approval
+  // against the rate in effect then, which is what §6.4 requires.
+  const usdToNgn = fxRate?.rate ?? FALLBACK_USD_TO_NGN_RATE;
   const feeEstimateNgnTotal = form.invoiceTotal
-    ? Number(form.invoiceTotal) * (form.invoiceCurrency === 'USD' ? APPROX_USD_TO_NGN_RATE : 1)
+    ? Number(form.invoiceTotal) * (form.invoiceCurrency === 'USD' ? usdToNgn : 1)
     : 0;
   const feeEstimate = form.invoiceTotal
     ? {
@@ -893,6 +906,17 @@ export function EcoApplyPage() {
             {form.invoiceCurrency === 'USD' && (
               <p className="text-xs text-ink-subtle -mt-2">
                 The application fee is charged in Naira — your USD amount will be converted at the exchange rate in effect when your application is reviewed.
+                {fxRate && (
+                  <>
+                    {' '}Today&apos;s rate is <strong>₦{fxRate.rate.toLocaleString()}</strong> per $1
+                    {!fxRate.isLive && ' (indicative — live rates are briefly unavailable)'}
+                    {form.invoiceTotal && Number(form.invoiceTotal) > 0 && (
+                      <>, so ${Number(form.invoiceTotal).toLocaleString()} is about{' '}
+                        ₦{Math.round(Number(form.invoiceTotal) * fxRate.rate).toLocaleString()}</>
+                    )}
+                    .
+                  </>
+                )}
               </p>
             )}
             <Input label="Customer Order / LC No." placeholder="Optional" value={form.customerOrderOrLcNo}
@@ -971,7 +995,11 @@ export function EcoApplyPage() {
                   ₦{feeEstimate.verified.toLocaleString(undefined, { maximumFractionDigits: 2 })} (0.11% — if chamber membership is verified) or{' '}
                   ₦{feeEstimate.unverified.toLocaleString(undefined, { maximumFractionDigits: 2 })} (0.125% — otherwise).
                   The final fee is confirmed by the reviewer at approval.
-                  {form.invoiceCurrency === 'USD' && ' This estimate converts your USD invoice at an approximate rate — the exact fee is set using the rate in effect when reviewed.'}
+                  {form.invoiceCurrency === 'USD' && (
+                    fxRate
+                      ? ` This converts your USD invoice at ₦${fxRate.rate.toLocaleString()} per $1${fxRate.isLive ? '' : ' (indicative rate)'} — the exact fee is set using the rate in effect when reviewed.`
+                      : ' This estimate converts your USD invoice at an approximate rate — the exact fee is set using the rate in effect when reviewed.'
+                  )}
                 </p>
               </div>
             )}

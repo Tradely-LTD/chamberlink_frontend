@@ -29,6 +29,7 @@ const ecoStatusStyle: Record<string, string> = {
   issued:             'bg-[#a0f4ca] text-[#002114]',
   rejected:           'bg-[#ffdad6] text-[#93000a]',
   revision_requested: 'bg-[#ffdea5] text-[#5d4201]',
+  revoked:            'bg-[#ffdad6] text-[#93000a]',
 };
 
 function AdminOverview() {

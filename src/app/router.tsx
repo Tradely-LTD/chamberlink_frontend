@@ -14,6 +14,8 @@ import { OverviewPage } from '@pages/dashboard/OverviewPage';
 import { ProfilePage } from '@pages/dashboard/ProfilePage';
 import { MembershipPage } from '@pages/dashboard/MembershipPage';
 import { MyConnectionsPage } from '@pages/dashboard/MyConnectionsPage';
+import { CompanyPage } from '@pages/dashboard/CompanyPage';
+import { CompanyVerificationPage } from '@pages/dashboard/CompanyVerificationPage';
 import { ChamberNetworkPage } from '@pages/dashboard/ChamberNetworkPage';
 import { EcoPage } from '@pages/dashboard/EcoPage';
 import { EcoApplyPage } from '@pages/dashboard/EcoApplyPage';
@@ -57,6 +59,11 @@ export const router = createBrowserRouter([
           // the backend; e.g. a staff_operator can also personally be a member of
           // a different chamber).
           { path: '/dashboard/connections', element: <MyConnectionsPage /> },
+          // Exporter company identity + sub-users (RFP §3.2, §4.1.4, §6.2).
+          // Unrestricted by role for the same reason as connections: a
+          // staff_operator can personally be an exporter too. Ownership of the
+          // company, not role, decides what can be changed — enforced server-side.
+          { path: '/dashboard/company', element: <CompanyPage /> },
           { path: '/dashboard/chamber-network', element: <ChamberNetworkPage /> },
 
           // Member-only routes (members + patron members)
@@ -197,6 +204,17 @@ export const router = createBrowserRouter([
             element: (
               <ProtectedRoute allowedRoles={['chamber_admin', 'staff_operator', 'super_admin']}>
                 <MemberManagementPage />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            // Company TIN verification queue (RFP §4.1.3). chamber_admin and
+            // above — the backend requires chamber_admin, so staff_operator is
+            // deliberately absent here rather than shown a page that 403s.
+            path: '/dashboard/company-verification',
+            element: (
+              <ProtectedRoute allowedRoles={['chamber_admin', 'super_admin']}>
+                <CompanyVerificationPage />
               </ProtectedRoute>
             ),
           },
