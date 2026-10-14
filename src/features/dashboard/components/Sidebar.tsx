@@ -20,18 +20,20 @@ interface NavItem {
 // member + patron (same nav — tier only affects what they can afford, not what they can see)
 const memberNavItems: NavItem[] = [
   { label: 'Dashboard',           to: '/dashboard',                     icon: 'dashboard',       end: true },
-  { label: 'Trade Fair',          to: '/dashboard/trade-fair',          icon: 'storefront' },
-  { label: 'Academy',             to: '/dashboard/academy',             icon: 'school' },
-  { label: 'eCO Certificates',    to: '/dashboard/eco',                 icon: 'description' },
-  { label: 'Export Documents',    to: '/dashboard/export-documents',    icon: 'receipt_long' },
-  { label: 'Membership',          to: '/dashboard/membership',          icon: 'verified_user' },
-  { label: 'Trade Corridors',     to: '/dashboard/trade-corridors',     icon: 'route' },
-  { label: 'Exporter Visibility', to: '/dashboard/exporter-visibility', icon: 'visibility' },
+  // What an exporter registers for — first after Dashboard. Exporters apply
+  // for certificates; nothing on the platform "tracks exports" as such.
+  { label: 'Certificate Applications', to: '/dashboard/eco',            icon: 'description' },
   // Deliberately NOT in GATED_LABELS: an exporter company is a platform-level
   // identity keyed on its TIN, independent of any chamber relationship (RFP
   // §6.2). A member with zero connections still needs to register it — it is
   // what makes their certificates carry a verified exporter name.
   { label: 'My Company',          to: '/dashboard/company',             icon: 'domain' },
+  { label: 'Membership',          to: '/dashboard/membership',          icon: 'verified_user' },
+  { label: 'Export Documents',    to: '/dashboard/export-documents',    icon: 'receipt_long' },
+  { label: 'Trade Fair',          to: '/dashboard/trade-fair',          icon: 'storefront' },
+  { label: 'E-Learning',          to: '/dashboard/academy',             icon: 'school' },
+  { label: 'Trade Corridors',     to: '/dashboard/trade-corridors',     icon: 'route' },
+  { label: 'Exporter Visibility', to: '/dashboard/exporter-visibility', icon: 'visibility' },
   { label: 'My Chambers',         to: '/dashboard/connections',         icon: 'corporate_fare' },
   { label: 'Chamber Network',     to: '/dashboard/chamber-network',     icon: 'travel_explore' },
   { label: 'My Profile',          to: '/dashboard/profile',             icon: 'manage_accounts' },
@@ -52,11 +54,11 @@ const institutionalNavItems: NavItem[] = [
 // staff_operator: operational — review eCOs, see members, manage trade fair
 const staffNavItems: NavItem[] = [
   { label: 'Dashboard',           to: '/dashboard',                     icon: 'dashboard',   end: true },
-  { label: 'eCO Queue',           to: '/dashboard/eco',                 icon: 'task_alt' },
+  { label: 'Certificate Queue',           to: '/dashboard/eco',                 icon: 'task_alt' },
   { label: 'Member Management',   to: '/dashboard/members',             icon: 'manage_accounts' },
   { label: 'Audit Log',           to: '/dashboard/admin',               icon: 'history' },
   { label: 'Trade Fair',          to: '/dashboard/trade-fair',          icon: 'storefront' },
-  { label: 'Academy',             to: '/dashboard/academy',             icon: 'school' },
+  { label: 'E-Learning',          to: '/dashboard/academy',             icon: 'school' },
   { label: 'Exporter Visibility', to: '/dashboard/exporter-visibility', icon: 'visibility' },
   { label: 'Export Documents',    to: '/dashboard/export-documents',    icon: 'receipt_long' },
   { label: 'My Chambers',         to: '/dashboard/connections',         icon: 'corporate_fare' },
@@ -68,7 +70,7 @@ const chamberAdminNavItems: NavItem[] = [
   { label: 'Dashboard',           to: '/dashboard',                     icon: 'dashboard',   end: true },
   { label: 'Member Management',   to: '/dashboard/members',             icon: 'manage_accounts' },
   { label: 'Audit Log',           to: '/dashboard/admin',               icon: 'history' },
-  { label: 'eCO Queue',           to: '/dashboard/eco',                 icon: 'task_alt' },
+  { label: 'Certificate Queue',           to: '/dashboard/eco',                 icon: 'task_alt' },
   // Confirming a company's TIN against tax records is a chamber_admin job in the
   // RFP's role table (§6.1) — absent from the staff_operator nav on purpose.
   { label: 'Company Verification', to: '/dashboard/company-verification', icon: 'domain_verification' },
@@ -77,7 +79,7 @@ const chamberAdminNavItems: NavItem[] = [
   { label: 'Trade Corridors',     to: '/dashboard/trade-corridors',     icon: 'route' },
   { label: 'Exporter Visibility', to: '/dashboard/exporter-visibility', icon: 'visibility' },
   { label: 'Export Documents',    to: '/dashboard/export-documents',    icon: 'receipt_long' },
-  { label: 'Academy',             to: '/dashboard/academy',             icon: 'school' },
+  { label: 'E-Learning',          to: '/dashboard/academy',             icon: 'school' },
   { label: 'My Chambers',         to: '/dashboard/connections',         icon: 'corporate_fare' },
   { label: 'My Profile',          to: '/dashboard/profile',             icon: 'manage_accounts' },
 ];
@@ -88,7 +90,7 @@ const executiveNavItems: NavItem[] = [
   { label: 'Analytics',        to: '/dashboard/analytics',    icon: 'bar_chart' },
   { label: 'Member Management',to: '/dashboard/members',      icon: 'manage_accounts' },
   { label: 'Audit Log',        to: '/dashboard/admin',        icon: 'history' },
-  { label: 'eCO Queue',        to: '/dashboard/eco',          icon: 'task_alt' },
+  { label: 'Certificate Queue',        to: '/dashboard/eco',          icon: 'task_alt' },
   { label: 'Trade Fair',       to: '/dashboard/trade-fair',   icon: 'storefront' },
   { label: 'My Chambers',      to: '/dashboard/connections',  icon: 'corporate_fare' },
   { label: 'My Profile',       to: '/dashboard/profile',      icon: 'manage_accounts' },
@@ -100,13 +102,13 @@ const superAdminNavItems: NavItem[] = [
   { label: 'Member Management',   to: '/dashboard/members',             icon: 'manage_accounts' },
   { label: 'All Users',           to: '/dashboard/all-users',           icon: 'groups' },
   { label: 'Audit Log',           to: '/dashboard/admin',               icon: 'history' },
-  { label: 'eCO Queue',           to: '/dashboard/eco',                 icon: 'task_alt' },
+  { label: 'Certificate Queue',           to: '/dashboard/eco',                 icon: 'task_alt' },
   { label: 'Analytics',           to: '/dashboard/analytics',           icon: 'bar_chart' },
   { label: 'Trade Fair',          to: '/dashboard/trade-fair',          icon: 'storefront' },
   { label: 'Trade Corridors',     to: '/dashboard/trade-corridors',     icon: 'route' },
   { label: 'Exporter Visibility', to: '/dashboard/exporter-visibility', icon: 'visibility' },
   { label: 'Export Documents',    to: '/dashboard/export-documents',    icon: 'receipt_long' },
-  { label: 'Academy',             to: '/dashboard/academy',             icon: 'school' },
+  { label: 'E-Learning',          to: '/dashboard/academy',             icon: 'school' },
   { label: 'Company Verification', to: '/dashboard/company-verification', icon: 'domain_verification' },
   { label: 'White-Label',         to: '/dashboard/white-label',         icon: 'corporate_fare' },
   { label: 'Settings',            to: '/dashboard/settings',            icon: 'tune' },
@@ -116,13 +118,13 @@ const superAdminNavItems: NavItem[] = [
 
 // Modules that assume a chamber relationship — hidden from a `member` with
 // ZERO chamber connections (any status counts as "connected"; see
-// useHasChamberConnection). Dashboard, eCO Certificates, My Chambers,
+// useHasChamberConnection). Dashboard, Certificate Applications, My Chambers,
 // Chamber Network, and My Profile stay visible regardless. Only applies to
 // the member-role nav (default branch below) — institutional/staff/
 // chamber_admin/executive/super_admin never gate on connection count.
 const GATED_LABELS = new Set([
   'Trade Fair',
-  'Academy',
+  'E-Learning',
   'Export Documents',
   'Membership',
   'Trade Corridors',

@@ -60,6 +60,17 @@ export default {
         card: '0 1px 2px 0 rgb(0 0 0 / 0.04), 0 1px 3px 0 rgb(0 0 0 / 0.06)',
         'card-hover': '0 4px 12px -2px rgb(0 0 0 / 0.08)',
       },
+      // Trade-route draw-in on the dashboard world map. Only ever applied via
+      // motion-safe:, and the route is complete without it.
+      keyframes: {
+        'route-draw': {
+          from: { strokeDashoffset: '2000' },
+          to: { strokeDashoffset: '0' },
+        },
+      },
+      animation: {
+        'route-draw': 'route-draw 900ms cubic-bezier(0.22, 1, 0.36, 1) both',
+      },
     },
   },
   plugins: [],

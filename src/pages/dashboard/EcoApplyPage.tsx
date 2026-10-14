@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams, Link } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams, Link } from 'react-router-dom';
 import {
   useCreateEcoCertificateMutation,
   useCreateEcoCertificateWithFilesMutation,
@@ -19,6 +19,7 @@ import { useGetDocumentsQuery, useUploadDocumentMutation } from '@features/docum
 import type { DocumentCategory } from '@features/documents';
 import { useHasChamberConnection } from '@features/membership';
 import { NIGERIAN_STATES } from '@shared/constants/nigerianStates';
+import { NIGERIAN_LGAS } from '@shared/constants/nigerianLgas';
 import { COUNTRIES } from '@shared/constants/countries';
 import { PACKAGE_TYPES } from '@shared/constants/packageTypes';
 import { Input } from '@shared/ui/Input';
@@ -271,6 +272,7 @@ interface FormState {
   quantity: string;
   quantityUnit: 'KG' | 'MT';
   originStates: string[];
+  originLga: string;
   destinationCountry: string;
   destinationPort: string;
   batchIdNo: string;
@@ -299,7 +301,7 @@ interface FormState {
 
 const initialForm: FormState = {
   tenantId: '', certificateTypeCode: '', solidMineralId: '', hsCodeId: '', descriptionOfGoods: '', packageCount: '', packageType: '', packageTypeOther: '', marksAndNumbers: '',
-  quantity: '', quantityUnit: 'KG', originStates: [], destinationCountry: '', destinationPort: '', batchIdNo: '',
+  quantity: '', quantityUnit: 'KG', originStates: [], originLga: '', destinationCountry: '', destinationPort: '', batchIdNo: '',
   isLicenseOwner: false, miningLicenseNo: '',
   companyName: '', companyAddress: '', companyCountry: 'Nigeria', companyEmail: '', companyPhone: '',
   consigneeName: '', consigneeAddress: '',
@@ -311,6 +313,7 @@ const initialForm: FormState = {
 export function EcoApplyPage() {
   const navigate = useNavigate();
   const { certId } = useParams<{ certId?: string }>();
+  const [searchParams] = useSearchParams();
   const isEditing = !!certId;
 
   const { data: existingCert } = useGetEcoCertificateQuery(certId ?? '', { skip: !certId });
@@ -384,6 +387,15 @@ export function EcoApplyPage() {
 
   const chamberLocked = !!existingCert && existingCert.status !== 'draft';
 
+  // The dashboard's certificate cards link here with ?type=<code>. Only a new
+  // application takes it — a draft being edited keeps the type it was saved with.
+  const requestedType = searchParams.get('type');
+  useEffect(() => {
+    if (isEditing || !requestedType) return;
+    if (!certificateTypes.some((t) => t.code === requestedType)) return;
+    setForm((f) => (f.certificateTypeCode ? f : { ...f, certificateTypeCode: requestedType }));
+  }, [isEditing, requestedType, certificateTypes]);
+
   // Pre-populate form when editing existing draft/revision_requested
   useEffect(() => {
     if (!existingCert) return;
@@ -402,6 +414,7 @@ export function EcoApplyPage() {
       quantity: existingCert.quantity != null ? String(existingCert.quantity) : '',
       quantityUnit: existingCert.quantityUnit ?? 'KG',
       originStates: existingCert.originStates ?? [],
+      originLga: existingCert.originLga ?? '',
       destinationCountry: existingCert.destinationCountry ?? '',
       destinationPort: existingCert.destinationPort ?? '',
       batchIdNo: existingCert.batchIdNo ?? '',
@@ -495,6 +508,7 @@ export function EcoApplyPage() {
     quantity: form.quantity ? Number(form.quantity) : undefined,
     quantityUnit: form.quantityUnit,
     originStates: form.originStates.length ? form.originStates : undefined,
+    originLga: form.originLga || undefined,
     destinationCountry: form.destinationCountry || undefined,
     destinationPort: form.destinationPort || undefined,
     batchIdNo: form.batchIdNo || undefined,
@@ -598,7 +612,7 @@ export function EcoApplyPage() {
   const canContinueStep0 = !!(
     form.tenantId && form.certificateTypeCode && goodsChosen && form.descriptionOfGoods
     && form.packageCount && form.packageType && (form.packageType !== 'Other' || form.packageTypeOther)
-    && form.quantity && form.originStates.length > 0 && form.destinationCountry
+    && form.quantity && form.originStates.length > 0 && form.originLga && form.destinationCountry
     && !errors.descriptionOfGoods && !errors.quantity && !errors.destinationCountry
   );
   const canContinueStep1 = !!(
@@ -658,15 +672,17 @@ export function EcoApplyPage() {
   return (
     <div className="p-6 max-w-2xl">
       <div className="flex items-center gap-2 mb-6">
-        <Link to="/dashboard/eco" className="text-sm text-ink-subtle hover:text-ink">eCO Certificates</Link>
+        <Link to="/dashboard/eco" className="text-sm text-ink-subtle hover:text-ink">Certificate Applications</Link>
         <span className="text-ink-subtle">/</span>
         <span className="text-sm text-ink">{isEditing ? 'Edit Application' : 'New Application'}</span>
       </div>
 
       <h1 className="text-2xl font-semibold text-ink mb-1">
-        {isRevisionRequested ? 'Resubmit Application' : isEditing ? 'Continue Draft' : 'Apply for Certificate of Origin'}
+        {isRevisionRequested ? 'Resubmit Application' : isEditing ? 'Continue Draft' : 'Apply for a Certificate'}
       </h1>
-      <p className="text-sm text-ink-subtle mb-2">Complete all required fields to submit your eCO application.</p>
+      <p className="text-sm text-ink-subtle mb-2">
+        No chamber membership needed to apply. The chamber reviews your application first; you pay only once it&apos;s approved.
+      </p>
 
       {isRevisionRequested && existingCert?.revisionNotes && (
         <div className="mb-4 rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-800">
@@ -734,9 +750,14 @@ export function EcoApplyPage() {
                   <p className="text-xs text-ink-subtle mt-1">Locked after first submission.</p>
                 </>
               ) : (
-                <Select label="From which Chamber of Commerce? *" value={form.tenantId} onValueChange={(v) => set('tenantId', v)}
-                  placeholder="Select a chamber…"
-                  options={onboardedTenants.map((t) => ({ value: t.id, label: `${t.name}${t.city ? ` — ${t.city}` : ''}` }))} />
+                <>
+                  <Select label="From which Chamber of Commerce? *" value={form.tenantId} onValueChange={(v) => set('tenantId', v)}
+                    placeholder="Select a chamber…"
+                    options={onboardedTenants.map((t) => ({ value: t.id, label: `${t.name}${t.city ? ` — ${t.city}` : ''}` }))} />
+                  <p className="text-xs text-ink-subtle mt-1">
+                    The chamber that reviews and issues your certificate. You don&apos;t need to be its member.
+                  </p>
+                </>
               )}
             </div>
 
@@ -801,10 +822,21 @@ export function EcoApplyPage() {
 
             <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide pt-2">Origin & Destination</p>
 
-            <Select label="Origin of Goods (Nigerian State) *" value={form.originStates[0] ?? ''}
-              onValueChange={(v) => set('originStates', v ? [v] : [])}
-              placeholder="Select a state…"
-              options={NIGERIAN_STATES.map((s) => ({ value: s, label: s }))} />
+            <div className="grid sm:grid-cols-2 gap-3">
+              <Select label="Origin of Goods — State *" value={form.originStates[0] ?? ''}
+                onValueChange={(v) => {
+                  // An LGA only means something inside its own state.
+                  set('originStates', v ? [v] : []);
+                  set('originLga', '');
+                }}
+                placeholder="Select a state…"
+                options={NIGERIAN_STATES.map((s) => ({ value: s, label: s }))} />
+              <Select label="Local Government Area *" value={form.originLga}
+                onValueChange={(v) => set('originLga', v)}
+                disabled={!form.originStates[0]}
+                placeholder={form.originStates[0] ? 'Select an LGA…' : 'Choose a state first'}
+                options={(NIGERIAN_LGAS[form.originStates[0] ?? ''] ?? []).map((l) => ({ value: l, label: l }))} />
+            </div>
 
             <Select label="Destination Country *" value={form.destinationCountry}
               onValueChange={(v) => set('destinationCountry', v)}
@@ -851,6 +883,9 @@ export function EcoApplyPage() {
                 className="w-4 h-4 rounded border-border text-primary focus:ring-primary/30" />
               <span className="text-sm text-ink">Are you a member of any chamber of commerce?</span>
             </label>
+            <p className="text-xs text-ink-subtle -mt-2 pl-7">
+              Optional. Members pay 0.11% of invoice value instead of 0.125%, once the chamber verifies the membership ID.
+            </p>
             {form.selfDeclaredIsMember && (
               <div className="pl-4 border-l-2 border-border space-y-3">
                 <div>
@@ -1015,7 +1050,7 @@ export function EcoApplyPage() {
               { label: 'Packages', value: combinedPackages || '—' },
               { label: 'Marks & Numbers', value: form.marksAndNumbers || '—' },
               { label: 'Quantity', value: form.quantity ? `${form.quantity} ${form.quantityUnit}` : '—' },
-              { label: 'Origin States', value: form.originStates.join(', ') || '—' },
+              { label: 'Origin of Goods', value: [form.originLga && `${form.originLga} LGA`, ...form.originStates].filter(Boolean).join(', ') || '—' },
               { label: 'Destination', value: [form.destinationCountry, form.destinationPort].filter(Boolean).join(', ') || '—' },
               { label: 'Batch/ID No.', value: form.batchIdNo || '—' },
             ]} />

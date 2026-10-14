@@ -514,9 +514,9 @@ describe('AC-9: Dashboard Shell', () => {
     expect(sidebar).toContain('Dashboard');
     expect(sidebar).toContain('My Profile');
     expect(sidebar).toContain('Membership');
-    expect(sidebar).toContain('eCO Certificates');
+    expect(sidebar).toContain('Certificate Applications');
     expect(sidebar).toContain('Trade Fair');
-    expect(sidebar).toContain('Academy');
+    expect(sidebar).toContain('E-Learning');
   });
 
   it('AC-9.3 — Every nav item is a live NavLink (no coming-soon placeholders left)', () => {

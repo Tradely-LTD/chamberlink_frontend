@@ -116,6 +116,7 @@ export interface ECertificate {
   quantity: number | null;
   quantityUnit: 'KG' | 'MT' | null;
   originStates: string[];
+  originLga: string | null;
   destinationCountry: string | null;
   destinationPort: string | null;
   batchIdNo: string | null;
@@ -213,6 +214,7 @@ export interface NewECertPayload {
   quantity: number;
   quantityUnit: 'KG' | 'MT';
   originStates: string[];
+  originLga?: string;
   destinationCountry: string;
   destinationPort?: string;
   batchIdNo?: string;

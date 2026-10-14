@@ -500,7 +500,7 @@ function AdminAcademyView() {
 
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-xl font-semibold text-ink">Academy Management</h2>
+          <h2 className="text-xl font-semibold text-ink">E-Learning Management</h2>
           <p className="text-sm text-ink-subtle mt-0.5">Manage courses, content, and track member progress.</p>
         </div>
         {tab === 'courses' && (
@@ -1038,7 +1038,7 @@ function MemberAcademyView() {
       )}
 
       <div className="mb-6">
-        <h2 className="text-xl font-semibold text-ink">NACCIMA Academy</h2>
+        <h2 className="text-xl font-semibold text-ink">E-Learning</h2>
         <p className="text-sm text-ink-subtle mt-0.5">Training and capacity building for chamber members.</p>
       </div>
 

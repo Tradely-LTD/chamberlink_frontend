@@ -1,8 +1,12 @@
 import { Link } from 'react-router-dom';
 import { useAppSelector } from '@shared/hooks/useAppDispatch';
 import { useGetMemberProfileQuery } from '@features/dashboard/dashboardApi';
-import { useGetEcoCertificatesQuery } from '@features/eco/ecoApi';
-import { useGetAnalyticsSummaryQuery, useGetAnalyticsTrendsQuery } from '@features/analytics/analyticsApi';
+import { useGetEcoCertificatesQuery, useGetCertificateTypesQuery } from '@features/eco/ecoApi';
+import type { CertificateTypeOption } from '@features/eco/ecoApi';
+import { useGetAnalyticsSummaryQuery, useGetAnalyticsTrendsQuery, useGetAnalyticsGeoQuery } from '@features/analytics/analyticsApi';
+import { ExportFootprint } from '@features/analytics/components/geo/ExportFootprint';
+import { geoFromCertificates } from '@features/analytics/components/geo/geoFromCertificates';
+import { useHasChamberConnection } from '@features/membership';
 import { SkeletonCard } from '@shared/ui/SkeletonCard';
 import { StatTile } from '@shared/ui/StatTile';
 import { Card, CardTitle } from '@shared/ui/Card';
@@ -33,8 +37,11 @@ const ecoStatusStyle: Record<string, string> = {
 };
 
 function AdminOverview() {
+  const role = useAppSelector((s) => s.auth.role);
+  const isPlatform = role === 'super_admin';
   const { data: stats, isLoading, isError, refetch } = useGetAnalyticsSummaryQuery();
   const { data: trends } = useGetAnalyticsTrendsQuery(6);
+  const { data: geo, isLoading: geoLoading, isError: geoError, refetch: refetchGeo } = useGetAnalyticsGeoQuery();
 
   const growth = stats && stats.revenueLastMonth > 0
     ? (((stats.revenueThisMonth - stats.revenueLastMonth) / stats.revenueLastMonth) * 100).toFixed(1)
@@ -42,10 +49,12 @@ function AdminOverview() {
   const revenueSparkline = trends?.map((t) => t.revenue);
 
   return (
-    <div className="p-6 max-w-6xl">
+    <div className="p-4 sm:p-6 max-w-6xl">
       <div className="mb-6">
-        <h2 className="text-xl font-semibold text-ink">Chamber Overview</h2>
-        <p className="text-sm text-ink-subtle mt-0.5">Key metrics across all modules.</p>
+        <h2 className="text-xl font-semibold text-ink">{isPlatform ? 'Platform Overview' : 'Chamber Overview'}</h2>
+        <p className="text-sm text-ink-subtle mt-0.5">
+          {isPlatform ? 'Every onboarded chamber — certificates, members and revenue.' : 'Key metrics across all modules.'}
+        </p>
       </div>
 
       {isLoading ? (
@@ -76,7 +85,7 @@ function AdminOverview() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
             {[
               { label: 'Manage Members', sub: 'View and manage all members', to: '/dashboard/admin', icon: 'manage_accounts' },
-              { label: 'eCO Queue', sub: 'Review pending applications', to: '/dashboard/eco', icon: 'task_alt' },
+              { label: 'Certificate Queue', sub: 'Review pending applications', to: '/dashboard/eco', icon: 'task_alt' },
               { label: 'Full Analytics', sub: 'Detailed charts and reports', to: '/dashboard/analytics', icon: 'bar_chart' },
             ].map((a) => (
               <Link
@@ -96,6 +105,18 @@ function AdminOverview() {
             ))}
           </div>
 
+          <div className="mb-6">
+            <ExportFootprint
+              title={isPlatform ? 'Export activity across Nigeria' : 'Your chamber\'s export activity'}
+              subtitle="Submitted certificate applications by destination, state of origin and goods."
+              geo={geo}
+              isLoading={geoLoading}
+              isError={geoError}
+              onRetry={refetchGeo}
+              empty={<p className="text-sm text-ink-muted text-center">No certificate applications yet. The map fills in as exporters apply.</p>}
+            />
+          </div>
+
           {/* Membership breakdown */}
           <Card>
             <CardTitle>Membership Status Breakdown</CardTitle>
@@ -113,140 +134,136 @@ function AdminOverview() {
   );
 }
 
+// Cosmetic only — the form itself keys off goodsSource/requiresMiningLicence,
+// never the code, so a type NACCIMA adds later simply gets the default icon.
+const certIcon = (t: CertificateTypeOption) =>
+  t.requiresMiningLicence ? 'diamond'
+    : ({ 'naccima-certificate-of-origin': 'verified', gsp: 'percent', 'ecowas-free-trade': 'handshake', 'movement-certificate': 'local_shipping', 'china-zero-tariff': 'public' } as Record<string, string>)[t.slug]
+      ?? 'description';
+
+// The standard member/non-member rates (RFP §4.1.9) — the same figures the
+// apply form's fee estimate uses. Shown here as the reason to join a chamber.
+const MEMBER_RATE = 0.0011;
+const NON_MEMBER_RATE = 0.00125;
+const EXAMPLE_INVOICE = 10_000_000;
+const naira = (n: number) => `₦${n.toLocaleString('en-NG', { maximumFractionDigits: 0 })}`;
+
+const IN_REVIEW: string[] = ['submitted', 'under_review', 'revision_requested'];
+const TO_PAY: string[] = ['approved', 'pending_payment'];
+
 function MemberOverview() {
   const user = useAppSelector((s) => s.auth.user);
   const { data: profile, isLoading: profileLoading, isError: profileError, error: profileErrorObj, refetch } = useGetMemberProfileQuery();
-  const { data: certificates, isLoading: ecoLoading } = useGetEcoCertificatesQuery();
+  const { data: certificates, isLoading: ecoLoading, isError: ecoError, refetch: refetchEco } = useGetEcoCertificatesQuery();
+  const { data: certificateTypes, isLoading: typesLoading } = useGetCertificateTypesQuery();
+  const { hasConnection } = useHasChamberConnection();
   const noChamberConnection = isNoActiveChamberError(profileErrorObj);
 
-  const pendingEco = certificates?.filter((c) =>
-    ['submitted', 'under_review', 'pending_payment'].includes(c.status)
-  ).length ?? 0;
-  const issuedEco = certificates?.filter((c) => c.status === 'issued').length ?? 0;
+  const drafts = certificates?.filter((c) => c.status === 'draft').length ?? 0;
+  const inReview = certificates?.filter((c) => IN_REVIEW.includes(c.status)).length ?? 0;
+  const toPay = certificates?.filter((c) => TO_PAY.includes(c.status)).length ?? 0;
+  const issued = certificates?.filter((c) => c.status === 'issued').length ?? 0;
   const memberStatus = profile?.status ?? 'pending_payment';
   const statusStyle = memberStatusStyle[memberStatus] ?? memberStatusStyle.pending_payment;
+  const needsRenewal = profile?.status === 'expired' || profile?.status === 'pending_payment';
+  const geo = geoFromCertificates(certificates);
+
+  const quickLinks = [
+    { label: 'My certificate applications', to: '/dashboard/eco', icon: 'description', gated: false },
+    { label: 'My company (TIN)', to: '/dashboard/company', icon: 'domain', gated: false },
+    { label: 'Trade documents', to: '/dashboard/documents', icon: 'folder_open', gated: true },
+    { label: 'E-Learning', to: '/dashboard/academy', icon: 'school', gated: true },
+  ].filter((l) => !l.gated || hasConnection);
 
   return (
-    <div className="p-6 max-w-6xl">
-      {/* Welcome */}
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold text-ink">
-          Welcome back, {user?.firstName ?? 'Member'}!
-        </h2>
-        <p className="text-sm text-ink-subtle mt-0.5">
-          Manage your certificates, track exports, and access trade services.
+    <div className="p-4 sm:p-6 max-w-6xl">
+      {/* Why you're here: one platform account, five certificates. */}
+      <div className="mb-5">
+        <h2 className="text-xl font-semibold text-ink">Welcome, {user?.firstName ?? 'Exporter'}</h2>
+        <p className="text-sm text-ink-muted mt-0.5 max-w-2xl">
+          Apply for an export certificate, pay online once it&apos;s approved, and download it — with or without a chamber membership.
         </p>
       </div>
 
-      {/* Quick actions */}
-      <div className="flex flex-wrap gap-3 mb-6">
-        <Link
-          to="/dashboard/eco/apply"
-          className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors hover:opacity-90"
-          style={{ background: '#023293' }}
-        >
-          <span className="material-symbols-outlined" style={{ fontSize: 16, fontVariationSettings: `'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 16` }}>add</span>
-          New eCO Certificate
-        </Link>
-        <Link
-          to="/dashboard/membership"
-          className="inline-flex items-center gap-2 rounded-lg border border-border bg-white px-4 py-2 text-sm font-medium text-ink hover:border-primary hover:text-primary transition-colors"
-        >
-          <span className="material-symbols-outlined" style={{ fontSize: 16, fontVariationSettings: `'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 16` }}>verified_user</span>
-          Renew Membership
-        </Link>
-        <Link
-          to="/dashboard/documents"
-          className="inline-flex items-center gap-2 rounded-lg border border-border bg-white px-4 py-2 text-sm font-medium text-ink hover:border-primary hover:text-primary transition-colors"
-        >
-          <span className="material-symbols-outlined" style={{ fontSize: 16, fontVariationSettings: `'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 16` }}>folder_open</span>
-          Documents
-        </Link>
-      </div>
-
-      {/* Stat cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-        {/* Membership card */}
-        {profileLoading ? (
-          <SkeletonCard className="h-28" />
-        ) : noChamberConnection ? (
-          <div className="bg-white rounded-xl border border-dashed border-border p-5">
-            <p className="text-xs font-semibold uppercase tracking-wide text-ink-subtle mb-2">Membership</p>
-            <p className="text-sm text-ink mb-2">You&apos;re not connected to a chamber yet.</p>
-            <Link to="/dashboard/connections" className="text-xs font-medium text-primary hover:underline">
-              Connect a chamber
-            </Link>
-          </div>
-        ) : profileError ? (
-          <div className="rounded-xl border border-[#ffdad6] bg-[#fff8f7] p-5 flex items-center justify-between">
-            <p className="text-sm text-[#93000a]">Failed to load membership status.</p>
-            <button onClick={refetch} className="text-sm text-primary hover:underline">Retry</button>
+      <section aria-labelledby="certs-title" className="mb-6">
+        <div className="flex items-baseline justify-between mb-3">
+          <h3 id="certs-title" className="text-sm font-semibold text-ink">Apply for a certificate</h3>
+          <Link to="/dashboard/eco" className="text-xs font-medium text-primary hover:underline">My applications</Link>
+        </div>
+        {typesLoading ? (
+          <div className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(190px,1fr))]">
+            {Array.from({ length: 5 }).map((_, i) => <SkeletonCard key={i} className="h-36" />)}
           </div>
         ) : (
-          <div className="bg-white rounded-xl border border-border p-5">
-            <div className="flex items-start justify-between mb-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-ink-subtle">Membership</p>
-              <span className="material-symbols-outlined" style={{ fontSize: 20, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20`, color: '#74777f' }}>verified_user</span>
-            </div>
-            <span className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold ${statusStyle.bg} ${statusStyle.text}`}>
-              {statusStyle.label}
-            </span>
-            {profile?.memberId && <p className="text-xs text-ink-subtle mt-2">ID: {profile.memberId}</p>}
-            {profile?.membershipExpiresAt && (
-              <p className="text-xs text-ink-subtle mt-0.5">
-                Expires: {new Date(profile.membershipExpiresAt).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos' })}
-              </p>
-            )}
-          </div>
+          <ul className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(190px,1fr))]">
+            {(certificateTypes ?? []).map((t) => (
+              <li key={t.code}>
+                <Link
+                  to={`/dashboard/eco/apply?type=${encodeURIComponent(t.code)}`}
+                  className="group flex h-full flex-col rounded-xl border border-border bg-white p-4 transition-[border-color,box-shadow] duration-200 hover:border-primary/40 hover:shadow-card-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                >
+                  <span className="mb-3 inline-flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <span className="material-symbols-outlined" aria-hidden="true" style={{ fontSize: 20, fontVariationSettings: `'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 20` }}>{certIcon(t)}</span>
+                  </span>
+                  <span className="text-sm font-semibold leading-snug text-ink">{t.name}</span>
+                  {t.description && <span className="mt-1 text-xs leading-relaxed text-ink-muted line-clamp-3">{t.description}</span>}
+                  <span className="mt-auto pt-3 inline-flex items-center gap-1 text-xs font-semibold text-primary">
+                    Apply
+                    <span className="material-symbols-outlined transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden="true" style={{ fontSize: 16 }}>arrow_forward</span>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
         )}
+      </section>
 
-        {/* Pending eCO */}
-        <div className="bg-white rounded-xl border border-border p-5">
-          <div className="flex items-start justify-between mb-3">
-            <p className="text-xs font-semibold uppercase tracking-wide text-ink-subtle">Pending Applications</p>
-            <span className="material-symbols-outlined" style={{ fontSize: 20, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20`, color: '#74777f' }}>pending_actions</span>
-          </div>
-          {ecoLoading ? <SkeletonCard className="h-8 w-12" /> : (
-            <>
-              <p className="text-3xl font-bold text-ink">{String(pendingEco).padStart(2, '0')}</p>
-              <p className="text-xs text-ink-subtle mt-1">Avg. turnaround: 24h</p>
-            </>
-          )}
-        </div>
-
-        {/* Issued certificates */}
-        <div className="rounded-xl border border-primary p-5" style={{ background: '#023293' }}>
-          <div className="flex items-start justify-between mb-3">
-            <p className="text-xs font-semibold uppercase tracking-wide text-[#aec7f7]">Certificates Issued</p>
-            <span className="material-symbols-outlined" style={{ fontSize: 20, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20`, color: '#aec7f7' }}>verified</span>
-          </div>
-          {ecoLoading ? <SkeletonCard className="h-8 w-12" /> : (
-            <>
-              <p className="text-3xl font-bold text-white">{issuedEco}</p>
-              <p className="text-xs text-[#aec7f7] mt-1">{certificates?.length ?? 0} total applications</p>
-            </>
-          )}
-        </div>
+      {/* Where your applications stand */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+        {[
+          { label: 'Drafts', value: drafts, sub: 'Saved, not submitted', icon: 'edit_note' },
+          { label: 'In review', value: inReview, sub: 'With the chamber', icon: 'pending_actions' },
+          { label: 'Ready to pay', value: toPay, sub: 'Approved — pay to issue', icon: 'payments', emphasis: toPay > 0 },
+          { label: 'Issued', value: issued, sub: `${certificates?.length ?? 0} applications in total`, icon: 'verified' },
+        ].map((t) => (
+          <Link
+            key={t.label}
+            to="/dashboard/eco"
+            className={`rounded-xl border p-4 transition-colors hover:border-primary/40 ${t.emphasis ? 'border-[#ffdea5] bg-[#fffaf0]' : 'border-border bg-white'}`}
+          >
+            <div className="flex items-start justify-between">
+              <p className="text-xs font-semibold uppercase tracking-wide text-ink-subtle">{t.label}</p>
+              <span className="material-symbols-outlined text-ink-subtle" aria-hidden="true" style={{ fontSize: 18 }}>{t.icon}</span>
+            </div>
+            {ecoLoading ? <SkeletonCard className="h-8 w-12 mt-2" /> : (
+              <>
+                <p className="mt-1 text-2xl font-bold text-ink tabular-nums">{t.value}</p>
+                <p className="text-xs text-ink-subtle mt-0.5">{t.sub}</p>
+              </>
+            )}
+          </Link>
+        ))}
       </div>
 
-      {/* Two-column layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Recent eCO table */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        {/* Recent applications */}
         <div className="lg:col-span-2 bg-white rounded-xl border border-border overflow-hidden">
           <div className="px-5 py-4 border-b border-border flex justify-between items-center">
-            <h3 className="text-sm font-semibold text-ink">Recent eCO Certificates</h3>
+            <h3 className="text-sm font-semibold text-ink">Recent certificate applications</h3>
             <Link to="/dashboard/eco" className="text-xs font-medium text-primary hover:underline">View all</Link>
           </div>
           {ecoLoading ? (
             <div className="p-5 space-y-3">
               {[1, 2, 3].map((i) => <SkeletonCard key={i} className="h-10" />)}
             </div>
+          ) : ecoError ? (
+            <div className="p-5 flex items-center justify-between">
+              <p className="text-sm text-danger">Couldn&apos;t load your applications.</p>
+              <button onClick={refetchEco} className="text-sm text-primary hover:underline">Retry</button>
+            </div>
           ) : !certificates || certificates.length === 0 ? (
             <div className="p-8 text-center">
-              <p className="text-sm text-ink-subtle">No certificates yet.</p>
-              <Link to="/dashboard/eco/apply" className="mt-2 inline-block text-sm text-primary hover:underline font-medium">
-                Apply for your first eCO
-              </Link>
+              <p className="text-sm text-ink-muted">No applications yet. Pick a certificate above to start one.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -263,16 +280,20 @@ function MemberOverview() {
                   {certificates.slice(0, 5).map((cert) => (
                     <tr key={cert.id} className="hover:bg-surface-alt transition-colors">
                       <td className="px-5 py-3">
-                        <p className="font-semibold text-ink">{cert.certificateNumber ?? cert.id.slice(0, 12).toUpperCase()}</p>
-                        <p className="text-xs text-ink-subtle truncate max-w-[160px]">{cert.solidMineralName ?? '—'}</p>
+                        <Link to={`/dashboard/eco/${cert.id}`} className="font-semibold text-ink hover:text-primary">
+                          {cert.certificateNumber ?? cert.id.slice(0, 12).toUpperCase()}
+                        </Link>
+                        <p className="text-xs text-ink-subtle truncate max-w-[180px]">
+                          {certificateTypes?.find((t) => t.code === cert.certificateTypeCode)?.name ?? cert.solidMineralName ?? '—'}
+                        </p>
                       </td>
-                      <td className="px-5 py-3 text-ink">{cert.destinationCountry}</td>
+                      <td className="px-5 py-3 text-ink">{cert.destinationCountry ?? '—'}</td>
                       <td className="px-5 py-3">
                         <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${ecoStatusStyle[cert.status] ?? 'bg-border text-ink-subtle'}`}>
                           {cert.status.replace(/_/g, ' ')}
                         </span>
                       </td>
-                      <td className="px-5 py-3 text-ink-subtle">
+                      <td className="px-5 py-3 text-ink-subtle tabular-nums">
                         {new Date(cert.createdAt).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos' })}
                       </td>
                     </tr>
@@ -283,48 +304,98 @@ function MemberOverview() {
           )}
         </div>
 
-        {/* Quick actions panel */}
         <div className="space-y-4">
-          <div className="bg-white rounded-xl border border-border p-5">
-            <h3 className="text-sm font-semibold text-ink mb-3">Quick Actions</h3>
-            <div className="space-y-1.5">
-              {[
-                { label: 'Apply for eCO Certificate', to: '/dashboard/eco/apply', icon: 'description' },
-                { label: 'View Trade Documents', to: '/dashboard/documents', icon: 'folder_open' },
-                { label: 'Browse Trade Fair', to: '/dashboard/trade-fair', icon: 'storefront' },
-                { label: 'NACCIMA Academy', to: '/dashboard/academy', icon: 'school' },
-              ].map((a) => (
-                <Link
-                  key={a.to}
-                  to={a.to}
-                  className="flex items-center justify-between w-full rounded-lg border border-border px-3 py-2.5 text-sm text-ink hover:bg-primary hover:text-white hover:border-primary transition-colors group"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <span className="material-symbols-outlined group-hover:text-white text-ink-subtle" style={{ fontSize: 16, fontVariationSettings: `'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 16` }}>{a.icon}</span>
-                    <span>{a.label}</span>
-                  </div>
-                  <span className="material-symbols-outlined text-ink-subtle group-hover:text-white/70" style={{ fontSize: 16 }}>chevron_right</span>
+          {/* Membership — an incentive when there is none, a status when there is. */}
+          {profileLoading ? (
+            <SkeletonCard className="h-48" />
+          ) : noChamberConnection ? (
+            <div className="rounded-xl border border-[#cfe0d8] bg-[linear-gradient(160deg,#f2faf6_0%,#ffffff_70%)] p-5">
+              <p className="text-xs font-semibold uppercase tracking-wide text-success">Chamber membership</p>
+              <h3 className="mt-1 text-base font-semibold text-ink leading-snug">Members pay less on every certificate</h3>
+              <dl className="mt-3 grid grid-cols-2 gap-2 text-center">
+                <div className="rounded-lg bg-white border border-border px-2 py-2">
+                  <dt className="text-[11px] text-ink-subtle">Non-member</dt>
+                  <dd className="text-sm font-bold text-ink tabular-nums">{(NON_MEMBER_RATE * 100).toFixed(3).replace(/0+$/, '')}%</dd>
+                </div>
+                <div className="rounded-lg bg-white border border-success/40 px-2 py-2">
+                  <dt className="text-[11px] text-success font-medium">Member</dt>
+                  <dd className="text-sm font-bold text-success tabular-nums">{(MEMBER_RATE * 100).toFixed(2)}%</dd>
+                </div>
+              </dl>
+              <p className="mt-3 text-xs text-ink-muted leading-relaxed">
+                of invoice value. On a {naira(EXAMPLE_INVOICE)} shipment that&apos;s {naira(EXAMPLE_INVOICE * MEMBER_RATE)} instead of {naira(EXAMPLE_INVOICE * NON_MEMBER_RATE)} — a saving on every certificate you apply for.
+              </p>
+              <div className="mt-4 flex flex-col gap-2">
+                <Link to="/dashboard/chamber-network" className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-success px-3 py-2 text-xs font-semibold text-white hover:opacity-90 transition-opacity">
+                  Find a chamber to join
                 </Link>
-              ))}
+                <Link to="/dashboard/connections" className="inline-flex items-center justify-center rounded-lg border border-border bg-white px-3 py-2 text-xs font-medium text-ink hover:border-primary hover:text-primary transition-colors">
+                  Already a member? Link your ID
+                </Link>
+              </div>
+              <p className="mt-3 text-[11px] text-ink-subtle">You can apply for any certificate today without a membership.</p>
             </div>
-          </div>
+          ) : profileError ? (
+            <div className="rounded-xl border border-[#ffdad6] bg-[#fff8f7] p-5 flex items-center justify-between">
+              <p className="text-sm text-[#93000a]">Failed to load membership status.</p>
+              <button onClick={refetch} className="text-sm text-primary hover:underline">Retry</button>
+            </div>
+          ) : (
+            <div className="bg-white rounded-xl border border-border p-5">
+              <div className="flex items-start justify-between mb-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-ink-subtle">Membership</p>
+                <span className="material-symbols-outlined" aria-hidden="true" style={{ fontSize: 20, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20`, color: '#74777f' }}>verified_user</span>
+              </div>
+              <span className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold ${statusStyle.bg} ${statusStyle.text}`}>
+                {statusStyle.label}
+              </span>
+              {profile?.memberId && <p className="text-xs text-ink-subtle mt-2">ID: {profile.memberId}</p>}
+              {profile?.membershipExpiresAt && (
+                <p className="text-xs text-ink-subtle mt-0.5">
+                  Expires: {new Date(profile.membershipExpiresAt).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos' })}
+                </p>
+              )}
+              <p className="text-xs text-ink-muted mt-3">
+                {profile?.status === 'active'
+                  ? `Your certificates qualify for the ${(MEMBER_RATE * 100).toFixed(2)}% member rate once the chamber verifies your ID.`
+                  : 'Renew to get the member rate on your certificates again.'}
+              </p>
+              {needsRenewal && (
+                <Link to="/dashboard/membership" className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-white hover:opacity-90">
+                  {profile?.status === 'expired' ? 'Renew membership' : 'Complete payment'}
+                </Link>
+              )}
+            </div>
+          )}
 
-          {/* Export Intelligence card */}
-          <div className="rounded-xl p-5 text-white" style={{ background: '#0b6c4b' }}>
-            <h3 className="text-sm font-semibold mb-2">Export Intelligence</h3>
-            <p className="text-xs text-white/80 mb-4">
-              New trade tariff reports available for ECOWAS region. Access the latest market data.
-            </p>
-            <Link
-              to="/dashboard/eco"
-              className="inline-flex items-center gap-1.5 rounded-lg bg-white/20 px-3 py-1.5 text-xs font-semibold hover:bg-white/30 transition-colors"
-            >
-              View eCO Certificates
-              <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_forward</span>
-            </Link>
-          </div>
+          <nav aria-label="Shortcuts" className="bg-white rounded-xl border border-border p-5">
+            <h3 className="text-sm font-semibold text-ink mb-3">Shortcuts</h3>
+            <ul className="space-y-1.5">
+              {quickLinks.map((a) => (
+                <li key={a.to}>
+                  <Link to={a.to} className="flex items-center justify-between rounded-lg border border-border px-3 py-2.5 text-sm text-ink hover:border-primary hover:text-primary transition-colors">
+                    <span className="flex items-center gap-2.5">
+                      <span className="material-symbols-outlined text-ink-subtle" aria-hidden="true" style={{ fontSize: 16 }}>{a.icon}</span>
+                      {a.label}
+                    </span>
+                    <span className="material-symbols-outlined text-ink-subtle" aria-hidden="true" style={{ fontSize: 16 }}>chevron_right</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
         </div>
       </div>
+
+      <ExportFootprint
+        title="Your export footprint"
+        subtitle="Where your certificate applications are headed, and which states the goods come from."
+        geo={geo}
+        isLoading={ecoLoading}
+        isError={ecoError}
+        onRetry={refetchEco}
+        empty={<p className="text-sm text-ink-muted text-center">Your map fills in as you apply — each destination and state of origin appears here.</p>}
+      />
     </div>
   );
 }
@@ -332,6 +403,7 @@ function MemberOverview() {
 function ExecutiveOverview() {
   const { data: stats, isLoading, isError, refetch } = useGetAnalyticsSummaryQuery();
   const { data: trends } = useGetAnalyticsTrendsQuery(6);
+  const { data: geo, isLoading: geoLoading, isError: geoError, refetch: refetchGeo } = useGetAnalyticsGeoQuery();
   const growth = stats && stats.revenueLastMonth > 0
     ? (((stats.revenueThisMonth - stats.revenueLastMonth) / stats.revenueLastMonth) * 100).toFixed(1)
     : null;
@@ -371,6 +443,17 @@ function ExecutiveOverview() {
           <StatTile icon="person_add" label="New This Month" value={`+${stats.newMembersThisMonth}`} sublabel="New registrations" />
         </div>
       )}
+      <div className="mb-6">
+        <ExportFootprint
+          title="Your chamber's export activity"
+          subtitle="Submitted certificate applications by destination, state of origin and goods."
+          geo={geo}
+          isLoading={geoLoading}
+          isError={geoError}
+          onRetry={refetchGeo}
+          empty={<p className="text-sm text-ink-muted text-center">No certificate applications yet.</p>}
+        />
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {[
           { label: 'Full Analytics', sub: 'Detailed charts and reports', to: '/dashboard/analytics', icon: 'bar_chart' },

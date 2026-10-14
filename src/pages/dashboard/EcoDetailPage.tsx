@@ -209,7 +209,7 @@ export function EcoDetailPage() {
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 mb-6">
         <Link to="/dashboard/eco" className="text-sm text-ink-subtle hover:text-primary">
-          {isAdmin ? 'eCO Queue' : 'eCO Certificates'}
+          {isAdmin ? 'Certificate Queue' : 'Certificate Applications'}
         </Link>
         <span className="text-border">/</span>
         <span className="text-sm text-ink font-medium">

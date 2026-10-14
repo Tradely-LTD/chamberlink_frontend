@@ -137,7 +137,7 @@ describe('Sidebar — Chamber Network nav item is member-role-only (AC1)', () =>
 });
 
 describe('Sidebar — chamber-scoped modules hidden for a zero-connection member', () => {
-  it('hides Trade Fair/Academy/Membership/Trade Corridors/Exporter Visibility/Export Documents at 0 connections', async () => {
+  it('hides Trade Fair/E-Learning/Membership/Trade Corridors/Exporter Visibility/Export Documents at 0 connections', async () => {
     connectionsFixture = [];
     renderSidebarForRole('member');
     // The connections query defaults to the FULL list while loading (see the
@@ -146,11 +146,11 @@ describe('Sidebar — chamber-scoped modules hidden for a zero-connection member
     // immediately on the pre-resolution render.
     await waitFor(() => expect(screen.queryByText('Trade Fair')).not.toBeInTheDocument());
 
-    for (const label of ['Academy', 'Membership', 'Trade Corridors', 'Exporter Visibility', 'Export Documents']) {
+    for (const label of ['E-Learning', 'Membership', 'Trade Corridors', 'Exporter Visibility', 'Export Documents']) {
       expect(screen.queryByText(label)).not.toBeInTheDocument();
     }
     // Always-visible items stay visible regardless of connection count.
-    for (const label of ['Dashboard', 'eCO Certificates', 'My Chambers', 'Chamber Network', 'My Profile']) {
+    for (const label of ['Dashboard', 'Certificate Applications', 'My Chambers', 'Chamber Network', 'My Profile']) {
       expect(screen.getByText(label)).toBeInTheDocument();
     }
   });
@@ -163,17 +163,17 @@ describe('Sidebar — chamber-scoped modules hidden for a zero-connection member
     // fetch actually resolving before we assert.
     await waitFor(() => expect(screen.getByText('Trade Fair')).toBeInTheDocument());
 
-    for (const label of ['Academy', 'Membership', 'Trade Corridors', 'Exporter Visibility', 'Export Documents']) {
+    for (const label of ['E-Learning', 'Membership', 'Trade Corridors', 'Exporter Visibility', 'Export Documents']) {
       expect(screen.getByText(label)).toBeInTheDocument();
     }
   });
 
-  it('does not gate any other role — chamber_admin sees Trade Fair/Academy regardless of connection count', async () => {
+  it('does not gate any other role — chamber_admin sees Trade Fair/E-Learning regardless of connection count', async () => {
     connectionsFixture = [];
     renderSidebarForRole('chamber_admin');
     await waitFor(() => expect(screen.getByText('Dashboard')).toBeInTheDocument());
     expect(screen.getByText('Trade Fair')).toBeInTheDocument();
-    expect(screen.getByText('Academy')).toBeInTheDocument();
+    expect(screen.getByText('E-Learning')).toBeInTheDocument();
   });
 
   it('regression: does NOT flash the gated (narrowed) nav while the connections query is still loading for a connected member — shows the full list until the answer is known, then stays full', async () => {
@@ -187,11 +187,11 @@ describe('Sidebar — chamber-scoped modules hidden for a zero-connection member
     // during loading, so a connected member saw the nav shrink then expand.
     await waitFor(() => expect(screen.getByText('Dashboard')).toBeInTheDocument());
     expect(screen.getByText('Trade Fair')).toBeInTheDocument();
-    expect(screen.getByText('Academy')).toBeInTheDocument();
+    expect(screen.getByText('E-Learning')).toBeInTheDocument();
 
     // Resolve the fetch — for a connected member the list should stay exactly as-is.
     releaseGate();
     await waitFor(() => expect(screen.getByText('Trade Fair')).toBeInTheDocument());
-    expect(screen.getByText('Academy')).toBeInTheDocument();
+    expect(screen.getByText('E-Learning')).toBeInTheDocument();
   });
 });

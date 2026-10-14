@@ -51,7 +51,7 @@ export function AnalyticsPage() {
               accent
             />
             <StatTile icon="calendar_month" label="Revenue Last Month" value={`₦${(stats.revenueLastMonth / 1000000).toFixed(1)}M`} />
-            <StatTile icon="description" label="eCO Certificates Issued" value={stats.ecoCertificatesIssued.toLocaleString()} sublabel="All time" />
+            <StatTile icon="description" label="Certificates Issued" value={stats.ecoCertificatesIssued.toLocaleString()} sublabel="All time" />
           </div>
 
           <p className={sectionLabelClass}>Events</p>

@@ -565,8 +565,8 @@ function MemberEcoView() {
     <div className="p-6 max-w-4xl">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-semibold text-ink">eCO Certificates</h1>
-          <p className="text-sm text-ink-subtle mt-0.5">Electronic Certificate of Origin applications.</p>
+          <h1 className="text-2xl font-semibold text-ink">Certificate Applications</h1>
+          <p className="text-sm text-ink-subtle mt-0.5">Your export certificate applications — drafts, reviews, payments and issued certificates.</p>
         </div>
         <Link to="/dashboard/eco/apply">
           <Button>+ New Application</Button>
