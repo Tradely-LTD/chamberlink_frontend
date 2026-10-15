@@ -8,10 +8,10 @@ interface Props<T extends string> {
   className?: string;
 }
 
-/** Filter/segment switcher. Scrolls horizontally on small screens instead of wrapping. */
+/** Underline tabs: a quiet bar with a blue indicator under the active tab. Scrolls sideways on small screens. */
 export function SegmentedTabs<T extends string>({ tabs, value, onChange, label, className = '' }: Props<T>) {
   return (
-    <div role="tablist" aria-label={label} className={`inline-flex max-w-full gap-0.5 overflow-x-auto rounded-control border border-border bg-surface-alt p-0.5 ${className}`}>
+    <div role="tablist" aria-label={label} className={`flex items-end gap-6 overflow-x-auto border-b border-border ${className}`}>
       {tabs.map((t) => {
         const active = t.value === value;
         return (
@@ -20,8 +20,8 @@ export function SegmentedTabs<T extends string>({ tabs, value, onChange, label, 
             role="tab"
             aria-selected={active}
             onClick={() => onChange(t.value)}
-            className={`inline-flex h-8 items-center gap-1.5 whitespace-nowrap rounded-[6px] px-3 text-[13px] font-medium transition-colors focus-visible:shadow-focus ${
-              active ? 'bg-surface text-ink shadow-card' : 'text-ink-subtle hover:text-ink'
+            className={`-mb-px inline-flex items-center gap-1.5 whitespace-nowrap border-b-2 px-1 pb-2.5 pt-1 text-sm font-medium transition-colors focus-visible:shadow-focus ${
+              active ? 'border-primary text-ink' : 'border-transparent text-ink-subtle hover:border-border-strong hover:text-ink'
             }`}
           >
             {t.label}

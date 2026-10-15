@@ -37,11 +37,11 @@ function Sparkline({ data }: { data: number[] }) {
   );
 }
 
-// `accent` is kept for call-site compatibility; it now marks the headline
-// figure with a primary rule rather than a solid blue tile.
-export function StatTile({ icon, label, value, sublabel, accent, sparkline }: StatTileProps) {
+// `accent` is accepted for call-site compatibility and deliberately has no
+// visual effect: every tile reads the same.
+export function StatTile({ icon, label, value, sublabel, accent: _accent, sparkline }: StatTileProps) {
   return (
-    <div className={`relative overflow-hidden rounded-card border border-border bg-surface p-5 ${accent ? 'before:absolute before:inset-y-0 before:left-0 before:w-[3px] before:bg-primary' : ''}`}>
+    <div className={`relative overflow-hidden rounded-card border border-border bg-surface p-5 `}>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex items-center gap-1.5 mb-2">

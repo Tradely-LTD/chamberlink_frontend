@@ -13,7 +13,7 @@ export function ResetPasswordPage() {
   return (
     <AuthShell
       kicker="Password reset"
-      heading={<>Choose a new<br /><em className="font-display italic font-semibold text-primary">password.</em></>}
+      heading={<>Choose a new<br /><em className=" italic font-semibold text-primary">password.</em></>}
       lede="Set a new password to finish recovering access to your Chamberlink account."
       benefits={[
         'Use at least 8 characters',

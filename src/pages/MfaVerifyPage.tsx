@@ -17,7 +17,7 @@ export function MfaVerifyPage() {
   return (
     <AuthShell
       kicker="One more step"
-      heading={<>Confirm it&apos;s<br /><em className="font-display italic font-semibold text-primary">really you.</em></>}
+      heading={<>Confirm it&apos;s<br /><em className=" italic font-semibold text-primary">really you.</em></>}
       lede="Two-factor authentication keeps your chamber account, certificate history, and payments secure."
       benefits={[
         'Protects certificate approvals and payments',

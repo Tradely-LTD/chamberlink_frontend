@@ -6,6 +6,7 @@ import { SkeletonCard } from '@shared/ui/SkeletonCard';
 import { ErrorBanner } from '@shared/ui/ErrorBanner';
 import { Button } from '@shared/ui/Button';
 import { Toast } from '@shared/ui/Toast';
+import { PageHeader } from '@shared/ui/PageHeader';
 
 /**
  * Every value here is stored and edited as a human-typed string — for a
@@ -81,13 +82,8 @@ function SettingsView() {
 
   return (
     <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-3xl">
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-ink mb-1">Platform Settings</h1>
-        <p className="text-sm text-ink-subtle">
-          Operational values changeable without a code deploy. Adding a new setting later never needs a
-          migration; this list is backed by a generic key/value store.
-        </p>
-      </div>
+      <PageHeader title="Platform Settings" description="Operational values changeable without a code deploy. Adding a new setting later never needs a
+          migration; this list is backed by a generic key/value store." />
 
       {isLoading && (
         <div className="space-y-3">
@@ -130,7 +126,7 @@ export function SettingsPage() {
               lock
             </span>
           </div>
-          <h2 className="font-bold text-ink mb-2">Access Restricted</h2>
+          <h2 className="font-semibold text-ink mb-2">Access Restricted</h2>
           <p className="text-sm text-ink-subtle">This console is available to Super Admins only.</p>
         </div>
       </div>

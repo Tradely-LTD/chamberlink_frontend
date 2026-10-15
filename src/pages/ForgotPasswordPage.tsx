@@ -5,7 +5,7 @@ export function ForgotPasswordPage() {
   return (
     <AuthShell
       kicker="Password recovery"
-      heading={<>Let&apos;s get you<br /><em className="font-display italic font-semibold text-primary">back in.</em></>}
+      heading={<>Let&apos;s get you<br /><em className=" italic font-semibold text-primary">back in.</em></>}
       lede="Enter the email on your Chamberlink account and we'll send you a reset link."
       benefits={[
         'Works for every chamber you’re connected to',

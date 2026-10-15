@@ -61,7 +61,7 @@ export function NigeriaTileMap({ origins }: Props) {
               }}
             >
               <span className="text-[10px] sm:text-[11px] font-semibold tracking-wide">{code}</span>
-              {data && <span className="text-[10px] sm:text-xs font-bold tabular-nums mt-0.5">{data.applications}</span>}
+              {data && <span className="text-[10px] sm:text-xs font-semibold tabular-nums mt-0.5">{data.applications}</span>}
             </div>
           );
         })}

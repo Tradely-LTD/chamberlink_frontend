@@ -10,6 +10,7 @@ import { ErrorBanner } from '@shared/ui/ErrorBanner';
 import { Button } from '@shared/ui/Button';
 import { Select } from '@shared/ui/Select';
 import { isNoActiveChamberError } from '@shared/utils';
+import { PageHeader } from '@shared/ui/PageHeader';
 
 export type { DocumentCategory };
 
@@ -95,17 +96,17 @@ function UploadModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: (
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
-      <div className="relative bg-surface rounded-card shadow-pop w-full max-w-md">
-        <div className="border-b border-border px-6 py-4 flex items-center justify-between">
-          <h2 className="font-semibold text-ink">Upload Document</h2>
+      <div className="relative bg-surface rounded-card border border-border shadow-pop animate-fade-up w-full max-w-md">
+        <div className="border-b border-border px-5 py-4 flex items-center justify-between">
+          <h2 className="text-[15px] font-semibold text-ink">Upload Document</h2>
           <button onClick={onClose} className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle">
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            <span className="material-symbols-outlined" aria-hidden="true" style={{ fontSize: 20 }}>close</span>
           </button>
         </div>
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {error && <ErrorBanner message={error} />}
           <div>
-            <label className="block text-xs font-semibold text-ink-subtle mb-1">Document Name <span className="text-danger">*</span></label>
+            <label className="block text-[13px] font-medium text-ink mb-1.5">Document Name <span className="text-danger">*</span></label>
             <input type="text" required value={docName} onChange={(e) => setDocName(e.target.value)}
               placeholder="e.g. Business Registration Certificate"
               className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed" />
@@ -113,7 +114,7 @@ function UploadModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: (
           <Select label="Category" value={category} onValueChange={(v) => setCategory(v as DocumentCategory)}
             options={(Object.keys(CATEGORY_LABELS) as DocumentCategory[]).map((k) => ({ value: k, label: CATEGORY_LABELS[k] }))} />
           <div>
-            <label className="block text-xs font-semibold text-ink-subtle mb-1">File <span className="text-danger">*</span></label>
+            <label className="block text-[13px] font-medium text-ink mb-1.5">File <span className="text-danger">*</span></label>
             <input ref={fileInputRef} type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" className="hidden" onChange={handleFileSelect} />
             <button type="button" onClick={() => fileInputRef.current?.click()}
               className="w-full rounded-lg border-2 border-dashed border-border px-4 py-6 text-center hover:border-primary transition-colors">
@@ -402,10 +403,7 @@ export function DocumentLibraryView() {
 export function DocumentsPage() {
   return (
     <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-4xl">
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-ink">Document Library</h1>
-        <p className="text-sm text-ink-subtle mt-0.5">Your certificates, registrations, and official documents.</p>
-      </div>
+      <PageHeader title="Document Library" description="Your certificates, registrations, and official documents." />
       <DocumentLibraryView />
     </div>
   );

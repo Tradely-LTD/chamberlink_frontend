@@ -14,6 +14,7 @@ import { SkeletonCard } from '@shared/ui/SkeletonCard';
 import { ErrorBanner } from '@shared/ui/ErrorBanner';
 import { Button } from '@shared/ui/Button';
 import { Select } from '@shared/ui/Select';
+import { PageHeader } from '@shared/ui/PageHeader';
 
 // ---------------------------------------------------------------------------
 // Status badge helpers
@@ -98,10 +99,10 @@ function MemberDetailModal({ member, onClose, isChamberAdmin }: MemberDetailModa
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
-      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-surface rounded-card border border-border shadow-pop animate-fade-up w-full max-w-lg max-h-[90vh] overflow-y-auto">
         {/* Sticky header */}
-        <div className="sticky top-0 bg-surface border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
-          <h2 className="font-semibold text-ink">Member Details</h2>
+        <div className="sticky top-0 bg-surface border-b border-border px-5 py-4 flex items-center justify-between rounded-t-card z-10">
+          <h2 className="text-[15px] font-semibold text-ink">Member Details</h2>
           <button
             onClick={onClose}
             className="p-1.5 rounded-lg text-ink-subtle hover:bg-surface-alt transition-colors"
@@ -124,16 +125,12 @@ function MemberDetailModal({ member, onClose, isChamberAdmin }: MemberDetailModa
           )}
 
           {/* Tabs */}
-          <div className="flex gap-1 bg-surface-alt rounded-lg p-1 mb-6 w-fit border border-border">
+          <div className="flex items-end gap-6 overflow-x-auto border-b border-border mb-6">
             {(['profile', 'payments'] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors capitalize ${
-                  activeTab === tab
-                    ? 'bg-surface text-ink shadow-card'
-                    : 'text-ink-subtle hover:text-ink'
-                }`}
+                className={`-mb-px border-b-2 px-1 pb-2.5 pt-1 text-sm font-medium whitespace-nowrap transition-colors focus-visible:shadow-focus capitalize ${activeTab === tab ? 'border-primary text-ink' : 'border-transparent text-ink-subtle hover:text-ink hover:border-border-strong'}`}
               >
                 {tab}
               </button>
@@ -199,11 +196,10 @@ function MemberDetailModal({ member, onClose, isChamberAdmin }: MemberDetailModa
                 <div className="overflow-x-auto">
                   <table className="data-table w-full text-sm">
                     <thead>
-                      <tr className="border-b border-border bg-surface-alt">
+                      <tr>
                         {['Date', 'Amount', 'Purpose', 'Gateway', 'Reference', 'Status'].map((h) => (
                           <th
                             key={h}
-                            className="text-left px-3 py-2 text-2xs font-semibold uppercase text-ink-subtle"
                           >
                             {h}
                           </th>
@@ -213,18 +209,18 @@ function MemberDetailModal({ member, onClose, isChamberAdmin }: MemberDetailModa
                     <tbody>
                       {payments.map((p) => (
                         <tr key={p.id} className="border-b border-border hover:bg-surface-alt">
-                          <td className="px-3 py-2 whitespace-nowrap text-ink-subtle">
+                          <td className="whitespace-nowrap text-ink-subtle">
                             {formatDateNG(p.paidAt ?? p.createdAt)}
                           </td>
-                          <td className="px-3 py-2 whitespace-nowrap font-medium text-ink">
+                          <td className="whitespace-nowrap font-medium text-ink">
                             NGN {p.amount.toLocaleString()}
                           </td>
-                          <td className="px-3 py-2 text-ink capitalize">{p.purpose}</td>
-                          <td className="px-3 py-2 capitalize text-ink-subtle">{p.gateway}</td>
-                          <td className="px-3 py-2 font-mono text-xs text-ink-subtle">
+                          <td className="text-ink capitalize">{p.purpose}</td>
+                          <td className="capitalize text-ink-subtle">{p.gateway}</td>
+                          <td className="font-mono text-xs text-ink-subtle">
                             {p.gatewayReference ?? p.reference}
                           </td>
-                          <td className="px-3 py-2">
+                          <td>
                             <PaymentStatusBadge status={p.status} />
                           </td>
                         </tr>
@@ -255,8 +251,8 @@ function MemberDetailModal({ member, onClose, isChamberAdmin }: MemberDetailModa
               <button
                 onClick={handleReactivate}
                 disabled={reactivating}
-                className="rounded-lg px-4 py-2 text-sm font-semibold text-white disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
-                style={{ background: 'rgb(var(--c-primary))' }}
+                className="inline-flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed h-10 px-4 text-sm rounded-control bg-primary text-white font-medium shadow-card transition-colors hover:bg-primary-hover focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
+               
               >
                 {reactivating ? 'Reactivating…' : 'Reactivate'}
               </button>
@@ -318,10 +314,10 @@ function BulkImportModal({ onClose }: BulkImportModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
-      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-surface rounded-card border border-border shadow-pop animate-fade-up w-full max-w-lg max-h-[90vh] overflow-y-auto">
         {/* Sticky header */}
-        <div className="sticky top-0 bg-surface border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
-          <h2 className="font-semibold text-ink">Bulk Import Members</h2>
+        <div className="sticky top-0 bg-surface border-b border-border px-5 py-4 flex items-center justify-between rounded-t-card z-10">
+          <h2 className="text-[15px] font-semibold text-ink">Bulk Import Members</h2>
           <button
             onClick={onClose}
             className="p-1.5 rounded-lg text-ink-subtle hover:bg-surface-alt transition-colors"
@@ -346,7 +342,7 @@ function BulkImportModal({ onClose }: BulkImportModalProps) {
           {!hasResult && (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-ink mb-1">
+                <label className="block text-[13px] font-medium text-ink mb-1.5">
                   CSV File <span className="text-ink-subtle font-normal">(max 5 MB)</span>
                 </label>
                 <input
@@ -374,8 +370,8 @@ function BulkImportModal({ onClose }: BulkImportModalProps) {
                 <button
                   type="submit"
                   disabled={isLoading || !selectedFile}
-                  className="rounded-lg px-4 py-2 text-sm font-semibold text-white disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
-                  style={{ background: 'rgb(var(--c-primary))' }}
+                  className="inline-flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed h-10 px-4 text-sm rounded-control bg-primary text-white font-medium shadow-card transition-colors hover:bg-primary-hover focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
+                 
                 >
                   {isLoading ? 'Importing…' : 'Import Members'}
                 </button>
@@ -399,11 +395,10 @@ function BulkImportModal({ onClose }: BulkImportModalProps) {
                   <div className="overflow-x-auto">
                     <table className="data-table w-full text-sm border border-border rounded-lg overflow-hidden">
                       <thead>
-                        <tr className="bg-surface-alt border-b border-border">
+                        <tr>
                           {['Row #', 'Email', 'Reason'].map((h) => (
                             <th
                               key={h}
-                              className="text-left px-3 py-2 text-2xs font-semibold uppercase text-ink-subtle"
                             >
                               {h}
                             </th>
@@ -413,9 +408,9 @@ function BulkImportModal({ onClose }: BulkImportModalProps) {
                       <tbody>
                         {importResult.failed.map((row, idx) => (
                           <tr key={idx} className="border-b border-border last:border-0">
-                            <td className="px-3 py-2 text-ink-subtle">{row.row}</td>
-                            <td className="px-3 py-2 font-mono text-xs text-ink">{row.email}</td>
-                            <td className="px-3 py-2 text-danger">{row.reason}</td>
+                            <td className="text-ink-subtle">{row.row}</td>
+                            <td className="font-mono text-xs text-ink">{row.email}</td>
+                            <td className="text-danger">{row.reason}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -531,10 +526,7 @@ export function MemberManagementPage() {
       )}
       {showBulkImport && <BulkImportModal onClose={() => setShowBulkImport(false)} />}
 
-      <h1 className="text-2xl font-semibold text-ink mb-1">Member Management</h1>
-      <p className="text-sm text-ink-subtle mb-6">
-        Browse, search, and manage chamber members.
-      </p>
+      <PageHeader title="Member Management" description="Browse, search, and manage chamber members." />
 
       {/* Top bar */}
       <div className="flex flex-wrap items-center gap-3 mb-4">
@@ -565,15 +557,15 @@ export function MemberManagementPage() {
           <button
             onClick={() => void handleExport()}
             disabled={isExporting}
-            className="rounded-lg border border-border bg-surface px-4 py-2 text-sm font-semibold text-ink hover:border-primary hover:text-primary disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+            className="inline-flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed h-10 px-4 text-sm rounded-control border border-border-strong bg-surface text-ink font-medium shadow-card transition-colors hover:bg-surface-alt focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isExporting ? 'Exporting...' : 'Export CSV'}
           </button>
           {isChamberAdmin && (
             <button
               onClick={() => setShowBulkImport(true)}
-              className="rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors"
-              style={{ background: 'rgb(var(--c-primary))' }}
+              className="inline-flex items-center justify-center gap-2 h-10 px-4 text-sm rounded-control bg-primary text-white font-medium shadow-card transition-colors hover:bg-primary-hover focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
+             
             >
               Bulk Import
             </button>
@@ -589,7 +581,7 @@ export function MemberManagementPage() {
           <ErrorBanner message="Failed to load members." />
           <button
             onClick={() => void refetch()}
-            className="rounded-lg border border-border bg-surface px-4 py-2 text-sm font-semibold text-ink hover:border-primary transition-colors"
+            className="inline-flex items-center justify-center gap-2 h-10 px-4 text-sm rounded-control border border-border-strong bg-surface text-ink font-medium shadow-card transition-colors hover:bg-surface-alt focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Retry
           </button>
@@ -604,12 +596,11 @@ export function MemberManagementPage() {
             <div className="overflow-x-auto">
               <table className="data-table w-full text-sm">
                 <thead>
-                  <tr className="border-b border-border bg-surface-alt">
+                  <tr>
                     {['Member ID', 'Full Name / Email', 'Business', 'Tier', 'Status', 'Expiry', 'Actions'].map(
                       (h) => (
                         <th
                           key={h}
-                          className="text-left px-4 py-3 text-2xs font-semibold uppercase text-ink-subtle"
                         >
                           {h}
                         </th>
@@ -623,21 +614,21 @@ export function MemberManagementPage() {
                       key={member.id}
                       className="border-b border-border hover:bg-surface-alt transition-colors"
                     >
-                      <td className="px-4 py-3 font-mono text-xs text-primary whitespace-nowrap">
+                      <td className="font-mono text-xs text-primary whitespace-nowrap">
                         {member.memberId ?? '–'}
                       </td>
-                      <td className="px-4 py-3">
+                      <td>
                         <p className="font-medium text-ink">
                           {[member.firstName, member.lastName].filter(Boolean).join(' ') || '–'}
                         </p>
                         <p className="text-xs text-ink-subtle">{member.email}</p>
                       </td>
-                      <td className="px-4 py-3 text-ink-subtle">{member.businessName ?? '–'}</td>
-                      <td className="px-4 py-3 text-ink whitespace-nowrap">{member.tierName ?? '–'}</td>
-                      <td className="px-4 py-3">
+                      <td className="text-ink-subtle">{member.businessName ?? '–'}</td>
+                      <td className="text-ink whitespace-nowrap">{member.tierName ?? '–'}</td>
+                      <td>
                         <StatusBadge status={member.memberStatus} />
                       </td>
-                      <td className="px-4 py-3 text-ink-subtle whitespace-nowrap num">
+                      <td className="text-ink-subtle whitespace-nowrap num">
                         {member.expiresAt
                           ? new Date(member.expiresAt).toLocaleDateString('en-NG', {
                               timeZone: 'Africa/Lagos',
@@ -647,7 +638,7 @@ export function MemberManagementPage() {
                             })
                           : '–'}
                       </td>
-                      <td className="px-4 py-3">
+                      <td>
                         <div className="flex items-center gap-3 whitespace-nowrap">
                           <button
                             onClick={() => setViewMember(member)}
@@ -689,14 +680,14 @@ export function MemberManagementPage() {
               <button
                 disabled={page === 1}
                 onClick={() => setPage((p) => p - 1)}
-                className="rounded-lg border border-border bg-surface px-3 py-1.5 text-sm font-medium text-ink hover:border-primary disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="inline-flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed h-8 px-3 text-[13px] rounded-control border border-border-strong bg-surface text-ink font-medium shadow-card transition-colors hover:bg-surface-alt focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Prev
               </button>
               <button
                 disabled={page * PAGE_SIZE >= total}
                 onClick={() => setPage((p) => p + 1)}
-                className="rounded-lg border border-border bg-surface px-3 py-1.5 text-sm font-medium text-ink hover:border-primary disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="inline-flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed h-8 px-3 text-[13px] rounded-control border border-border-strong bg-surface text-ink font-medium shadow-card transition-colors hover:bg-surface-alt focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Next
               </button>

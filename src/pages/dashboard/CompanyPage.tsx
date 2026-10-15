@@ -10,20 +10,23 @@ import {
 } from '@features/companies/companiesApi';
 import { SkeletonCard } from '@shared/ui/SkeletonCard';
 import { ErrorBanner } from '@shared/ui/ErrorBanner';
-import { Badge } from '@shared/ui/Badge';
+import { PageHeader } from '@shared/ui/PageHeader';
+import { SectionCard, DetailGrid } from '@shared/ui/SectionCard';
+import { StatusBadge, type StatusTone } from '@shared/ui/StatusBadge';
+import { BusinessProfileCard } from '@features/dashboard/components/BusinessProfileCard';
 import { Button } from '@shared/ui/Button';
 import { Input } from '@shared/ui/Input';
 
-const STATUS_VARIANT: Record<TinVerificationStatus, 'success' | 'warning' | 'error'> = {
+const STATUS_TONE: Record<TinVerificationStatus, StatusTone> = {
   verified: 'success',
   pending_review: 'warning',
-  failed: 'error',
+  failed: 'danger',
 };
 
 const STATUS_LABEL: Record<TinVerificationStatus, string> = {
   verified: 'Verified',
-  pending_review: 'Awaiting Verification',
-  failed: 'Verification Failed',
+  pending_review: 'Awaiting verification',
+  failed: 'Verification failed',
 };
 
 const apiMessage = (err: unknown, fallback: string): string =>
@@ -38,7 +41,7 @@ const apiMessage = (err: unknown, fallback: string): string =>
 function StatusNotice({ company }: { company: ExporterCompany }) {
   if (company.verificationStatus === 'verified') {
     return (
-      <div className="mb-4 rounded-lg bg-success-bg border border-primary/20 px-4 py-3 text-sm text-ink">
+      <div className="rounded-control border border-success-border bg-success-bg px-4 py-3 text-[13px] text-success">
         <strong>Verified.</strong> Your registered company name and address are now applied automatically
         to every certificate application you submit, so you no longer type them in.
       </div>
@@ -46,7 +49,7 @@ function StatusNotice({ company }: { company: ExporterCompany }) {
   }
   if (company.verificationStatus === 'failed') {
     return (
-      <div className="mb-4 rounded-lg bg-danger-bg border border-danger-border px-4 py-3 text-sm text-danger">
+      <div className="rounded-control border border-danger-border bg-danger-bg px-4 py-3 text-[13px] text-danger">
         <strong>We couldn&apos;t verify this company.</strong>
         {company.verificationNotes && <div className="mt-1">{company.verificationNotes}</div>}
         <div className="mt-1">
@@ -57,7 +60,7 @@ function StatusNotice({ company }: { company: ExporterCompany }) {
     );
   }
   return (
-    <div className="mb-4 rounded-lg bg-warning-bg border border-warning-border px-4 py-3 text-sm text-warning">
+    <div className="rounded-control border border-warning-border bg-warning-bg px-4 py-3 text-[13px] text-warning">
       <strong>Awaiting verification.</strong> NACCIMA is confirming your TIN against tax records. This
       doesn&apos;t block you. You can apply for certificates now, entering your company details on the
       application. Once verified, they&apos;ll be filled in for you.
@@ -92,8 +95,8 @@ function RegisterCompanyForm() {
   };
 
   return (
-    <div className="bg-surface rounded-card border border-border p-6 max-w-xl">
-      <h2 className="text-lg font-semibold text-ink">Register your exporting company</h2>
+    <div className="bg-surface rounded-card border border-border p-6">
+      <h2 className="text-[17px] font-semibold text-ink">Register your exporting company</h2>
       <p className="mt-1 mb-5 text-sm text-ink-subtle">
         Your company is identified by its Tax Identification Number. Once NACCIMA has confirmed it
         against tax records, your registered name and address are applied to every certificate
@@ -145,7 +148,7 @@ function RegisterCompanyForm() {
         onClick={handleSubmit}
         className="mt-5 bg-primary hover:bg-primary-hover text-white"
       >
-        Register Company
+        Register company
       </Button>
     </div>
   );
@@ -185,10 +188,10 @@ function SubUsers({ data }: { data: MyCompanyResponse & { company: ExporterCompa
   };
 
   return (
-    <div className="bg-surface rounded-card border border-border overflow-hidden max-w-2xl">
-      <div className="px-6 py-4 border-b border-border">
-        <h2 className="text-sm font-semibold text-ink">Who can apply for this company</h2>
-        <p className="mt-0.5 text-xs text-ink-subtle">
+    <div className="bg-surface rounded-card border border-border overflow-hidden">
+      <div className="px-5 py-4 border-b border-border">
+        <h2 className="text-[15px] font-semibold text-ink">Who can apply for this company</h2>
+        <p className="mt-0.5 text-[13px] text-ink-subtle">
           {isOwner
             ? `You can authorise up to ${data.maxSubUsers} colleague${data.maxSubUsers === 1 ? '' : 's'} to apply for certificates on the company's behalf. ${subUsers.length} of ${data.maxSubUsers} used.`
             : 'Only the company administrator can change who is authorised here.'}
@@ -197,16 +200,16 @@ function SubUsers({ data }: { data: MyCompanyResponse & { company: ExporterCompa
 
       <div className="divide-y divide-border-subtle">
         {data.members.map((m) => (
-          <div key={m.userId} className="flex items-center gap-3 px-6 py-3">
+          <div key={m.userId} className="flex items-center gap-3 px-5 py-3">
             <div className="min-w-0 flex-1">
               <div className="text-sm font-medium text-ink truncate">{m.firstName} {m.lastName}</div>
               <div className="text-xs text-ink-subtle truncate">{m.email}</div>
             </div>
-            <Badge variant={m.role === 'owner' ? 'default' : 'success'}>
-              {m.role === 'owner' ? 'Administrator' : 'Sub-user'}
-            </Badge>
+            <StatusBadge tone={m.role === 'owner' ? 'info' : 'neutral'}>
+              {m.role === 'owner' ? 'Administrator' : 'Can apply'}
+            </StatusBadge>
             {isOwner && m.role === 'sub_user' && (
-              <Button variant="outline" loading={removing} onClick={() => handleRemove(m.userId)}>
+              <Button size="sm" variant="danger" loading={removing} onClick={() => handleRemove(m.userId)}>
                 Remove
               </Button>
             )}
@@ -215,7 +218,7 @@ function SubUsers({ data }: { data: MyCompanyResponse & { company: ExporterCompa
       </div>
 
       {isOwner && (
-        <div className="border-t border-border px-6 py-4">
+        <div className="border-t border-border bg-surface-alt px-5 py-4 rounded-b-card">
           {error && <div className="mb-3"><ErrorBanner message={error} /></div>}
           {atLimit ? (
             <p className="text-xs text-ink-subtle">
@@ -266,69 +269,45 @@ export function CompanyPage() {
   if (isError || !data) {
     return (
       <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-3xl">
-        <ErrorBanner message="Failed to load your company details." />
-        <Button variant="outline" onClick={() => refetch()} className="mt-4">Try again</Button>
+        <ErrorBanner message="Couldn't load your company details." onRetry={() => refetch()} />
       </div>
     );
   }
 
   return (
-    <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-3xl">
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-ink">My Company</h1>
-        <p className="text-sm text-ink-subtle mt-0.5">
-          Your verified exporter identity and the people authorised to apply on its behalf.
-        </p>
-      </div>
+    <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8">
+      <PageHeader
+        title="My company"
+        description="Your exporting company: its verified tax identity, business details, and who may apply on its behalf."
+      />
 
-      {!data.company ? (
-        <RegisterCompanyForm />
-      ) : (
-        <div className="flex flex-col gap-6">
-          <div>
+      <div className="max-w-3xl space-y-6">
+        {!data.company ? (
+          <RegisterCompanyForm />
+        ) : (
+          <>
             <StatusNotice company={data.company} />
+            <SectionCard
+              title={data.company.name}
+              description={<>TIN <span className="font-mono">{data.company.tin}</span></>}
+              action={<StatusBadge tone={STATUS_TONE[data.company.verificationStatus]}>{STATUS_LABEL[data.company.verificationStatus]}</StatusBadge>}
+            >
+              {/* Both are shown once verified so the applicant can see what the
+                  tax record says versus what they entered. */}
+              <DetailGrid items={[
+                ...(data.company.registeredName ? [{ label: 'Registered name (tax records)', value: data.company.registeredName }] : []),
+                { label: 'Name you submitted', value: data.company.submittedName },
+                { label: 'Address printed on certificates', value: data.company.registeredAddress ?? data.company.submittedAddress, wide: true },
+              ]} />
+            </SectionCard>
+          </>
+        )}
 
-            <div className="bg-surface rounded-card border border-border overflow-hidden">
-              <div className="flex items-start justify-between gap-4 px-6 py-4 border-b border-border">
-                <div className="min-w-0">
-                  <h2 className="text-base font-semibold text-ink truncate">{data.company.name}</h2>
-                  <p className="text-xs text-ink-subtle mt-0.5">TIN {data.company.tin}</p>
-                </div>
-                <Badge variant={STATUS_VARIANT[data.company.verificationStatus]}>
-                  {STATUS_LABEL[data.company.verificationStatus]}
-                </Badge>
-              </div>
+        <BusinessProfileCard />
 
-              <div className="px-6 py-4 text-sm">
-                <dl className="grid gap-3">
-                  {/* Both are shown once verified so the applicant can see what the
-                      tax record says versus what they entered — a silent
-                      substitution would be surprising on an issued certificate. */}
-                  {data.company.registeredName && (
-                    <div>
-                      <dt className="text-xs text-ink-subtle">Registered name (on tax records)</dt>
-                      <dd className="text-ink font-medium">{data.company.registeredName}</dd>
-                    </div>
-                  )}
-                  <div>
-                    <dt className="text-xs text-ink-subtle">Name you submitted</dt>
-                    <dd className="text-ink">{data.company.submittedName}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-xs text-ink-subtle">Address used on certificates</dt>
-                    <dd className="text-ink">
-                      {data.company.registeredAddress ?? data.company.submittedAddress ?? '–'}
-                    </dd>
-                  </div>
-                </dl>
-              </div>
-            </div>
-          </div>
-
-          {/* Inside the `data.company` branch, so the narrowed shape holds. */}
-          <SubUsers data={{ ...data, company: data.company }} />
-        </div>
-      )}
+        {/* Inside the `data.company` branch, so the narrowed shape holds. */}
+        {data.company && <SubUsers data={{ ...data, company: data.company }} />}
+      </div>
     </div>
   );
 }

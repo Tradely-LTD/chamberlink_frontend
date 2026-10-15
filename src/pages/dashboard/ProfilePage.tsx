@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, type ReactNode } from 'react';
 import { useAppDispatch, useAppSelector } from '@shared/hooks/useAppDispatch';
 import { useGetMemberProfileQuery } from '@features/dashboard/dashboardApi';
 import { useGetMembershipStatusQuery } from '@features/membership/membershipApi';
@@ -16,7 +16,11 @@ import { EmptyState } from '@shared/ui/EmptyState';
 import { Button } from '@shared/ui/Button';
 import { Input } from '@shared/ui/Input';
 import { Toast } from '@shared/ui/Toast';
-import { emptyApi } from '@shared/api/emptyApi';
+import { Link } from 'react-router-dom';
+import { PageHeader } from '@shared/ui/PageHeader';
+import { SectionCard, DetailGrid } from '@shared/ui/SectionCard';
+import { StatusBadge, Status } from '@shared/ui/StatusBadge';
+import { useUpdateProfileMutation } from '@features/dashboard/profileApi';
 import { isNoActiveChamberError } from '@shared/utils';
 
 function errorMessage(err: unknown, fallback: string): string {
@@ -68,35 +72,31 @@ function MfaSecurityRow() {
 
   return (
     <div>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-sm font-medium text-ink">Multi-Factor Authentication</p>
+          <p className="text-sm font-medium text-ink">Two-step sign-in</p>
           <p className="text-xs text-ink-subtle">
             {user?.isMfaEnabled
-              ? 'A verification code is required at login'
-              : 'No verification code is required at login'}
+              ? 'A code sent to your email is required each time you sign in.'
+              : 'Add a code sent to your email each time you sign in.'}
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <span
-            className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${user?.isMfaEnabled ? 'bg-success-bg text-success' : 'bg-border-subtle text-ink-muted'}`}
-          >
-            {user?.isMfaEnabled ? 'Enabled' : 'Disabled'}
-          </span>
+          <StatusBadge tone={user?.isMfaEnabled ? 'success' : 'neutral'}>{user?.isMfaEnabled ? 'On' : 'Off'}</StatusBadge>
           {stage === 'idle' &&
             (user?.isMfaEnabled ? (
               <Button variant="outline" loading={isRequesting} onClick={handleRequestDisable}>
-                Turn Off
+                Turn off
               </Button>
             ) : (
               <Button variant="outline" loading={isEnabling} onClick={handleEnable}>
-                Turn On
+                Turn on
               </Button>
             ))}
         </div>
       </div>
       {stage === 'confirm-disable' && (
-        <div className="mt-3 flex items-end gap-3 rounded-lg bg-surface-alt border border-border px-4 py-3">
+        <div className="mt-3 flex flex-wrap items-end gap-3 rounded-control border border-border bg-surface-alt px-4 py-3">
           <Input
             label="Enter the code we emailed you"
             value={code}
@@ -121,49 +121,56 @@ function MfaSecurityRow() {
   );
 }
 
-interface ApiResponse<T> { success: boolean; data: T; }
-
-const profileApi = emptyApi.injectEndpoints({
-  endpoints: (builder) => ({
-    updateProfile: builder.mutation<void, { firstName: string; lastName: string; phone?: string; businessName?: string }>({
-      query: (body) => ({ url: '/membership/me', method: 'PUT', body }),
-      invalidatesTags: ['Members'],
-    }),
-    patchProfile: builder.mutation<void, Record<string, string>>({
-      query: (body) => ({ url: '/membership/me', method: 'PATCH', body }),
-      invalidatesTags: ['Members'],
-    }),
-    uploadLogo: builder.mutation<{ logoUrl: string }, FormData>({
-      query: (body) => ({ url: '/membership/me/profile/logo', method: 'POST', body, formData: true }),
-      transformResponse: (res: ApiResponse<{ logoUrl: string }>) => res.data,
-      invalidatesTags: ['Members'],
-    }),
-  }),
-  overrideExisting: false,
-});
-
-const { useUpdateProfileMutation, usePatchProfileMutation, useUploadLogoMutation } = profileApi;
-
-const membershipStatusColors: Record<string, string> = {
-  active: 'bg-success-bg text-success',
-  pending_payment: 'bg-warning-bg text-warning',
-  expired: 'bg-danger-bg text-danger',
-  suspended: 'bg-border-subtle text-ink-muted',
-};
-
 const ROLE_LABELS: Record<string, string> = {
-  chamber_admin: 'Chamber Admin',
-  staff_operator: 'Staff Operator',
-  chamber_executive: 'NACCIMA Executive',
-  super_admin: 'Super Admin',
-  institutional_subscriber: 'Institutional Subscriber',
+  member: 'Exporter',
+  chamber_admin: 'Chamber admin',
+  staff_operator: 'Staff operator',
+  chamber_executive: 'Chamber executive',
+  super_admin: 'Super admin',
+  institutional_subscriber: 'Institution',
 };
+
+const fmtDate = (d?: string | null) =>
+  d ? new Date(d).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'long', year: 'numeric' }) : null;
+
+/** Who you are, at a glance: avatar initials, name, email, role. */
+function IdentityHeader({ name, email, role, extra }: { name: string; email?: string; role?: string; extra?: ReactNode }) {
+  const initials = name.split(' ').map((w) => w[0]).filter(Boolean).slice(0, 2).join('').toUpperCase() || '?';
+  return (
+    <section className="mb-6 flex flex-wrap items-center gap-4 rounded-card border border-border bg-surface p-5">
+      <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-primary-soft text-lg font-semibold text-primary">{initials}</div>
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-[17px] font-semibold text-ink">{name}</p>
+        <p className="truncate text-[13px] text-ink-subtle">{email}</p>
+      </div>
+      <div className="flex flex-wrap items-center gap-2">
+        {role && <StatusBadge tone="info">{ROLE_LABELS[role] ?? role}</StatusBadge>}
+        {extra}
+      </div>
+    </section>
+  );
+}
+
+function SecurityCard({ verified }: { verified?: boolean }) {
+  return (
+    <SectionCard title="Security" description="How your account is protected.">
+      <div className="space-y-5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-sm font-medium text-ink">Email address</p>
+            <p className="text-xs text-ink-subtle">{verified ? 'Confirmed. Sign-in codes and notices go here.' : 'Not confirmed yet. Check your inbox for the link.'}</p>
+          </div>
+          <StatusBadge tone={verified ? 'success' : 'warning'}>{verified ? 'Confirmed' : 'Not confirmed'}</StatusBadge>
+        </div>
+        <div className="border-t border-border-subtle pt-5"><MfaSecurityRow /></div>
+      </div>
+    </SectionCard>
+  );
+}
 
 export function ProfilePage() {
   const user = useAppSelector((s) => s.auth.user);
   const role = user?.role;
-
-  // Role flags — computed before any hooks that depend on them
   const isMember = role === 'member';
   const isSuperAdmin = role === 'super_admin';
   const isTenantAdmin = role === 'chamber_admin' || role === 'staff_operator' || role === 'chamber_executive';
@@ -172,120 +179,54 @@ export function ProfilePage() {
   const { data: profile, isLoading, isError, error, refetch } = useGetMemberProfileQuery();
   const { data: membership } = useGetMembershipStatusQuery();
   const [updateProfile, { isLoading: isSaving }] = useUpdateProfileMutation();
-  const [patchProfile, { isLoading: isPatchSaving }] = usePatchProfileMutation();
-  const [uploadLogo, { isLoading: isUploadingLogo }] = useUploadLogoMutation();
   const { data: myTenant, refetch: refetchTenant } = useGetMyTenantQuery(undefined, { skip: !isTenantAdmin });
   const [updateMyTenant, { isLoading: isTenantSaving }] = useUpdateMyTenantMutation();
   const [uploadMyTenantLogo, { isLoading: isUploadingOrgLogo }] = useUploadMyTenantLogoMutation();
 
   const [editing, setEditing] = useState(false);
-  const [editingBusiness, setEditingBusiness] = useState(false);
   const [connectModalOpen, setConnectModalOpen] = useState(false);
-  const [connectToast, setConnectToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
-  const [form, setForm] = useState({ firstName: '', lastName: '', businessName: '', phone: '' });
-  const [bizForm, setBizForm] = useState({ registrationNumber: '', industry: '', address: '', city: '', state: '', website: '' });
-  const [saved, setSaved] = useState(false);
-  const [logoError, setLogoError] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [form, setForm] = useState({ firstName: '', lastName: '', phone: '' });
+  const [formError, setFormError] = useState<string | null>(null);
   const [editingOrg, setEditingOrg] = useState(false);
   const [orgForm, setOrgForm] = useState({ address: '', phone: '', email: '', website: '' });
   const [orgError, setOrgError] = useState<string | null>(null);
-  const [orgLogoError, setOrgLogoError] = useState<string | null>(null);
-  const logoInputRef = useRef<HTMLInputElement>(null);
   const orgLogoInputRef = useRef<HTMLInputElement>(null);
 
+  const fullName = `${profile?.firstName ?? user?.firstName ?? ''} ${profile?.lastName ?? user?.lastName ?? ''}`.trim() || (user?.email ?? 'Your account');
+
   const startEdit = () => {
-    setForm({
-      firstName: profile?.firstName ?? user?.firstName ?? '',
-      lastName: profile?.lastName ?? user?.lastName ?? '',
-      businessName: profile?.businessName ?? '',
-      phone: '',
-    });
+    setForm({ firstName: profile?.firstName ?? user?.firstName ?? '', lastName: profile?.lastName ?? user?.lastName ?? '', phone: '' });
+    setFormError(null);
     setEditing(true);
-    setSaved(false);
   };
-
-  const startBizEdit = () => {
-    setBizForm({
-      registrationNumber: profile?.registrationNumber ?? '',
-      industry: profile?.industry ?? '',
-      address: profile?.address ?? '',
-      city: profile?.city ?? '',
-      state: profile?.state ?? '',
-      website: profile?.website ?? '',
-    });
-    setEditingBusiness(true);
-    setSaved(false);
-  };
-
   const handleSave = async () => {
+    setFormError(null);
     try {
-      await updateProfile(form).unwrap();
+      await updateProfile({ firstName: form.firstName, lastName: form.lastName, ...(form.phone ? { phone: form.phone } : {}) }).unwrap();
       setEditing(false);
-      setSaved(true);
+      setToast({ message: 'Your details were saved.', type: 'success' });
       refetch();
-    } catch { /* handled by RTK */ }
-  };
-
-  const handleBizSave = async () => {
-    try {
-      const updates: Record<string, string> = {};
-      Object.entries(bizForm).forEach(([k, v]) => { if (v.trim()) updates[k] = v.trim(); });
-      await patchProfile(updates).unwrap();
-      setEditingBusiness(false);
-      setSaved(true);
-      refetch();
-    } catch { /* handled by RTK */ }
-  };
-
-  const handleLogoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (!['image/jpeg', 'image/png'].includes(file.type)) {
-      setLogoError('Only JPEG and PNG images are allowed.');
-      return;
+    } catch (err) {
+      setFormError(errorMessage(err, 'Could not save your details.'));
     }
-    setLogoError(null);
-    const fd = new FormData();
-    fd.append('logo', file);
-    try {
-      await uploadLogo(fd).unwrap();
-      refetch();
-    } catch (err: unknown) {
-      setLogoError((err as { data?: { message?: string } })?.data?.message ?? 'Logo upload failed. Please try again.');
-    }
-    e.target.value = '';
   };
 
   const handleOrgLogoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    e.target.value = '';
     if (!file) return;
-    if (!['image/jpeg', 'image/png'].includes(file.type)) {
-      setOrgLogoError('Only JPEG and PNG images are allowed.');
-      return;
-    }
-    setOrgLogoError(null);
+    if (!['image/jpeg', 'image/png'].includes(file.type)) { setOrgError('Use a JPEG or PNG image.'); return; }
     const fd = new FormData();
     fd.append('logo', file);
-    try {
-      await uploadMyTenantLogo(fd).unwrap();
-      refetchTenant();
-    } catch (err: unknown) {
-      setOrgLogoError((err as { data?: { message?: string } })?.data?.message ?? 'Logo upload failed. Please try again.');
-    }
-    e.target.value = '';
+    try { await uploadMyTenantLogo(fd).unwrap(); refetchTenant(); }
+    catch (err) { setOrgError(errorMessage(err, 'Logo upload failed. Please try again.')); }
   };
-
   const startOrgEdit = () => {
-    setOrgForm({
-      address: myTenant?.address ?? '',
-      phone: myTenant?.phone ?? '',
-      email: myTenant?.email ?? '',
-      website: myTenant?.website ?? '',
-    });
+    setOrgForm({ address: myTenant?.address ?? '', phone: myTenant?.phone ?? '', email: myTenant?.email ?? '', website: myTenant?.website ?? '' });
     setEditingOrg(true);
     setOrgError(null);
   };
-
   const handleOrgSave = async () => {
     setOrgError(null);
     try {
@@ -293,454 +234,190 @@ export function ProfilePage() {
       Object.entries(orgForm).forEach(([k, v]) => { if (v.trim()) updates[k] = v.trim(); });
       await updateMyTenant(updates).unwrap();
       setEditingOrg(false);
-      setSaved(true);
+      setToast({ message: 'Chamber details were saved.', type: 'success' });
       refetchTenant();
     } catch {
-      setOrgError('Failed to update organisation details. Please try again.');
+      setOrgError('Could not save the chamber details. Please try again.');
     }
   };
 
-  // Early returns — all hooks are already declared above
+  const frame = 'mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8';
+  const column = 'max-w-3xl space-y-6';
+  const toastEl = toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />;
+
   if (isLoading) return <PageLoader />;
 
+  // Member with no chamber yet: identity is global, so it still shows.
   if (isError && isMember) {
     if (isNoActiveChamberError(error)) {
       return (
-        <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-3xl">
-          <h1 className="text-2xl font-semibold text-ink mb-1">My Profile</h1>
-          <p className="text-sm text-ink-subtle mb-6">Manage your personal and business information.</p>
-
-          {/* Basic ChamberLink identity is global, not chamber-scoped — always available. */}
-          <div className="bg-surface rounded-card border border-border overflow-hidden mb-6">
-            <div className="px-6 py-4 border-b border-border">
-              <h2 className="font-medium text-ink">Account Details</h2>
-            </div>
-            <dl className="divide-y divide-border-subtle">
-              {[
-                { label: 'Full Name', value: `${user?.firstName ?? '–'} ${user?.lastName ?? ''}`.trim() },
-                { label: 'Email Address', value: user?.email ?? '–' },
-              ].map((row) => (
-                <div key={row.label} className="grid grid-cols-3 gap-4 px-6 py-4">
-                  <dt className="text-sm font-medium text-ink-subtle">{row.label}</dt>
-                  <dd className="col-span-2 text-sm text-ink">{row.value}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-
-          <EmptyState
-            icon="corporate_fare"
-            title="You're not connected to a chamber yet"
-            message="Business details, membership plan, and document uploads become available once you connect to a chamber."
-            action={<Button onClick={() => setConnectModalOpen(true)}>Connect a chamber</Button>}
-          />
-
-          {connectModalOpen && (
-            <ConnectChamberModal
-              onClose={() => setConnectModalOpen(false)}
-              onConnected={(message) => setConnectToast({ message, type: 'success' })}
+        <div className={frame}>
+          <PageHeader title="My profile" description="Your personal account. Company details live under My Company." />
+          <div className={column}>
+            <IdentityHeader name={fullName} email={user?.email} role={role} />
+            <EmptyState
+              icon="corporate_fare"
+              title="Not connected to a chamber yet"
+              message="Connect to a chamber to edit your personal details, see your membership and get the member rate on certificates."
+              action={<Button onClick={() => setConnectModalOpen(true)}>Connect a chamber</Button>}
             />
+            <SecurityCard verified={user?.isEmailVerified} />
+          </div>
+          {connectModalOpen && (
+            <ConnectChamberModal onClose={() => setConnectModalOpen(false)} onConnected={(message) => setToast({ message, type: 'success' })} />
           )}
-          {connectToast && (
-            <Toast message={connectToast.message} type={connectToast.type} onClose={() => setConnectToast(null)} />
-          )}
+          {toastEl}
         </div>
       );
     }
-    return <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8"><ErrorBanner message="Failed to load profile." /></div>;
+    return <div className={frame}><ErrorBanner message="Couldn't load your profile." onRetry={refetch} /></div>;
   }
 
-  const logoUrl = profile?.logoUrl;
+  const personal = (
+    <SectionCard
+      title="Personal details"
+      action={!editing && <Button size="sm" variant="secondary" onClick={startEdit}>Edit</Button>}
+      footer={editing && <>
+        <Button variant="secondary" onClick={() => setEditing(false)}>Cancel</Button>
+        <Button loading={isSaving} onClick={handleSave}>Save changes</Button>
+      </>}
+    >
+      {formError && <div className="mb-4"><ErrorBanner message={formError} /></div>}
+      {editing ? (
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Input label="First name" autoComplete="given-name" value={form.firstName} onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))} />
+          <Input label="Last name" autoComplete="family-name" value={form.lastName} onChange={(e) => setForm((f) => ({ ...f, lastName: e.target.value }))} />
+          <div className="sm:col-span-2">
+            <Input label="Phone number" type="tel" autoComplete="tel" hint="Leave blank to keep the current number." value={form.phone} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))} />
+          </div>
+        </div>
+      ) : (
+        <DetailGrid items={[
+          { label: 'First name', value: profile?.firstName ?? user?.firstName },
+          { label: 'Last name', value: profile?.lastName ?? user?.lastName },
+          { label: 'Email', value: user?.email },
+          { label: 'Role', value: ROLE_LABELS[role ?? ''] ?? role },
+        ]} />
+      )}
+    </SectionCard>
+  );
 
-  // Admin/staff see an organisation-focused profile
+  // Staff, chamber admins, executives, super admin
   if (!isMember) {
     return (
-      <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-3xl">
-        <h1 className="text-2xl font-semibold text-ink mb-1">My Profile</h1>
-        <p className="text-sm text-ink-subtle mb-6">Your account and organisation details.</p>
+      <div className={frame}>
+        <PageHeader title="My profile" description={isSuperAdmin ? 'Your account on the platform.' : 'Your account and your chamber’s public details.'} />
+        <div className={column}>
+          <IdentityHeader name={fullName} email={user?.email} role={role} />
+          {personal}
 
-        {saved && (
-          <div className="mb-4 rounded-lg bg-success-bg border border-success-border px-4 py-3 text-sm text-success">
-            Profile updated successfully.
-          </div>
-        )}
-
-        {/* Platform identity card — super_admin only */}
-        {isSuperAdmin ? (
-          <div className="bg-surface rounded-card border border-border overflow-hidden mb-6">
-            <div className="px-6 py-4 border-b border-border">
-              <h2 className="font-medium text-ink">Platform Identity</h2>
-            </div>
-            <dl className="divide-y divide-border-subtle">
-              {[
-                { label: 'Platform', value: 'Chamberlink, the chamber digital portal' },
-                { label: 'Operated by', value: 'Tradely LTD.' },
-                { label: 'Your Role', value: ROLE_LABELS[user?.role ?? ''] ?? user?.role ?? '–' },
-              ].map((row) => (
-                <div key={row.label} className="grid grid-cols-3 gap-4 px-6 py-4">
-                  <dt className="text-sm font-medium text-ink-subtle">{row.label}</dt>
-                  <dd className="col-span-2 text-sm text-ink">{row.value}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-        ) : (
-          <div className="bg-surface rounded-card border border-border overflow-hidden mb-6">
-            <div className="px-6 py-4 border-b border-border flex items-center justify-between">
-              <h2 className="font-medium text-ink">Organisation</h2>
-              {user?.role === 'chamber_admin' && !editingOrg && (
-                <Button variant="outline" onClick={startOrgEdit}>Edit</Button>
-              )}
-            </div>
-
-            {/* Chamber logo — separate from any personal identity, shown as a
-                storefront placeholder (not an avatar) when empty. Upload only
-                available to chamber_admin, matching the Edit button above. */}
-            <div className="px-6 py-5 border-b border-border flex items-center gap-5">
-              <div className="relative flex-shrink-0">
-                {isUploadingOrgLogo ? (
-                  <div className="w-16 h-16 rounded-card bg-surface-alt border border-border flex items-center justify-center">
-                    <svg className="w-5 h-5 animate-spin text-primary" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                    </svg>
-                  </div>
-                ) : myTenant?.logoUrl ? (
-                  <img src={myTenant.logoUrl} alt="Chamber logo" className="w-16 h-16 rounded-card object-contain border border-border bg-surface" />
-                ) : (
-                  <div className="w-16 h-16 rounded-card bg-surface-alt border-2 border-dashed border-border flex items-center justify-center text-ink-subtle">
-                    <span className="material-symbols-outlined" style={{ fontSize: 28 }}>storefront</span>
-                  </div>
-                )}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-ink mb-0.5">Chamber Logo</p>
-                <p className="text-xs text-ink-subtle mb-3">
-                  Shown on your chamber's public listing and Chamber Network cards. JPEG or PNG, compressed automatically.
-                </p>
-                {orgLogoError && <p className="text-xs text-danger mb-2">{orgLogoError}</p>}
-                {user?.role === 'chamber_admin' && (
-                  <>
-                    <input ref={orgLogoInputRef} type="file" accept="image/jpeg,image/png" className="hidden" onChange={handleOrgLogoChange} />
-                    <button
-                      onClick={() => orgLogoInputRef.current?.click()}
-                      disabled={isUploadingOrgLogo}
-                      className="text-xs font-medium px-3 py-1.5 rounded-lg border border-border text-primary hover:bg-surface-alt transition-colors disabled:opacity-50"
-                    >
-                      {myTenant?.logoUrl ? 'Replace Logo' : 'Upload Logo'}
-                    </button>
-                  </>
-                )}
-              </div>
-            </div>
-
-            {editingOrg ? (
-              <div className="px-6 py-5 space-y-4">
-                {orgError && <ErrorBanner message={orgError} />}
-                <Input
-                  label="Address"
-                  placeholder="e.g. 1 Chamber Road, Kano"
-                  value={orgForm.address}
-                  onChange={(e) => setOrgForm((f) => ({ ...f, address: e.target.value }))}
-                />
-                <Input
-                  label="Phone"
-                  placeholder="e.g. +234 700 000 0000"
-                  value={orgForm.phone}
-                  onChange={(e) => setOrgForm((f) => ({ ...f, phone: e.target.value }))}
-                />
-                <Input
-                  label="Public Email"
-                  placeholder="e.g. info@chamber.ng"
-                  value={orgForm.email}
-                  onChange={(e) => setOrgForm((f) => ({ ...f, email: e.target.value }))}
-                />
-                <Input
-                  label="Website"
-                  placeholder="https://chamber.ng"
-                  value={orgForm.website}
-                  onChange={(e) => setOrgForm((f) => ({ ...f, website: e.target.value }))}
-                />
-                <div className="flex gap-3 pt-2">
-                  <Button loading={isTenantSaving} onClick={handleOrgSave}>Save Changes</Button>
-                  <Button variant="outline" onClick={() => setEditingOrg(false)}>Cancel</Button>
-                </div>
-              </div>
-            ) : (
-              <dl className="divide-y divide-border-subtle">
-                {[
-                  { label: 'Organisation', value: myTenant?.name ?? '–' },
-                  { label: 'Region', value: myTenant?.region ?? '–' },
-                  { label: 'City', value: myTenant?.city ?? '–' },
-                  { label: 'Address', value: myTenant?.address ?? '–' },
-                  { label: 'Phone', value: myTenant?.phone ?? '–' },
-                  { label: 'Public Email', value: myTenant?.email ?? '–' },
-                  { label: 'Website', value: myTenant?.website ?? '–' },
-                  { label: 'Your Role', value: ROLE_LABELS[user?.role ?? ''] ?? user?.role ?? '–' },
-                ].map((row) => (
-                  <div key={row.label} className="grid grid-cols-3 gap-4 px-6 py-4">
-                    <dt className="text-sm font-medium text-ink-subtle">{row.label}</dt>
-                    <dd className="col-span-2 text-sm text-ink">{row.value}</dd>
-                  </div>
-                ))}
-              </dl>
-            )}
-          </div>
-        )}
-
-        {/* Account card */}
-        <div className="bg-surface rounded-card border border-border overflow-hidden mb-6">
-          <div className="px-6 py-4 border-b border-border flex items-center justify-between">
-            <h2 className="font-medium text-ink">Account Details</h2>
-            {!editing && <Button variant="outline" onClick={startEdit}>Edit</Button>}
-          </div>
-          {editing ? (
-            <div className="px-6 py-5 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <Input label="First Name" value={form.firstName} onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))} />
-                <Input label="Last Name" value={form.lastName} onChange={(e) => setForm((f) => ({ ...f, lastName: e.target.value }))} />
-              </div>
-              <Input label="Phone Number" value={form.phone} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))} />
-              <div className="flex gap-3 pt-2">
-                <Button loading={isSaving} onClick={handleSave}>Save Changes</Button>
-                <Button variant="outline" onClick={() => setEditing(false)}>Cancel</Button>
-              </div>
-            </div>
+          {isSuperAdmin ? (
+            <SectionCard title="Platform">
+              <DetailGrid items={[
+                { label: 'Product', value: 'Chamberlink' },
+                { label: 'Operated by', value: 'Tradely LTD' },
+              ]} />
+            </SectionCard>
           ) : (
-            <dl className="divide-y divide-border-subtle">
-              {[
-                { label: 'Full Name', value: `${user?.firstName ?? '–'} ${user?.lastName ?? ''}`.trim() },
-                { label: 'Email Address', value: user?.email ?? '–' },
-              ].map((row) => (
-                <div key={row.label} className="grid grid-cols-3 gap-4 px-6 py-4">
-                  <dt className="text-sm font-medium text-ink-subtle">{row.label}</dt>
-                  <dd className="col-span-2 text-sm text-ink">{row.value}</dd>
+            <SectionCard
+              title="Chamber"
+              description="Shown on your chamber's public listing and Chamber Network cards."
+              action={role === 'chamber_admin' && !editingOrg && <Button size="sm" variant="secondary" onClick={startOrgEdit}>Edit</Button>}
+              footer={editingOrg && <>
+                <Button variant="secondary" onClick={() => setEditingOrg(false)}>Cancel</Button>
+                <Button loading={isTenantSaving} onClick={handleOrgSave}>Save changes</Button>
+              </>}
+            >
+              {orgError && <div className="mb-4"><ErrorBanner message={orgError} /></div>}
+              <div className="mb-6 flex items-center gap-4">
+                <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center overflow-hidden rounded-card border border-border bg-surface-alt">
+                  {myTenant?.logoUrl
+                    ? <img src={myTenant.logoUrl} alt="Chamber logo" className="h-full w-full object-contain" />
+                    : <span className="material-symbols-outlined text-ink-subtle" aria-hidden="true" style={{ fontSize: 26 }}>corporate_fare</span>}
                 </div>
-              ))}
-            </dl>
-          )}
-        </div>
-
-        {/* Security */}
-        <div className="bg-surface rounded-card border border-border overflow-hidden">
-          <div className="px-6 py-4 border-b border-border">
-            <h2 className="font-medium text-ink">Security</h2>
-          </div>
-          <div className="px-6 py-5 space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-ink">Email Verification</p>
-                <p className="text-xs text-ink-subtle">{user?.isEmailVerified ? 'Your email is verified' : 'Email not yet verified'}</p>
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-ink">{myTenant?.name ?? 'Chamber'}</p>
+                  <p className="text-xs text-ink-subtle">{[myTenant?.city, myTenant?.region].filter(Boolean).join(', ') || 'Location not set'}</p>
+                  {role === 'chamber_admin' && (
+                    <>
+                      <input ref={orgLogoInputRef} type="file" accept="image/jpeg,image/png" className="hidden" onChange={handleOrgLogoChange} />
+                      <Button size="sm" variant="secondary" className="mt-2" loading={isUploadingOrgLogo} onClick={() => orgLogoInputRef.current?.click()}>
+                        {myTenant?.logoUrl ? 'Replace logo' : 'Upload logo'}
+                      </Button>
+                    </>
+                  )}
+                </div>
               </div>
-              <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${user?.isEmailVerified ? 'bg-success-bg text-success' : 'bg-warning-bg text-warning'}`}>
-                {user?.isEmailVerified ? 'Verified' : 'Pending'}
-              </span>
-            </div>
-            <MfaSecurityRow />
-          </div>
+              {editingOrg ? (
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="sm:col-span-2"><Input label="Address" placeholder="e.g. 1 Chamber Road, Kano" value={orgForm.address} onChange={(e) => setOrgForm((f) => ({ ...f, address: e.target.value }))} /></div>
+                  <Input label="Phone" type="tel" placeholder="e.g. +234 700 000 0000" value={orgForm.phone} onChange={(e) => setOrgForm((f) => ({ ...f, phone: e.target.value }))} />
+                  <Input label="Public email" type="email" placeholder="e.g. info@chamber.ng" value={orgForm.email} onChange={(e) => setOrgForm((f) => ({ ...f, email: e.target.value }))} />
+                  <div className="sm:col-span-2"><Input label="Website" placeholder="https://chamber.ng" value={orgForm.website} onChange={(e) => setOrgForm((f) => ({ ...f, website: e.target.value }))} /></div>
+                </div>
+              ) : (
+                <DetailGrid items={[
+                  { label: 'Address', value: myTenant?.address, wide: true },
+                  { label: 'Phone', value: myTenant?.phone },
+                  { label: 'Public email', value: myTenant?.email },
+                  { label: 'Website', value: myTenant?.website, wide: true },
+                ]} />
+              )}
+            </SectionCard>
+          )}
+
+          <SecurityCard verified={user?.isEmailVerified} />
         </div>
+        {toastEl}
       </div>
     );
   }
 
-  // Member profile view
+  // Exporter / member
   return (
-    <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-3xl">
-      <h1 className="text-2xl font-semibold text-ink mb-1">My Profile</h1>
-      <p className="text-sm text-ink-subtle mb-6">Manage your personal and business information.</p>
+    <div className={frame}>
+      <PageHeader title="My profile" description="Your personal account. Company details live under My Company." />
+      <div className={column}>
+        <IdentityHeader
+          name={fullName}
+          email={user?.email}
+          role={role}
+          extra={profile?.memberId && <span className="font-mono text-xs text-ink-subtle">{profile.memberId}</span>}
+        />
 
-      {saved && (
-        <div className="mb-4 rounded-lg bg-success-bg border border-success-border px-4 py-3 text-sm text-success">
-          Profile updated successfully.
-        </div>
-      )}
+        {personal}
 
-      {/* Personal Information */}
-      <div className="bg-surface rounded-card border border-border overflow-hidden mb-6">
-        <div className="px-6 py-4 border-b border-border flex items-center justify-between">
-          <h2 className="font-medium text-ink">Personal Information</h2>
-          {!editing && <Button variant="outline" onClick={startEdit}>Edit</Button>}
-        </div>
+        <SectionCard
+          title="Chamber membership"
+          description={membership?.tierName ? `${membership.tierName.replace(/^\w/, (c) => c.toUpperCase())} plan` : undefined}
+          action={membership?.status && <Status status={membership.status} />}
+          footer={<>
+            <Link to="/dashboard/connections" className="text-[13px] font-medium text-primary hover:underline underline-offset-2">My chambers</Link>
+            <Link to="/dashboard/membership" className="inline-flex h-8 items-center rounded-control border border-border-strong bg-surface px-3 text-[13px] font-medium text-ink shadow-card hover:bg-surface-alt">Manage membership</Link>
+          </>}
+        >
+          <DetailGrid items={[
+            { label: 'Member ID', value: profile?.memberId && <span className="font-mono text-[13px]">{profile.memberId}</span> },
+            { label: 'Plan', value: membership?.tierName && <span className="capitalize">{membership.tierName}</span> },
+            { label: 'Member since', value: fmtDate(membership?.memberSince) },
+            { label: 'Renews on', value: fmtDate(membership?.expiresAt) },
+          ]} />
+        </SectionCard>
 
-        {editing ? (
-          <div className="px-6 py-5 space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <Input label="First Name" value={form.firstName} onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))} />
-              <Input label="Last Name" value={form.lastName} onChange={(e) => setForm((f) => ({ ...f, lastName: e.target.value }))} />
-            </div>
-            <Input label="Business Name" value={form.businessName} onChange={(e) => setForm((f) => ({ ...f, businessName: e.target.value }))} />
-            <Input label="Phone Number" value={form.phone} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))} />
-            <div className="flex gap-3 pt-2">
-              <Button loading={isSaving} onClick={handleSave}>Save Changes</Button>
-              <Button variant="outline" onClick={() => setEditing(false)}>Cancel</Button>
-            </div>
-          </div>
-        ) : (
-          <dl className="divide-y divide-border-subtle">
-            {[
-              { label: 'Full Name', value: `${profile?.firstName ?? user?.firstName ?? '–'} ${profile?.lastName ?? user?.lastName ?? ''}`.trim() },
-              { label: 'Email Address', value: user?.email ?? '–' },
-              { label: 'Business Name', value: profile?.businessName ?? '–' },
-              { label: 'Member ID', value: profile?.memberId ?? '–' },
-              { label: 'Account Status', value: profile?.status ? profile.status.replace(/_/g, ' ').replace(/^\w/, (c) => c.toUpperCase()) : '–' },
-            ].map((row) => (
-              <div key={row.label} className="grid grid-cols-3 gap-4 px-6 py-4">
-                <dt className="text-sm font-medium text-ink-subtle">{row.label}</dt>
-                <dd className="col-span-2 text-sm text-ink break-words">{row.value}</dd>
-              </div>
-            ))}
-          </dl>
-        )}
+        <Link to="/dashboard/company" className="group flex items-center gap-4 rounded-card border border-border bg-surface p-5 transition-[border-color,box-shadow] hover:border-primary/40 hover:shadow-card-hover focus-visible:shadow-focus">
+          <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-control bg-primary-soft text-primary">
+            <span className="material-symbols-outlined" aria-hidden="true" style={{ fontSize: 20 }}>domain</span>
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-sm font-semibold text-ink">Company and business details</span>
+            <span className="block text-[13px] text-ink-subtle">Your TIN, trading name, CAC number, address and document logo are under My Company.</span>
+          </span>
+          <span className="material-symbols-outlined text-ink-subtle transition-transform group-hover:translate-x-0.5" aria-hidden="true" style={{ fontSize: 20 }}>chevron_right</span>
+        </Link>
+
+        <SecurityCard verified={user?.isEmailVerified} />
       </div>
-
-      {/* Business Information */}
-      <div className="bg-surface rounded-card border border-border overflow-hidden mb-6">
-        <div className="px-6 py-4 border-b border-border flex items-center justify-between">
-          <h2 className="font-medium text-ink">Business Information</h2>
-          {!editingBusiness && <Button variant="outline" onClick={startBizEdit}>Edit</Button>}
-        </div>
-
-        {/* Company logo — deliberately distinct from the personal identity in
-            Personal Information above: a storefront placeholder, not an
-            avatar, since this is your business's mark, not a photo of you. */}
-        <div className="px-6 py-5 border-b border-border flex items-center gap-5">
-          <div className="relative flex-shrink-0">
-            {isUploadingLogo ? (
-              <div className="w-16 h-16 rounded-card bg-surface-alt border border-border flex items-center justify-center">
-                <svg className="w-5 h-5 animate-spin text-primary" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                </svg>
-              </div>
-            ) : logoUrl ? (
-              <img src={logoUrl} alt="Company logo" className="w-16 h-16 rounded-card object-contain border border-border bg-surface" />
-            ) : (
-              <div className="w-16 h-16 rounded-card bg-surface-alt border-2 border-dashed border-border flex items-center justify-center text-ink-subtle">
-                <span className="material-symbols-outlined" style={{ fontSize: 28 }}>storefront</span>
-              </div>
-            )}
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-ink mb-0.5">Company Logo</p>
-            <p className="text-xs text-ink-subtle mb-3">Used on generated invoices and packing lists. JPEG or PNG · Compressed automatically.</p>
-            {logoError && <p className="text-xs text-danger mb-2">{logoError}</p>}
-            <input ref={logoInputRef} type="file" accept="image/jpeg,image/png" className="hidden" onChange={handleLogoChange} />
-            <button
-              onClick={() => logoInputRef.current?.click()}
-              disabled={isUploadingLogo}
-              className="text-xs font-medium px-3 py-1.5 rounded-lg border border-border text-primary hover:bg-surface-alt transition-colors disabled:opacity-50"
-            >
-              {logoUrl ? 'Replace Logo' : 'Upload Logo'}
-            </button>
-          </div>
-        </div>
-
-        {editingBusiness ? (
-          <div className="px-6 py-5 space-y-4">
-            <Input
-              label="CAC Registration Number"
-              placeholder="e.g. RC-123456"
-              value={bizForm.registrationNumber}
-              onChange={(e) => setBizForm((f) => ({ ...f, registrationNumber: e.target.value }))}
-            />
-            <Input
-              label="Industry"
-              placeholder="e.g. Agriculture, Leather Goods, Textiles"
-              value={bizForm.industry}
-              onChange={(e) => setBizForm((f) => ({ ...f, industry: e.target.value }))}
-            />
-            <Input
-              label="Business Address"
-              placeholder="Street address"
-              value={bizForm.address}
-              onChange={(e) => setBizForm((f) => ({ ...f, address: e.target.value }))}
-            />
-            <div className="grid grid-cols-2 gap-4">
-              <Input label="City" placeholder="e.g. Kano" value={bizForm.city} onChange={(e) => setBizForm((f) => ({ ...f, city: e.target.value }))} />
-              <Input label="State" placeholder="e.g. Kano State" value={bizForm.state} onChange={(e) => setBizForm((f) => ({ ...f, state: e.target.value }))} />
-            </div>
-            <Input
-              label="Website"
-              placeholder="https://yourcompany.com"
-              value={bizForm.website}
-              onChange={(e) => setBizForm((f) => ({ ...f, website: e.target.value }))}
-            />
-            <div className="flex gap-3 pt-2">
-              <Button loading={isPatchSaving} onClick={handleBizSave}>Save Changes</Button>
-              <Button variant="outline" onClick={() => setEditingBusiness(false)}>Cancel</Button>
-            </div>
-          </div>
-        ) : (
-          <dl className="divide-y divide-border-subtle">
-            {[
-              { label: 'CAC Number', value: profile?.registrationNumber ?? '–' },
-              { label: 'Industry', value: profile?.industry ?? '–' },
-              { label: 'Address', value: [profile?.address, profile?.city, profile?.state].filter(Boolean).join(', ') || '–' },
-              { label: 'Website', value: profile?.website ?? '–' },
-            ].map((row) => (
-              <div key={row.label} className="grid grid-cols-3 gap-4 px-6 py-4">
-                <dt className="text-sm font-medium text-ink-subtle">{row.label}</dt>
-                <dd className="col-span-2 text-sm text-ink">{row.value}</dd>
-              </div>
-            ))}
-          </dl>
-        )}
-      </div>
-
-      {/* Membership Plan */}
-      {membership && (
-        <div className="bg-surface rounded-card border border-border overflow-hidden mb-6">
-          <div className="px-6 py-4 border-b border-border flex items-center justify-between">
-            <h2 className="font-medium text-ink">Membership Plan</h2>
-            {membership.status && (
-              <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${membershipStatusColors[membership.status] ?? 'bg-border-subtle text-ink-muted'}`}>
-                {membership.status.replace(/_/g, ' ')}
-              </span>
-            )}
-          </div>
-          <dl className="divide-y divide-border-subtle">
-            {[
-              { label: 'Plan', value: membership.tierName ?? '–' },
-              {
-                label: 'Member Since',
-                value: membership.memberSince
-                  ? new Date(membership.memberSince).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'long', year: 'numeric' })
-                  : '–',
-              },
-              {
-                label: 'Expires',
-                value: membership.expiresAt
-                  ? new Date(membership.expiresAt).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'long', year: 'numeric' })
-                  : '–',
-              },
-            ].map((row) => (
-              <div key={row.label} className="grid grid-cols-3 gap-4 px-6 py-4">
-                <dt className="text-sm font-medium text-ink-subtle">{row.label}</dt>
-                <dd className="col-span-2 text-sm text-ink break-words">{row.value}</dd>
-              </div>
-            ))}
-          </dl>
-        </div>
-      )}
-
-      {/* Security */}
-      <div className="bg-surface rounded-card border border-border overflow-hidden">
-        <div className="px-6 py-4 border-b border-border">
-          <h2 className="font-medium text-ink">Security</h2>
-        </div>
-        <div className="px-6 py-5 space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-ink">Email Verification</p>
-              <p className="text-xs text-ink-subtle">{user?.isEmailVerified ? 'Your email is verified' : 'Email not yet verified'}</p>
-            </div>
-            <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${user?.isEmailVerified ? 'bg-success-bg text-success' : 'bg-warning-bg text-warning'}`}>
-              {user?.isEmailVerified ? 'Verified' : 'Pending'}
-            </span>
-          </div>
-          <MfaSecurityRow />
-        </div>
-      </div>
+      {toastEl}
     </div>
   );
 }

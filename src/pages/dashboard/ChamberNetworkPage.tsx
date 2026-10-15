@@ -7,6 +7,7 @@ import { ErrorBanner } from '@shared/ui/ErrorBanner';
 import { EmptyState } from '@shared/ui/EmptyState';
 import { Button } from '@shared/ui/Button';
 import { Toast } from '@shared/ui/Toast';
+import { PageHeader } from '@shared/ui/PageHeader';
 
 /**
  * Chamber Network — discover onboarded chambers this ChamberLink identity is
@@ -53,12 +54,7 @@ export function ChamberNetworkPage() {
 
   return (
     <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-4xl">
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-ink mb-1">Chamber Network</h1>
-        <p className="text-sm text-ink-subtle">
-          Already a member of one of these chambers? Connect with your existing member ID to link your records.
-        </p>
-      </div>
+      <PageHeader title="Chamber Network" description="Already a member of one of these chambers? Connect with your existing member ID to link your records." />
 
       {isLoading && (
         <div className="space-y-3">

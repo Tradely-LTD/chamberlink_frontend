@@ -298,7 +298,6 @@ function MemberOverview() {
             <SkeletonCard className="h-52" />
           ) : noChamberConnection && feeRates ? (
             <section className="rounded-card border border-gold-light/30 bg-surface p-5 relative overflow-hidden">
-              <div className="absolute inset-x-0 top-0 h-[3px] bg-gold-light" aria-hidden="true" />
               <SectionLabel className="text-gold">Chamber membership</SectionLabel>
               <h3 className="mt-1.5 text-[15px] font-semibold leading-snug text-ink">Members pay less on every certificate</h3>
               <dl className="mt-4 grid grid-cols-2 overflow-hidden rounded-control border border-border text-center">

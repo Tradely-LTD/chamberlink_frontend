@@ -1,12 +1,15 @@
+import { plainText } from '@shared/utils/plainText';
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { emptyApi } from '@shared/api/emptyApi';
 import { SkeletonCard } from '@shared/ui/SkeletonCard';
+import { StatTile } from '@shared/ui/StatTile';
 import { Button } from '@shared/ui/Button';
 import { ErrorBanner } from '@shared/ui/ErrorBanner';
 import { Select } from '@shared/ui/Select';
 import { useAppSelector } from '@shared/hooks/useAppDispatch';
 import { useHasActiveConnection } from '@features/membership';
+import { PageHeader } from '@shared/ui/PageHeader';
 
 // ── Types ─────────────────────────────────────────────────────────────────
 
@@ -216,11 +219,11 @@ function SponsorModal({ corridor, onClose }: { corridor: TradeCorridor; onClose:
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
-      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-md">
-        <div className="border-b border-border px-6 py-4 flex items-center justify-between">
+      <div className="relative bg-surface rounded-card border border-border shadow-pop animate-fade-up w-full max-w-md">
+        <div className="border-b border-border px-5 py-4 flex items-center justify-between">
           <div>
-            <h2 className="font-bold text-ink">Apply for Sponsorship</h2>
-            <p className="text-xs text-ink-subtle mt-0.5">{corridor.title}</p>
+            <h2 className="text-[15px] font-semibold text-ink">Apply for Sponsorship</h2>
+            <p className="text-xs text-ink-subtle mt-0.5">{plainText(corridor.title)}</p>
           </div>
           <button onClick={onClose} className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle">
             <span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span>
@@ -236,7 +239,7 @@ function SponsorModal({ corridor, onClose }: { corridor: TradeCorridor; onClose:
                 style={tier === t ? { borderColor: tc.accent, background: tc.bg + '50' } : {}}>
                 <div className="flex items-center justify-between mb-1">
                   <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ background: tc.bg, color: tc.text }}>{tc.label} Sponsor</span>
-                  <span className="font-bold text-ink">₦{p.toLocaleString()}/yr</span>
+                  <span className="font-semibold text-ink">₦{p.toLocaleString()}/yr</span>
                 </div>
                 <p className="text-xs text-ink-subtle">{t === 'gold' ? 'Top placement, featured in newsletters, corridor logo rights.' : 'Secondary listing, directory placement, corridor badge.'}</p>
               </button>
@@ -252,8 +255,8 @@ function SponsorModal({ corridor, onClose }: { corridor: TradeCorridor; onClose:
           <div className="flex gap-3">
             <Button variant="outline" onClick={onClose}>Cancel</Button>
             <button disabled={isLoading} onClick={handleApply}
-              className="flex-1 flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
-              style={{ background: 'rgb(var(--c-primary))' }}>
+              className="flex-1 flex items-center justify-center gap-2 disabled:opacity-50 h-10 px-4 text-sm rounded-control bg-primary text-white font-medium shadow-card transition-colors hover:bg-primary-hover focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
+             >
               {isLoading ? 'Processing…' : <><span className="material-symbols-outlined" style={{ fontSize: 16 }}>payments</span>Proceed to Payment</>}
             </button>
           </div>
@@ -386,10 +389,7 @@ function MemberCorridorsView() {
         <div className="mb-4"><ErrorBanner message={followError} /></div>
       )}
 
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold text-ink">Sponsored Trade Corridors</h2>
-        <p className="text-sm text-ink-subtle mt-0.5">Explore active trade routes and sponsor a corridor to boost your business visibility globally.</p>
-      </div>
+      <PageHeader title="Sponsored Trade Corridors" description="Explore active trade routes and sponsor a corridor to boost your business visibility globally." />
 
       {/* How it works banner */}
       <div className="rounded-card border border-primary/20 bg-primary/5 p-4 mb-6 flex items-start gap-3">
@@ -404,11 +404,11 @@ function MemberCorridorsView() {
         </div>
       </div>
 
-      <div className="flex gap-1 bg-surface-alt rounded-lg p-1 mb-6 w-fit border border-border">
+      <div className="flex flex-wrap items-center gap-1.5 mb-6">
         {([['corridors', 'All Corridors'], ['my-activity', 'My Activity']] as const).map(([t, label]) => (
-          <button key={t} onClick={() => setTab(t)} className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === t ? 'bg-surface text-ink shadow-card' : 'text-ink-subtle hover:text-ink'}`}>
+          <button key={t} onClick={() => setTab(t)} className={`-mb-px border-b-2 px-1 pb-2.5 pt-1 text-sm font-medium whitespace-nowrap transition-colors focus-visible:shadow-focus ${tab === t ? 'border-primary text-ink' : 'border-transparent text-ink-subtle hover:text-ink hover:border-border-strong'}`}>
             {label}
-            {t === 'my-activity' && (memberships.length + apps.length) > 0 && <span className="ml-1.5 rounded-full px-1.5 py-0.5 text-xs text-white font-bold" style={{ background: 'rgb(var(--c-primary))' }}>{memberships.length + apps.length}</span>}
+            {t === 'my-activity' && (memberships.length + apps.length) > 0 && <span className="ml-1.5 rounded-full px-1.5 py-0.5 text-xs text-white font-semibold" style={{ background: 'rgb(var(--c-primary))' }}>{memberships.length + apps.length}</span>}
           </button>
         ))}
       </div>
@@ -426,7 +426,7 @@ function MemberCorridorsView() {
                     <div className="flex items-start justify-between gap-4 mb-3">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 flex-wrap mb-1">
-                          <h3 className="text-base font-bold text-ink">{c.title}</h3>
+                          <h3 className="text-base font-semibold text-ink">{plainText(c.title)}</h3>
                           <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ background: st.bg, color: st.text }}>{st.label}</span>
                         </div>
                         <div className="flex items-center gap-3 text-sm text-ink-subtle flex-wrap">
@@ -436,11 +436,11 @@ function MemberCorridorsView() {
                         </div>
                       </div>
                       <div className="text-right flex-shrink-0">
-                        <p className="text-2xl font-bold text-primary">{c.memberCount}</p>
+                        <p className="text-2xl font-semibold text-primary">{c.memberCount}</p>
                         <p className="text-xs text-ink-subtle">members</p>
                       </div>
                     </div>
-                    <p className="text-sm text-ink-subtle mb-4">{c.description}</p>
+                    <p className="text-sm text-ink-subtle mb-4">{plainText(c.description)}</p>
 
                     {/* Current sponsors */}
                     {c.sponsors.length > 0 && (
@@ -462,7 +462,7 @@ function MemberCorridorsView() {
                       <button
                         disabled={leavingId === c.id}
                         onClick={() => handleLeave(c.id)}
-                        className="flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium border border-border bg-surface text-ink-subtle hover:bg-surface-alt disabled:opacity-50 transition-colors"
+                        className="flex items-center gap-1.5 disabled:opacity-50 h-10 px-4 text-sm rounded-control border border-border-strong bg-surface text-ink font-medium shadow-card transition-colors hover:bg-surface-alt focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <span className="material-symbols-outlined" style={{ fontSize: 16 }}>bookmark_remove</span>
                         {leavingId === c.id ? 'Unfollowing…' : 'Unfollow'}
@@ -497,8 +497,8 @@ function MemberCorridorsView() {
                         </p>
                       </div>
                       <button onClick={() => setSponsorCorridor(c)}
-                        className="flex-shrink-0 flex items-center gap-1.5 rounded-lg px-5 py-2.5 text-sm font-semibold text-white shadow-card"
-                        style={{ background: 'rgb(var(--c-primary))' }}>
+                        className="flex items-center gap-1.5 h-10 px-4 text-sm rounded-control bg-primary text-white font-medium shadow-card transition-colors hover:bg-primary-hover focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
+                       >
                         <span className="material-symbols-outlined" style={{ fontSize: 16 }}>workspace_premium</span>
                         Become a Sponsor
                       </button>
@@ -524,7 +524,7 @@ function MemberCorridorsView() {
             {memberships.length === 0 ? (
               <div className="bg-surface rounded-card border border-border p-10 text-center">
                 <p className="text-sm text-ink-subtle mb-4">You are not following any corridors yet.</p>
-                <button onClick={() => setTab('corridors')} className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white" style={{ background: 'rgb(var(--c-primary))' }}>Browse Corridors</button>
+                <button onClick={() => setTab('corridors')} className="inline-flex items-center justify-center gap-2 h-10 px-4 text-sm rounded-control bg-primary text-white font-medium shadow-card transition-colors hover:bg-primary-hover focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed">Browse Corridors</button>
               </div>
             ) : (
               <div className="space-y-2">
@@ -552,7 +552,7 @@ function MemberCorridorsView() {
             {apps.length === 0 ? (
               <div className="bg-surface rounded-card border border-border p-10 text-center">
                 <p className="text-sm text-ink-subtle mb-4">No sponsorship applications yet.</p>
-                <button onClick={() => setTab('corridors')} className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white" style={{ background: 'rgb(var(--c-primary))' }}>Browse Corridors</button>
+                <button onClick={() => setTab('corridors')} className="inline-flex items-center justify-center gap-2 h-10 px-4 text-sm rounded-control bg-primary text-white font-medium shadow-card transition-colors hover:bg-primary-hover focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed">Browse Corridors</button>
               </div>
             ) : (
               <div className="space-y-3">
@@ -563,14 +563,14 @@ function MemberCorridorsView() {
                     <div key={app.id} className="bg-surface rounded-card border border-border p-5">
                       <div className="flex items-start justify-between">
                         <div>
-                          <p className="font-bold text-ink text-sm">{app.corridorTitle}</p>
+                          <p className="font-semibold text-ink text-sm">{app.corridorTitle}</p>
                           <div className="flex items-center gap-2 mt-1">
                             <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ background: tc.bg, color: tc.text }}>{tc.label} Sponsor</span>
                             <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ background: ac.bg, color: ac.text }}>{ac.label}</span>
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="font-bold text-ink">₦{app.amount.toLocaleString()}</p>
+                          <p className="font-semibold text-ink">₦{app.amount.toLocaleString()}</p>
                           <p className="text-xs text-ink-subtle">{new Date(app.createdAt ?? app.appliedAt ?? '').toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'short', year: 'numeric' })}</p>
                         </div>
                       </div>
@@ -604,10 +604,10 @@ function ApplicationDetailModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
-      <div className="relative bg-surface rounded-card shadow-pop w-full max-w-lg">
-        <div className="border-b border-border px-6 py-4 flex items-center justify-between">
+      <div className="relative bg-surface rounded-card border border-border shadow-pop animate-fade-up w-full max-w-lg">
+        <div className="border-b border-border px-5 py-4 flex items-center justify-between">
           <div>
-            <h2 className="font-semibold text-ink">Sponsorship Application</h2>
+            <h2 className="text-[15px] font-semibold text-ink">Sponsorship Application</h2>
             <p className="text-xs text-ink-subtle mt-0.5">{app.corridorTitle}</p>
           </div>
           <button onClick={onClose} className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle">
@@ -641,7 +641,7 @@ function ApplicationDetailModal({
               <p className="text-2xs font-semibold text-ink-subtle uppercase mb-2">Corridor</p>
               <div className="rounded-card border border-border p-4 space-y-2">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-semibold text-sm text-ink">{corridor.title}</span>
+                  <span className="font-semibold text-sm text-ink">{plainText(corridor.title)}</span>
                   <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold"
                     style={{ background: corridorStatusConfig[corridor.status].bg, color: corridorStatusConfig[corridor.status].text }}>
                     {corridorStatusConfig[corridor.status].label}
@@ -649,7 +649,7 @@ function ApplicationDetailModal({
                 </div>
                 <p className="text-xs text-ink-subtle">{corridor.origin} → {corridor.destination} · {corridor.category}</p>
                 {corridor.tradeVolume && <p className="text-xs text-ink-subtle">Trade volume: <strong>{corridor.tradeVolume}</strong></p>}
-                <p className="text-xs text-ink-subtle">{corridor.description}</p>
+                <p className="text-xs text-ink-subtle">{plainText(corridor.description)}</p>
                 {corridor.sponsors.length > 0 && (
                   <div className="flex items-center gap-2 flex-wrap pt-1">
                     <p className="text-xs text-ink-subtle">Existing sponsors:</p>
@@ -713,22 +713,22 @@ function CorridorMembersSection({ corridorId, isExpanded }: { corridorId: string
           <div className="rounded-card border border-border overflow-hidden mb-3">
             <table className="data-table w-full text-sm">
               <thead>
-                <tr className="bg-surface-alt border-b border-border">
+                <tr>
                   {['Name', 'Company', 'Member ID', 'Joined', 'Source'].map((h) => (
-                    <th key={h} className="text-left px-4 py-2.5 text-2xs font-semibold text-ink-subtle uppercase">{h}</th>
+                    <th key={h}>{h}</th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border-subtle">
+              <tbody>
                 {items.map((m) => (
                   <tr key={m.id} className="hover:bg-surface-alt">
-                    <td className="px-4 py-2.5 font-medium text-ink">{m.name}</td>
-                    <td className="px-4 py-2.5 text-ink-subtle">{m.companyName ?? '–'}</td>
-                    <td className="px-4 py-2.5 font-mono text-xs text-ink-subtle">{m.memberId}</td>
-                    <td className="px-4 py-2.5 text-xs text-ink-subtle">
+                    <td className="font-medium text-ink">{m.name}</td>
+                    <td className="text-ink-subtle">{m.companyName ?? '–'}</td>
+                    <td className="font-mono text-xs text-ink-subtle">{m.memberId}</td>
+                    <td className="text-xs text-ink-subtle">
                       {new Date(m.joinedAt).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'short', year: 'numeric' })}
                     </td>
-                    <td className="px-4 py-2.5">
+                    <td>
                       <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold"
                         style={m.source === 'eco-auto' ? { background: 'rgb(var(--c-success-bg))', color: 'rgb(var(--c-success))' } : { background: 'rgb(var(--c-border))', color: 'rgb(var(--c-ink-muted))' }}>
                         {m.source === 'eco-auto' ? 'eCO Auto' : 'Manual'}
@@ -743,9 +743,9 @@ function CorridorMembersSection({ corridorId, isExpanded }: { corridorId: string
             <span>Showing {items.length} of {total} members</span>
             <div className="flex gap-2">
               <button disabled={page === 1} onClick={() => setPage(p => p - 1)}
-                className="px-3 py-1.5 rounded-md border border-border bg-surface disabled:opacity-40 hover:bg-surface-alt">Previous</button>
+                className="inline-flex items-center justify-center gap-2 disabled:opacity-40 h-8 px-3 text-[13px] rounded-control border border-border-strong bg-surface text-ink font-medium shadow-card transition-colors hover:bg-surface-alt focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed">Previous</button>
               <button disabled={items.length < 20} onClick={() => setPage(p => p + 1)}
-                className="px-3 py-1.5 rounded-md border border-border bg-surface disabled:opacity-40 hover:bg-surface-alt">Next</button>
+                className="inline-flex items-center justify-center gap-2 disabled:opacity-40 h-8 px-3 text-[13px] rounded-control border border-border-strong bg-surface text-ink font-medium shadow-card transition-colors hover:bg-surface-alt focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
             </div>
           </div>
         </>
@@ -798,14 +798,14 @@ function CreateCorridorModal({ initial, onClose }: { initial?: TradeCorridor; on
     }
   };
 
-  const inputCls = 'w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-primary';
+  const inputCls = 'min-h-10 px-3 py-2 w-full rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:text-ink-subtle disabled:cursor-not-allowed';
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
-      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-surface border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
-          <h2 className="font-bold text-ink">{initial ? 'Edit Corridor' : 'Create New Corridor'}</h2>
+      <div className="relative bg-surface rounded-card border border-border shadow-pop animate-fade-up w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-surface border-b border-border px-5 py-4 flex items-center justify-between rounded-t-card">
+          <h2 className="text-[15px] font-semibold text-ink">{initial ? 'Edit Corridor' : 'Create New Corridor'}</h2>
           <button onClick={onClose} className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle">
             <span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span>
           </button>
@@ -814,30 +814,30 @@ function CreateCorridorModal({ initial, onClose }: { initial?: TradeCorridor; on
           {error && <ErrorBanner message={error} />}
 
           <div>
-            <label className="block text-xs font-semibold text-ink-subtle mb-1">Title *</label>
+            <label className="block text-[13px] font-medium text-ink mb-1.5">Title *</label>
             <input required value={form.title} onChange={set('title')} placeholder="e.g. Nigeria → China (Leather & Hides)" className={inputCls} />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-ink-subtle mb-1">Origin *</label>
+              <label className="block text-[13px] font-medium text-ink mb-1.5">Origin *</label>
               <input required value={form.origin} onChange={set('origin')} placeholder="e.g. Kano, Nigeria" className={inputCls} />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-ink-subtle mb-1">Destination *</label>
+              <label className="block text-[13px] font-medium text-ink mb-1.5">Destination *</label>
               <input required value={form.destination} onChange={set('destination')} placeholder="e.g. Guangzhou, China" className={inputCls} />
             </div>
           </div>
           <div>
-            <label className="block text-xs font-semibold text-ink-subtle mb-1">Category *</label>
+            <label className="block text-[13px] font-medium text-ink mb-1.5">Category *</label>
             <input required value={form.category} onChange={set('category')} placeholder="e.g. Agriculture & Food" className={inputCls} />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-ink-subtle mb-1">Description *</label>
+            <label className="block text-[13px] font-medium text-ink mb-1.5">Description *</label>
             <textarea required rows={3} value={form.description} onChange={set('description')} placeholder="Describe the corridor purpose and opportunities…" className={inputCls + ' resize-none'} />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-ink-subtle mb-1">Status</label>
+              <label className="block text-[13px] font-medium text-ink mb-1.5">Status</label>
               <Select
                 label="Status"
                 hideLabel
@@ -852,28 +852,28 @@ function CreateCorridorModal({ initial, onClose }: { initial?: TradeCorridor; on
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-ink-subtle mb-1">Trade Volume</label>
+              <label className="block text-[13px] font-medium text-ink mb-1.5">Trade Volume</label>
               <input value={form.tradeVolume} onChange={set('tradeVolume')} placeholder="e.g. ₦2.3B/year" className={inputCls} />
             </div>
           </div>
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-ink-subtle mb-1">Sponsor Slots</label>
+              <label className="block text-[13px] font-medium text-ink mb-1.5">Sponsor Slots</label>
               <input type="number" min={0} value={form.sponsorSlotsAvailable} onChange={set('sponsorSlotsAvailable')} className={inputCls} />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-ink-subtle mb-1">Gold Price (₦)</label>
+              <label className="block text-[13px] font-medium text-ink mb-1.5">Gold Price (₦)</label>
               <input type="number" min={0} value={form.sponsorPriceGold} onChange={set('sponsorPriceGold')} className={inputCls} />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-ink-subtle mb-1">Silver Price (₦)</label>
+              <label className="block text-[13px] font-medium text-ink mb-1.5">Silver Price (₦)</label>
               <input type="number" min={0} value={form.sponsorPriceSilver} onChange={set('sponsorPriceSilver')} className={inputCls} />
             </div>
           </div>
 
           <div className="flex gap-3 pt-2">
             <Button variant="outline" type="button" onClick={onClose}>Cancel</Button>
-            <button type="submit" disabled={isLoading} className="flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50" style={{ background: 'rgb(var(--c-primary))' }}>
+            <button type="submit" disabled={isLoading} className="inline-flex items-center justify-center gap-2 flex-1 disabled:opacity-50 h-10 px-4 text-sm rounded-control bg-primary text-white font-medium shadow-card transition-colors hover:bg-primary-hover focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed">
               {isLoading ? 'Saving…' : initial ? 'Save Changes' : 'Create Corridor'}
             </button>
           </div>
@@ -924,14 +924,11 @@ function AdminCorridorsView() {
       )}
 
       <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="text-xl font-semibold text-ink">Trade Corridors Management</h2>
-          <p className="text-sm text-ink-subtle mt-0.5">Manage trade corridors and sponsorship applications.</p>
-        </div>
+        <PageHeader title="Trade Corridors Management" description="Manage trade corridors and sponsorship applications." />
         <button
           onClick={() => setShowCreateCorridor(true)}
-          className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white"
-          style={{ background: 'rgb(var(--c-primary))' }}
+          className="flex items-center gap-2 h-10 px-4 text-sm rounded-control bg-primary text-white font-medium shadow-card transition-colors hover:bg-primary-hover focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
+         
         >
           <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>
           Create Corridor
@@ -944,20 +941,14 @@ function AdminCorridorsView() {
           { icon: 'group', label: 'Total Members', value: allCorridors.reduce((s, c) => s + c.memberCount, 0) },
           { icon: 'pending', label: 'Pending Applications', value: pending },
           { icon: 'workspace_premium', label: 'Total Sponsors', value: allCorridors.reduce((s, c) => s + c.sponsors.length, 0) },
-        ].map(({ icon, label, value, accent }) => (
-          <div key={label} className={`rounded-card border p-4 bg-surface border-border relative overflow-hidden ${accent ? 'before:absolute before:inset-y-0 before:left-0 before:w-[3px] before:bg-primary' : ''}`} >
-            <div className="flex items-center gap-2 mb-2">
-              <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`, color: 'rgb(var(--c-ink-subtle))' }}>{icon}</span>
-              <p className={`text-2xs font-semibold uppercase text-ink-subtle`}>{label}</p>
-            </div>
-            <p className={`num text-[26px] font-semibold leading-none text-ink mt-1`}>{value}</p>
-          </div>
+        ].map(({ icon, label, value }) => (
+          <StatTile key={label} icon={icon} label={label} value={String(value)} />
         ))}
       </div>
 
-      <div className="flex gap-1 bg-surface-alt rounded-lg p-1 mb-6 w-fit border border-border">
+      <div className="flex items-end gap-6 overflow-x-auto border-b border-border mb-6">
         {([['corridors', 'Corridors'], ['applications', `Applications${pending > 0 ? ` (${pending})` : ''}`]] as const).map(([t, label]) => (
-          <button key={t} onClick={() => setTab(t)} className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === t ? 'bg-surface text-ink shadow-card' : 'text-ink-subtle hover:text-ink'}`}>{label}</button>
+          <button key={t} onClick={() => setTab(t)} className={`-mb-px border-b-2 px-1 pb-2.5 pt-1 text-sm font-medium whitespace-nowrap transition-colors focus-visible:shadow-focus ${tab === t ? 'border-primary text-ink' : 'border-transparent text-ink-subtle hover:text-ink hover:border-border-strong'}`}>{label}</button>
         ))}
       </div>
 
@@ -974,7 +965,7 @@ function AdminCorridorsView() {
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
-                      <h3 className="font-bold text-ink">{c.title}</h3>
+                      <h3 className="font-semibold text-ink">{plainText(c.title)}</h3>
                       <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ background: st.bg, color: st.text }}>{st.label}</span>
                     </div>
                     <p className="text-sm text-ink-subtle">{c.origin} → {c.destination} · {c.category}</p>
@@ -982,12 +973,12 @@ function AdminCorridorsView() {
                   <div className="flex items-center gap-3 flex-shrink-0 ml-4">
                     <button
                       onClick={(e) => { e.stopPropagation(); setEditCorridor(c); }}
-                      className="rounded-lg border border-border px-3 py-1.5 text-xs font-semibold text-ink-subtle hover:border-primary hover:text-primary transition-colors"
+                      className="inline-flex items-center justify-center gap-2 h-8 px-3 text-[13px] rounded-control border border-border-strong bg-surface text-ink font-medium shadow-card transition-colors hover:bg-surface-alt focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Edit
                     </button>
                     <div className="text-right">
-                      <p className="font-bold text-primary">{c.memberCount} members</p>
+                      <p className="font-semibold text-primary">{c.memberCount} members</p>
                       <p className="text-xs text-ink-subtle">{c.sponsors.length} sponsors · {c.sponsorSlotsAvailable} open slots</p>
                     </div>
                     <span className="material-symbols-outlined text-ink-subtle" style={{ fontSize: 20, transition: 'transform 0.2s', transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)' }}>expand_more</span>
@@ -996,7 +987,7 @@ function AdminCorridorsView() {
 
                 {isExpanded && (
                   <div className="border-t border-border px-5 py-4 space-y-4 bg-[#fafbfc]">
-                    <p className="text-sm text-ink-subtle">{c.description}</p>
+                    <p className="text-sm text-ink-subtle">{plainText(c.description)}</p>
                     {c.tradeVolume && (
                       <p className="text-xs text-ink-subtle">Estimated trade volume: <strong className="text-ink">{c.tradeVolume}</strong></p>
                     )}
@@ -1029,13 +1020,13 @@ function AdminCorridorsView() {
                           return (
                             <div key={t} className="rounded-lg border px-4 py-2.5 flex items-center gap-3" style={{ borderColor: tc.accent + '60', background: tc.bg + '40' }}>
                               <span className="text-xs font-semibold" style={{ color: tc.text }}>{tc.label}</span>
-                              <span className="font-bold text-sm" style={{ color: tc.text }}>₦{price.toLocaleString()}/yr</span>
+                              <span className="font-semibold text-sm" style={{ color: tc.text }}>₦{price.toLocaleString()}/yr</span>
                             </div>
                           );
                         })}
                         <div className="rounded-lg border border-border bg-surface px-4 py-2.5 flex items-center gap-2">
                           <span className="text-xs text-ink-subtle">Open slots:</span>
-                          <span className="font-bold text-sm text-ink">{c.sponsorSlotsAvailable}</span>
+                          <span className="font-semibold text-sm text-ink">{c.sponsorSlotsAvailable}</span>
                         </div>
                       </div>
                     </div>
@@ -1057,28 +1048,28 @@ function AdminCorridorsView() {
             <div className="overflow-x-auto">
               <table className="data-table w-full text-sm">
                 <thead>
-                  <tr className="bg-surface-alt border-b border-border">
+                  <tr>
                     {['Applicant', 'Corridor', 'Tier', 'Amount', 'Applied', 'Status', ''].map((h) => (
-                      <th key={h} className="text-left px-4 py-3 text-2xs font-semibold text-ink-subtle uppercase">{h}</th>
+                      <th key={h}>{h}</th>
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border-subtle">
+                <tbody>
                   {allApps.map((app) => {
                     const ac = appStatusConfig[app.status];
                     const tc = tierConfig[app.tier];
                     return (
                       <tr key={app.id} className="hover:bg-surface-alt transition-colors">
-                        <td className="px-4 py-3">
+                        <td>
                           <p className="font-medium text-ink">{app.memberName ?? '–'}</p>
                           <p className="text-xs text-ink-subtle">{app.companyName}</p>
                         </td>
-                        <td className="px-4 py-3 text-ink-subtle max-w-[160px] truncate">{app.corridorTitle}</td>
-                        <td className="px-4 py-3"><span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ background: tc.bg, color: tc.text }}>{tc.label}</span></td>
-                        <td className="px-4 py-3 font-semibold text-ink">₦{app.amount.toLocaleString()}</td>
-                        <td className="px-4 py-3 text-xs text-ink-subtle">{new Date(app.createdAt).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'short', year: 'numeric' })}</td>
-                        <td className="px-4 py-3"><span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ background: ac.bg, color: ac.text }}>{ac.label}</span></td>
-                        <td className="px-4 py-3">
+                        <td className="text-ink-subtle max-w-[160px] truncate">{app.corridorTitle}</td>
+                        <td><span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ background: tc.bg, color: tc.text }}>{tc.label}</span></td>
+                        <td className="font-semibold text-ink">₦{app.amount.toLocaleString()}</td>
+                        <td className="text-xs text-ink-subtle">{new Date(app.createdAt).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'short', year: 'numeric' })}</td>
+                        <td><span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ background: ac.bg, color: ac.text }}>{ac.label}</span></td>
+                        <td>
                           <button onClick={() => setSelectedApp(app)} className="text-xs font-medium text-primary hover:underline">View</button>
                         </td>
                       </tr>

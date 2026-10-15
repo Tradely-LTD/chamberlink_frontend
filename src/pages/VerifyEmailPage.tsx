@@ -17,7 +17,7 @@ export function VerifyEmailPage() {
   return (
     <AuthShell
       kicker="Almost there"
-      heading={<>Verify your<br /><em className="font-display italic font-semibold text-primary">email address.</em></>}
+      heading={<>Verify your<br /><em className=" italic font-semibold text-primary">email address.</em></>}
       lede="Confirm your email to activate your Chamberlink ID and start applying for certificates."
       benefits={[
         'Unlocks your Chamberlink dashboard',

@@ -12,6 +12,7 @@ import { Badge } from '@shared/ui/Badge';
 import { Button } from '@shared/ui/Button';
 import { Input } from '@shared/ui/Input';
 import { Textarea } from '@shared/ui/Textarea';
+import { PageHeader } from '@shared/ui/PageHeader';
 
 const FILTERS: { label: string; value: TinVerificationStatus }[] = [
   { label: 'Awaiting Verification', value: 'pending_review' },
@@ -160,13 +161,8 @@ export function CompanyVerificationPage() {
 
   return (
     <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-4xl">
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-ink">Company Verification</h1>
-        <p className="text-sm text-ink-subtle mt-0.5">
-          Confirm each exporter company&apos;s TIN against tax records. A verified company&apos;s
-          registered name and address are applied automatically to its certificate applications.
-        </p>
-      </div>
+      <PageHeader title="Company Verification" description="Confirm each exporter company&apos;s TIN against tax records. A verified company&apos;s
+          registered name and address are applied automatically to its certificate applications." />
 
       <div className="mb-5 flex flex-wrap gap-2">
         {FILTERS.map((f) => (
