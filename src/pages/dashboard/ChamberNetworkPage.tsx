@@ -52,7 +52,7 @@ export function ChamberNetworkPage() {
   };
 
   return (
-    <div className="p-6 max-w-4xl">
+    <div className="mx-auto w-full max-w-4xl px-4 py-6 sm:px-8 sm:py-8">
       <div className="mb-6">
         <h1 className="text-2xl font-semibold text-ink mb-1">Chamber Network</h1>
         <p className="text-sm text-ink-subtle">
@@ -78,7 +78,7 @@ export function ChamberNetworkPage() {
         <EmptyState
           icon="travel_explore"
           title="You're connected to every onboarded chamber"
-          message="There's no other chamber left to connect to right now — check back as more chambers onboard."
+          message="There's no other chamber to connect to right now. Check back as more chambers join."
         />
       )}
 
@@ -107,7 +107,7 @@ export function ChamberNetworkPage() {
                   <p className="font-medium text-ink truncate">{chamber.name}</p>
                   {chamber.city && <p className="text-xs text-ink-subtle truncate">{chamber.city}</p>}
                   {inlineError?.tenantId === chamber.id && (
-                    <p className="mt-1 text-xs text-red-600">{inlineError.message}</p>
+                    <p className="mt-1 text-xs text-danger">{inlineError.message}</p>
                   )}
                 </div>
               </div>

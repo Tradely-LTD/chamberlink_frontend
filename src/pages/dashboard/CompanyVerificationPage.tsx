@@ -114,7 +114,7 @@ function ReviewCard({ company }: { company: ExporterCompany }) {
             />
             <Textarea
               label="Notes"
-              placeholder="Required if you cannot verify — the applicant is shown this"
+              placeholder="Required if you cannot verify. The applicant sees this"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
             />
@@ -133,7 +133,7 @@ function ReviewCard({ company }: { company: ExporterCompany }) {
               loading={isLoading}
               disabled={notes.trim().length < 3}
               onClick={() => submit('fail')}
-              className="border-red-300 text-red-700 hover:bg-red-50"
+              className="border-danger-border text-danger hover:bg-danger-bg"
             >
               Cannot Verify
             </Button>
@@ -159,7 +159,7 @@ export function CompanyVerificationPage() {
   const { data: companies, isLoading, isError, refetch } = useGetCompanyQueueQuery(status);
 
   return (
-    <div className="p-6 max-w-4xl">
+    <div className="mx-auto w-full max-w-4xl px-4 py-6 sm:px-8 sm:py-8">
       <div className="mb-6">
         <h1 className="text-2xl font-semibold text-ink">Company Verification</h1>
         <p className="text-sm text-ink-subtle mt-0.5">

@@ -13,10 +13,10 @@ import { Button } from '@shared/ui/Button';
 import { Toast } from '@shared/ui/Toast';
 
 const statusColors: Record<string, string> = {
-  active: 'bg-green-100 text-green-800',
-  pending_payment: 'bg-yellow-100 text-yellow-800',
-  expired: 'bg-red-100 text-red-800',
-  suspended: 'bg-gray-100 text-gray-700',
+  active: 'bg-success-bg text-success',
+  pending_payment: 'bg-warning-bg text-warning',
+  expired: 'bg-danger-bg text-danger',
+  suspended: 'bg-border-subtle text-ink-muted',
 };
 
 const statusLabels: Record<string, string> = {
@@ -27,7 +27,7 @@ const statusLabels: Record<string, string> = {
 };
 
 function formatDate(iso: string | null): string {
-  if (!iso) return '—';
+  if (!iso) return '–';
   return new Date(iso).toLocaleDateString('en-NG', {
     timeZone: 'Africa/Lagos',
     day: 'numeric',
@@ -82,12 +82,12 @@ export function MyConnectionsPage() {
   };
 
   return (
-    <div className="p-6 max-w-4xl">
+    <div className="mx-auto w-full max-w-4xl px-4 py-6 sm:px-8 sm:py-8">
       <div className="flex items-start justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl font-semibold text-ink mb-1">My Chambers</h1>
           <p className="text-sm text-ink-subtle">
-            Every chamber your ChamberLink identity is connected to — each with its own status, tier, and dues.
+            Every chamber your Chamberlink account is connected to, each with its own status, tier and dues.
           </p>
         </div>
         <Button onClick={() => setConnectModalOpen(true)} className="flex-shrink-0">
@@ -134,7 +134,7 @@ export function MyConnectionsPage() {
                         className="h-10 w-10 rounded-lg object-contain border border-border/40 bg-white flex-shrink-0"
                       />
                     ) : (
-                      <div className="h-10 w-10 rounded-lg bg-[#f7f9f7] border border-border/40 flex items-center justify-center flex-shrink-0">
+                      <div className="h-10 w-10 rounded-lg bg-surface-alt border border-border/40 flex items-center justify-center flex-shrink-0">
                         <span className="material-symbols-outlined text-ink-subtle" style={{ fontSize: 20 }}>
                           corporate_fare
                         </span>
@@ -144,7 +144,7 @@ export function MyConnectionsPage() {
                       <p className="font-medium text-ink truncate flex items-center gap-2">
                         {c.tenantName}
                         {c.isActive && (
-                          <span className="inline-flex items-center rounded-full bg-[#d6e3ff] px-2 py-0.5 text-[11px] font-medium text-primary">
+                          <span className="inline-flex items-center rounded-full bg-primary-soft px-2 py-0.5 text-[11px] font-medium text-primary">
                             Active workspace
                           </span>
                         )}
@@ -155,7 +155,7 @@ export function MyConnectionsPage() {
                     </div>
                   </div>
                   <span
-                    className={`flex-shrink-0 inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColors[c.status] ?? 'bg-gray-100 text-gray-700'}`}
+                    className={`flex-shrink-0 inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColors[c.status] ?? 'bg-border-subtle text-ink-muted'}`}
                   >
                     {statusLabels[c.status] ?? c.status}
                   </span>
@@ -195,7 +195,7 @@ export function MyConnectionsPage() {
                       <span className="text-xs text-ink-subtle">Disconnect from {c.tenantName}?</span>
                       <Button
                         variant="outline"
-                        className="border-red-300 text-red-700 hover:border-red-500"
+                        className="border-danger-border text-danger hover:border-danger"
                         loading={isBusy && isRemoving}
                         onClick={() => handleDisconnect(c.tenantId)}
                       >
@@ -208,7 +208,7 @@ export function MyConnectionsPage() {
                   ) : (
                     <button
                       onClick={() => setConfirmingTenantId(c.tenantId)}
-                      className="ml-auto text-xs font-medium text-red-600 hover:underline"
+                      className="ml-auto text-xs font-medium text-danger hover:underline"
                     >
                       Disconnect
                     </button>

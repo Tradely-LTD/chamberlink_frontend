@@ -21,13 +21,13 @@ import { Select } from '@shared/ui/Select';
 type StatusKey = 'active' | 'pending_payment' | 'expired' | 'suspended';
 
 const statusBadgeStyle: Record<StatusKey, React.CSSProperties> = {
-  active:          { background: '#a0f4ca', color: '#005137' },
-  pending_payment: { background: '#ffdea5', color: '#5d4201' },
-  expired:         { background: '#ffdad6', color: '#93000a' },
-  suspended:       { background: '#e0e3e5', color: '#44474e' },
+  active:          { background: 'rgb(var(--c-success-bg))', color: 'rgb(var(--c-success))' },
+  pending_payment: { background: 'rgb(var(--c-warning-bg))', color: 'rgb(var(--c-warning))' },
+  expired:         { background: 'rgb(var(--c-danger-bg))', color: 'rgb(var(--c-danger))' },
+  suspended:       { background: 'rgb(var(--c-border))', color: 'rgb(var(--c-ink-muted))' },
 };
 
-const nullBadgeStyle: React.CSSProperties = { background: '#e0e3e5', color: '#44474e' };
+const nullBadgeStyle: React.CSSProperties = { background: 'rgb(var(--c-border))', color: 'rgb(var(--c-ink-muted))' };
 
 function getStatusStyle(status: string | null): React.CSSProperties {
   if (!status) return nullBadgeStyle;
@@ -51,10 +51,10 @@ function StatusBadge({ status }: { status: string | null }) {
 // ---------------------------------------------------------------------------
 
 const paymentStatusStyle: Record<PaymentRecord['status'], React.CSSProperties> = {
-  success:  { background: '#a0f4ca', color: '#005137' },
-  pending:  { background: '#ffdea5', color: '#5d4201' },
-  failed:   { background: '#ffdad6', color: '#93000a' },
-  refunded: { background: '#e0e3e5', color: '#44474e' },
+  success:  { background: 'rgb(var(--c-success-bg))', color: 'rgb(var(--c-success))' },
+  pending:  { background: 'rgb(var(--c-warning-bg))', color: 'rgb(var(--c-warning))' },
+  failed:   { background: 'rgb(var(--c-danger-bg))', color: 'rgb(var(--c-danger))' },
+  refunded: { background: 'rgb(var(--c-border))', color: 'rgb(var(--c-ink-muted))' },
 };
 
 function PaymentStatusBadge({ status }: { status: PaymentRecord['status'] }) {
@@ -73,7 +73,7 @@ function PaymentStatusBadge({ status }: { status: PaymentRecord['status'] }) {
 // ---------------------------------------------------------------------------
 
 function formatDateNG(iso: string | null | undefined): string {
-  if (!iso) return '—';
+  if (!iso) return '–';
   return new Date(iso).toLocaleDateString('en-NG', {
     timeZone: 'Africa/Lagos',
     day: 'numeric',
@@ -125,7 +125,7 @@ function MemberDetailModal({ member, onClose, isChamberAdmin }: MemberDetailModa
     }
   };
 
-  const fullName = [member.firstName, member.lastName].filter(Boolean).join(' ') || '—';
+  const fullName = [member.firstName, member.lastName].filter(Boolean).join(' ') || '–';
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -148,7 +148,7 @@ function MemberDetailModal({ member, onClose, isChamberAdmin }: MemberDetailModa
           </button>
         </div>
 
-        <div className="p-6">
+        <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8">
           {localError && (
             <div className="mb-4">
               <ErrorBanner message={localError} />
@@ -178,12 +178,12 @@ function MemberDetailModal({ member, onClose, isChamberAdmin }: MemberDetailModa
               {[
                 { label: 'Full Name', value: fullName },
                 { label: 'Email', value: member.email },
-                { label: 'Member ID', value: member.memberId ?? '—' },
-                { label: 'Tier', value: member.tierName ?? '—' },
+                { label: 'Member ID', value: member.memberId ?? '–' },
+                { label: 'Tier', value: member.tierName ?? '–' },
                 {
                   label: 'Account Status',
                   value: (
-                    <span className={`text-sm ${member.isActive ? 'text-[#005137]' : 'text-[#93000a]'}`}>
+                    <span className={`text-sm ${member.isActive ? 'text-success' : 'text-danger'}`}>
                       {member.isActive ? 'Active' : 'Inactive'}
                     </span>
                   ),
@@ -205,7 +205,7 @@ function MemberDetailModal({ member, onClose, isChamberAdmin }: MemberDetailModa
                         month: 'short',
                         year: 'numeric',
                       })
-                    : '—',
+                    : '–',
                 },
               ].map((row) => (
                 <div key={row.label} className="grid grid-cols-2 gap-4 py-3">
@@ -278,7 +278,7 @@ function MemberDetailModal({ member, onClose, isChamberAdmin }: MemberDetailModa
                 onClick={handleDeactivate}
                 disabled={deactivating}
                 className="rounded-lg px-4 py-2 text-sm font-semibold text-white disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
-                style={{ background: '#93000a' }}
+                style={{ background: 'rgb(var(--c-danger))' }}
               >
                 {deactivating ? 'Deactivating…' : 'Deactivate'}
               </button>
@@ -288,7 +288,7 @@ function MemberDetailModal({ member, onClose, isChamberAdmin }: MemberDetailModa
                 onClick={handleReactivate}
                 disabled={reactivating}
                 className="rounded-lg px-4 py-2 text-sm font-semibold text-white disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
-                style={{ background: '#023293' }}
+                style={{ background: 'rgb(var(--c-primary))' }}
               >
                 {reactivating ? 'Reactivating…' : 'Reactivate'}
               </button>
@@ -368,7 +368,7 @@ function BulkImportModal({ onClose }: BulkImportModalProps) {
           </button>
         </div>
 
-        <div className="p-6">
+        <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8">
           {importError && (
             <div className="mb-4">
               <ErrorBanner message="Import failed. Please check the file and try again." />
@@ -387,13 +387,13 @@ function BulkImportModal({ onClose }: BulkImportModalProps) {
                   accept=".csv"
                   onChange={handleFileChange}
                   className="block w-full text-sm text-ink file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:text-white file:cursor-pointer"
-                  style={{ '--tw-file-bg': '#023293' } as React.CSSProperties}
+                  style={{ '--tw-file-bg': 'rgb(var(--c-primary))' } as React.CSSProperties}
                 />
                 {fileError && (
-                  <p className="mt-1 text-xs text-[#93000a]">{fileError}</p>
+                  <p className="mt-1 text-xs text-danger">{fileError}</p>
                 )}
                 {selectedFile && !fileError && (
-                  <p className="mt-1 text-xs text-[#005137]">
+                  <p className="mt-1 text-xs text-success">
                     Selected: {selectedFile.name} ({(selectedFile.size / 1024).toFixed(1)} KB)
                   </p>
                 )}
@@ -407,7 +407,7 @@ function BulkImportModal({ onClose }: BulkImportModalProps) {
                   type="submit"
                   disabled={isLoading || !selectedFile}
                   className="rounded-lg px-4 py-2 text-sm font-semibold text-white disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
-                  style={{ background: '#023293' }}
+                  style={{ background: 'rgb(var(--c-primary))' }}
                 >
                   {isLoading ? 'Importing…' : 'Import Members'}
                 </button>
@@ -418,14 +418,14 @@ function BulkImportModal({ onClose }: BulkImportModalProps) {
           {hasResult && importResult && (
             <div className="space-y-4">
               {/* Success banner */}
-              <div className="rounded-lg px-4 py-3 text-sm font-medium" style={{ background: '#a0f4ca', color: '#005137' }}>
+              <div className="rounded-lg px-4 py-3 text-sm font-medium" style={{ background: 'rgb(var(--c-success-bg))', color: 'rgb(var(--c-success))' }}>
                 Imported: {importResult.imported} member{importResult.imported !== 1 ? 's' : ''} successfully.
               </div>
 
               {/* Failed rows */}
               {importResult.failed.length > 0 && (
                 <div>
-                  <p className="text-sm font-semibold text-[#93000a] mb-2">
+                  <p className="text-sm font-semibold text-danger mb-2">
                     {importResult.failed.length} row{importResult.failed.length !== 1 ? 's' : ''} failed:
                   </p>
                   <div className="overflow-x-auto">
@@ -447,7 +447,7 @@ function BulkImportModal({ onClose }: BulkImportModalProps) {
                           <tr key={idx} className="border-b border-border last:border-0">
                             <td className="px-3 py-2 text-ink-subtle">{row.row}</td>
                             <td className="px-3 py-2 font-mono text-xs text-ink">{row.email}</td>
-                            <td className="px-3 py-2 text-[#93000a]">{row.reason}</td>
+                            <td className="px-3 py-2 text-danger">{row.reason}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -553,7 +553,7 @@ export function MemberManagementPage() {
   };
 
   return (
-    <div className="p-6 max-w-7xl">
+    <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8">
       {viewMember && (
         <MemberDetailModal
           member={viewMember}
@@ -605,7 +605,7 @@ export function MemberManagementPage() {
             <button
               onClick={() => setShowBulkImport(true)}
               className="rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors"
-              style={{ background: '#023293' }}
+              style={{ background: 'rgb(var(--c-primary))' }}
             >
               Bulk Import
             </button>
@@ -656,16 +656,16 @@ export function MemberManagementPage() {
                       className="border-b border-border hover:bg-surface-alt transition-colors"
                     >
                       <td className="px-4 py-3 font-mono text-xs text-primary">
-                        {member.memberId ?? '—'}
+                        {member.memberId ?? '–'}
                       </td>
                       <td className="px-4 py-3">
                         <p className="font-medium text-ink">
-                          {[member.firstName, member.lastName].filter(Boolean).join(' ') || '—'}
+                          {[member.firstName, member.lastName].filter(Boolean).join(' ') || '–'}
                         </p>
                         <p className="text-xs text-ink-subtle">{member.email}</p>
                       </td>
-                      <td className="px-4 py-3 text-ink-subtle">{member.businessName ?? '—'}</td>
-                      <td className="px-4 py-3 text-ink">{member.tierName ?? '—'}</td>
+                      <td className="px-4 py-3 text-ink-subtle">{member.businessName ?? '–'}</td>
+                      <td className="px-4 py-3 text-ink">{member.tierName ?? '–'}</td>
                       <td className="px-4 py-3">
                         <StatusBadge status={member.memberStatus} />
                       </td>
@@ -677,7 +677,7 @@ export function MemberManagementPage() {
                               month: 'short',
                               year: 'numeric',
                             })
-                          : '—'}
+                          : '–'}
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
@@ -690,7 +690,7 @@ export function MemberManagementPage() {
                           {member.isActive && isChamberAdmin && (
                             <button
                               onClick={() => setViewMember(member)}
-                              className="text-xs font-medium text-[#93000a] hover:underline"
+                              className="text-xs font-medium text-danger hover:underline"
                             >
                               Deactivate
                             </button>
@@ -698,7 +698,7 @@ export function MemberManagementPage() {
                           {!member.isActive && isChamberAdmin && (
                             <button
                               onClick={() => setViewMember(member)}
-                              className="text-xs font-medium text-[#005137] hover:underline"
+                              className="text-xs font-medium text-success hover:underline"
                             >
                               Reactivate
                             </button>

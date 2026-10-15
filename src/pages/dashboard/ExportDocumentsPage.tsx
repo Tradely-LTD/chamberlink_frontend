@@ -20,18 +20,18 @@ import { DocumentLibraryView } from '@pages/dashboard/DocumentsPage';
 // ── Config ─────────────────────────────────────────────────────────────────
 
 const docTypeConfig: Record<DocType, { label: string; icon: string; bg: string; text: string }> = {
-  commercial_invoice:   { label: 'Commercial Invoice',   icon: 'receipt_long',      bg: '#d6e3ff', text: '#023293' },
-  packing_list:         { label: 'Packing List',         icon: 'inventory_2',       bg: '#a0f4ca', text: '#005137' },
-  combined_certificate: { label: 'Combined Certificate', icon: 'workspace_premium', bg: '#ffdea5', text: '#5d4201' },
-  export_declaration:   { label: 'Export Declaration',   icon: 'fact_check',        bg: '#e0e3e5', text: '#44474e' },
-  phytosanitary:        { label: 'Phytosanitary Cert',   icon: 'eco',               bg: '#a0f4ca', text: '#005137' },
+  commercial_invoice:   { label: 'Commercial Invoice',   icon: 'receipt_long',      bg: 'rgb(var(--c-primary-soft))', text: 'rgb(var(--c-primary))' },
+  packing_list:         { label: 'Packing List',         icon: 'inventory_2',       bg: 'rgb(var(--c-success-bg))', text: 'rgb(var(--c-success))' },
+  combined_certificate: { label: 'Combined Certificate', icon: 'workspace_premium', bg: 'rgb(var(--c-warning-bg))', text: 'rgb(var(--c-warning))' },
+  export_declaration:   { label: 'Export Declaration',   icon: 'fact_check',        bg: 'rgb(var(--c-border))', text: 'rgb(var(--c-ink-muted))' },
+  phytosanitary:        { label: 'Phytosanitary Cert',   icon: 'eco',               bg: 'rgb(var(--c-success-bg))', text: 'rgb(var(--c-success))' },
 };
 
 const docStatusConfig: Record<ExportDocument['status'], { label: string; bg: string; text: string }> = {
-  draft:      { label: 'Draft',      bg: '#e0e3e5', text: '#44474e' },
-  processing: { label: 'Processing', bg: '#ffdea5', text: '#5d4201' },
-  ready:      { label: 'Ready',      bg: '#a0f4ca', text: '#005137' },
-  downloaded: { label: 'Downloaded', bg: '#d6e3ff', text: '#023293' },
+  draft:      { label: 'Draft',      bg: 'rgb(var(--c-border))', text: 'rgb(var(--c-ink-muted))' },
+  processing: { label: 'Processing', bg: 'rgb(var(--c-warning-bg))', text: 'rgb(var(--c-warning))' },
+  ready:      { label: 'Ready',      bg: 'rgb(var(--c-success-bg))', text: 'rgb(var(--c-success))' },
+  downloaded: { label: 'Downloaded', bg: 'rgb(var(--c-primary-soft))', text: 'rgb(var(--c-primary))' },
 };
 
 const ADMIN_ROLES = ['chamber_admin', 'chamber_executive', 'super_admin', 'staff_operator'];
@@ -133,7 +133,7 @@ function CreateDocModal({ onClose }: { onClose: () => void }) {
               type="submit"
               disabled={isLoading}
               className="flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
-              style={{ background: '#023293' }}
+              style={{ background: 'rgb(var(--c-primary))' }}
             >
               {isLoading ? 'Generating…' : 'Generate Document'}
             </button>
@@ -198,7 +198,7 @@ function MarkReadyModal({ docId, onClose }: MarkReadyModalProps) {
 
           <div>
             <label className="block text-xs font-semibold text-ink-subtle mb-1">
-              Document File <span className="text-red-500">*</span>
+              Document File <span className="text-danger">*</span>
             </label>
             <div
               className="border-2 border-dashed border-border rounded-lg p-4 text-center cursor-pointer hover:border-primary transition-colors"
@@ -206,14 +206,14 @@ function MarkReadyModal({ docId, onClose }: MarkReadyModalProps) {
             >
               {file ? (
                 <div className="flex items-center justify-center gap-2 text-sm text-ink">
-                  <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#0b6c4b' }}>check_circle</span>
+                  <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'rgb(var(--c-success))' }}>check_circle</span>
                   <span className="font-medium truncate max-w-[220px]">{file.name}</span>
                 </div>
               ) : (
                 <div className="flex flex-col items-center gap-1">
                   <span className="material-symbols-outlined text-ink-subtle" style={{ fontSize: 28 }}>upload_file</span>
                   <p className="text-sm text-ink-subtle">Click to select file</p>
-                  <p className="text-xs text-[#9a9da5]">PDF, JPEG, or PNG — max 10 MB</p>
+                  <p className="text-xs text-[#9a9da5]">PDF, JPEG or PNG, max 10 MB</p>
                 </div>
               )}
             </div>
@@ -245,7 +245,7 @@ function MarkReadyModal({ docId, onClose }: MarkReadyModalProps) {
               type="submit"
               disabled={isLoading || !file}
               className="flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
-              style={{ background: '#0b6c4b' }}
+              style={{ background: 'rgb(var(--c-success))' }}
             >
               {isLoading ? 'Uploading…' : 'Upload & Mark Ready'}
             </button>
@@ -320,7 +320,7 @@ function MemberExportDocsView() {
   };
 
   return (
-    <div className="p-4 sm:p-6 max-w-5xl">
+    <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-8 sm:py-8">
       {showCreate && <CreateDocModal onClose={() => setShowCreate(false)} />}
 
       {/* Page header — stacks on mobile */}
@@ -334,7 +334,7 @@ function MemberExportDocsView() {
             <button
               onClick={() => navigate('/dashboard/export-documents/generate')}
               className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-white"
-              style={{ background: '#023293' }}
+              style={{ background: 'rgb(var(--c-primary))' }}
             >
               <span className="material-symbols-outlined" style={{ fontSize: 16 }}>receipt_long</span>
               <span className="hidden sm:inline">Generate Invoice / Packing List</span>
@@ -404,7 +404,7 @@ function MemberExportDocsView() {
                   <button
                     onClick={() => navigate('/dashboard/export-documents/generate')}
                     className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white"
-                    style={{ background: '#023293' }}
+                    style={{ background: 'rgb(var(--c-primary))' }}
                   >
                     Generate First Document
                   </button>
@@ -508,7 +508,7 @@ function MemberExportDocsView() {
                                     disabled={deletingId === doc.id}
                                     onClick={() => handleDelete(doc.id)}
                                     className="rounded-lg px-2.5 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
-                                    style={{ background: '#93000a' }}
+                                    style={{ background: 'rgb(var(--c-danger))' }}
                                   >
                                     {deletingId === doc.id ? '…' : 'Yes'}
                                   </button>
@@ -522,7 +522,7 @@ function MemberExportDocsView() {
                               ) : (
                                 <button
                                   onClick={() => setConfirmDeleteId(doc.id)}
-                                  className="flex items-center gap-1 rounded-lg border border-border px-2 py-1.5 text-xs font-semibold text-ink-subtle hover:border-red-300 hover:text-red-600 transition-colors"
+                                  className="flex items-center gap-1 rounded-lg border border-border px-2 py-1.5 text-xs font-semibold text-ink-subtle hover:border-danger-border hover:text-danger transition-colors"
                                 >
                                   <span className="material-symbols-outlined" style={{ fontSize: 13 }}>delete</span>
                                 </button>
@@ -578,7 +578,7 @@ function AdminExportDocsView() {
   };
 
   return (
-    <div className="p-6 max-w-6xl">
+    <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8">
       {markReadyDocId && (
         <MarkReadyModal
           docId={markReadyDocId}
@@ -587,7 +587,7 @@ function AdminExportDocsView() {
       )}
 
       <div className="mb-6">
-        <h2 className="text-xl font-semibold text-ink">Export Documents — Admin</h2>
+        <h2 className="text-xl font-semibold text-ink">Export documents (admin)</h2>
         <p className="text-sm text-ink-subtle mt-0.5">
           Review and process member export document requests.
         </p>
@@ -605,7 +605,7 @@ function AdminExportDocsView() {
           <div
             key={label}
             className={`rounded-xl border p-4 ${accent ? '' : 'bg-white border-border'}`}
-            style={accent ? { background: '#023293', borderColor: '#023293' } : {}}
+            style={accent ? { background: 'rgb(var(--c-primary))', borderColor: 'rgb(var(--c-primary))' } : {}}
           >
             <div className="flex items-center gap-2 mb-2">
               <span
@@ -613,14 +613,14 @@ function AdminExportDocsView() {
                 style={{
                   fontSize: 18,
                   fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`,
-                  color: accent ? '#aec7f7' : '#74777f',
+                  color: accent ? 'rgb(var(--c-primary-200))' : 'rgb(var(--c-ink-subtle))',
                 }}
               >
                 {icon}
               </span>
               <p
                 className={`text-xs font-semibold uppercase tracking-wide ${
-                  accent ? 'text-[#aec7f7]' : 'text-ink-subtle'
+                  accent ? 'text-primary-200' : 'text-ink-subtle'
                 }`}
               >
                 {label}
@@ -682,7 +682,7 @@ function AdminExportDocsView() {
                   )}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#f0f2f4]">
+              <tbody className="divide-y divide-border-subtle">
                 {filtered.map((doc) => {
                   const dtc = docTypeConfig[doc.type];
                   const dsc = docStatusConfig[doc.status];
@@ -693,7 +693,7 @@ function AdminExportDocsView() {
                         <p className="font-semibold text-ink">{dtc.label}</p>
                         <p className="text-xs font-mono text-ink-subtle">{doc.referenceNo}</p>
                       </td>
-                      <td className="px-4 py-3 text-ink-subtle">{doc.memberName ?? '—'}</td>
+                      <td className="px-4 py-3 text-ink-subtle">{doc.memberName ?? '–'}</td>
                       <td className="px-4 py-3 text-ink-subtle max-w-[140px] truncate">
                         {doc.consignee}
                       </td>
@@ -720,7 +720,7 @@ function AdminExportDocsView() {
                             disabled={isBusy}
                             onClick={() => handleProcess(doc)}
                             className="text-xs font-medium px-2.5 py-1 rounded-md text-white disabled:opacity-50"
-                            style={{ background: '#c5a059' }}
+                            style={{ background: 'rgb(var(--c-gold-light))' }}
                           >
                             {isBusy ? '…' : 'Process'}
                           </button>
@@ -729,7 +729,7 @@ function AdminExportDocsView() {
                           <button
                             onClick={() => setMarkReadyDocId(doc.id)}
                             className="text-xs font-medium px-2.5 py-1 rounded-md text-white"
-                            style={{ background: '#0b6c4b' }}
+                            style={{ background: 'rgb(var(--c-success))' }}
                           >
                             Mark Ready
                           </button>

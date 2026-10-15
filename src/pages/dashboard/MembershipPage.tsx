@@ -29,17 +29,17 @@ const membershipPayApi = emptyApi.injectEndpoints({
 const { useInitiateDuesPaymentMutation } = membershipPayApi;
 
 const tierColors: Record<string, string> = {
-  ordinary: 'bg-gray-100 text-gray-700',
-  associate: 'bg-blue-100 text-blue-700',
-  patron: 'bg-amber-100 text-amber-700',
-  corporate: 'bg-green-100 text-green-700',
+  ordinary: 'bg-border-subtle text-ink-muted',
+  associate: 'bg-primary-soft text-primary',
+  patron: 'bg-warning-bg text-warning',
+  corporate: 'bg-success-bg text-success',
 };
 
 const statusColors: Record<string, string> = {
-  active: 'bg-green-100 text-green-800',
-  pending_payment: 'bg-yellow-100 text-yellow-800',
-  expired: 'bg-red-100 text-red-800',
-  suspended: 'bg-gray-100 text-gray-700',
+  active: 'bg-success-bg text-success',
+  pending_payment: 'bg-warning-bg text-warning',
+  expired: 'bg-danger-bg text-danger',
+  suspended: 'bg-border-subtle text-ink-muted',
 };
 
 export function MembershipPage() {
@@ -63,12 +63,12 @@ export function MembershipPage() {
     }
   };
 
-  if (statusLoading || tiersLoading) return <div className="p-6"><SkeletonCard /><div className="mt-4"><SkeletonCard /></div></div>;
+  if (statusLoading || tiersLoading) return <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8"><SkeletonCard /><div className="mt-4"><SkeletonCard /></div></div>;
 
   if (statusError) {
     if (isNoActiveChamberError(statusErrorObj)) {
       return (
-        <div className="p-6 max-w-3xl">
+        <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 sm:py-8">
           <h1 className="text-2xl font-semibold text-ink mb-1">Membership</h1>
           <p className="text-sm text-ink-subtle mb-6">View your membership status and available tiers.</p>
           <EmptyState
@@ -87,7 +87,7 @@ export function MembershipPage() {
         </div>
       );
     }
-    return <div className="p-6"><ErrorBanner message="Failed to load membership information." /></div>;
+    return <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8"><ErrorBanner message="Failed to load membership information." /></div>;
   }
 
   const expiresAt = status?.expiresAt ? new Date(status.expiresAt).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'long', year: 'numeric' }) : null;
@@ -95,7 +95,7 @@ export function MembershipPage() {
   const needsPayment = status?.status === 'expired' || status?.status === 'pending_payment';
 
   return (
-    <div className="p-6 max-w-3xl">
+    <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 sm:py-8">
       <h1 className="text-2xl font-semibold text-ink mb-1">Membership</h1>
       <p className="text-sm text-ink-subtle mb-6">View your membership status and available tiers.</p>
 
@@ -106,17 +106,17 @@ export function MembershipPage() {
         <div className="px-6 py-4 border-b border-border/40 flex items-center justify-between">
           <h2 className="font-medium text-ink">Current Membership</h2>
           {status?.status && (
-            <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${statusColors[status.status] ?? 'bg-gray-100 text-gray-700'}`}>
+            <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${statusColors[status.status] ?? 'bg-border-subtle text-ink-muted'}`}>
               {status.status.replace(/_/g, ' ')}
             </span>
           )}
         </div>
         <dl className="divide-y divide-border/30">
           {[
-            { label: 'Tier', value: status?.tierName ?? '—' },
-            { label: 'Member Since', value: memberSince ?? '—' },
-            { label: 'Expires', value: expiresAt ?? '—' },
-            { label: 'Member ID', value: status?.memberId ?? '—' },
+            { label: 'Tier', value: status?.tierName ?? '–' },
+            { label: 'Member Since', value: memberSince ?? '–' },
+            { label: 'Expires', value: expiresAt ?? '–' },
+            { label: 'Member ID', value: status?.memberId ?? '–' },
           ].map((row) => (
             <div key={row.label} className="grid grid-cols-3 gap-4 px-6 py-4">
               <dt className="text-sm font-medium text-ink-subtle">{row.label}</dt>
@@ -147,7 +147,7 @@ export function MembershipPage() {
             <div key={tier.id} className="bg-white rounded-xl border border-border/40 p-5">
               <div className="flex items-start justify-between mb-3">
                 <div>
-                  <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${tierColors[tier.name.toLowerCase()] ?? 'bg-gray-100 text-gray-700'}`}>
+                  <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${tierColors[tier.name.toLowerCase()] ?? 'bg-border-subtle text-ink-muted'}`}>
                     {tier.name}
                   </span>
                   <p className="text-xl font-bold text-primary mt-2">

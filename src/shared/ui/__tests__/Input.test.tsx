@@ -20,7 +20,7 @@ describe('Input', () => {
 
   it('applies normal border class when no error', () => {
     render(<Input label="Email" />);
-    expect(screen.getByRole('textbox')).toHaveClass('border-border');
+    expect(screen.getByRole('textbox')).toHaveClass('border-border-input');
   });
 
   it('passes through additional props', () => {

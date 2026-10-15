@@ -39,7 +39,7 @@ function AuditLogTab() {
   return (
     <div className="bg-white rounded-xl border border-border/40 overflow-hidden">
       <div className="px-4 py-3 border-b border-border/40 bg-surface-alt">
-        <p className="text-xs font-medium text-ink-subtle uppercase tracking-wide">Immutable Audit Trail — append-only log of all financial and document actions</p>
+        <p className="text-xs font-medium text-ink-subtle uppercase tracking-wide">Immutable audit trail: an append-only log of every financial and document action</p>
       </div>
       <div className="divide-y divide-border/20">
         {entries.map((entry) => (
@@ -65,7 +65,7 @@ function AuditLogTab() {
 
 export function AdminPage() {
   return (
-    <div className="p-6 max-w-6xl">
+    <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8">
       <h1 className="text-2xl font-semibold text-ink mb-1">Audit Log</h1>
       <p className="text-sm text-ink-subtle mb-6">Immutable, append-only record of all financial and document actions.</p>
       <AuditLogTab />

@@ -1,3 +1,90 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Design tokens — space-separated RGB so Tailwind opacity modifiers work.
+   Light only: the portal has no dark mode. */
+:root {
+  --c-primary: 11 63 168;          /* #0B3FA8 — actions, links, data */
+  --c-primary-hover: 9 52 140;     /* #09348C */
+  --c-primary-soft: 238 243 253;   /* #EEF3FD */
+  --c-primary-200: 196 214 248;    /* #C4D6F8 */
+
+  --c-gold: 138 100 8;             /* #8A6408 — accent text (5.4:1) */
+  --c-gold-hover: 112 81 6;
+  --c-gold-soft: 251 245 230;      /* #FBF5E6 */
+  --c-gold-light: 166 121 10;      /* #A6790A — the map's route gold, marks only */
+
+  --c-ink: 16 24 40;               /* #101828 */
+  --c-ink-muted: 71 84 103;        /* #475467 */
+  --c-ink-subtle: 91 101 119;      /* #5B6577 */
+
+  --c-canvas: 244 246 249;         /* #F4F6F9 — page background */
+  --c-surface: 255 255 255;
+  --c-surface-alt: 248 249 251;    /* #F8F9FB — table heads, wells */
+
+  --c-border: 228 231 236;         /* #E4E7EC — hairlines */
+  --c-border-subtle: 238 240 243;  /* #EEF0F3 — row dividers */
+  --c-border-strong: 205 210 218;  /* #CDD2DA */
+  --c-border-input: 138 147 163;   /* #8A93A3 — 3.1:1, field boundaries */
+
+  --c-success: 6 118 71;           /* #067647 */
+  --c-success-bg: 236 253 243;
+  --c-success-border: 171 239 198;
+  --c-warning: 154 63 5;           /* #9A3F05 */
+  --c-warning-bg: 255 250 235;
+  --c-warning-border: 254 223 137;
+  --c-danger: 180 35 24;           /* #B42318 */
+  --c-danger-bg: 254 243 242;
+  --c-danger-border: 254 205 202;
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    @apply bg-canvas font-sans text-[14px] leading-[1.5] text-ink;
+    font-feature-settings: 'ss02', 'zero';
+  }
+  h1, h2, h3, h4 {
+    @apply tracking-[-0.01em] text-ink;
+  }
+  ::selection {
+    background: rgb(var(--c-primary) / 0.15);
+  }
+  /* One icon weight across the app; individual icons may still set FILL. */
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 350, 'GRAD' 0, 'opsz' 20;
+    line-height: 1;
+    user-select: none;
+  }
+  :focus-visible {
+    outline: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* Numbers that line up in columns and don't jitter as they change. */
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* Shared table anatomy — see shared/ui/Table.tsx. Also applied to the
+     raw <table>s that predate it, via the .data-table class. */
+  .data-table { @apply w-full text-left text-[13px]; }
+  .data-table thead th {
+    @apply bg-surface-alt px-4 py-2.5 text-2xs font-semibold uppercase text-ink-subtle border-b border-border whitespace-nowrap;
+  }
+  .data-table tbody td { @apply px-4 py-3 align-middle text-ink border-b border-border-subtle; }
+  .data-table tbody tr:last-child td { @apply border-b-0; }
+  .data-table tbody tr { @apply transition-colors duration-150; }
+  .data-table tbody tr:hover { @apply bg-surface-alt; }
+}

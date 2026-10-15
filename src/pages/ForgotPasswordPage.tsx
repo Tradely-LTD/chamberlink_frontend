@@ -10,7 +10,7 @@ export function ForgotPasswordPage() {
       benefits={[
         'Works for every chamber you’re connected to',
         'Reset links expire for your security',
-        'No account lockouts — just request a new link',
+        'No account lockouts. Just request a new link',
       ]}
       cardIcon="lock_reset"
       cardTitle="Forgot your password?"

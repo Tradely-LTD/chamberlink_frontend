@@ -70,7 +70,7 @@ export function NigeriaTileMap({ origins }: Props) {
       {/* Live readout instead of a floating tooltip: reachable by keyboard, never clipped by the card edge. */}
       <p className="mt-3 h-5 text-xs text-ink-muted tabular-nums" aria-live="polite">
         {active
-          ? <><span className="font-semibold text-ink">{active}</span> — {plural(activeRow?.applications ?? 0, 'application')}, {activeRow?.issued ?? 0} issued</>
+          ? <><span className="font-semibold text-ink">{active}</span>: {plural(activeRow?.applications ?? 0, 'application')}, {activeRow?.issued ?? 0} issued</>
           : 'Hover or tab through a state to see its numbers.'}
       </p>
 

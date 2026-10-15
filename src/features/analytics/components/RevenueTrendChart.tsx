@@ -38,17 +38,17 @@ export function RevenueTrendChart({ data }: Props) {
             <stop offset="100%" stopColor={CHART_COLORS.blue} stopOpacity={0.02} />
           </linearGradient>
         </defs>
-        <CartesianGrid vertical={false} stroke="#e2e5e9" />
+        <CartesianGrid vertical={false} stroke="rgb(var(--c-border))" />
         <XAxis
           dataKey="month"
           tickFormatter={monthLabel}
-          tick={{ fontSize: 11, fill: '#74777f' }}
-          axisLine={{ stroke: '#e2e5e9' }}
+          tick={{ fontSize: 11, fill: 'rgb(var(--c-ink-subtle))' }}
+          axisLine={{ stroke: 'rgb(var(--c-border))' }}
           tickLine={false}
         />
         <YAxis
           tickFormatter={fmtNaira}
-          tick={{ fontSize: 11, fill: '#74777f' }}
+          tick={{ fontSize: 11, fill: 'rgb(var(--c-ink-subtle))' }}
           axisLine={false}
           tickLine={false}
           width={48}

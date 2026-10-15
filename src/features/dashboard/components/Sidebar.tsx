@@ -142,6 +142,25 @@ function getNavItems(role: Role | null): NavItem[] {
   }
 }
 
+// Sections the flat per-role lists are grouped into, in display order. Purely
+// presentational — which items a role sees is still decided above.
+const SECTION_OF: Record<string, string> = {
+  'Dashboard': 'Workspace', 'Overview': 'Workspace',
+  'Certificate Applications': 'Workspace', 'Certificate Queue': 'Workspace',
+  'My Company': 'Workspace', 'Company Verification': 'Workspace',
+  'Member Management': 'Workspace', 'All Users': 'Workspace', 'Audit Log': 'Workspace', 'Analytics': 'Workspace',
+  'Bank Verification': 'Workspace', 'Trade Data API': 'Workspace',
+  'Membership': 'Trade services', 'Export Documents': 'Trade services', 'Trade Fair': 'Trade services',
+  'E-Learning': 'Trade services', 'Trade Corridors': 'Trade services', 'Exporter Visibility': 'Trade services',
+  'White-Label': 'Platform', 'Settings': 'Platform',
+  'My Chambers': 'Account', 'Chamber Network': 'Account', 'My Profile': 'Account',
+};
+const SECTION_ORDER = ['Workspace', 'Trade services', 'Platform', 'Account'];
+
+const groupItems = (items: NavItem[]) =>
+  SECTION_ORDER
+    .map((section) => ({ section, items: items.filter((i) => (SECTION_OF[i.label] ?? 'Workspace') === section) }))
+    .filter((g) => g.items.length > 0);
 // "Member Portal" paired with the chamber's own name (e.g. "NACCIMA") read as
 // "NACCIMA's Member Portal" — implying the signed-in user is a NACCIMA member
 // even when they belong to a different chamber entirely (chamberlink_frontend
@@ -261,36 +280,28 @@ export function Sidebar() {
 
   return (
     <aside
-      className={`relative flex h-full flex-col bg-primary transition-[width] duration-200 ${collapsed ? 'w-[72px]' : 'w-60'}`}
+      className={`relative flex h-full flex-col border-r border-border bg-surface transition-[width] duration-200 ${collapsed ? 'w-[72px]' : 'w-64'}`}
+      aria-label="Main navigation"
     >
-      {/* Collapse/expand toggle — floats on the sidebar's edge, Notion/Slack-style */}
+      {/* Collapse/expand toggle — floats on the sidebar's edge */}
       <button
         onClick={() => setCollapsed((v) => !v)}
         title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-        className="absolute -right-3 top-16 z-10 h-6 w-6 rounded-full border border-border bg-white shadow-sm flex items-center justify-center text-ink-subtle hover:text-primary transition-colors"
+        className="absolute -right-3 top-[22px] z-10 hidden md:flex h-6 w-6 rounded-full border border-border-strong bg-surface shadow-card items-center justify-center text-ink-subtle hover:text-primary hover:border-primary transition-colors"
       >
-        <span
-          className="material-symbols-outlined"
-          style={{ fontSize: 16, fontVariationSettings: `'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 16` }}
-        >
+        <span className="material-symbols-outlined" aria-hidden="true" style={{ fontSize: 16 }}>
           {collapsed ? 'chevron_right' : 'chevron_left'}
         </span>
       </button>
 
-      {/* Logo — white backdrop plate so the multi-color seal doesn't wash out against the blue nav */}
-      <div className={`flex items-center gap-3 pt-6 pb-5 border-b border-white/10 ${collapsed ? 'justify-center px-2' : 'px-5'}`}>
-        <div className="h-10 w-10 rounded-full bg-white flex items-center justify-center flex-shrink-0 shadow-sm">
-          <img
-            src="/naccima-seal.png"
-            alt="NACCIMA seal"
-            className="h-9 w-9 object-contain"
-          />
-        </div>
+      {/* Brand */}
+      <div className={`flex h-16 flex-shrink-0 items-center gap-3 border-b border-border ${collapsed ? 'justify-center px-2' : 'px-5'}`}>
+        <img src="/naccima-seal.png" alt="NACCIMA seal" className="h-9 w-9 flex-shrink-0 object-contain" />
         {!collapsed && (
-          <div className="min-w-0">
-            <p className="text-white font-bold text-sm leading-tight truncate">{orgName}</p>
-            <p className="text-white/50 text-xs mt-0.5 font-medium truncate">
+          <div className="min-w-0 leading-tight">
+            <p className="truncate text-[14px] font-semibold text-ink">{orgName}</p>
+            <p className="truncate text-2xs font-medium uppercase text-ink-subtle mt-0.5">
               {role ? (portalLabel[role] ?? 'Portal') : 'Digital Gateway'}
             </p>
           </div>
@@ -299,82 +310,76 @@ export function Sidebar() {
 
       {/* Nav — relative wrapper enables the fade overlay */}
       <div className="relative flex-1 min-h-0">
-        <nav ref={navRef} className="h-full px-3 py-4 overflow-y-auto">
-          <ul className="space-y-0.5">
-            {visibleItems.map((item) => (
-            <li key={item.to}>
-              <NavLink
-                to={item.to}
-                end={item.end}
-                title={collapsed ? item.label : undefined}
-                className={({ isActive }) =>
-                  `flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${collapsed ? 'justify-center' : 'gap-3'} ${
-                    isActive
-                      ? 'bg-white/15 text-white'
-                      : 'text-white/60 hover:bg-white/8 hover:text-white/90'
-                  }`
-                }
-              >
-                {({ isActive }) => (
-                  <>
-                    <span
-                      className="material-symbols-outlined flex-shrink-0 select-none"
-                      style={{
-                        fontSize: 20,
-                        fontVariationSettings: `'FILL' ${isActive ? 1 : 0}, 'wght' 400, 'GRAD' 0, 'opsz' 20`,
-                        color: isActive ? '#fff' : 'rgba(255,255,255,0.55)',
-                      }}
+        <nav ref={navRef} className="h-full overflow-y-auto px-3 py-4">
+          {groupItems(visibleItems).map((group, gi) => (
+            <div key={group.section} className={gi > 0 ? 'mt-5' : ''}>
+              {!collapsed ? (
+                <p className="px-3 mb-1.5 text-2xs font-semibold uppercase text-ink-subtle">{group.section}</p>
+              ) : gi > 0 ? (
+                <div className="mx-3 mb-3 border-t border-border" aria-hidden="true" />
+              ) : null}
+              <ul className="space-y-0.5">
+                {group.items.map((item) => (
+                  <li key={item.to}>
+                    <NavLink
+                      to={item.to}
+                      end={item.end}
+                      title={collapsed ? item.label : undefined}
+                      className={({ isActive }) =>
+                        `group relative flex h-9 items-center rounded-control px-3 text-[13.5px] transition-colors duration-150 focus-visible:shadow-focus ${collapsed ? 'justify-center' : 'gap-3'} ${
+                          isActive
+                            ? 'bg-primary-soft font-semibold text-primary before:absolute before:-left-3 before:top-1.5 before:bottom-1.5 before:w-[3px] before:rounded-r before:bg-primary'
+                            : 'font-medium text-ink-muted hover:bg-surface-alt hover:text-ink'
+                        }`
+                      }
                     >
-                      {item.icon}
-                    </span>
-                    {!collapsed && <span className={isActive ? 'text-white' : 'text-white/60'}>{item.label}</span>}
-                  </>
-                )}
-              </NavLink>
-            </li>
-            ))}
-          </ul>
+                      {({ isActive }) => (
+                        <>
+                          <span
+                            className={`material-symbols-outlined flex-shrink-0 ${isActive ? 'text-primary' : 'text-ink-subtle group-hover:text-ink-muted'}`}
+                            aria-hidden="true"
+                            style={{ fontSize: 19, fontVariationSettings: `'FILL' ${isActive ? 1 : 0}, 'wght' 400, 'GRAD' 0, 'opsz' 20` }}
+                          >
+                            {item.icon}
+                          </span>
+                          {!collapsed && <span className="truncate">{item.label}</span>}
+                        </>
+                      )}
+                    </NavLink>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </nav>
         {/* Fade indicator — visible only when more items are below the fold */}
         {canScrollMore && (
-          <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-b from-transparent to-primary" />
+          <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-b from-transparent to-surface" />
         )}
       </div>
 
-      {/* User + Logout */}
-      <div className="px-3 pb-4 border-t border-white/10 pt-4">
+      {/* User + sign out — separated from navigation on purpose */}
+      <div className="border-t border-border p-3">
         {user && (
-          <div className={`flex items-center mb-3 ${collapsed ? 'justify-center' : 'gap-3 px-3'}`} title={collapsed ? `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() : undefined}>
-            <div
-              className="h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
-              style={{ background: '#1b365d', color: '#aec7f7' }}
-            >
+          <div className={`flex items-center rounded-control px-2 py-2 ${collapsed ? 'justify-center' : 'gap-3'}`} title={collapsed ? `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() : undefined}>
+            <div className="h-8 w-8 flex-shrink-0 rounded-full bg-primary-soft text-primary flex items-center justify-center text-xs font-semibold">
               {initials}
             </div>
             {!collapsed && (
-              <div className="min-w-0">
-                <p className="text-white text-xs font-semibold truncate">
-                  {user.firstName} {user.lastName}
-                </p>
-                <p className="text-white/50 text-xs truncate">
-                  {role ? (roleLabels[role] ?? role) : ''}
-                </p>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-[13px] font-semibold text-ink">{user.firstName} {user.lastName}</p>
+                <p className="truncate text-xs text-ink-subtle">{role ? (roleLabels[role] ?? role) : ''}</p>
               </div>
             )}
           </div>
         )}
         <button
           onClick={handleLogout}
-          title={collapsed ? 'Sign Out' : undefined}
-          className={`w-full flex items-center rounded-lg px-3 py-2.5 text-sm font-medium text-white/50 hover:bg-white/8 hover:text-white transition-all ${collapsed ? 'justify-center' : 'gap-3'}`}
+          title={collapsed ? 'Sign out' : undefined}
+          className={`mt-1 flex h-9 w-full items-center rounded-control px-3 text-[13.5px] font-medium text-ink-muted transition-colors hover:bg-danger-bg hover:text-danger focus-visible:shadow-focus ${collapsed ? 'justify-center' : 'gap-3'}`}
         >
-          <span
-            className="material-symbols-outlined flex-shrink-0"
-            style={{ fontSize: 20, fontVariationSettings: `'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20` }}
-          >
-            logout
-          </span>
-          {!collapsed && 'Sign Out'}
+          <span className="material-symbols-outlined flex-shrink-0" aria-hidden="true" style={{ fontSize: 19 }}>logout</span>
+          {!collapsed && 'Sign out'}
         </button>
       </div>
     </aside>

@@ -169,24 +169,24 @@ const {
 // ── Demo data ─────────────────────────────────────────────────────────────
 
 const demoCorridors: TradeCorridor[] = [
-  { id: 'c1', title: 'Nigeria — China Trade Corridor', origin: 'Kano, Nigeria', destination: 'Guangzhou, China', category: 'Manufacturing & Textiles', description: 'Facilitating exports of leather, hides, and agricultural products to China, with return imports of machinery and electronics.', status: 'active', memberCount: 214, tradeVolume: '$42M / year', sponsors: [{ id: 's1', companyName: 'Dantata & Sawoe Ltd', tier: 'gold' }, { id: 's2', companyName: 'Kano Textile Mills', tier: 'silver' }], sponsorSlotsAvailable: 1, sponsorPriceGold: 500000, sponsorPriceSilver: 250000, isFollowing: true },
-  { id: 'c2', title: 'Nigeria — UAE Trade Corridor', origin: 'Kano, Nigeria', destination: 'Dubai, UAE', category: 'Agriculture & Food', description: 'Promoting Nigerian groundnuts, sesame seeds, and shea butter to the Gulf market and connecting Nigerian businesses to UAE investors.', status: 'active', memberCount: 178, tradeVolume: '$28M / year', sponsors: [{ id: 's3', companyName: 'Arewa Agro Exports', tier: 'gold' }], sponsorSlotsAvailable: 2, sponsorPriceGold: 500000, sponsorPriceSilver: 250000, isFollowing: false },
-  { id: 'c3', title: 'Nigeria — UK Trade Corridor', origin: 'Kano, Nigeria', destination: 'London, UK', category: 'Creative & Cultural Goods', description: 'Connecting Northern Nigerian artisans, leather craftsmen, and cultural goods exporters to UK buyers and diaspora markets.', status: 'active', memberCount: 132, tradeVolume: '$12M / year', sponsors: [], sponsorSlotsAvailable: 3, sponsorPriceGold: 500000, sponsorPriceSilver: 250000, isFollowing: false },
-  { id: 'c4', title: 'Nigeria — West Africa Intra-Regional', origin: 'Kano, Nigeria', destination: 'Accra / Abidjan / Dakar', category: 'ECOWAS Free Trade', description: 'Leveraging ECOWAS protocols to facilitate preferential-tariff trade across West Africa for NACCIMA members.', status: 'upcoming', memberCount: 0, sponsors: [], sponsorSlotsAvailable: 3, sponsorPriceGold: 350000, sponsorPriceSilver: 175000, isFollowing: false },
+  { id: 'c1', title: 'Nigeria–China Trade Corridor', origin: 'Kano, Nigeria', destination: 'Guangzhou, China', category: 'Manufacturing & Textiles', description: 'Facilitating exports of leather, hides, and agricultural products to China, with return imports of machinery and electronics.', status: 'active', memberCount: 214, tradeVolume: '$42M / year', sponsors: [{ id: 's1', companyName: 'Dantata & Sawoe Ltd', tier: 'gold' }, { id: 's2', companyName: 'Kano Textile Mills', tier: 'silver' }], sponsorSlotsAvailable: 1, sponsorPriceGold: 500000, sponsorPriceSilver: 250000, isFollowing: true },
+  { id: 'c2', title: 'Nigeria–UAE Trade Corridor', origin: 'Kano, Nigeria', destination: 'Dubai, UAE', category: 'Agriculture & Food', description: 'Promoting Nigerian groundnuts, sesame seeds, and shea butter to the Gulf market and connecting Nigerian businesses to UAE investors.', status: 'active', memberCount: 178, tradeVolume: '$28M / year', sponsors: [{ id: 's3', companyName: 'Arewa Agro Exports', tier: 'gold' }], sponsorSlotsAvailable: 2, sponsorPriceGold: 500000, sponsorPriceSilver: 250000, isFollowing: false },
+  { id: 'c3', title: 'Nigeria–UK Trade Corridor', origin: 'Kano, Nigeria', destination: 'London, UK', category: 'Creative & Cultural Goods', description: 'Connecting Northern Nigerian artisans, leather craftsmen, and cultural goods exporters to UK buyers and diaspora markets.', status: 'active', memberCount: 132, tradeVolume: '$12M / year', sponsors: [], sponsorSlotsAvailable: 3, sponsorPriceGold: 500000, sponsorPriceSilver: 250000, isFollowing: false },
+  { id: 'c4', title: 'Nigeria–West Africa Intra-Regional', origin: 'Kano, Nigeria', destination: 'Accra / Abidjan / Dakar', category: 'ECOWAS Free Trade', description: 'Leveraging ECOWAS protocols to facilitate preferential-tariff trade across West Africa for NACCIMA members.', status: 'upcoming', memberCount: 0, sponsors: [], sponsorSlotsAvailable: 3, sponsorPriceGold: 350000, sponsorPriceSilver: 175000, isFollowing: false },
 ];
 
 const demoMyApplications: SponsorApplication[] = [
-  { id: 'a1', corridorId: 'c1', corridorTitle: 'Nigeria — China Trade Corridor', companyName: 'My Company Ltd', tier: 'silver', status: 'approved', createdAt: '2025-02-10T00:00:00Z', appliedAt: '2025-02-10T00:00:00Z', amount: 250000 },
+  { id: 'a1', corridorId: 'c1', corridorTitle: 'Nigeria–China Trade Corridor', companyName: 'My Company Ltd', tier: 'silver', status: 'approved', createdAt: '2025-02-10T00:00:00Z', appliedAt: '2025-02-10T00:00:00Z', amount: 250000 },
 ];
 
 const demoAllApplications: SponsorApplication[] = [
-  { id: 'a1', corridorId: 'c1', corridorTitle: 'Nigeria — China Trade Corridor', companyName: 'My Company Ltd', tier: 'silver', status: 'approved', createdAt: '2025-02-10T00:00:00Z', appliedAt: '2025-02-10T00:00:00Z', amount: 250000, memberName: 'Amina Musa' },
-  { id: 'a2', corridorId: 'c3', corridorTitle: 'Nigeria — UK Trade Corridor', companyName: 'Kano Export House', tier: 'gold', status: 'pending_review', createdAt: '2025-04-01T00:00:00Z', appliedAt: '2025-04-01T00:00:00Z', amount: 500000, memberName: 'Ibrahim Dantata' },
+  { id: 'a1', corridorId: 'c1', corridorTitle: 'Nigeria–China Trade Corridor', companyName: 'My Company Ltd', tier: 'silver', status: 'approved', createdAt: '2025-02-10T00:00:00Z', appliedAt: '2025-02-10T00:00:00Z', amount: 250000, memberName: 'Amina Musa' },
+  { id: 'a2', corridorId: 'c3', corridorTitle: 'Nigeria–UK Trade Corridor', companyName: 'Kano Export House', tier: 'gold', status: 'pending_review', createdAt: '2025-04-01T00:00:00Z', appliedAt: '2025-04-01T00:00:00Z', amount: 500000, memberName: 'Ibrahim Dantata' },
 ];
 
 const demoMyMemberships: CorridorMembershipItem[] = [
-  { corridorId: 'c1', corridorTitle: 'Nigeria — China Trade Corridor', joinedAt: '2025-03-15T00:00:00Z', source: 'manual' },
-  { corridorId: 'c2', corridorTitle: 'Nigeria — UAE Trade Corridor', joinedAt: '2025-04-20T00:00:00Z', source: 'eco-auto' },
+  { corridorId: 'c1', corridorTitle: 'Nigeria–China Trade Corridor', joinedAt: '2025-03-15T00:00:00Z', source: 'manual' },
+  { corridorId: 'c2', corridorTitle: 'Nigeria–UAE Trade Corridor', joinedAt: '2025-04-20T00:00:00Z', source: 'eco-auto' },
 ];
 
 const demoCorridorMembers: CorridorMemberRow[] = [
@@ -195,22 +195,22 @@ const demoCorridorMembers: CorridorMemberRow[] = [
 ];
 
 const tierConfig = {
-  gold:   { label: 'Gold',   bg: '#ffdea5', text: '#5d4201', accent: '#c5a059' },
-  silver: { label: 'Silver', bg: '#e0e3e5', text: '#44474e', accent: '#74777f' },
-  bronze: { label: 'Bronze', bg: '#ffdad6', text: '#93000a', accent: '#ba1a1a' },
+  gold:   { label: 'Gold',   bg: 'rgb(var(--c-warning-bg))', text: 'rgb(var(--c-warning))', accent: 'rgb(var(--c-gold-light))' },
+  silver: { label: 'Silver', bg: 'rgb(var(--c-border))', text: 'rgb(var(--c-ink-muted))', accent: 'rgb(var(--c-ink-subtle))' },
+  bronze: { label: 'Bronze', bg: 'rgb(var(--c-danger-bg))', text: 'rgb(var(--c-danger))', accent: 'rgb(var(--c-danger))' },
 };
 
 const corridorStatusConfig = {
-  active:   { label: 'Active',   bg: '#a0f4ca', text: '#005137' },
-  inactive: { label: 'Inactive', bg: '#e0e3e5', text: '#44474e' },
-  upcoming: { label: 'Upcoming', bg: '#ffdea5', text: '#5d4201' },
+  active:   { label: 'Active',   bg: 'rgb(var(--c-success-bg))', text: 'rgb(var(--c-success))' },
+  inactive: { label: 'Inactive', bg: 'rgb(var(--c-border))', text: 'rgb(var(--c-ink-muted))' },
+  upcoming: { label: 'Upcoming', bg: 'rgb(var(--c-warning-bg))', text: 'rgb(var(--c-warning))' },
 };
 
 const appStatusConfig: Record<string, { label: string; bg: string; text: string }> = {
-  pending_payment: { label: 'Awaiting Payment', bg: '#e0e3e5', text: '#44474e' },
-  pending_review:  { label: 'Under Review',     bg: '#ffdea5', text: '#5d4201' },
-  approved:        { label: 'Approved',          bg: '#a0f4ca', text: '#005137' },
-  rejected:        { label: 'Rejected',          bg: '#ffdad6', text: '#93000a' },
+  pending_payment: { label: 'Awaiting Payment', bg: 'rgb(var(--c-border))', text: 'rgb(var(--c-ink-muted))' },
+  pending_review:  { label: 'Under Review',     bg: 'rgb(var(--c-warning-bg))', text: 'rgb(var(--c-warning))' },
+  approved:        { label: 'Approved',          bg: 'rgb(var(--c-success-bg))', text: 'rgb(var(--c-success))' },
+  rejected:        { label: 'Rejected',          bg: 'rgb(var(--c-danger-bg))', text: 'rgb(var(--c-danger))' },
 };
 
 const ADMIN_ROLES = ['chamber_admin', 'chamber_executive', 'super_admin', 'staff_operator'];
@@ -274,7 +274,7 @@ function SponsorModal({ corridor, onClose }: { corridor: TradeCorridor; onClose:
             <Button variant="outline" onClick={onClose}>Cancel</Button>
             <button disabled={isLoading} onClick={handleApply}
               className="flex-1 flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
-              style={{ background: '#023293' }}>
+              style={{ background: 'rgb(var(--c-primary))' }}>
               {isLoading ? 'Processing…' : <><span className="material-symbols-outlined" style={{ fontSize: 16 }}>payments</span>Proceed to Payment</>}
             </button>
           </div>
@@ -326,7 +326,7 @@ function MemberCorridorsView() {
     // fire and fail when we already know it will. Matches
     // requireActiveMembership on the backend.
     if (!hasActiveConnection) {
-      setFollowError('Following a trade corridor requires an active, paid membership — complete your dues payment first.');
+      setFollowError('Following a trade corridor requires an active, paid membership. Complete your dues payment first.');
       return;
     }
     setJoiningId(corridorId);
@@ -337,7 +337,7 @@ function MemberCorridorsView() {
       if (e?.status === 409) {
         // Already following — ignore, list will refresh
       } else if (e?.status === 403 && e?.data?.message === 'MEMBERSHIP_NOT_ACTIVE') {
-        setFollowError('Following a trade corridor requires an active, paid membership — complete your dues payment first.');
+        setFollowError('Following a trade corridor requires an active, paid membership. Complete your dues payment first.');
       } else if (e?.status === 403) {
         setFollowError('Permission denied (403). Make sure your account has member role.');
       } else if (e?.status === 404) {
@@ -370,20 +370,20 @@ function MemberCorridorsView() {
   const memberships = myMemberships ?? (membershipsLoading ? demoMyMemberships : []);
 
   return (
-    <div className="p-6 max-w-4xl">
+    <div className="mx-auto w-full max-w-4xl px-4 py-6 sm:px-8 sm:py-8">
       {sponsorCorridor && <SponsorModal corridor={sponsorCorridor} onClose={() => setSponsorCorridor(null)} />}
 
       {/* DB / network error — shown instead of fake demo data */}
       {corridorsError && !isLoading && (
-        <div className="mb-4 flex items-center gap-3 rounded-xl border border-[#ffdad6] bg-[#fff5f5] px-4 py-3 text-sm text-[#93000a]">
+        <div className="mb-4 flex items-center gap-3 rounded-xl border border-danger-bg bg-[#fff5f5] px-4 py-3 text-sm text-danger">
           <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1` }}>wifi_off</span>
-          Could not load corridors — check your connection and <button onClick={() => window.location.reload()} className="underline font-semibold ml-1">refresh</button>.
+          Could not load corridors. Check your connection and <button onClick={() => window.location.reload()} className="underline font-semibold ml-1">refresh</button>.
         </div>
       )}
 
       {/* Payment verification banners */}
       {verifying && (
-        <div className="mb-4 flex items-center gap-3 rounded-xl border border-[#d6e3ff] bg-[#f0f4ff] px-4 py-3 text-sm text-primary">
+        <div className="mb-4 flex items-center gap-3 rounded-xl border border-primary-soft bg-primary-soft px-4 py-3 text-sm text-primary">
           <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent flex-shrink-0" />
           Verifying your sponsorship payment…
         </div>
@@ -392,8 +392,8 @@ function MemberCorridorsView() {
         <div
           className="mb-4 flex items-center gap-3 rounded-xl border px-4 py-3 text-sm"
           style={sponsorMsg.confirmed
-            ? { borderColor: '#a0f4ca', background: '#f0fdf6', color: '#005137' }
-            : { borderColor: '#ffdea5', background: '#fffbf0', color: '#5d4201' }}
+            ? { borderColor: 'rgb(var(--c-success-bg))', background: '#f0fdf6', color: 'rgb(var(--c-success))' }
+            : { borderColor: 'rgb(var(--c-warning-bg))', background: 'rgb(var(--c-warning-bg))', color: 'rgb(var(--c-warning))' }}
         >
           <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1` }}>
             {sponsorMsg.confirmed ? 'check_circle' : 'info'}
@@ -414,13 +414,13 @@ function MemberCorridorsView() {
 
       {/* How it works banner */}
       <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 mb-6 flex items-start gap-3">
-        <span className="material-symbols-outlined flex-shrink-0 mt-0.5" style={{ fontSize: 20, color: '#023293', fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20` }}>info</span>
+        <span className="material-symbols-outlined flex-shrink-0 mt-0.5" style={{ fontSize: 20, color: 'rgb(var(--c-primary))', fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20` }}>info</span>
         <div>
           <p className="text-sm font-semibold text-ink mb-1">How sponsorships work</p>
           <ol className="text-xs text-ink-subtle space-y-0.5 list-decimal list-inside">
             <li>Pick a corridor below and click <strong>Become a Sponsor</strong>.</li>
             <li>Choose Gold or Silver tier, then proceed to our secure payment gateway (Paystack / Flutterwave).</li>
-            <li>Once payment is confirmed your company name and badge appear on the corridor — visible to all NACCIMA members and exporters.</li>
+            <li>Once payment is confirmed your company name and badge appear on the corridor, visible to all NACCIMA members and exporters.</li>
           </ol>
         </div>
       </div>
@@ -429,7 +429,7 @@ function MemberCorridorsView() {
         {([['corridors', 'All Corridors'], ['my-activity', 'My Activity']] as const).map(([t, label]) => (
           <button key={t} onClick={() => setTab(t)} className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === t ? 'bg-white text-ink shadow-sm' : 'text-ink-subtle hover:text-ink'}`}>
             {label}
-            {t === 'my-activity' && (memberships.length + apps.length) > 0 && <span className="ml-1.5 rounded-full px-1.5 py-0.5 text-xs text-white font-bold" style={{ background: '#023293' }}>{memberships.length + apps.length}</span>}
+            {t === 'my-activity' && (memberships.length + apps.length) > 0 && <span className="ml-1.5 rounded-full px-1.5 py-0.5 text-xs text-white font-bold" style={{ background: 'rgb(var(--c-primary))' }}>{memberships.length + apps.length}</span>}
           </button>
         ))}
       </div>
@@ -443,7 +443,7 @@ function MemberCorridorsView() {
               const canSponsor = c.sponsorSlotsAvailable > 0 && c.status !== 'inactive';
               return (
                 <div key={c.id} className="bg-white rounded-xl border border-border overflow-hidden">
-                  <div className="p-6">
+                  <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8">
                     <div className="flex items-start justify-between gap-4 mb-3">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 flex-wrap mb-1">
@@ -519,15 +519,15 @@ function MemberCorridorsView() {
                       </div>
                       <button onClick={() => setSponsorCorridor(c)}
                         className="flex-shrink-0 flex items-center gap-1.5 rounded-lg px-5 py-2.5 text-sm font-semibold text-white shadow-sm"
-                        style={{ background: '#023293' }}>
+                        style={{ background: 'rgb(var(--c-primary))' }}>
                         <span className="material-symbols-outlined" style={{ fontSize: 16 }}>workspace_premium</span>
                         Become a Sponsor
                       </button>
                     </div>
                   )}
                   {!canSponsor && c.status === 'upcoming' && (
-                    <div className="border-t border-border bg-[#ffdea5]/20 px-6 py-3">
-                      <p className="text-xs text-[#5d4201]">Sponsorships open when this corridor launches.</p>
+                    <div className="border-t border-border bg-warning-bg/20 px-6 py-3">
+                      <p className="text-xs text-warning">Sponsorships open when this corridor launches.</p>
                     </div>
                   )}
                 </div>
@@ -545,7 +545,7 @@ function MemberCorridorsView() {
             {memberships.length === 0 ? (
               <div className="bg-white rounded-xl border border-border p-10 text-center">
                 <p className="text-sm text-ink-subtle mb-4">You are not following any corridors yet.</p>
-                <button onClick={() => setTab('corridors')} className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white" style={{ background: '#023293' }}>Browse Corridors</button>
+                <button onClick={() => setTab('corridors')} className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white" style={{ background: 'rgb(var(--c-primary))' }}>Browse Corridors</button>
               </div>
             ) : (
               <div className="space-y-2">
@@ -558,7 +558,7 @@ function MemberCorridorsView() {
                       </p>
                     </div>
                     <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold flex-shrink-0"
-                      style={m.source === 'eco-auto' ? { background: '#a0f4ca', color: '#005137' } : { background: '#e0e3e5', color: '#44474e' }}>
+                      style={m.source === 'eco-auto' ? { background: 'rgb(var(--c-success-bg))', color: 'rgb(var(--c-success))' } : { background: 'rgb(var(--c-border))', color: 'rgb(var(--c-ink-muted))' }}>
                       {m.source === 'eco-auto' ? 'Added via eCO' : 'Joined manually'}
                     </span>
                   </div>
@@ -573,7 +573,7 @@ function MemberCorridorsView() {
             {apps.length === 0 ? (
               <div className="bg-white rounded-xl border border-border p-10 text-center">
                 <p className="text-sm text-ink-subtle mb-4">No sponsorship applications yet.</p>
-                <button onClick={() => setTab('corridors')} className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white" style={{ background: '#023293' }}>Browse Corridors</button>
+                <button onClick={() => setTab('corridors')} className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white" style={{ background: 'rgb(var(--c-primary))' }}>Browse Corridors</button>
               </div>
             ) : (
               <div className="space-y-3">
@@ -639,9 +639,9 @@ function ApplicationDetailModal({
           {/* Applicant */}
           <div>
             <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide mb-2">Applicant</p>
-            <div className="rounded-xl border border-border divide-y divide-[#f0f2f4]">
+            <div className="rounded-xl border border-border divide-y divide-border-subtle">
               {[
-                { label: 'Member Name', value: app.memberName ?? '—' },
+                { label: 'Member Name', value: app.memberName ?? '–' },
                 { label: 'Company', value: app.companyName },
                 { label: 'Sponsorship Tier', value: <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ background: tc.bg, color: tc.text }}>{tc.label} Sponsor</span> },
                 { label: 'Amount', value: `₦${app.amount.toLocaleString()}` },
@@ -689,11 +689,11 @@ function ApplicationDetailModal({
             <div className="flex gap-3 pt-1">
               <Button variant="outline" onClick={onClose}>Cancel</Button>
               <button disabled={updating} onClick={() => onUpdate('rejected')}
-                className="flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50" style={{ background: '#ba1a1a' }}>
+                className="flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50" style={{ background: 'rgb(var(--c-danger))' }}>
                 {updating ? 'Saving…' : 'Reject'}
               </button>
               <button disabled={updating} onClick={() => onUpdate('approved')}
-                className="flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50" style={{ background: '#0b6c4b' }}>
+                className="flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50" style={{ background: 'rgb(var(--c-success))' }}>
                 {updating ? 'Saving…' : 'Approve'}
               </button>
             </div>
@@ -740,18 +740,18 @@ function CorridorMembersSection({ corridorId, isExpanded }: { corridorId: string
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#f0f2f4]">
+              <tbody className="divide-y divide-border-subtle">
                 {items.map((m) => (
                   <tr key={m.id} className="hover:bg-surface-alt">
                     <td className="px-4 py-2.5 font-medium text-ink">{m.name}</td>
-                    <td className="px-4 py-2.5 text-ink-subtle">{m.companyName ?? '—'}</td>
+                    <td className="px-4 py-2.5 text-ink-subtle">{m.companyName ?? '–'}</td>
                     <td className="px-4 py-2.5 font-mono text-xs text-ink-subtle">{m.memberId}</td>
                     <td className="px-4 py-2.5 text-xs text-ink-subtle">
                       {new Date(m.joinedAt).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'short', year: 'numeric' })}
                     </td>
                     <td className="px-4 py-2.5">
                       <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold"
-                        style={m.source === 'eco-auto' ? { background: '#a0f4ca', color: '#005137' } : { background: '#e0e3e5', color: '#44474e' }}>
+                        style={m.source === 'eco-auto' ? { background: 'rgb(var(--c-success-bg))', color: 'rgb(var(--c-success))' } : { background: 'rgb(var(--c-border))', color: 'rgb(var(--c-ink-muted))' }}>
                         {m.source === 'eco-auto' ? 'eCO Auto' : 'Manual'}
                       </span>
                     </td>
@@ -894,7 +894,7 @@ function CreateCorridorModal({ initial, onClose }: { initial?: TradeCorridor; on
 
           <div className="flex gap-3 pt-2">
             <Button variant="outline" type="button" onClick={onClose}>Cancel</Button>
-            <button type="submit" disabled={isLoading} className="flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50" style={{ background: '#023293' }}>
+            <button type="submit" disabled={isLoading} className="flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50" style={{ background: 'rgb(var(--c-primary))' }}>
               {isLoading ? 'Saving…' : initial ? 'Save Changes' : 'Create Corridor'}
             </button>
           </div>
@@ -926,7 +926,7 @@ function AdminCorridorsView() {
   };
 
   return (
-    <div className="p-6 max-w-6xl">
+    <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8">
       {selectedApp && (
         <ApplicationDetailModal
           app={selectedApp}
@@ -952,7 +952,7 @@ function AdminCorridorsView() {
         <button
           onClick={() => setShowCreateCorridor(true)}
           className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white"
-          style={{ background: '#023293' }}
+          style={{ background: 'rgb(var(--c-primary))' }}
         >
           <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>
           Create Corridor
@@ -966,10 +966,10 @@ function AdminCorridorsView() {
           { icon: 'pending', label: 'Pending Applications', value: pending },
           { icon: 'workspace_premium', label: 'Total Sponsors', value: allCorridors.reduce((s, c) => s + c.sponsors.length, 0) },
         ].map(({ icon, label, value, accent }) => (
-          <div key={label} className={`rounded-xl border p-4 ${accent ? '' : 'bg-white border-border'}`} style={accent ? { background: '#023293', borderColor: '#023293' } : {}}>
+          <div key={label} className={`rounded-xl border p-4 ${accent ? '' : 'bg-white border-border'}`} style={accent ? { background: 'rgb(var(--c-primary))', borderColor: 'rgb(var(--c-primary))' } : {}}>
             <div className="flex items-center gap-2 mb-2">
-              <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`, color: accent ? '#aec7f7' : '#74777f' }}>{icon}</span>
-              <p className={`text-xs font-semibold uppercase tracking-wide ${accent ? 'text-[#aec7f7]' : 'text-ink-subtle'}`}>{label}</p>
+              <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`, color: accent ? 'rgb(var(--c-primary-200))' : 'rgb(var(--c-ink-subtle))' }}>{icon}</span>
+              <p className={`text-xs font-semibold uppercase tracking-wide ${accent ? 'text-primary-200' : 'text-ink-subtle'}`}>{label}</p>
             </div>
             <p className={`text-2xl font-bold ${accent ? 'text-white' : 'text-ink'}`}>{value}</p>
           </div>
@@ -1074,7 +1074,7 @@ function AdminCorridorsView() {
 
       {tab === 'applications' && (
         <div className="bg-white rounded-xl border border-border overflow-hidden">
-          {appsLoading ? <div className="p-6"><SkeletonCard /></div> : (
+          {appsLoading ? <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8"><SkeletonCard /></div> : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
@@ -1084,14 +1084,14 @@ function AdminCorridorsView() {
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#f0f2f4]">
+                <tbody className="divide-y divide-border-subtle">
                   {allApps.map((app) => {
                     const ac = appStatusConfig[app.status];
                     const tc = tierConfig[app.tier];
                     return (
                       <tr key={app.id} className="hover:bg-surface-alt transition-colors">
                         <td className="px-4 py-3">
-                          <p className="font-medium text-ink">{app.memberName ?? '—'}</p>
+                          <p className="font-medium text-ink">{app.memberName ?? '–'}</p>
                           <p className="text-xs text-ink-subtle">{app.companyName}</p>
                         </td>
                         <td className="px-4 py-3 text-ink-subtle max-w-[160px] truncate">{app.corridorTitle}</td>

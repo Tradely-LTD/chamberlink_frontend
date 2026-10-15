@@ -46,7 +46,7 @@ function StatusNotice({ company }: { company: ExporterCompany }) {
   }
   if (company.verificationStatus === 'failed') {
     return (
-      <div className="mb-4 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+      <div className="mb-4 rounded-lg bg-danger-bg border border-danger-border px-4 py-3 text-sm text-danger">
         <strong>We couldn&apos;t verify this company.</strong>
         {company.verificationNotes && <div className="mt-1">{company.verificationNotes}</div>}
         <div className="mt-1">
@@ -57,9 +57,9 @@ function StatusNotice({ company }: { company: ExporterCompany }) {
     );
   }
   return (
-    <div className="mb-4 rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-800">
+    <div className="mb-4 rounded-lg bg-warning-bg border border-warning-border px-4 py-3 text-sm text-warning">
       <strong>Awaiting verification.</strong> NACCIMA is confirming your TIN against tax records. This
-      doesn&apos;t block you — you can apply for certificates now, entering your company details on the
+      doesn&apos;t block you. You can apply for certificates now, entering your company details on the
       application. Once verified, they&apos;ll be filled in for you.
     </div>
   );
@@ -97,7 +97,7 @@ function RegisterCompanyForm() {
       <p className="mt-1 mb-5 text-sm text-ink-subtle">
         Your company is identified by its Tax Identification Number. Once NACCIMA has confirmed it
         against tax records, your registered name and address are applied to every certificate
-        application automatically — you won&apos;t type them in again.
+        application automatically, so you won&apos;t type them in again.
       </p>
 
       {error && <div className="mb-4"><ErrorBanner message={error} /></div>}
@@ -243,7 +243,7 @@ function SubUsers({ data }: { data: MyCompanyResponse & { company: ExporterCompa
                 </Button>
               </div>
               <p className="mt-2 text-xs text-ink-subtle">
-                They must have registered on Chamberlink first — ask them to create an account, then add
+                They must have registered on Chamberlink first. Ask them to create an account, then add
                 them here.
               </p>
             </>
@@ -262,10 +262,10 @@ function SubUsers({ data }: { data: MyCompanyResponse & { company: ExporterCompa
 export function CompanyPage() {
   const { data, isLoading, isError, refetch } = useGetMyCompanyQuery();
 
-  if (isLoading) return <div className="p-6 max-w-2xl"><SkeletonCard /></div>;
+  if (isLoading) return <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 sm:py-8"><SkeletonCard /></div>;
   if (isError || !data) {
     return (
-      <div className="p-6 max-w-2xl">
+      <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 sm:py-8">
         <ErrorBanner message="Failed to load your company details." />
         <Button variant="outline" onClick={() => refetch()} className="mt-4">Try again</Button>
       </div>
@@ -273,7 +273,7 @@ export function CompanyPage() {
   }
 
   return (
-    <div className="p-6 max-w-3xl">
+    <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 sm:py-8">
       <div className="mb-6">
         <h1 className="text-2xl font-semibold text-ink">My Company</h1>
         <p className="text-sm text-ink-subtle mt-0.5">
@@ -317,7 +317,7 @@ export function CompanyPage() {
                   <div>
                     <dt className="text-xs text-ink-subtle">Address used on certificates</dt>
                     <dd className="text-ink">
-                      {data.company.registeredAddress ?? data.company.submittedAddress ?? '—'}
+                      {data.company.registeredAddress ?? data.company.submittedAddress ?? '–'}
                     </dd>
                   </div>
                 </dl>

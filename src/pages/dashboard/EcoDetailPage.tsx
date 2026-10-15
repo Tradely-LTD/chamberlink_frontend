@@ -25,7 +25,7 @@ const statusVariant: Record<ECertStatus, 'success' | 'warning' | 'error' | 'defa
 
 const statusLabel: Record<ECertStatus, string> = {
   draft: 'Draft', submitted: 'Submitted', under_review: 'Under Review',
-  pending_payment: 'Awaiting Payment', approved: 'Approved — Awaiting Payment', issued: 'Issued',
+  pending_payment: 'Awaiting Payment', approved: 'Approved, awaiting payment', issued: 'Issued',
   rejected: 'Rejected', revision_requested: 'Revision Required', revoked: 'Revoked',
 };
 
@@ -45,7 +45,7 @@ const ADMIN_ROLES = ['super_admin', 'chamber_admin', 'staff_operator', 'chamber_
 const Row = ({ label, value }: { label: string; value: ReactNode }) => (
   <div className="flex items-start py-3 border-b border-border/20 last:border-0">
     <span className="w-56 shrink-0 text-sm text-ink-subtle">{label}</span>
-    <span className="text-sm text-ink font-medium">{value ?? '—'}</span>
+    <span className="text-sm text-ink font-medium">{value ?? '–'}</span>
   </div>
 );
 
@@ -80,10 +80,10 @@ const DocRow = ({ label, certId, docType, attached }: {
           >
             {isFetching ? 'Opening…' : 'View Attached'}
           </button>
-          {error && <span className="text-xs text-red-600">{error}</span>}
+          {error && <span className="text-xs text-danger">{error}</span>}
         </span>
       ) : (
-        <span className="text-sm text-ink font-medium">—</span>
+        <span className="text-sm text-ink font-medium">–</span>
       )}
     </div>
   );
@@ -111,9 +111,9 @@ export function EcoDetailPage() {
   const [revokeReason, setRevokeReason] = useState('');
   const [actionError, setActionError] = useState<string | null>(null);
 
-  if (isLoading) return <div className="p-6 max-w-3xl"><SkeletonCard /></div>;
+  if (isLoading) return <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 sm:py-8"><SkeletonCard /></div>;
   if (isError || !cert) return (
-    <div className="p-6 max-w-3xl">
+    <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 sm:py-8">
       <ErrorBanner message="Failed to load certificate details. You may not have permission to view this certificate." />
       <Link to="/dashboard/eco" className="inline-block mt-4 text-sm text-primary hover:underline">
         ← Back
@@ -205,7 +205,7 @@ export function EcoDetailPage() {
   };
 
   return (
-    <div className="p-6 max-w-3xl">
+    <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 sm:py-8">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 mb-6">
         <Link to="/dashboard/eco" className="text-sm text-ink-subtle hover:text-primary">
@@ -223,7 +223,7 @@ export function EcoDetailPage() {
           <h1 className="text-2xl font-semibold text-ink">
             {cert.certificateNumber ?? 'Application Details'}
           </h1>
-          <p className="text-sm text-ink-subtle mt-0.5">Certificate of Origin — Solid Minerals</p>
+          <p className="text-sm text-ink-subtle mt-0.5">Certificate of Origin, Solid Minerals</p>
         </div>
         <Badge variant={statusVariant[cert.status]}>{statusLabel[cert.status]}</Badge>
       </div>
@@ -240,25 +240,25 @@ export function EcoDetailPage() {
 
       {/* Status notices */}
       {cert.status === 'rejected' && cert.rejectionReason && (
-        <div className="mb-4 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+        <div className="mb-4 rounded-lg bg-danger-bg border border-danger-border px-4 py-3 text-sm text-danger">
           <strong>Rejection reason:</strong> {cert.rejectionReason}
         </div>
       )}
       {cert.status === 'revision_requested' && cert.revisionNotes && (
-        <div className="mb-4 rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-800">
+        <div className="mb-4 rounded-lg bg-warning-bg border border-warning-border px-4 py-3 text-sm text-warning">
           <strong>Revision required:</strong> {cert.revisionNotes}
         </div>
       )}
       {cert.status === 'approved' && (
-        <div className="mb-4 rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-800">
-          Approved — payment is required before the certificate is issued.
+        <div className="mb-4 rounded-lg bg-warning-bg border border-warning-border px-4 py-3 text-sm text-warning">
+          Approved. Payment is required before the certificate is issued.
         </div>
       )}
       {/* Revoked certificates keep their PDF and number, so the notice has to
           carry the weight: without it a member sees a downloadable certificate
           and no indication it is no longer honoured. */}
       {isRevoked && (
-        <div className="mb-4 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+        <div className="mb-4 rounded-lg bg-danger-bg border border-danger-border px-4 py-3 text-sm text-danger">
           <strong>This certificate has been revoked</strong>
           {cert.revokedAt && <> on {fmtDate(cert.revokedAt)}</>}
           {' '}and is no longer valid. Anyone verifying it publicly will see it as revoked.
@@ -271,7 +271,7 @@ export function EcoDetailPage() {
         </div>
       )}
       {cert.resubmittedFromCertificateId && (
-        <div className="mb-4 rounded-lg bg-blue-50 border border-blue-200 px-4 py-3 text-sm text-blue-800">
+        <div className="mb-4 rounded-lg bg-primary-soft border border-primary-200 px-4 py-3 text-sm text-primary">
           This application replaces a revoked certificate.{' '}
           <Link
             to={`/dashboard/eco/${cert.resubmittedFromCertificateId}`}
@@ -282,7 +282,7 @@ export function EcoDetailPage() {
         </div>
       )}
       {isIssuedMissingDoc && (
-        <div className="mb-4 rounded-lg bg-yellow-50 border border-yellow-200 px-4 py-3 text-sm text-yellow-800">
+        <div className="mb-4 rounded-lg bg-warning-bg border border-warning-border px-4 py-3 text-sm text-warning">
           The certificate PDF is missing or could not be retrieved (possible storage error).
           {isAdmin && !isReadOnly && (
             <span> Use the button below to re-generate it.</span>
@@ -299,7 +299,7 @@ export function EcoDetailPage() {
           reason is mandatory, quoted to the applicant verbatim in the
           notification email, and kept in the audit log. */}
       {revokeOpen && (
-        <div className="mb-6 rounded-lg border border-red-200 bg-red-50/50 px-4 py-4">
+        <div className="mb-6 rounded-lg border border-danger-border bg-danger-bg/50 px-4 py-4">
           <h2 className="text-sm font-semibold text-ink mb-1">Revoke this certificate</h2>
           <p className="text-xs text-ink-subtle mb-3">
             The certificate stays on record and remains publicly verifiable, but will show as
@@ -319,7 +319,7 @@ export function EcoDetailPage() {
               loading={revoking}
               disabled={revokeReason.trim().length < 10}
               onClick={handleRevoke}
-              className="bg-red-600 hover:bg-red-700 text-white"
+              className="bg-danger hover:bg-danger text-white"
             >
               Confirm revocation
             </Button>
@@ -366,7 +366,7 @@ export function EcoDetailPage() {
             super_admin only — a chamber_executive is read-only and a
             staff_operator's authority stops at reviewing applications. */}
         {canRevoke && !isReadOnly && !revokeOpen && (
-          <Button variant="outline" onClick={() => setRevokeOpen(true)} className="border-red-300 text-red-700 hover:bg-red-50">
+          <Button variant="outline" onClick={() => setRevokeOpen(true)} className="border-danger-border text-danger hover:bg-danger-bg">
             <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14L21 3m-2 7v6a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h6" />
             </svg>
@@ -411,11 +411,11 @@ export function EcoDetailPage() {
           <h2 className="text-xs font-semibold text-ink-subtle uppercase tracking-wide">Certificate Info</h2>
         </div>
         <div className="px-6">
-          <Row label="Certificate #" value={cert.certificateNumber ?? '—'} />
+          <Row label="Certificate #" value={cert.certificateNumber ?? '–'} />
           <Row label="Status" value={<Badge variant={statusVariant[cert.status]}>{statusLabel[cert.status]}</Badge>} />
           <Row label="Applied" value={fmtDate(cert.createdAt)} />
-          <Row label="Issued" value={cert.issuedAt ? fmtDate(cert.issuedAt) : '—'} />
-          <Row label="Application Fee (estimate/confirmed)" value={cert.applicationFee ? `₦${cert.applicationFee.toLocaleString()}` : '—'} />
+          <Row label="Issued" value={cert.issuedAt ? fmtDate(cert.issuedAt) : '–'} />
+          <Row label="Application Fee (estimate/confirmed)" value={cert.applicationFee ? `₦${cert.applicationFee.toLocaleString()}` : '–'} />
           {/* Only for a USD invoice — shows the exact rate the Naira fee came
               from, so the number can be checked rather than just trusted
               (RFP §8.5, §6.4). Absent entirely for an NGN invoice, which had
@@ -433,7 +433,7 @@ export function EcoDetailPage() {
                     <span className="text-ink-subtle"> · {fmtDate(cert.fxRateAt)}</span>
                   )}
                   {cert.fxRateSource && !cert.fxRateSource.startsWith('live:') && (
-                    <span className="text-amber-700"> · fallback rate</span>
+                    <span className="text-warning"> · fallback rate</span>
                   )}
                 </>
               }
@@ -444,7 +444,7 @@ export function EcoDetailPage() {
             <Row label="Revocation Reason" value={cert.revocationReason} />
           )}
           <Row label="Membership Verified" value={cert.membershipVerified ? 'Yes' : 'No'} />
-          <Row label="Self-Declared Chamber Member" value={cert.selfDeclaredIsMember ? `Yes (${cert.selfDeclaredMembershipId ?? '—'})` : 'No'} />
+          <Row label="Self-Declared Chamber Member" value={cert.selfDeclaredIsMember ? `Yes (${cert.selfDeclaredMembershipId ?? '–'})` : 'No'} />
           {cert.paymentRef && <Row label="Payment Ref" value={<span className="font-mono text-xs">{cert.paymentRef}</span>} />}
         </div>
       </div>
@@ -474,7 +474,7 @@ export function EcoDetailPage() {
           <h2 className="text-xs font-semibold text-ink-subtle uppercase tracking-wide">Exporter / Company Details</h2>
         </div>
         <div className="px-6">
-          <Row label="License Owner" value={cert.isLicenseOwner ? `Yes (${cert.miningLicenseNo ?? '—'})` : 'No'} />
+          <Row label="License Owner" value={cert.isLicenseOwner ? `Yes (${cert.miningLicenseNo ?? '–'})` : 'No'} />
           <Row label="Company Name" value={cert.companyName} />
           <Row label="Company Address" value={cert.companyAddress} />
           <Row label="Company Country" value={cert.companyCountry} />

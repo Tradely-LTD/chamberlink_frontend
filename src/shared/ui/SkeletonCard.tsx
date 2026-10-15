@@ -3,5 +3,5 @@ interface Props {
 }
 
 export function SkeletonCard({ className = '' }: Props) {
-  return <div className={`animate-pulse rounded-xl bg-gray-200 min-h-[80px] ${className}`} />;
+  return <div aria-hidden="true" className={`animate-pulse rounded-card bg-border-subtle min-h-[80px] ${className}`} />;
 }

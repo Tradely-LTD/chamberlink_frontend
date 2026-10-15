@@ -202,7 +202,7 @@ function ResetPasswordModal({ user, onClose }: {
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {error && <ErrorBanner message={error} />}
           <p className="text-sm text-ink-subtle">
-            Set a new password directly on this account. It takes effect immediately — their current password will stop working.
+            Set a new password directly on this account. It takes effect immediately, and their current password stops working.
           </p>
 
           <Input
@@ -316,7 +316,7 @@ function AllUsersView() {
   };
 
   return (
-    <div className="p-6 max-w-6xl">
+    <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8">
       {editingUser && (
         <EditUserModal
           user={editingUser}
@@ -330,7 +330,7 @@ function AllUsersView() {
 
       <div className="mb-6">
         <h1 className="text-xl font-semibold text-ink">Manage All Users</h1>
-        <p className="text-sm text-ink-subtle mt-0.5">Every ChamberLink identity, across every chamber — edit roles and chamber assignments.</p>
+        <p className="text-sm text-ink-subtle mt-0.5">Every Chamberlink account across every chamber. Edit roles and chamber assignments.</p>
       </div>
 
       {warnings.length > 0 && (
@@ -397,9 +397,9 @@ function AllUsersView() {
                       <Badge variant={roleBadgeVariant(u.role)}>{ROLE_LABELS[u.role]}</Badge>
                     </td>
                     <td className="px-4 py-3 text-ink">
-                      {isStaffTierRole(u.role) ? (u.tenantName ?? '—')
-                        : u.role === 'member' ? (u.connections.length > 0 ? `${u.connections.length} chamber${u.connections.length === 1 ? '' : 's'}` : '—')
-                        : '—'}
+                      {isStaffTierRole(u.role) ? (u.tenantName ?? '–')
+                        : u.role === 'member' ? (u.connections.length > 0 ? `${u.connections.length} chamber${u.connections.length === 1 ? '' : 's'}` : '–')
+                        : '–'}
                     </td>
                     <td className="px-4 py-3">
                       <Badge variant={u.isActive ? 'success' : 'error'}>{u.isActive ? 'Active' : 'Inactive'}</Badge>

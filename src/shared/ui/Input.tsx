@@ -1,32 +1,32 @@
 import { forwardRef, useId } from 'react';
+import { FieldLabel, FieldMessage } from './Field';
+import { controlClass } from './fieldStyles';
 
 interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
   error?: string;
+  /** Persistent helper text under the field (replaced by the error when there is one). */
+  hint?: string;
 }
 
 export const Input = forwardRef<HTMLInputElement, Props>(
-  ({ label, error, id: idProp, className = '', ...props }, ref) => {
+  ({ label, error, hint, id: idProp, className = '', ...props }, ref) => {
     const generatedId = useId();
     const inputId = idProp ?? generatedId;
+    const msgId = `${inputId}-msg`;
 
     return (
-      <div className="flex flex-col gap-1">
-        <label
-          htmlFor={inputId}
-          className="text-sm font-medium text-ink"
-        >
-          {label}
-        </label>
+      <div className="flex flex-col gap-1.5">
+        <FieldLabel htmlFor={inputId}>{label}</FieldLabel>
         <input
           ref={ref}
           id={inputId}
+          aria-invalid={!!error || undefined}
+          aria-describedby={error || hint ? msgId : undefined}
           {...props}
-          className={`w-full rounded-lg border bg-surface px-4 py-2.5 text-sm text-ink placeholder-ink-subtle outline-none transition focus:ring-2 focus:ring-primary/40 ${
-            error ? 'border-danger' : 'border-border'
-          } ${className}`}
+          className={`h-10 px-3 ${controlClass(error)} ${className}`}
         />
-        {error && <p className="text-xs text-danger">{error}</p>}
+        <FieldMessage id={msgId} error={error} hint={hint} />
       </div>
     );
   }

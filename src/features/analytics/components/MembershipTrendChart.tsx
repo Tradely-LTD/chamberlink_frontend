@@ -35,20 +35,20 @@ export function MembershipTrendChart({ data }: Props) {
   return (
     <ResponsiveContainer width="100%" height={224}>
       <LineChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
-        <CartesianGrid vertical={false} stroke="#e2e5e9" />
+        <CartesianGrid vertical={false} stroke="rgb(var(--c-border))" />
         <XAxis
           dataKey="month"
           tickFormatter={monthLabel}
-          tick={{ fontSize: 11, fill: '#74777f' }}
-          axisLine={{ stroke: '#e2e5e9' }}
+          tick={{ fontSize: 11, fill: 'rgb(var(--c-ink-subtle))' }}
+          axisLine={{ stroke: 'rgb(var(--c-border))' }}
           tickLine={false}
         />
-        <YAxis tick={{ fontSize: 11, fill: '#74777f' }} axisLine={false} tickLine={false} width={32} allowDecimals={false} />
+        <YAxis tick={{ fontSize: 11, fill: 'rgb(var(--c-ink-subtle))' }} axisLine={false} tickLine={false} width={32} allowDecimals={false} />
         <Tooltip content={<ChartTooltip />} />
         <Legend
           iconType="circle"
           iconSize={8}
-          wrapperStyle={{ fontSize: 12, color: '#74777f', paddingTop: 8 }}
+          wrapperStyle={{ fontSize: 12, color: 'rgb(var(--c-ink-subtle))', paddingTop: 8 }}
         />
         <Line type="monotone" dataKey="newMembers" name="New Members" stroke={CHART_COLORS.blue} strokeWidth={2} dot={{ r: 3, strokeWidth: 0, fill: CHART_COLORS.blue }} activeDot={{ r: 5 }} />
         <Line type="monotone" dataKey="ecoIssued" name="eCO Issued" stroke={CHART_COLORS.green} strokeWidth={2} dot={{ r: 3, strokeWidth: 0, fill: CHART_COLORS.green }} activeDot={{ r: 5 }} />

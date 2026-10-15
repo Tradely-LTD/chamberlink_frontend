@@ -6,10 +6,10 @@ interface Props {
   onClose: () => void;
 }
 
-const colors = {
-  success: 'bg-green-100 border-green-500 text-green-800',
-  error: 'bg-red-100 border-red-500 text-red-800',
-  info: 'bg-blue-100 border-blue-500 text-blue-800',
+const styles = {
+  success: { icon: 'check_circle', color: 'text-success' },
+  error: { icon: 'error', color: 'text-danger' },
+  info: { icon: 'info', color: 'text-primary' },
 };
 
 export function Toast({ message, type, onClose }: Props) {
@@ -18,16 +18,17 @@ export function Toast({ message, type, onClose }: Props) {
     return () => clearTimeout(t);
   }, [onClose]);
 
+  const s = styles[type];
   return (
     <div
-      className={`fixed top-4 right-4 z-50 flex items-start gap-3 rounded-lg border-l-4 p-4 shadow-md max-w-sm ${colors[type]}`}
+      role={type === 'error' ? 'alert' : 'status'}
+      aria-live={type === 'error' ? 'assertive' : 'polite'}
+      className="fixed bottom-5 right-5 z-50 flex max-w-sm items-start gap-3 rounded-card border border-border bg-surface p-4 shadow-pop animate-fade-up"
     >
-      <p className="text-sm">{message}</p>
-      <button
-        onClick={onClose}
-        className="ml-auto text-current opacity-60 hover:opacity-100"
-      >
-        &#x2715;
+      <span className={`material-symbols-outlined ${s.color}`} aria-hidden="true" style={{ fontSize: 20, fontVariationSettings: `'FILL' 1` }}>{s.icon}</span>
+      <p className="text-sm text-ink pt-px">{message}</p>
+      <button onClick={onClose} aria-label="Dismiss" className="ml-auto -mr-1 -mt-1 rounded-md p-1 text-ink-subtle hover:bg-surface-alt hover:text-ink transition-colors">
+        <span className="material-symbols-outlined" aria-hidden="true" style={{ fontSize: 18 }}>close</span>
       </button>
     </div>
   );

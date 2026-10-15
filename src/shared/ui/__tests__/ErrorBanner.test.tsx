@@ -10,7 +10,7 @@ describe('ErrorBanner', () => {
   it('has error styling', () => {
     const { container } = render(<ErrorBanner message="Error" />);
     const banner = container.firstChild as HTMLElement;
-    expect(banner).toHaveClass('bg-red-50');
-    expect(banner).toHaveClass('text-red-700');
+    expect(banner).toHaveClass('bg-danger-bg');
+    expect(banner).toHaveClass('text-danger');
   });
 });

@@ -23,7 +23,7 @@ export function AnalyticsPage() {
   const isGrowthPositive = stats.revenueThisMonth >= stats.revenueLastMonth;
 
   return (
-    <div className="p-6 max-w-5xl">
+    <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-8 sm:py-8">
       <h1 className="text-xl font-semibold text-ink mb-1">Analytics Hub</h1>
       <p className="text-sm text-ink-subtle mb-6">Chamber performance metrics and key indicators.</p>
 

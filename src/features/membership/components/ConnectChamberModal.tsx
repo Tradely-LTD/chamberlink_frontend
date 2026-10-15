@@ -102,7 +102,7 @@ export function ConnectChamberModal({ onClose, onConnected }: Props) {
                     </Button>
                   </div>
                   {inlineError?.tenantId === chamber.id && (
-                    <p className="mt-2 text-xs text-red-600">{inlineError.message}</p>
+                    <p className="mt-2 text-xs text-danger">{inlineError.message}</p>
                   )}
                 </li>
               ))}

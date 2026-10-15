@@ -80,10 +80,10 @@ const demoLogs: VerificationLog[] = [
 ];
 
 const resultConfig = {
-  valid:     { icon: 'verified', label: 'Valid',     bg: '#a0f4ca', text: '#005137', iconColor: '#0b6c4b' },
-  expired:   { icon: 'schedule', label: 'Expired',   bg: '#ffdea5', text: '#5d4201', iconColor: '#c5a059' },
-  revoked:   { icon: 'cancel',   label: 'Revoked',   bg: '#ffdad6', text: '#93000a', iconColor: '#ba1a1a' },
-  not_found: { icon: 'search_off', label: 'Not Found', bg: '#e0e3e5', text: '#44474e', iconColor: '#74777f' },
+  valid:     { icon: 'verified', label: 'Valid',     bg: 'rgb(var(--c-success-bg))', text: 'rgb(var(--c-success))', iconColor: 'rgb(var(--c-success))' },
+  expired:   { icon: 'schedule', label: 'Expired',   bg: 'rgb(var(--c-warning-bg))', text: 'rgb(var(--c-warning))', iconColor: 'rgb(var(--c-gold-light))' },
+  revoked:   { icon: 'cancel',   label: 'Revoked',   bg: 'rgb(var(--c-danger-bg))', text: 'rgb(var(--c-danger))', iconColor: 'rgb(var(--c-danger))' },
+  not_found: { icon: 'search_off', label: 'Not Found', bg: 'rgb(var(--c-border))', text: 'rgb(var(--c-ink-muted))', iconColor: 'rgb(var(--c-ink-subtle))' },
 };
 
 const ADMIN_ROLES = ['chamber_admin', 'chamber_executive', 'super_admin', 'staff_operator'];
@@ -94,7 +94,7 @@ function VerificationResultCard({ result, onClear }: { result: VerificationResul
   const rc = resultConfig[result.status];
 
   return (
-    <div className={`rounded-xl border-2 p-6`} style={{ borderColor: result.status === 'valid' ? '#0b6c4b' : result.status === 'not_found' ? '#c4c6cf' : '#ba1a1a', background: rc.bg + '20' }}>
+    <div className={`rounded-xl border-2 p-6`} style={{ borderColor: result.status === 'valid' ? 'rgb(var(--c-success))' : result.status === 'not_found' ? '#c4c6cf' : 'rgb(var(--c-danger))', background: rc.bg + '20' }}>
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: rc.bg }}>
@@ -124,7 +124,7 @@ function VerificationResultCard({ result, onClear }: { result: VerificationResul
             <div className="sm:col-span-2">
               <p className="text-xs text-ink-subtle mb-1">Products Covered</p>
               <div className="flex flex-wrap gap-1.5">
-                {result.products.map((p) => <span key={p} className="rounded-full px-2.5 py-0.5 text-xs font-medium border" style={{ background: '#f7f9fb', borderColor: '#e0e3e5', color: '#44474e' }}>{p}</span>)}
+                {result.products.map((p) => <span key={p} className="rounded-full px-2.5 py-0.5 text-xs font-medium border" style={{ background: 'rgb(var(--c-surface-alt))', borderColor: 'rgb(var(--c-border))', color: 'rgb(var(--c-ink-muted))' }}>{p}</span>)}
               </div>
             </div>
           )}
@@ -163,7 +163,7 @@ function InstitutionalVerificationView() {
   };
 
   return (
-    <div className="p-6 max-w-2xl">
+    <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 sm:py-8">
       <div className="mb-6">
         <h2 className="text-xl font-semibold text-ink">Banks & FI Verification Portal</h2>
         <p className="text-sm text-ink-subtle mt-0.5">Verify the authenticity of NACCIMA eCO certificates and member credentials.</p>
@@ -185,7 +185,7 @@ function InstitutionalVerificationView() {
             placeholder={tab === 'eco' ? 'e.g. ECO-2025-KAN-004821' : 'e.g. KAC-M-00214'}
             className="flex-1 rounded-lg border border-border px-4 py-2.5 text-sm focus:outline-none focus:border-primary font-mono"
           />
-          <button type="submit" disabled={isLoading} className="flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50" style={{ background: '#023293' }}>
+          <button type="submit" disabled={isLoading} className="flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50" style={{ background: 'rgb(var(--c-primary))' }}>
             {isLoading ? 'Verifying…' : <><span className="material-symbols-outlined" style={{ fontSize: 16 }}>search</span>Verify</>}
           </button>
         </form>
@@ -222,7 +222,7 @@ function AdminVerificationView() {
   });
 
   return (
-    <div className="p-6 max-w-6xl">
+    <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8">
       <div className="mb-6">
         <h2 className="text-xl font-semibold text-ink">Verification Audit Log</h2>
         <p className="text-sm text-ink-subtle mt-0.5">All eCO certificate and member ID verification queries from banks and institutions.</p>
@@ -235,10 +235,10 @@ function AdminVerificationView() {
           { icon: 'schedule', label: 'Expired', value: allLogs.filter((l) => l.result === 'expired').length },
           { icon: 'search_off', label: 'Not Found', value: allLogs.filter((l) => l.result === 'not_found').length },
         ].map(({ icon, label, value, accent }) => (
-          <div key={label} className={`rounded-xl border p-4 ${accent ? '' : 'bg-white border-border'}`} style={accent ? { background: '#023293', borderColor: '#023293' } : {}}>
+          <div key={label} className={`rounded-xl border p-4 ${accent ? '' : 'bg-white border-border'}`} style={accent ? { background: 'rgb(var(--c-primary))', borderColor: 'rgb(var(--c-primary))' } : {}}>
             <div className="flex items-center gap-2 mb-2">
-              <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`, color: accent ? '#aec7f7' : '#74777f' }}>{icon}</span>
-              <p className={`text-xs font-semibold uppercase tracking-wide ${accent ? 'text-[#aec7f7]' : 'text-ink-subtle'}`}>{label}</p>
+              <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`, color: accent ? 'rgb(var(--c-primary-200))' : 'rgb(var(--c-ink-subtle))' }}>{icon}</span>
+              <p className={`text-xs font-semibold uppercase tracking-wide ${accent ? 'text-primary-200' : 'text-ink-subtle'}`}>{label}</p>
             </div>
             <p className={`text-2xl font-bold ${accent ? 'text-white' : 'text-ink'}`}>{value}</p>
           </div>
@@ -273,14 +273,14 @@ function AdminVerificationView() {
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#f0f2f4]">
+              <tbody className="divide-y divide-border-subtle">
                 {filtered.map((log) => {
                   const rc = resultConfig[log.result];
                   return (
                     <tr key={log.id} className="hover:bg-surface-alt transition-colors">
                       <td className="px-4 py-3 font-mono text-sm text-ink">{log.queriedRef}</td>
                       <td className="px-4 py-3">
-                        <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide" style={{ background: log.queryType === 'eco' ? '#d6e3ff' : '#a0f4ca', color: log.queryType === 'eco' ? '#023293' : '#005137' }}>
+                        <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide" style={{ background: log.queryType === 'eco' ? 'rgb(var(--c-primary-soft))' : 'rgb(var(--c-success-bg))', color: log.queryType === 'eco' ? 'rgb(var(--c-primary))' : 'rgb(var(--c-success))' }}>
                           {log.queryType === 'eco' ? 'eCO' : 'Member'}
                         </span>
                       </td>

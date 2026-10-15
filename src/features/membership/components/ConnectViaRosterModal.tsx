@@ -50,7 +50,7 @@ export function ConnectViaRosterModal({ tenantId, tenantName, onClose, onConnect
         setPreview(result.preview);
         setStep('preview');
       } else {
-        setError('No match found — double-check the ID or contact the chamber.');
+        setError('No match found. Double-check the ID or contact the chamber.');
       }
     } catch {
       setError('Something went wrong while checking that ID. Please try again.');
@@ -88,7 +88,7 @@ export function ConnectViaRosterModal({ tenantId, tenantName, onClose, onConnect
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 px-4">
       <div className="w-full max-w-md rounded-xl bg-white shadow-xl">
         <div className="flex items-center justify-between border-b border-border px-5 py-4">
-          <h2 className="text-base font-semibold text-ink">Connect with existing ID — {tenantName}</h2>
+          <h2 className="text-base font-semibold text-ink">Connect with existing ID: {tenantName}</h2>
           <button
             onClick={onClose}
             className="rounded-lg p-1.5 text-ink-subtle hover:bg-surface-alt transition-colors"
@@ -117,7 +117,7 @@ export function ConnectViaRosterModal({ tenantId, tenantName, onClose, onConnect
                 placeholder="e.g. LCC-2019-0042"
                 autoFocus
               />
-              {error && <p className="text-xs text-red-600">{error}</p>}
+              {error && <p className="text-xs text-danger">{error}</p>}
               <div className="flex items-center justify-end gap-2">
                 <Button type="button" variant="outline" onClick={onClose}>
                   Cancel
@@ -132,7 +132,7 @@ export function ConnectViaRosterModal({ tenantId, tenantName, onClose, onConnect
           {step === 'preview' && preview && (
             <div className="space-y-4">
               <p className="text-sm font-medium text-ink">Is this you?</p>
-              <div className="rounded-lg border border-border bg-[#f7f9f7] px-4 py-3 text-sm text-ink space-y-1">
+              <div className="rounded-lg border border-border bg-surface-alt px-4 py-3 text-sm text-ink space-y-1">
                 <p>{preview.firstNameMasked}</p>
                 {preview.businessName && <p>{preview.businessName}</p>}
                 <p className="text-ink-subtle">
@@ -141,13 +141,13 @@ export function ConnectViaRosterModal({ tenantId, tenantName, onClose, onConnect
                     .join(' · ')}
                 </p>
               </div>
-              {error && <p className="text-xs text-red-600">{error}</p>}
+              {error && <p className="text-xs text-danger">{error}</p>}
               <div className="flex items-center justify-end gap-2">
                 <Button type="button" variant="outline" onClick={handleTryDifferentId} disabled={isConnecting}>
                   Try a different ID
                 </Button>
                 <Button type="button" loading={isConnecting} onClick={handleConfirm}>
-                  Confirm — this is me
+                  Yes, this is me
                 </Button>
               </div>
             </div>

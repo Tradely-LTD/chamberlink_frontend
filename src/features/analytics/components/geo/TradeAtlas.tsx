@@ -106,7 +106,7 @@ export default function TradeAtlas({ destinations }: Props) {
                   tabIndex={row ? 0 : undefined}
                   aria-label={row ? `${label}: ${plural(row.applications, 'application')}, ${row.issued} issued` : undefined}
                   className={row ? 'cursor-pointer outline-none focus-visible:stroke-ink' : ''}
-                  onMouseMove={(e) => showTip(isOrigin ? 'Nigeria — origin' : label, row, e.clientX, e.clientY)}
+                  onMouseMove={(e) => showTip(isOrigin ? 'Nigeria (origin)' : label, row, e.clientX, e.clientY)}
                   onFocus={() => showTipAtShape(f, label, row)}
                   onBlur={() => setTip(null)}
                 />

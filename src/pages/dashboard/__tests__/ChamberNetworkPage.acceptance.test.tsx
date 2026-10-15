@@ -179,7 +179,7 @@ describe('ChamberNetworkPage — Connect via roster ID happy path', () => {
     expect(screen.getByText('Amina B.')).toBeInTheDocument();
     expect(screen.getByText('Acme Traders Ltd')).toBeInTheDocument();
 
-    await user.click(screen.getByRole('button', { name: 'Confirm — this is me' }));
+    await user.click(screen.getByRole('button', { name: 'Yes, this is me' }));
 
     await waitFor(() => expect(screen.getByText('Connected using your existing membership ID.')).toBeInTheDocument());
     expect(checkRosterCalls).toEqual([{ tenantId: 'tenant-a', legacyMemberId: 'LCC-2019-0042' }]);
@@ -198,7 +198,7 @@ describe('ChamberNetworkPage — no match found (not an error, inline message)',
     await user.click(screen.getByRole('button', { name: 'Check ID' }));
 
     await waitFor(() =>
-      expect(screen.getByText(/No match found — double-check the ID or contact the chamber\./)).toBeInTheDocument()
+      expect(screen.getByText(/No match found\. Double-check the ID or contact the chamber\./)).toBeInTheDocument()
     );
   });
 });
@@ -234,7 +234,7 @@ describe('ChamberNetworkPage — race condition: claimed by someone else between
     await user.click(screen.getByRole('button', { name: 'Check ID' }));
     await waitFor(() => expect(screen.getByText('Is this you?')).toBeInTheDocument());
 
-    await user.click(screen.getByRole('button', { name: 'Confirm — this is me' }));
+    await user.click(screen.getByRole('button', { name: 'Yes, this is me' }));
 
     await waitFor(() =>
       expect(screen.getByText('This membership record has already been claimed.')).toBeInTheDocument()

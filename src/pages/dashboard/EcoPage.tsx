@@ -27,7 +27,7 @@ const statusVariant: Record<ECertStatus, 'success' | 'warning' | 'error' | 'defa
 
 const statusLabel: Record<ECertStatus, string> = {
   draft: 'Draft', submitted: 'Submitted', under_review: 'Under Review',
-  pending_payment: 'Awaiting Payment', approved: 'Approved — Awaiting Payment', issued: 'Issued',
+  pending_payment: 'Awaiting Payment', approved: 'Approved, awaiting payment', issued: 'Issued',
   rejected: 'Rejected', revision_requested: 'Revision Required', revoked: 'Revoked',
 };
 
@@ -40,7 +40,7 @@ const FILTER_OPTIONS: { label: string; value: string }[] = [
   { label: 'All', value: '' },
   { label: 'Submitted', value: 'submitted' },
   { label: 'Under Review', value: 'under_review' },
-  { label: 'Approved — Awaiting Payment', value: 'approved' },
+  { label: 'Approved, awaiting payment', value: 'approved' },
   { label: 'Awaiting Payment', value: 'pending_payment' },
   { label: 'Issued', value: 'issued' },
   { label: 'Rejected', value: 'rejected' },
@@ -80,9 +80,9 @@ function ReviewNotesModal({
             </svg>
           </button>
         </div>
-        <div className="p-6">
+        <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8">
           <p className="text-sm text-ink-subtle mb-4">
-            Application by <span className="font-medium text-ink">{item.applicantFirstName} {item.applicantLastName}</span> — {item.solidMineralName ?? '—'} → {item.destinationCountry ?? '—'}
+            Application by <span className="font-medium text-ink">{item.applicantFirstName} {item.applicantLastName}</span>: {item.solidMineralName ?? '–'} → {item.destinationCountry ?? '–'}
           </p>
           <div className="mb-4">
             <label className="block text-xs font-semibold text-ink-subtle mb-1">
@@ -101,7 +101,7 @@ function ReviewNotesModal({
             <Button
               loading={isLoading}
               disabled={requiresNotes && !notes.trim()}
-              className={action === 'approve' ? 'bg-primary hover:bg-primary-hover text-white' : 'bg-red-600 hover:bg-red-700 text-white'}
+              className={action === 'approve' ? 'bg-primary hover:bg-primary-hover text-white' : 'bg-danger hover:bg-danger text-white'}
               onClick={() => onConfirm(notes)}
             >
               Confirm
@@ -146,14 +146,14 @@ function CertActionButtons({ certId, compact = false }: { certId: string; compac
   if (compact) {
     return (
       <div className="flex items-center gap-2">
-        {error && <span className="text-xs text-red-600" title={error}>⚠</span>}
+        {error && <span className="text-xs text-danger" title={error}>⚠</span>}
         <button disabled={busy} onClick={() => open('view')}
-          className="flex items-center gap-1 rounded-lg border border-border/60 px-2.5 py-1.5 text-xs font-semibold text-primary hover:bg-[#f0faf4] transition-colors disabled:opacity-50">
+          className="flex items-center gap-1 rounded-lg border border-border/60 px-2.5 py-1.5 text-xs font-semibold text-primary hover:bg-success-bg transition-colors disabled:opacity-50">
           <span className="material-symbols-outlined" style={{ fontSize: 13 }}>visibility</span>
           {busy ? '…' : 'View'}
         </button>
         <button disabled={busy} onClick={() => open('download')}
-          className="flex items-center gap-1 rounded-lg border border-border/60 px-2.5 py-1.5 text-xs font-semibold text-ink-subtle hover:bg-[#f7f9f7] transition-colors disabled:opacity-50">
+          className="flex items-center gap-1 rounded-lg border border-border/60 px-2.5 py-1.5 text-xs font-semibold text-ink-subtle hover:bg-surface-alt transition-colors disabled:opacity-50">
           <span className="material-symbols-outlined" style={{ fontSize: 13 }}>download</span>
           {busy ? '…' : 'Download'}
         </button>
@@ -163,7 +163,7 @@ function CertActionButtons({ certId, compact = false }: { certId: string; compac
 
   return (
     <div className="flex items-center gap-2">
-      {error && <span className="text-xs text-red-600" title={error}>⚠ {error}</span>}
+      {error && <span className="text-xs text-danger" title={error}>⚠ {error}</span>}
       <button disabled={busy} onClick={() => open('view')}
         className="text-xs font-medium text-primary hover:underline disabled:opacity-50">
         {busy ? '…' : 'View'}
@@ -201,11 +201,11 @@ function VerifyMembershipButton({ item, onDone }: { item: EcoQueueItem; onDone: 
       <button
         disabled={isLoading}
         onClick={handleVerify}
-        className="text-xs font-semibold text-[#005137] border border-[#a0f4ca] bg-[#f0faf4] rounded-md px-2.5 py-1 hover:bg-[#a0f4ca]/40 transition-colors disabled:opacity-50"
+        className="text-xs font-semibold text-success border border-success-bg bg-success-bg rounded-md px-2.5 py-1 hover:bg-success-bg/40 transition-colors disabled:opacity-50"
       >
         {isLoading ? 'Verifying…' : 'Mark Membership Verified'}
       </button>
-      {error && <span className="text-xs text-red-600">{error}</span>}
+      {error && <span className="text-xs text-danger">{error}</span>}
     </div>
   );
 }
@@ -262,7 +262,7 @@ function AdminEcoQueue({ isReadOnly }: { isReadOnly: boolean }) {
   };
 
   return (
-    <div className="p-6 max-w-6xl">
+    <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8">
       {reviewModal && (
         <ReviewNotesModal
           item={reviewModal.item}
@@ -312,11 +312,11 @@ function AdminEcoQueue({ isReadOnly }: { isReadOnly: boolean }) {
             <div key={i} className="bg-white rounded-xl border border-border/40 p-5 animate-pulse">
               <div className="flex items-center gap-4">
                 <div className="flex-1 space-y-2">
-                  <div className="h-4 bg-[#e8ece8] rounded w-1/4" />
-                  <div className="h-3 bg-[#e8ece8] rounded w-1/3" />
+                  <div className="h-4 bg-border-subtle rounded w-1/4" />
+                  <div className="h-3 bg-border-subtle rounded w-1/3" />
                 </div>
-                <div className="h-6 bg-[#e8ece8] rounded-full w-20" />
-                <div className="h-4 bg-[#e8ece8] rounded w-16" />
+                <div className="h-6 bg-border-subtle rounded-full w-20" />
+                <div className="h-4 bg-border-subtle rounded w-16" />
               </div>
             </div>
           ))}
@@ -353,9 +353,9 @@ function AdminEcoQueue({ isReadOnly }: { isReadOnly: boolean }) {
                       {item.memberId && <p className="text-xs text-ink-subtle font-mono">{item.memberId}</p>}
                     </td>
                     <td className="px-4 py-3">
-                      <p className="text-ink max-w-[200px] truncate">{item.solidMineralName ?? '—'}</p>
+                      <p className="text-ink max-w-[200px] truncate">{item.solidMineralName ?? '–'}</p>
                     </td>
-                    <td className="px-4 py-3 text-ink">{item.destinationCountry ?? '—'}</td>
+                    <td className="px-4 py-3 text-ink">{item.destinationCountry ?? '–'}</td>
                     <td className="px-4 py-3">
                       <Badge variant={statusVariant[item.status]}>{statusLabel[item.status]}</Badge>
                     </td>
@@ -407,7 +407,7 @@ function AdminEcoQueue({ isReadOnly }: { isReadOnly: boolean }) {
                             </button>
                             <button
                               onClick={() => handleAction(item, 'reject')}
-                              className="text-xs font-medium text-red-600 border border-red-200 rounded-md px-2.5 py-1 hover:bg-red-50 transition-colors"
+                              className="text-xs font-medium text-danger border border-danger-border rounded-md px-2.5 py-1 hover:bg-danger-bg transition-colors"
                             >
                               Reject
                             </button>
@@ -465,14 +465,14 @@ function PayButton({ certId }: { certId: string }) {
         disabled={isLoading}
         onClick={handlePay}
         className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-white transition-colors disabled:opacity-60"
-        style={{ background: '#023293' }}
+        style={{ background: 'rgb(var(--c-primary))' }}
       >
         <span className="material-symbols-outlined" style={{ fontSize: 13 }}>
           {isLoading ? 'hourglass_empty' : 'payments'}
         </span>
         {isLoading ? 'Redirecting…' : 'Pay Application Fee'}
       </button>
-      {error && <p className="text-xs text-red-600">{error}</p>}
+      {error && <p className="text-xs text-danger">{error}</p>}
     </div>
   );
 }
@@ -509,7 +509,7 @@ function VerifyPaymentButton({ certRef, onConfirmed }: { certRef: string; onConf
   };
 
   if (status === 'done') {
-    return <p className="text-xs font-semibold text-primary">✓ Confirmed — certificate moved to issuance.</p>;
+    return <p className="text-xs font-semibold text-primary">Payment confirmed. The certificate is being issued.</p>;
   }
 
   return (
@@ -518,15 +518,15 @@ function VerifyPaymentButton({ certRef, onConfirmed }: { certRef: string; onConf
         disabled={isLoading}
         onClick={handleVerify}
         className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-white transition-colors disabled:opacity-60"
-        style={{ background: '#795900' }}
+        style={{ background: 'rgb(var(--c-gold))' }}
       >
         <span className="material-symbols-outlined" style={{ fontSize: 13 }}>
           {isLoading ? 'hourglass_empty' : 'verified'}
         </span>
-        {isLoading ? 'Verifying…' : 'I already paid — Verify Payment'}
+        {isLoading ? 'Verifying…' : 'I already paid, verify payment'}
       </button>
       {status === 'failed' && (
-        <p className="text-xs text-red-600">Could not confirm — please try again.</p>
+        <p className="text-xs text-danger">Could not confirm the payment. Please try again.</p>
       )}
       {status === 'not_confirmed' && (
         <p className="text-xs text-gold">
@@ -562,11 +562,11 @@ function MemberEcoView() {
   const hasCachedData = Array.isArray(certs);
 
   return (
-    <div className="p-6 max-w-4xl">
+    <div className="mx-auto w-full max-w-4xl px-4 py-6 sm:px-8 sm:py-8">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-semibold text-ink">Certificate Applications</h1>
-          <p className="text-sm text-ink-subtle mt-0.5">Your export certificate applications — drafts, reviews, payments and issued certificates.</p>
+          <p className="text-sm text-ink-subtle mt-0.5">Your export certificate applications: drafts, reviews, payments and issued certificates.</p>
         </div>
         <Link to="/dashboard/eco/apply">
           <Button>+ New Application</Button>
@@ -601,7 +601,7 @@ function MemberEcoView() {
       {isError && hasCachedData && (
         <div className="flex items-center gap-2 mb-4 px-3 py-2 rounded-lg text-xs text-gold bg-[#fff2e2] border border-[#ffc641]/40">
           <span className="material-symbols-outlined" style={{ fontSize: 14 }}>sync_problem</span>
-          Could not refresh — showing last loaded data.
+          Could not refresh. Showing the last loaded data.
           <button onClick={() => refetch()} disabled={isFetching} className="ml-auto underline disabled:opacity-50">
             {isFetching ? 'Refreshing…' : 'Retry'}
           </button>
@@ -625,7 +625,7 @@ function MemberEcoView() {
       {!isLoading && !isError && displayedCerts.length === 0 && (certs ?? []).length > 0 && (
         <div className="bg-white rounded-xl border border-border/40 p-12 text-center">
           <h3 className="text-base font-medium text-ink mb-1">No certificates for this chamber</h3>
-          <p className="text-sm text-ink-subtle mb-4">You have certificates from other chambers — switch the filter above to see them.</p>
+          <p className="text-sm text-ink-subtle mb-4">You have certificates from other chambers. Switch the filter above to see them.</p>
           <button onClick={() => setChamberFilter('all')} className="text-sm text-primary hover:underline">Show All Chambers</button>
         </div>
       )}
@@ -642,7 +642,7 @@ function MemberEcoView() {
               <div key={cert.id}
                 className={`bg-white rounded-xl border p-4 sm:p-5 transition-colors ${
                   isPayable
-                    ? 'border-amber-300 bg-amber-50/30 hover:bg-amber-50/60'
+                    ? 'border-warning-border bg-warning-bg/30 hover:bg-warning-bg/60'
                     : 'border-border/40 hover:bg-surface-alt'
                 }`}>
                 {/* Top row: cert number + status badge */}
@@ -661,22 +661,22 @@ function MemberEcoView() {
 
                 {/* Status banners */}
                 {isAwaitingReview && (
-                  <div className="flex items-center gap-2 mb-3 px-3 py-2 rounded-lg bg-[#f0f4ff] border border-primary/20">
+                  <div className="flex items-center gap-2 mb-3 px-3 py-2 rounded-lg bg-primary-soft border border-primary/20">
                     <span className="material-symbols-outlined text-primary flex-shrink-0" style={{ fontSize: 16 }}>hourglass_top</span>
                     <p className="text-xs text-primary font-medium">Awaiting chamber review.</p>
                   </div>
                 )}
                 {cert.status === 'approved' && (
-                  <div className="flex items-center gap-2 mb-3 px-3 py-2 rounded-lg bg-amber-100 border border-amber-200">
-                    <span className="material-symbols-outlined text-amber-700 flex-shrink-0" style={{ fontSize: 16, fontVariationSettings: `'FILL' 1` }}>warning</span>
-                    <p className="text-xs text-amber-800 font-medium">Approved — payment required to proceed to issuance.</p>
+                  <div className="flex items-center gap-2 mb-3 px-3 py-2 rounded-lg bg-warning-bg border border-warning-border">
+                    <span className="material-symbols-outlined text-warning flex-shrink-0" style={{ fontSize: 16, fontVariationSettings: `'FILL' 1` }}>warning</span>
+                    <p className="text-xs text-warning font-medium">Approved. Pay to proceed to issuance.</p>
                   </div>
                 )}
                 {isPendingPaymentWithRef && (
-                  <div className="flex items-center gap-2 mb-3 px-3 py-2 rounded-lg bg-amber-100 border border-amber-200">
-                    <span className="material-symbols-outlined text-amber-700 flex-shrink-0" style={{ fontSize: 16, fontVariationSettings: `'FILL' 1` }}>warning</span>
-                    <p className="text-xs text-amber-800 font-medium">
-                      Payment initiated — if you completed the payment, click &quot;I already paid — Verify Payment&quot; below.
+                  <div className="flex items-center gap-2 mb-3 px-3 py-2 rounded-lg bg-warning-bg border border-warning-border">
+                    <span className="material-symbols-outlined text-warning flex-shrink-0" style={{ fontSize: 16, fontVariationSettings: `'FILL' 1` }}>warning</span>
+                    <p className="text-xs text-warning font-medium">
+                      Payment started. If you completed it, click &quot;I already paid, verify payment&quot; below.
                     </p>
                   </div>
                 )}
@@ -684,14 +684,14 @@ function MemberEcoView() {
                 {/* Details row */}
                 <div className="flex flex-wrap gap-x-4 gap-y-0.5 mb-3">
                   <span className="text-xs text-ink-subtle">
-                    <span className="font-medium text-ink-subtle">To:</span> {cert.destinationCountry || '—'}
+                    <span className="font-medium text-ink-subtle">To:</span> {cert.destinationCountry || '–'}
                   </span>
                   <span className="text-xs text-ink-subtle truncate max-w-xs">
-                    <span className="font-medium text-ink-subtle">Mineral:</span> {cert.solidMineralName || '—'}
+                    <span className="font-medium text-ink-subtle">Mineral:</span> {cert.solidMineralName || '–'}
                   </span>
                   {chamberFilter === 'all' && cert.tenantId && (
                     <span className="text-xs text-ink-subtle">
-                      <span className="font-medium text-ink-subtle">Chamber:</span> {tenantNameById.get(cert.tenantId) ?? '—'}
+                      <span className="font-medium text-ink-subtle">Chamber:</span> {tenantNameById.get(cert.tenantId) ?? '–'}
                     </span>
                   )}
                   {cert.applicationFee != null && cert.applicationFee > 0 && (
@@ -715,7 +715,7 @@ function MemberEcoView() {
                   </Link>
                   {isEditableDraft && (
                     <Link to={`/dashboard/eco/apply/${cert.id}`}
-                      className="flex items-center gap-1 rounded-lg border border-border/60 px-2.5 py-1.5 text-xs font-semibold text-primary hover:bg-[#f0faf4] transition-colors">
+                      className="flex items-center gap-1 rounded-lg border border-border/60 px-2.5 py-1.5 text-xs font-semibold text-primary hover:bg-success-bg transition-colors">
                       <span className="material-symbols-outlined" style={{ fontSize: 13 }}>edit</span>
                       {cert.status === 'draft' ? 'Continue' : 'Edit & Resubmit'}
                     </Link>

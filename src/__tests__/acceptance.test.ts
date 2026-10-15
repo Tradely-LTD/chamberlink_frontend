@@ -557,7 +557,7 @@ describe('AC-9: Dashboard Shell', () => {
     // Mobile nav is present
     expect(shell).toContain('MobileNav');
     // Hamburger button
-    expect(mobile).toContain('Toggle menu');
+    expect(mobile).toContain('Open menu');
     expect(mobile).toContain('md:hidden');
   });
 });

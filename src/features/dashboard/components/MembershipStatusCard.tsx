@@ -3,10 +3,10 @@ import type { MemberProfile } from '@entities/user/types';
 import { SkeletonCard } from '@shared/ui/SkeletonCard';
 
 const statusColors: Record<string, string> = {
-  active: 'bg-green-100 text-green-800',
-  expired: 'bg-red-100 text-red-800',
-  pending_payment: 'bg-amber-100 text-amber-800',
-  suspended: 'bg-gray-100 text-gray-800',
+  active: 'bg-success-bg text-success',
+  expired: 'bg-danger-bg text-danger',
+  pending_payment: 'bg-warning-bg text-warning',
+  suspended: 'bg-border-subtle text-ink',
 };
 
 const statusLabels: Record<string, string> = {
@@ -40,7 +40,7 @@ export function MembershipStatusCard({
 
   if (noConnection) {
     return (
-      <div className="rounded-xl border border-dashed border-border/60 bg-[#f7f9f7] p-5">
+      <div className="rounded-xl border border-dashed border-border/60 bg-surface-alt p-5">
         <p className="text-xs font-medium text-ink-subtle uppercase tracking-wide mb-2">
           Membership Status
         </p>
@@ -54,8 +54,8 @@ export function MembershipStatusCard({
 
   if (error) {
     return (
-      <div className="rounded-xl border border-red-200 bg-red-50 p-5 flex items-center justify-between">
-        <p className="text-sm text-red-700">
+      <div className="rounded-xl border border-danger-border bg-danger-bg p-5 flex items-center justify-between">
+        <p className="text-sm text-danger">
           Failed to load membership status.
         </p>
         {onRetry && (

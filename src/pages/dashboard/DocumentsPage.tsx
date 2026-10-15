@@ -30,12 +30,12 @@ const CATEGORY_LABELS: Record<DocumentCategory, string> = {
 };
 
 const CATEGORY_COLORS: Record<DocumentCategory, { bg: string; text: string }> = {
-  commercial_invoice:    { bg: '#d6e3ff', text: '#023293' },
-  packing_list:          { bg: '#a0f4ca', text: '#005137' },
-  certificate_of_origin: { bg: '#ffdea5', text: '#5d4201' },
+  commercial_invoice:    { bg: 'rgb(var(--c-primary-soft))', text: 'rgb(var(--c-primary))' },
+  packing_list:          { bg: 'rgb(var(--c-success-bg))', text: 'rgb(var(--c-success))' },
+  certificate_of_origin: { bg: 'rgb(var(--c-warning-bg))', text: 'rgb(var(--c-warning))' },
   membership_card:       { bg: '#e8d5f5', text: '#3d1060' },
-  business_registration: { bg: '#e0e3e5', text: '#44474e' },
-  tax_clearance:         { bg: '#fce4ec', text: '#880e4f' },
+  business_registration: { bg: 'rgb(var(--c-border))', text: 'rgb(var(--c-ink-muted))' },
+  tax_clearance:         { bg: 'rgb(var(--c-danger-bg))', text: '#880e4f' },
   export_permit:         { bg: '#e0f2fe', text: '#01579b' },
   signature:             { bg: '#fff3c4', text: '#7a5c00' },
   cac_certificate:       { bg: '#d1f5ea', text: '#00695c' },
@@ -105,7 +105,7 @@ function UploadModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: (
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {error && <ErrorBanner message={error} />}
           <div>
-            <label className="block text-xs font-semibold text-ink-subtle mb-1">Document Name <span className="text-red-500">*</span></label>
+            <label className="block text-xs font-semibold text-ink-subtle mb-1">Document Name <span className="text-danger">*</span></label>
             <input type="text" required value={docName} onChange={(e) => setDocName(e.target.value)}
               placeholder="e.g. Business Registration Certificate"
               className="w-full rounded-lg border border-border/60 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary" />
@@ -113,7 +113,7 @@ function UploadModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: (
           <Select label="Category" value={category} onValueChange={(v) => setCategory(v as DocumentCategory)}
             options={(Object.keys(CATEGORY_LABELS) as DocumentCategory[]).map((k) => ({ value: k, label: CATEGORY_LABELS[k] }))} />
           <div>
-            <label className="block text-xs font-semibold text-ink-subtle mb-1">File <span className="text-red-500">*</span></label>
+            <label className="block text-xs font-semibold text-ink-subtle mb-1">File <span className="text-danger">*</span></label>
             <input ref={fileInputRef} type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" className="hidden" onChange={handleFileSelect} />
             <button type="button" onClick={() => fileInputRef.current?.click()}
               className="w-full rounded-lg border-2 border-dashed border-border/60 px-4 py-6 text-center hover:border-primary transition-colors">
@@ -238,12 +238,12 @@ function DeleteButton({ docId, docName }: { docId: string; docName: string }) {
               setConfirming(false);
             }
           }}
-          className="text-xs font-medium text-red-600 hover:text-red-700 disabled:opacity-50"
+          className="text-xs font-medium text-danger hover:text-danger disabled:opacity-50"
         >
           {isLoading ? '…' : 'Yes'}
         </button>
         <button onClick={() => setConfirming(false)} className="text-xs font-medium text-ink-subtle">No</button>
-        {error && <span className="text-xs text-red-500 ml-1">{error}</span>}
+        {error && <span className="text-xs text-danger ml-1">{error}</span>}
       </div>
     );
   }
@@ -252,7 +252,7 @@ function DeleteButton({ docId, docName }: { docId: string; docName: string }) {
     <button
       onClick={(e) => { e.stopPropagation(); setConfirming(true); }}
       title={`Delete ${docName}`}
-      className="p-1 rounded-md text-ink-subtle hover:text-red-500 hover:bg-red-50 transition-colors"
+      className="p-1 rounded-md text-ink-subtle hover:text-danger hover:bg-danger-bg transition-colors"
     >
       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -272,7 +272,7 @@ export function DocumentLibraryView() {
 
   if (!isLoading && noConnection) {
     return (
-      <div className="rounded-xl border border-dashed border-border/60 bg-[#f7f9f7] p-8 text-center">
+      <div className="rounded-xl border border-dashed border-border/60 bg-surface-alt p-8 text-center">
         <p className="text-sm font-semibold text-ink mb-1">You&apos;re not connected to a chamber yet</p>
         <p className="text-sm text-ink-subtle mb-4">Connect to a chamber to upload and manage your documents.</p>
         <Link to="/dashboard/connections" className="text-sm font-medium text-primary hover:underline">
@@ -310,7 +310,7 @@ export function DocumentLibraryView() {
       </div>
 
       {uploadSuccess && (
-        <div className="mb-4 rounded-lg bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-700">
+        <div className="mb-4 rounded-lg bg-success-bg border border-success-border px-4 py-3 text-sm text-success">
           Document uploaded successfully.
         </div>
       )}
@@ -354,7 +354,7 @@ export function DocumentLibraryView() {
                   <div className="flex items-center gap-1">
                     {doc.url && (
                       <a href={doc.url} target="_blank" rel="noopener noreferrer"
-                        className="p-1 rounded-md text-primary hover:bg-[#f0faf4] transition-colors" title="Download">
+                        className="p-1 rounded-md text-primary hover:bg-success-bg transition-colors" title="Download">
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                         </svg>
@@ -382,7 +382,7 @@ export function DocumentLibraryView() {
                 <div className="flex items-center gap-1 flex-shrink-0">
                   {doc.url && (
                     <a href={doc.url} target="_blank" rel="noopener noreferrer"
-                      className="p-1.5 rounded-md text-primary hover:bg-[#f0faf4] transition-colors" title="Download">
+                      className="p-1.5 rounded-md text-primary hover:bg-success-bg transition-colors" title="Download">
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                       </svg>
@@ -401,7 +401,7 @@ export function DocumentLibraryView() {
 
 export function DocumentsPage() {
   return (
-    <div className="p-4 sm:p-6 max-w-4xl">
+    <div className="mx-auto w-full max-w-4xl px-4 py-6 sm:px-8 sm:py-8">
       <div className="mb-6">
         <h1 className="text-2xl font-semibold text-ink">Document Library</h1>
         <p className="text-sm text-ink-subtle mt-0.5">Your certificates, registrations, and official documents.</p>

@@ -117,9 +117,9 @@ function StepDocType({ form, setForm }: { form: GeneratorForm; setForm: React.Di
       <div className="grid grid-cols-2 gap-4">
         {([
           { value: 'commercial_invoice' as const, label: 'Commercial Invoice', desc: 'Invoice issued to the buyer listing goods, quantities, and agreed prices.', icon: 'receipt_long' },
-          { value: 'packing_list' as const,       label: 'Packing List',       desc: 'Shipping manifest — weights, dimensions, marks & numbers. No prices.', icon: 'inventory_2' },
+          { value: 'packing_list' as const,       label: 'Packing List',       desc: 'Shipping manifest: weights, dimensions, marks and numbers. No prices.', icon: 'inventory_2' },
         ]).map((opt) => (
-          <label key={opt.value} className={`flex flex-col gap-2 p-4 rounded-xl border-2 cursor-pointer transition-all ${form.type === opt.value ? 'border-primary bg-[#f0faf4]' : 'border-border/40 hover:border-primary/40'}`}>
+          <label key={opt.value} className={`flex flex-col gap-2 p-4 rounded-xl border-2 cursor-pointer transition-all ${form.type === opt.value ? 'border-primary bg-success-bg' : 'border-border/40 hover:border-primary/40'}`}>
             <input type="radio" name="docType" value={opt.value} checked={form.type === opt.value}
               onChange={() => setForm((f) => ({ ...f, type: opt.value }))} className="sr-only" />
             <div className="flex items-center gap-2">
@@ -148,10 +148,10 @@ function StepTransport({ form, setForm }: { form: GeneratorForm; setForm: React.
     <div className="space-y-6">
       <div>
         <h2 className="font-medium text-ink mb-1">Mode of Transport</h2>
-        <p className="text-xs text-ink-subtle mb-4">Choose first — this shapes which fields appear on your line items.</p>
+        <p className="text-xs text-ink-subtle mb-4">Choose this first. It decides which fields appear on your line items.</p>
         <div className="grid grid-cols-4 gap-3">
           {MODE_META.map((m) => (
-            <label key={m.value} className={`flex flex-col items-center gap-1.5 p-4 rounded-xl border-2 cursor-pointer transition-all text-center ${form.shippingMethod === m.value ? 'border-primary bg-[#f0faf4]' : 'border-border/40 hover:border-primary/40'}`}>
+            <label key={m.value} className={`flex flex-col items-center gap-1.5 p-4 rounded-xl border-2 cursor-pointer transition-all text-center ${form.shippingMethod === m.value ? 'border-primary bg-success-bg' : 'border-border/40 hover:border-primary/40'}`}>
               <input type="radio" name="shippingMethod" value={m.value} checked={form.shippingMethod === m.value}
                 onChange={() => setForm((f) => ({ ...f, shippingMethod: m.value }))} className="sr-only" />
               <span className="material-symbols-outlined text-primary" style={{ fontSize: 28, fontVariationSettings: `'FILL' 1` }}>{m.icon}</span>
@@ -174,7 +174,7 @@ function StepTransport({ form, setForm }: { form: GeneratorForm; setForm: React.
             <p className="text-sm font-semibold text-ink">I already have a booking confirmation</p>
             <p className="text-xs text-ink-subtle mt-0.5">
               Check this if you have a {form.shippingMethod === 'air' ? 'flight booking / AWB' : form.shippingMethod === 'sea' ? 'vessel booking / B/L' : form.shippingMethod === 'road' ? 'truck booking' : form.shippingMethod === 'rail' ? 'rail booking' : 'booking confirmation'} and want to fill in those details now.
-              If not, leave it unchecked — you can add them later from your document library.
+              If not, leave it unchecked. You can add them later from your document library.
             </p>
           </div>
         </label>
@@ -276,7 +276,7 @@ function PackingLineItemFields({ item, idx, updateItem, mode }: {
           <label className="block text-xs font-semibold text-ink-subtle mb-1">Package Type</label>
           <Select label="Package Type" hideLabel value={item.packageType ?? ''}
             onValueChange={(v) => updateItem(idx, { packageType: v })}
-            placeholder="— Select —" className={inputSmCls}
+            placeholder="Select…" className={inputSmCls}
             options={PKG_TYPES.map((t) => ({ value: t, label: t }))} />
         </div>
       </div>
@@ -299,12 +299,12 @@ function PackingLineItemFields({ item, idx, updateItem, mode }: {
 
       {/* Dimensions — shown for air (required) and sea (optional for CBM); hidden for road/rail */}
       {showDims && (
-        <div className={`rounded-lg p-3 border ${dimsRequired ? 'border-primary/30 bg-[#f0faf4]' : 'border-border/30 bg-surface-alt'}`}>
+        <div className={`rounded-lg p-3 border ${dimsRequired ? 'border-primary/30 bg-success-bg' : 'border-border/30 bg-surface-alt'}`}>
           <label className="block text-xs font-semibold text-ink-subtle mb-1">
             Dimensions (L × W × H)
             {dimsRequired
-              ? <span className="ml-1 text-primary">— needed for volumetric weight calculation</span>
-              : <span className="ml-1 font-normal text-ink-subtle">— optional, for CBM calculation</span>
+              ? <span className="ml-1 text-primary">(needed for volumetric weight)</span>
+              : <span className="ml-1 font-normal text-ink-subtle">(optional, for CBM)</span>
             }
           </label>
           <div className="grid grid-cols-4 gap-2">
@@ -362,8 +362,8 @@ function StepLineItems({ form, setForm }: { form: GeneratorForm; setForm: React.
           {isPacking && form.shippingMethod && (
             <p className="text-xs text-ink-subtle mt-0.5">
               Mode: <span className="font-semibold capitalize text-ink">{form.shippingMethod}</span>
-              {form.shippingMethod === 'air' && ' — dimensions required for vol. weight'}
-              {form.shippingMethod === 'sea' && ' — dimensions optional for CBM'}
+              {form.shippingMethod === 'air' && ' (dimensions required for volumetric weight)'}
+              {form.shippingMethod === 'sea' && ' (dimensions optional for CBM)'}
             </p>
           )}
         </div>
@@ -376,7 +376,7 @@ function StepLineItems({ form, setForm }: { form: GeneratorForm; setForm: React.
             <div className="flex items-center justify-between mb-3">
               <span className="text-xs font-semibold text-ink-subtle uppercase">Item {idx + 1}</span>
               {items.length > 1 && (
-                <button onClick={() => removeItem(idx)} className="p-1 rounded-md text-ink-subtle hover:text-red-500 hover:bg-red-50 transition-colors">
+                <button onClick={() => removeItem(idx)} className="p-1 rounded-md text-ink-subtle hover:text-danger hover:bg-danger-bg transition-colors">
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                   </svg>
@@ -448,7 +448,7 @@ function StepLineItems({ form, setForm }: { form: GeneratorForm; setForm: React.
       )}
 
       {/* Summary footer */}
-      <div className="mt-4 p-3 rounded-lg bg-[#f0faf4] border border-primary/20">
+      <div className="mt-4 p-3 rounded-lg bg-success-bg border border-primary/20">
         {isPacking ? (
           <div className="flex flex-wrap gap-4 text-xs text-ink-subtle">
             <span>Packages: <span className="font-bold text-ink">{totalPackages(items)}</span></span>
@@ -498,7 +498,7 @@ function StepDetails({ form, setForm }: { form: GeneratorForm; setForm: React.Di
 
           {/* Booking details — gated by checkbox from StepTransport */}
           {form.hasBooking ? (
-            <div className="rounded-xl border border-primary/30 bg-[#f0faf4] p-4 space-y-4">
+            <div className="rounded-xl border border-primary/30 bg-success-bg p-4 space-y-4">
               <p className="text-xs font-semibold text-primary uppercase tracking-wide">Booking Details</p>
 
               <div className="grid grid-cols-2 gap-3">
@@ -551,7 +551,7 @@ function StepDetails({ form, setForm }: { form: GeneratorForm; setForm: React.Di
                 <div>
                   <label className="block text-xs font-semibold text-ink-subtle mb-1">
                     Chargeable Weight (kg)
-                    <span className="ml-1 font-normal text-ink-subtle">max(actual, vol. wt) — optional</span>
+                    <span className="ml-1 font-normal text-ink-subtle">max(actual, vol. wt), optional</span>
                   </label>
                   <input type="number" min={0} step={0.01} value={form.chargeableWeight}
                     onChange={set('chargeableWeight')} placeholder="e.g. 125.50" className={inputCls} />
@@ -602,7 +602,7 @@ function StepReview({ form }: { form: GeneratorForm }) {
     { label: 'Date',           value: form.invoiceDate },
     { label: 'Line Items',     value: `${form.lineItems.length} item(s)` },
     ...(isPacking ? [
-      { label: 'Mode',              value: form.shippingMethod || '—' },
+      { label: 'Mode',              value: form.shippingMethod || '–' },
       { label: 'Country of Origin', value: form.countryOfOrigin || 'Nigeria' },
       { label: 'Booking Details',   value: form.hasBooking ? 'Included' : 'To be added later' },
       ...(form.hasBooking && form.vesselOrFlightNo  ? [{ label: tLabels.ref,    value: form.vesselOrFlightNo }]  : []),
@@ -654,24 +654,24 @@ function StepReview({ form }: { form: GeneratorForm }) {
                 <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-surface-alt/50'}>
                   {isPacking ? (
                     <>
-                      <td className="px-3 py-2 text-ink-subtle">{item.marksAndNumbers || '—'}</td>
+                      <td className="px-3 py-2 text-ink-subtle">{item.marksAndNumbers || '–'}</td>
                       <td className="px-3 py-2 text-ink">{item.description}</td>
-                      <td className="px-3 py-2 text-ink-subtle">{item.hsCode || '—'}</td>
+                      <td className="px-3 py-2 text-ink-subtle">{item.hsCode || '–'}</td>
                       <td className="px-3 py-2 text-ink whitespace-nowrap">
                         {item.numberOfPackages ?? item.quantity}{item.packageType ? ` × ${item.packageType}` : ''}
                       </td>
-                      <td className="px-3 py-2 text-ink">{item.netWeight != null ? fmt2(item.netWeight) : '—'}</td>
-                      <td className="px-3 py-2 text-ink">{item.grossWeight != null ? fmt2(item.grossWeight) : '—'}</td>
+                      <td className="px-3 py-2 text-ink">{item.netWeight != null ? fmt2(item.netWeight) : '–'}</td>
+                      <td className="px-3 py-2 text-ink">{item.grossWeight != null ? fmt2(item.grossWeight) : '–'}</td>
                       <td className="px-3 py-2 text-ink-subtle whitespace-nowrap">
                         {item.length && item.width && item.height
                           ? `${item.length}×${item.width}×${item.height} ${item.dimensionUnit ?? 'cm'}`
-                          : '—'}
+                          : '–'}
                       </td>
                     </>
                   ) : (
                     <>
                       <td className="px-3 py-2 text-ink">{item.description}</td>
-                      <td className="px-3 py-2 text-ink-subtle">{item.hsCode || '—'}</td>
+                      <td className="px-3 py-2 text-ink-subtle">{item.hsCode || '–'}</td>
                       <td className="px-3 py-2 text-ink">{item.quantity}</td>
                       <td className="px-3 py-2 text-ink">{item.unit}</td>
                       <td className="px-3 py-2 text-ink">{fmtNaira(item.unitPrice)}</td>
@@ -692,14 +692,14 @@ function StepReview({ form }: { form: GeneratorForm }) {
 
 function SuccessBanner({ referenceNo, downloadUrl, onEcoAttach }: { referenceNo: string; downloadUrl: string; onEcoAttach: () => void }) {
   return (
-    <div className="rounded-xl border border-green-200 bg-green-50 p-5">
+    <div className="rounded-xl border border-success-border bg-success-bg p-5">
       <div className="flex items-start gap-3">
-        <svg className="w-6 h-6 text-green-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg className="w-6 h-6 text-success flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
         <div className="flex-1">
-          <p className="text-sm font-semibold text-green-800 mb-1">Document Generated — {referenceNo}</p>
-          <p className="text-xs text-green-700 mb-3">Saved to your Document Library and ready to download.</p>
+          <p className="text-sm font-semibold text-success mb-1">Document generated: {referenceNo}</p>
+          <p className="text-xs text-success mb-3">Saved to your Document Library and ready to download.</p>
           <div className="flex flex-wrap gap-3">
             <a href={downloadUrl} target="_blank" rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 rounded-lg bg-primary text-white px-4 py-2 text-sm font-medium hover:bg-primary-hover transition-colors">
@@ -709,7 +709,7 @@ function SuccessBanner({ referenceNo, downloadUrl, onEcoAttach }: { referenceNo:
               Download PDF
             </a>
             <button onClick={onEcoAttach}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-primary text-primary px-4 py-2 text-sm font-medium hover:bg-[#f0faf4] transition-colors">
+              className="inline-flex items-center gap-1.5 rounded-lg border border-primary text-primary px-4 py-2 text-sm font-medium hover:bg-success-bg transition-colors">
               Attach to new eCO application
             </button>
           </div>
@@ -838,13 +838,13 @@ export function ExportDocGeneratorPage() {
       const message = (err as { data?: { message?: string } })?.data?.message;
       setError(
         message === 'MEMBERSHIP_NOT_ACTIVE'
-          ? 'Generating export documents requires an active, paid membership — complete your dues payment first.'
+          ? 'Generating export documents requires an active, paid membership. Complete your dues payment first.'
           : message ?? 'Failed to generate document. Please try again.'
       );
     }
   };
 
-  if (isLoadingDraft || isLoadingConnection) return <div className="p-6"><SkeletonCard /></div>;
+  if (isLoadingDraft || isLoadingConnection) return <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8"><SkeletonCard /></div>;
 
   // Blocked BEFORE the multi-step form ever renders — no point letting a
   // member fill out invoice/packing-list details across several steps only
@@ -852,11 +852,11 @@ export function ExportDocGeneratorPage() {
   // requireActiveMembership on the backend.
   if (!hasActiveConnection) {
     return (
-      <div className="p-6 max-w-2xl">
+      <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 sm:py-8">
         <EmptyState
           icon="lock"
           title="Active Membership Required"
-          message="Generating export documents requires an active, paid membership — complete your dues payment first."
+          message="Generating export documents requires an active, paid membership. Complete your dues payment first."
           action={<Button onClick={() => navigate('/dashboard/membership')}>Go to Membership</Button>}
         />
       </div>
@@ -901,7 +901,7 @@ export function ExportDocGeneratorPage() {
   };
 
   return (
-    <div className="p-6 max-w-2xl">
+    <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 sm:py-8">
       <div className="flex items-center gap-2 mb-6">
         <Link to="/dashboard/export-documents" className="text-sm text-ink-subtle hover:text-ink">Export Documents</Link>
         <span className="text-ink-subtle">/</span>

@@ -79,7 +79,7 @@ function MfaSecurityRow() {
         </div>
         <div className="flex items-center gap-3">
           <span
-            className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${user?.isMfaEnabled ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'}`}
+            className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${user?.isMfaEnabled ? 'bg-success-bg text-success' : 'bg-border-subtle text-ink-muted'}`}
           >
             {user?.isMfaEnabled ? 'Enabled' : 'Disabled'}
           </span>
@@ -96,7 +96,7 @@ function MfaSecurityRow() {
         </div>
       </div>
       {stage === 'confirm-disable' && (
-        <div className="mt-3 flex items-end gap-3 rounded-lg bg-[#f7f9f7] border border-border/40 px-4 py-3">
+        <div className="mt-3 flex items-end gap-3 rounded-lg bg-surface-alt border border-border/40 px-4 py-3">
           <Input
             label="Enter the code we emailed you"
             value={code}
@@ -116,7 +116,7 @@ function MfaSecurityRow() {
           </Button>
         </div>
       )}
-      {error && <p className="mt-2 text-xs text-red-600">{error}</p>}
+      {error && <p className="mt-2 text-xs text-danger">{error}</p>}
     </div>
   );
 }
@@ -145,10 +145,10 @@ const profileApi = emptyApi.injectEndpoints({
 const { useUpdateProfileMutation, usePatchProfileMutation, useUploadLogoMutation } = profileApi;
 
 const membershipStatusColors: Record<string, string> = {
-  active: 'bg-green-100 text-green-800',
-  pending_payment: 'bg-yellow-100 text-yellow-800',
-  expired: 'bg-red-100 text-red-800',
-  suspended: 'bg-gray-100 text-gray-700',
+  active: 'bg-success-bg text-success',
+  pending_payment: 'bg-warning-bg text-warning',
+  expired: 'bg-danger-bg text-danger',
+  suspended: 'bg-border-subtle text-ink-muted',
 };
 
 const ROLE_LABELS: Record<string, string> = {
@@ -306,7 +306,7 @@ export function ProfilePage() {
   if (isError && isMember) {
     if (isNoActiveChamberError(error)) {
       return (
-        <div className="p-6 max-w-2xl">
+        <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 sm:py-8">
           <h1 className="text-2xl font-semibold text-ink mb-1">My Profile</h1>
           <p className="text-sm text-ink-subtle mb-6">Manage your personal and business information.</p>
 
@@ -317,8 +317,8 @@ export function ProfilePage() {
             </div>
             <dl className="divide-y divide-border/30">
               {[
-                { label: 'Full Name', value: `${user?.firstName ?? '—'} ${user?.lastName ?? ''}`.trim() },
-                { label: 'Email Address', value: user?.email ?? '—' },
+                { label: 'Full Name', value: `${user?.firstName ?? '–'} ${user?.lastName ?? ''}`.trim() },
+                { label: 'Email Address', value: user?.email ?? '–' },
               ].map((row) => (
                 <div key={row.label} className="grid grid-cols-3 gap-4 px-6 py-4">
                   <dt className="text-sm font-medium text-ink-subtle">{row.label}</dt>
@@ -347,7 +347,7 @@ export function ProfilePage() {
         </div>
       );
     }
-    return <div className="p-6"><ErrorBanner message="Failed to load profile." /></div>;
+    return <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8"><ErrorBanner message="Failed to load profile." /></div>;
   }
 
   const logoUrl = profile?.logoUrl;
@@ -355,12 +355,12 @@ export function ProfilePage() {
   // Admin/staff see an organisation-focused profile
   if (!isMember) {
     return (
-      <div className="p-6 max-w-2xl">
+      <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 sm:py-8">
         <h1 className="text-2xl font-semibold text-ink mb-1">My Profile</h1>
         <p className="text-sm text-ink-subtle mb-6">Your account and organisation details.</p>
 
         {saved && (
-          <div className="mb-4 rounded-lg bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-700">
+          <div className="mb-4 rounded-lg bg-success-bg border border-success-border px-4 py-3 text-sm text-success">
             Profile updated successfully.
           </div>
         )}
@@ -373,9 +373,9 @@ export function ProfilePage() {
             </div>
             <dl className="divide-y divide-border/30">
               {[
-                { label: 'Platform', value: 'Chamberlink ERP — Chamber Digital Portal' },
+                { label: 'Platform', value: 'Chamberlink, the chamber digital portal' },
                 { label: 'Operated by', value: 'Tradely LTD.' },
-                { label: 'Your Role', value: ROLE_LABELS[user?.role ?? ''] ?? user?.role ?? '—' },
+                { label: 'Your Role', value: ROLE_LABELS[user?.role ?? ''] ?? user?.role ?? '–' },
               ].map((row) => (
                 <div key={row.label} className="grid grid-cols-3 gap-4 px-6 py-4">
                   <dt className="text-sm font-medium text-ink-subtle">{row.label}</dt>
@@ -418,7 +418,7 @@ export function ProfilePage() {
                 <p className="text-xs text-ink-subtle mb-3">
                   Shown on your chamber's public listing and Chamber Network cards. JPEG or PNG, compressed automatically.
                 </p>
-                {orgLogoError && <p className="text-xs text-red-600 mb-2">{orgLogoError}</p>}
+                {orgLogoError && <p className="text-xs text-danger mb-2">{orgLogoError}</p>}
                 {user?.role === 'chamber_admin' && (
                   <>
                     <input ref={orgLogoInputRef} type="file" accept="image/jpeg,image/png" className="hidden" onChange={handleOrgLogoChange} />
@@ -469,14 +469,14 @@ export function ProfilePage() {
             ) : (
               <dl className="divide-y divide-border/30">
                 {[
-                  { label: 'Organisation', value: myTenant?.name ?? '—' },
-                  { label: 'Region', value: myTenant?.region ?? '—' },
-                  { label: 'City', value: myTenant?.city ?? '—' },
-                  { label: 'Address', value: myTenant?.address ?? '—' },
-                  { label: 'Phone', value: myTenant?.phone ?? '—' },
-                  { label: 'Public Email', value: myTenant?.email ?? '—' },
-                  { label: 'Website', value: myTenant?.website ?? '—' },
-                  { label: 'Your Role', value: ROLE_LABELS[user?.role ?? ''] ?? user?.role ?? '—' },
+                  { label: 'Organisation', value: myTenant?.name ?? '–' },
+                  { label: 'Region', value: myTenant?.region ?? '–' },
+                  { label: 'City', value: myTenant?.city ?? '–' },
+                  { label: 'Address', value: myTenant?.address ?? '–' },
+                  { label: 'Phone', value: myTenant?.phone ?? '–' },
+                  { label: 'Public Email', value: myTenant?.email ?? '–' },
+                  { label: 'Website', value: myTenant?.website ?? '–' },
+                  { label: 'Your Role', value: ROLE_LABELS[user?.role ?? ''] ?? user?.role ?? '–' },
                 ].map((row) => (
                   <div key={row.label} className="grid grid-cols-3 gap-4 px-6 py-4">
                     <dt className="text-sm font-medium text-ink-subtle">{row.label}</dt>
@@ -509,8 +509,8 @@ export function ProfilePage() {
           ) : (
             <dl className="divide-y divide-border/30">
               {[
-                { label: 'Full Name', value: `${user?.firstName ?? '—'} ${user?.lastName ?? ''}`.trim() },
-                { label: 'Email Address', value: user?.email ?? '—' },
+                { label: 'Full Name', value: `${user?.firstName ?? '–'} ${user?.lastName ?? ''}`.trim() },
+                { label: 'Email Address', value: user?.email ?? '–' },
               ].map((row) => (
                 <div key={row.label} className="grid grid-cols-3 gap-4 px-6 py-4">
                   <dt className="text-sm font-medium text-ink-subtle">{row.label}</dt>
@@ -532,7 +532,7 @@ export function ProfilePage() {
                 <p className="text-sm font-medium text-ink">Email Verification</p>
                 <p className="text-xs text-ink-subtle">{user?.isEmailVerified ? 'Your email is verified' : 'Email not yet verified'}</p>
               </div>
-              <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${user?.isEmailVerified ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+              <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${user?.isEmailVerified ? 'bg-success-bg text-success' : 'bg-warning-bg text-warning'}`}>
                 {user?.isEmailVerified ? 'Verified' : 'Pending'}
               </span>
             </div>
@@ -545,12 +545,12 @@ export function ProfilePage() {
 
   // Member profile view
   return (
-    <div className="p-6 max-w-2xl">
+    <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 sm:py-8">
       <h1 className="text-2xl font-semibold text-ink mb-1">My Profile</h1>
       <p className="text-sm text-ink-subtle mb-6">Manage your personal and business information.</p>
 
       {saved && (
-        <div className="mb-4 rounded-lg bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-700">
+        <div className="mb-4 rounded-lg bg-success-bg border border-success-border px-4 py-3 text-sm text-success">
           Profile updated successfully.
         </div>
       )}
@@ -578,11 +578,11 @@ export function ProfilePage() {
         ) : (
           <dl className="divide-y divide-border/30">
             {[
-              { label: 'Full Name', value: `${profile?.firstName ?? user?.firstName ?? '—'} ${profile?.lastName ?? user?.lastName ?? ''}`.trim() },
-              { label: 'Email Address', value: user?.email ?? '—' },
-              { label: 'Business Name', value: profile?.businessName ?? '—' },
-              { label: 'Member ID', value: profile?.memberId ?? '—' },
-              { label: 'Account Status', value: profile?.status ? profile.status.replace(/_/g, ' ') : '—' },
+              { label: 'Full Name', value: `${profile?.firstName ?? user?.firstName ?? '–'} ${profile?.lastName ?? user?.lastName ?? ''}`.trim() },
+              { label: 'Email Address', value: user?.email ?? '–' },
+              { label: 'Business Name', value: profile?.businessName ?? '–' },
+              { label: 'Member ID', value: profile?.memberId ?? '–' },
+              { label: 'Account Status', value: profile?.status ? profile.status.replace(/_/g, ' ') : '–' },
             ].map((row) => (
               <div key={row.label} className="grid grid-cols-3 gap-4 px-6 py-4">
                 <dt className="text-sm font-medium text-ink-subtle">{row.label}</dt>
@@ -623,7 +623,7 @@ export function ProfilePage() {
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-ink mb-0.5">Company Logo</p>
             <p className="text-xs text-ink-subtle mb-3">Used on generated invoices and packing lists. JPEG or PNG · Compressed automatically.</p>
-            {logoError && <p className="text-xs text-red-600 mb-2">{logoError}</p>}
+            {logoError && <p className="text-xs text-danger mb-2">{logoError}</p>}
             <input ref={logoInputRef} type="file" accept="image/jpeg,image/png" className="hidden" onChange={handleLogoChange} />
             <button
               onClick={() => logoInputRef.current?.click()}
@@ -673,10 +673,10 @@ export function ProfilePage() {
         ) : (
           <dl className="divide-y divide-border/30">
             {[
-              { label: 'CAC Number', value: profile?.registrationNumber ?? '—' },
-              { label: 'Industry', value: profile?.industry ?? '—' },
-              { label: 'Address', value: [profile?.address, profile?.city, profile?.state].filter(Boolean).join(', ') || '—' },
-              { label: 'Website', value: profile?.website ?? '—' },
+              { label: 'CAC Number', value: profile?.registrationNumber ?? '–' },
+              { label: 'Industry', value: profile?.industry ?? '–' },
+              { label: 'Address', value: [profile?.address, profile?.city, profile?.state].filter(Boolean).join(', ') || '–' },
+              { label: 'Website', value: profile?.website ?? '–' },
             ].map((row) => (
               <div key={row.label} className="grid grid-cols-3 gap-4 px-6 py-4">
                 <dt className="text-sm font-medium text-ink-subtle">{row.label}</dt>
@@ -693,25 +693,25 @@ export function ProfilePage() {
           <div className="px-6 py-4 border-b border-border/40 flex items-center justify-between">
             <h2 className="font-medium text-ink">Membership Plan</h2>
             {membership.status && (
-              <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${membershipStatusColors[membership.status] ?? 'bg-gray-100 text-gray-700'}`}>
+              <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${membershipStatusColors[membership.status] ?? 'bg-border-subtle text-ink-muted'}`}>
                 {membership.status.replace(/_/g, ' ')}
               </span>
             )}
           </div>
           <dl className="divide-y divide-border/30">
             {[
-              { label: 'Plan', value: membership.tierName ?? '—' },
+              { label: 'Plan', value: membership.tierName ?? '–' },
               {
                 label: 'Member Since',
                 value: membership.memberSince
                   ? new Date(membership.memberSince).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'long', year: 'numeric' })
-                  : '—',
+                  : '–',
               },
               {
                 label: 'Expires',
                 value: membership.expiresAt
                   ? new Date(membership.expiresAt).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'long', year: 'numeric' })
-                  : '—',
+                  : '–',
               },
             ].map((row) => (
               <div key={row.label} className="grid grid-cols-3 gap-4 px-6 py-4">
@@ -734,7 +734,7 @@ export function ProfilePage() {
               <p className="text-sm font-medium text-ink">Email Verification</p>
               <p className="text-xs text-ink-subtle">{user?.isEmailVerified ? 'Your email is verified' : 'Email not yet verified'}</p>
             </div>
-            <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${user?.isEmailVerified ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+            <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${user?.isEmailVerified ? 'bg-success-bg text-success' : 'bg-warning-bg text-warning'}`}>
               {user?.isEmailVerified ? 'Verified' : 'Pending'}
             </span>
           </div>

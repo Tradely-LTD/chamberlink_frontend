@@ -33,14 +33,14 @@ export function useConnectToChamber(onSuccess: (message: string) => void) {
         onSuccess("You're already connected to this chamber.");
       } else {
         // reactivated
-        onSuccess('Welcome back — your connection has been reactivated.');
+        onSuccess('Welcome back. Your connection has been reactivated.');
       }
     } catch (err: unknown) {
       const e = err as { status?: number; data?: { message?: string } };
       if (e.status === 409) {
         setInlineError({
           tenantId,
-          message: e.data?.message ?? 'Your connection to this chamber is suspended — contact the chamber admin.',
+          message: e.data?.message ?? 'Your connection to this chamber is suspended. Contact the chamber admin.',
         });
       } else if (e.status === 404) {
         setInlineError({ tenantId, message: 'This chamber is unavailable right now.' });

@@ -38,7 +38,7 @@ describe('Button', () => {
 
   it('applies secondary variant classes', () => {
     render(<Button variant="secondary">Secondary</Button>);
-    expect(screen.getByRole('button')).toHaveClass('bg-gold');
+    expect(screen.getByRole('button')).toHaveClass('bg-surface');
   });
 
   it('applies ghost variant classes', () => {

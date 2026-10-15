@@ -67,7 +67,7 @@ function SettingRow({ setting, onSaved }: { setting: PlatformSetting; onSaved: (
           </Button>
         </div>
       </div>
-      {error && <p className="mt-2 text-xs text-red-600">{error}</p>}
+      {error && <p className="mt-2 text-xs text-danger">{error}</p>}
       <p className="mt-1.5 text-[11px] text-ink-subtle">
         Default: {setting.options?.find((o) => o.value === setting.defaultValue)?.label ?? setting.defaultValue}{setting.type === 'percent' ? '%' : ''}
       </p>
@@ -80,12 +80,12 @@ function SettingsView() {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   return (
-    <div className="p-6 max-w-3xl">
+    <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 sm:py-8">
       <div className="mb-6">
         <h1 className="text-2xl font-semibold text-ink mb-1">Platform Settings</h1>
         <p className="text-sm text-ink-subtle">
           Operational values changeable without a code deploy. Adding a new setting later never needs a
-          migration — this list is backed by a generic key/value store.
+          migration; this list is backed by a generic key/value store.
         </p>
       </div>
 
@@ -122,10 +122,10 @@ export function SettingsPage() {
     return (
       <div className="p-6 flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: '#ffdad6' }}>
+          <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: 'rgb(var(--c-danger-bg))' }}>
             <span
               className="material-symbols-outlined"
-              style={{ fontSize: 32, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 32`, color: '#93000a' }}
+              style={{ fontSize: 32, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 32`, color: 'rgb(var(--c-danger))' }}
             >
               lock
             </span>

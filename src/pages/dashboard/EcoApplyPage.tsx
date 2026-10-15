@@ -675,7 +675,7 @@ export function EcoApplyPage() {
     : null;
 
   return (
-    <div className="p-6 max-w-2xl">
+    <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 sm:py-8">
       <div className="flex items-center gap-2 mb-6">
         <Link to="/dashboard/eco" className="text-sm text-ink-subtle hover:text-ink">Certificate Applications</Link>
         <span className="text-ink-subtle">/</span>
@@ -693,15 +693,15 @@ export function EcoApplyPage() {
       </p>
 
       {isRevisionRequested && existingCert?.revisionNotes && (
-        <div className="mb-4 rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-800">
+        <div className="mb-4 rounded-lg bg-warning-bg border border-warning-border px-4 py-3 text-sm text-warning">
           <p className="font-semibold mb-1">Admin revision notes:</p>
           <p>{existingCert.revisionNotes}</p>
         </div>
       )}
 
       {draftSaved && (
-        <div className="mb-4 rounded-lg bg-green-50 border border-green-200 px-4 py-2 text-sm text-green-700">
-          Draft saved — you can close this page and continue later.
+        <div className="mb-4 rounded-lg bg-success-bg border border-success-border px-4 py-2 text-sm text-success">
+          Draft saved. You can close this page and continue later.
         </div>
       )}
 
@@ -761,7 +761,7 @@ export function EcoApplyPage() {
                 <>
                   <Select label="From which Chamber of Commerce? *" value={form.tenantId} onValueChange={(v) => set('tenantId', v)}
                     placeholder="Select a chamber…"
-                    options={onboardedTenants.map((t) => ({ value: t.id, label: `${t.name}${t.city ? ` — ${t.city}` : ''}` }))} />
+                    options={onboardedTenants.map((t) => ({ value: t.id, label: `${t.name}${t.city ? `, ${t.city}` : ''}` }))} />
                   <p className="text-xs text-ink-subtle mt-1">
                     The chamber that reviews and issues your certificate. You don&apos;t need to be its member.
                   </p>
@@ -831,7 +831,7 @@ export function EcoApplyPage() {
             <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide pt-2">Origin & Destination</p>
 
             <div className="grid sm:grid-cols-2 gap-3">
-              <Select label="Origin of Goods — State *" value={form.originStates[0] ?? ''}
+              <Select label="Origin of Goods: State *" value={form.originStates[0] ?? ''}
                 onValueChange={(v) => {
                   // An LGA only means something inside its own state.
                   set('originStates', v ? [v] : []);
@@ -894,7 +894,7 @@ export function EcoApplyPage() {
             <p className="text-xs text-ink-subtle -mt-2 pl-7">
               Optional.{feeRates && <> Members pay {formatRatePct(feeRates.memberRatePct)} of invoice value instead of {formatRatePct(feeRates.nonMemberRatePct)}</>}
               {payFirst
-                ? ' — paying first, the member rate applies when your membership with this chamber is already active on Chamberlink.'
+                ? '. When paying first, the member rate applies only if your membership with this chamber is already active on Chamberlink.'
                 : ', once the chamber verifies the membership ID.'}
             </p>
             {form.selfDeclaredIsMember && (
@@ -902,8 +902,8 @@ export function EcoApplyPage() {
                 <div>
                   <Select label="Which chamber are you a member of? *" value={form.tenantId} onValueChange={(v) => set('tenantId', v)} disabled={chamberLocked}
                     placeholder="Select a chamber…"
-                    options={onboardedTenants.map((t) => ({ value: t.id, label: `${t.name}${t.city ? ` — ${t.city}` : ''}` }))} />
-                  <p className="text-xs text-ink-subtle mt-1">Same chamber your application is routed to — the one selected in Product &amp; Goods.</p>
+                    options={onboardedTenants.map((t) => ({ value: t.id, label: `${t.name}${t.city ? `, ${t.city}` : ''}` }))} />
+                  <p className="text-xs text-ink-subtle mt-1">The same chamber your application goes to, chosen in Product &amp; Goods.</p>
                 </div>
                 <Input label="Membership ID *" value={form.selfDeclaredMembershipId}
                   onChange={(e) => set('selfDeclaredMembershipId', e.target.value)} />
@@ -920,7 +920,7 @@ export function EcoApplyPage() {
           <div className="space-y-4">
             <h2 className="font-medium text-ink mb-1">Shipment & Transport</h2>
             <p className="text-xs text-ink-subtle mb-3">
-              If any of these details aren&apos;t known yet, tick &quot;I don&apos;t know yet&quot; — we&apos;ll record it as unknown ({UNKNOWN_VALUE}).
+              If any of these details aren&apos;t known yet, tick &quot;I don&apos;t know yet&quot; and we&apos;ll record it as unknown ({UNKNOWN_VALUE}).
             </p>
 
             <div>
@@ -994,11 +994,11 @@ export function EcoApplyPage() {
             </div>
             {form.invoiceCurrency === 'USD' && (
               <p className="text-xs text-ink-subtle -mt-2">
-                The application fee is charged in Naira — your USD amount will be converted at the exchange rate in effect when your application is reviewed.
+                The application fee is charged in Naira. Your USD amount will be converted at the exchange rate in effect when your application is reviewed.
                 {fxRate && (
                   <>
                     {' '}Today&apos;s rate is <strong>₦{fxRate.rate.toLocaleString()}</strong> per $1
-                    {!fxRate.isLive && ' (indicative — live rates are briefly unavailable)'}
+                    {!fxRate.isLive && ' (indicative: live rates are briefly unavailable)'}
                     {form.invoiceTotal && Number(form.invoiceTotal) > 0 && (
                       <>, so ${Number(form.invoiceTotal).toLocaleString()} is about{' '}
                         ₦{Math.round(Number(form.invoiceTotal) * fxRate.rate).toLocaleString()}</>
@@ -1019,7 +1019,7 @@ export function EcoApplyPage() {
               <h2 className="font-medium text-ink">Compliance / Declaration Documents</h2>
               <p className="text-xs text-ink-subtle mt-1">
                 Select from your library or upload new files. Documents marked * are required
-                {transportRequirement && ` — including the ${transportRequirement.label}, because your goods travel by ${MEANS_OF_TRANSPORT_LABEL[form.meansOfTransport] ?? form.meansOfTransport}`}.
+                {transportRequirement && `, including the ${transportRequirement.label}, because your goods travel by ${MEANS_OF_TRANSPORT_LABEL[form.meansOfTransport] ?? form.meansOfTransport}`}.
               </p>
             </div>
             <DocSlot label={docLabel('invoice', 'Attach Invoice')} filterCategory="commercial_invoice" selectedDocId={invoiceDocId} onSelectDocId={setInvoiceDocId} selectedFile={invoiceFile} onSelectFile={setInvoiceFile} hasConnection={hasConnection} />
@@ -1055,49 +1055,49 @@ export function EcoApplyPage() {
 
             <ReviewSection title="Product & Goods" onEdit={() => setStep(0)} rows={[
               { label: 'Chamber', value: onboardedTenants.find((t) => t.id === form.tenantId)?.name ?? form.tenantId },
-              { label: 'Solid Mineral', value: selectedMineral?.name ?? '—' },
-              { label: 'HS Code', value: selectedMineral?.hsCode ?? '—' },
+              { label: 'Solid Mineral', value: selectedMineral?.name ?? '–' },
+              { label: 'HS Code', value: selectedMineral?.hsCode ?? '–' },
               { label: 'Description', value: form.descriptionOfGoods },
-              { label: 'Packages', value: combinedPackages || '—' },
-              { label: 'Marks & Numbers', value: form.marksAndNumbers || '—' },
-              { label: 'Quantity', value: form.quantity ? `${form.quantity} ${form.quantityUnit}` : '—' },
-              { label: 'Origin of Goods', value: [form.originLga && `${form.originLga} LGA`, ...form.originStates].filter(Boolean).join(', ') || '—' },
-              { label: 'Destination', value: [form.destinationCountry, form.destinationPort].filter(Boolean).join(', ') || '—' },
-              { label: 'Batch/ID No.', value: form.batchIdNo || '—' },
+              { label: 'Packages', value: combinedPackages || '–' },
+              { label: 'Marks & Numbers', value: form.marksAndNumbers || '–' },
+              { label: 'Quantity', value: form.quantity ? `${form.quantity} ${form.quantityUnit}` : '–' },
+              { label: 'Origin of Goods', value: [form.originLga && `${form.originLga} LGA`, ...form.originStates].filter(Boolean).join(', ') || '–' },
+              { label: 'Destination', value: [form.destinationCountry, form.destinationPort].filter(Boolean).join(', ') || '–' },
+              { label: 'Batch/ID No.', value: form.batchIdNo || '–' },
             ]} />
 
             <ReviewSection title="Exporter/Company & Consignee" onEdit={() => setStep(1)} rows={[
-              { label: 'License Owner', value: form.isLicenseOwner ? `Yes (${form.miningLicenseNo || '—'})` : 'No' },
+              { label: 'License Owner', value: form.isLicenseOwner ? `Yes (${form.miningLicenseNo || '–'})` : 'No' },
               { label: 'Company', value: form.companyName },
               { label: 'Company Address', value: form.companyAddress },
               { label: 'Company Country', value: form.companyCountry },
               { label: 'Company Email', value: form.companyEmail },
               { label: 'Company Phone', value: form.companyPhone },
-              { label: 'Chamber Member', value: form.selfDeclaredIsMember ? `Yes (${form.selfDeclaredMembershipId || '—'})` : 'No' },
+              { label: 'Chamber Member', value: form.selfDeclaredIsMember ? `Yes (${form.selfDeclaredMembershipId || '–'})` : 'No' },
               { label: 'Consignee', value: form.consigneeName },
               { label: 'Consignee Address', value: form.consigneeAddress },
             ]} />
 
             <ReviewSection title="Shipment & Transport" onEdit={() => setStep(2)} rows={[
-              { label: 'Departure Date', value: form.departureDate || '—' },
+              { label: 'Departure Date', value: form.departureDate || '–' },
               { label: 'Means of Transport', value: MEANS_OF_TRANSPORT.find((m) => m.value === form.meansOfTransport)?.label ?? form.meansOfTransport },
-              { label: 'Vessel/Flight/Vehicle & Voyage No.', value: form.vesselFlightVehicleNameVoyageNo || '—' },
-              { label: 'Port of Loading', value: form.portOfLoading || '—' },
-              { label: 'Port of Discharge', value: form.portOfDischarge || '—' },
+              { label: 'Vessel/Flight/Vehicle & Voyage No.', value: form.vesselFlightVehicleNameVoyageNo || '–' },
+              { label: 'Port of Loading', value: form.portOfLoading || '–' },
+              { label: 'Port of Discharge', value: form.portOfDischarge || '–' },
             ]} />
 
             <ReviewSection title="Commercial Information" onEdit={() => setStep(3)} rows={[
-              { label: 'Invoice Number', value: form.invoiceNumber || '—' },
+              { label: 'Invoice Number', value: form.invoiceNumber || '–' },
               { label: 'Invoice Date', value: form.invoiceDate },
-              { label: 'Invoice Total', value: form.invoiceTotal ? `${form.invoiceCurrency === 'USD' ? '$' : '₦'}${Number(form.invoiceTotal).toLocaleString()}` : '—' },
-              { label: 'Customer Order / LC No.', value: form.customerOrderOrLcNo || '—' },
+              { label: 'Invoice Total', value: form.invoiceTotal ? `${form.invoiceCurrency === 'USD' ? '$' : '₦'}${Number(form.invoiceTotal).toLocaleString()}` : '–' },
+              { label: 'Customer Order / LC No.', value: form.customerOrderOrLcNo || '–' },
             ]} />
 
             <ReviewSection title="Compliance Documents" onEdit={() => setStep(4)} rows={[
-              { label: 'Invoice', value: invoiceFile?.name ?? (invoiceDocId ? (myDocs.find((d) => d.id === invoiceDocId)?.name ?? 'Attached') : '—') },
-              { label: 'Signature', value: signatureFile?.name ?? (signatureDocId ? (myDocs.find((d) => d.id === signatureDocId)?.name ?? 'Attached') : '—') },
-              { label: 'CAC Certificate', value: cacCertificateFile?.name ?? (cacCertificateDocId ? (myDocs.find((d) => d.id === cacCertificateDocId)?.name ?? 'Attached') : '—') },
-              { label: 'NEPC Certificate', value: nepcCertificateFile?.name ?? (nepcCertificateDocId ? (myDocs.find((d) => d.id === nepcCertificateDocId)?.name ?? 'Attached') : '—') },
+              { label: 'Invoice', value: invoiceFile?.name ?? (invoiceDocId ? (myDocs.find((d) => d.id === invoiceDocId)?.name ?? 'Attached') : '–') },
+              { label: 'Signature', value: signatureFile?.name ?? (signatureDocId ? (myDocs.find((d) => d.id === signatureDocId)?.name ?? 'Attached') : '–') },
+              { label: 'CAC Certificate', value: cacCertificateFile?.name ?? (cacCertificateDocId ? (myDocs.find((d) => d.id === cacCertificateDocId)?.name ?? 'Attached') : '–') },
+              { label: 'NEPC Certificate', value: nepcCertificateFile?.name ?? (nepcCertificateDocId ? (myDocs.find((d) => d.id === nepcCertificateDocId)?.name ?? 'Attached') : '–') },
               // Only listed when the chosen mode calls for one (RFP §4.1.7), so
               // the review never shows a row for a document nobody was asked for.
               ...(transportRequirement
@@ -1106,7 +1106,7 @@ export function EcoApplyPage() {
                     value: transportDocumentFile?.name
                       ?? (transportDocumentDocId
                         ? (myDocs.find((d) => d.id === transportDocumentDocId)?.name ?? 'Attached')
-                        : existingCert?.transportDocumentKey ? 'Attached' : '—'),
+                        : existingCert?.transportDocumentKey ? 'Attached' : '–'),
                   }]
                 : []),
             ]} />
@@ -1115,13 +1115,13 @@ export function EcoApplyPage() {
               <div className="rounded-lg bg-success-bg border border-primary/20 px-4 py-3 text-sm text-ink">
                 <p className="font-medium mb-1">Estimated Application Fee</p>
                 <p className="text-xs text-ink-subtle">
-                  ₦{feeEstimate.verified.toLocaleString(undefined, { maximumFractionDigits: 2 })} ({formatRatePct(feeRates!.memberRatePct)} — if chamber membership is verified) or{' '}
-                  ₦{feeEstimate.unverified.toLocaleString(undefined, { maximumFractionDigits: 2 })} ({formatRatePct(feeRates!.nonMemberRatePct)} — otherwise).
+                  ₦{feeEstimate.verified.toLocaleString(undefined, { maximumFractionDigits: 2 })} ({formatRatePct(feeRates!.memberRatePct)} if chamber membership is verified) or{' '}
+                  ₦{feeEstimate.unverified.toLocaleString(undefined, { maximumFractionDigits: 2 })} ({formatRatePct(feeRates!.nonMemberRatePct)} otherwise).
                   {payFirst ? ' You pay this fee on submission.' : ' The final fee is confirmed by the reviewer at approval.'}
                   {form.invoiceCurrency === 'USD' && (
                     fxRate
-                      ? ` This converts your USD invoice at ₦${fxRate.rate.toLocaleString()} per $1${fxRate.isLive ? '' : ' (indicative rate)'} — the exact fee is set using the rate in effect when reviewed.`
-                      : ' This estimate converts your USD invoice at an approximate rate — the exact fee is set using the rate in effect when reviewed.'
+                      ? ` This converts your USD invoice at ₦${fxRate.rate.toLocaleString()} per $1${fxRate.isLive ? '' : ' (indicative rate)'}. The exact fee is set using the rate in effect when reviewed.`
+                      : ' This estimate converts your USD invoice at an approximate rate. The exact fee is set using the rate in effect when reviewed.'
                   )}
                 </p>
               </div>

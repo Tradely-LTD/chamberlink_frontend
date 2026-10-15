@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { StatusBadge, type StatusTone } from './StatusBadge';
 
 interface Props {
   label?: string;
@@ -6,18 +7,14 @@ interface Props {
   variant?: 'default' | 'coming-soon' | 'success' | 'warning' | 'error';
 }
 
-const styles: Record<NonNullable<Props['variant']>, string> = {
-  default: 'bg-primary/10 text-primary',
-  'coming-soon': 'bg-warning-bg text-warning-text',
-  success: 'bg-success-bg text-success-text',
-  warning: 'bg-warning-bg text-warning-text',
-  error: 'bg-danger-bg text-danger-text',
+const toneFor: Record<NonNullable<Props['variant']>, StatusTone> = {
+  default: 'info',
+  'coming-soon': 'gold',
+  success: 'success',
+  warning: 'warning',
+  error: 'danger',
 };
 
 export function Badge({ label, children, variant = 'default' }: Props) {
-  return (
-    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${styles[variant]}`}>
-      {children ?? label}
-    </span>
-  );
+  return <StatusBadge tone={toneFor[variant]}>{children ?? label}</StatusBadge>;
 }

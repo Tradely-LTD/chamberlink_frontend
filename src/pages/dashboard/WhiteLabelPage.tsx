@@ -15,9 +15,9 @@ import type { Tenant, CreateTenantPayload } from '@features/white-label';
 // ── Status config ─────────────────────────────────────────────────────────
 
 const tenantStatusConfig: Record<Tenant['status'], { label: string; bg: string; text: string }> = {
-  active:    { label: 'Active',    bg: '#a0f4ca', text: '#005137' },
-  suspended: { label: 'Suspended', bg: '#ffdad6', text: '#93000a' },
-  trial:     { label: 'Trial',     bg: '#ffdea5', text: '#5d4201' },
+  active:    { label: 'Active',    bg: 'rgb(var(--c-success-bg))', text: 'rgb(var(--c-success))' },
+  suspended: { label: 'Suspended', bg: 'rgb(var(--c-danger-bg))', text: 'rgb(var(--c-danger))' },
+  trial:     { label: 'Trial',     bg: 'rgb(var(--c-warning-bg))', text: 'rgb(var(--c-warning))' },
 };
 
 // ── Create Tenant Modal ────────────────────────────────────────────────────
@@ -36,7 +36,7 @@ const EMPTY_CREATE_FORM: CreateForm = {
   chamberAdminEmail: '',
   chamberAdminFirstName: '',
   chamberAdminLastName: '',
-  primaryColor: '#023293',
+  primaryColor: 'rgb(var(--c-primary))',
   secondaryColor: '#ffffff',
   tagline: '',
   city: '',
@@ -107,7 +107,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
           {/* Required fields */}
           <div>
             <label className="block text-xs font-semibold text-ink-subtle mb-1">
-              Organisation Name <span className="text-red-500">*</span>
+              Organisation Name <span className="text-danger">*</span>
             </label>
             <input
               required
@@ -120,7 +120,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
 
           <div>
             <label className="block text-xs font-semibold text-ink-subtle mb-1">
-              Slug (URL identifier) <span className="text-red-500">*</span>{' '}
+              Slug (URL identifier) <span className="text-danger">*</span>{' '}
               <span className="text-ink-subtle font-normal">(lowercase letters and hyphens only)</span>
             </label>
             <input
@@ -135,7 +135,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
 
           <div>
             <label className="block text-xs font-semibold text-ink-subtle mb-1">
-              Region / State <span className="text-red-500">*</span>
+              Region / State <span className="text-danger">*</span>
             </label>
             <input
               required
@@ -148,7 +148,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
 
           <div>
             <label className="block text-xs font-semibold text-ink-subtle mb-1">
-              RC Number <span className="text-red-500">*</span>
+              RC Number <span className="text-danger">*</span>
             </label>
             <input
               required
@@ -167,7 +167,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-semibold text-ink-subtle mb-1">
-                  First Name <span className="text-red-500">*</span>
+                  First Name <span className="text-danger">*</span>
                 </label>
                 <input
                   required
@@ -179,7 +179,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
               </div>
               <div>
                 <label className="block text-xs font-semibold text-ink-subtle mb-1">
-                  Last Name <span className="text-red-500">*</span>
+                  Last Name <span className="text-danger">*</span>
                 </label>
                 <input
                   required
@@ -192,7 +192,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
             </div>
             <div className="mt-3">
               <label className="block text-xs font-semibold text-ink-subtle mb-1">
-                Admin Email <span className="text-red-500">*</span>
+                Admin Email <span className="text-danger">*</span>
               </label>
               <input
                 required
@@ -294,7 +294,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
               type="submit"
               disabled={isLoading}
               className="flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
-              style={{ background: '#023293' }}
+              style={{ background: 'rgb(var(--c-primary))' }}
             >
               {isLoading ? 'Creating…' : 'Create Chamber'}
             </button>
@@ -329,7 +329,7 @@ function EditTenantModal({ tenant, onClose }: { tenant: Tenant; onClose: () => v
     region: tenant.region,
     city: tenant.city ?? '',
     tagline: tenant.tagline ?? '',
-    primaryColor: tenant.primaryColor ?? '#023293',
+    primaryColor: tenant.primaryColor ?? 'rgb(var(--c-primary))',
     secondaryColor: tenant.secondaryColor ?? '#ffffff',
     address: tenant.address ?? '',
     phone: tenant.phone ?? '',
@@ -390,7 +390,7 @@ function EditTenantModal({ tenant, onClose }: { tenant: Tenant; onClose: () => v
           {/* Core details */}
           <div>
             <label className="block text-xs font-semibold text-ink-subtle mb-1">
-              Organisation Name <span className="text-red-500">*</span>
+              Organisation Name <span className="text-danger">*</span>
             </label>
             <input
               required
@@ -529,7 +529,7 @@ function EditTenantModal({ tenant, onClose }: { tenant: Tenant; onClose: () => v
               type="submit"
               disabled={isLoading}
               className="flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
-              style={{ background: '#023293' }}
+              style={{ background: 'rgb(var(--c-primary))' }}
             >
               {isLoading ? 'Saving…' : 'Save Changes'}
             </button>
@@ -584,14 +584,14 @@ function ModuleConfigPanel({ tenant, onClose }: { tenant: Tenant; onClose: () =>
                 key={key}
                 className="flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors"
                 style={{
-                  borderColor: enabled ? '#023293' : '#e0e3e5',
-                  background: enabled ? '#f0f4ff' : 'white',
+                  borderColor: enabled ? 'rgb(var(--c-primary))' : 'rgb(var(--c-border))',
+                  background: enabled ? 'rgb(var(--c-primary-soft))' : 'white',
                 }}
               >
                 <span className="text-sm text-ink font-medium">{key}</span>
                 <div
                   className="relative w-9 h-5 rounded-full transition-colors flex-shrink-0"
-                  style={enabled ? { background: '#023293' } : { background: '#e0e3e5' }}
+                  style={enabled ? { background: 'rgb(var(--c-primary))' } : { background: 'rgb(var(--c-border))' }}
                 >
                   <div
                     className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${
@@ -616,7 +616,7 @@ function ModuleConfigPanel({ tenant, onClose }: { tenant: Tenant; onClose: () =>
               disabled={isLoading}
               onClick={handleSave}
               className="flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
-              style={{ background: '#023293' }}
+              style={{ background: 'rgb(var(--c-primary))' }}
             >
               {isLoading ? 'Saving…' : 'Save Modules'}
             </button>
@@ -643,7 +643,7 @@ function WhiteLabelView() {
   };
 
   return (
-    <div className="p-6 max-w-6xl">
+    <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8">
       {showCreate && <CreateTenantModal onClose={() => setShowCreate(false)} />}
       {editTenant && (
         <EditTenantModal tenant={editTenant} onClose={() => setEditTenant(null)} />
@@ -664,7 +664,7 @@ function WhiteLabelView() {
         <button
           onClick={() => setShowCreate(true)}
           className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white"
-          style={{ background: '#023293' }}
+          style={{ background: 'rgb(var(--c-primary))' }}
         >
           <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>
           New Chamber
@@ -696,7 +696,7 @@ function WhiteLabelView() {
           <div
             key={label}
             className={`rounded-xl border p-4 ${accent ? '' : 'bg-white border-border'}`}
-            style={accent ? { background: '#023293', borderColor: '#023293' } : {}}
+            style={accent ? { background: 'rgb(var(--c-primary))', borderColor: 'rgb(var(--c-primary))' } : {}}
           >
             <div className="flex items-center gap-2 mb-2">
               <span
@@ -704,14 +704,14 @@ function WhiteLabelView() {
                 style={{
                   fontSize: 18,
                   fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`,
-                  color: accent ? '#aec7f7' : '#74777f',
+                  color: accent ? 'rgb(var(--c-primary-200))' : 'rgb(var(--c-ink-subtle))',
                 }}
               >
                 {icon}
               </span>
               <p
                 className={`text-xs font-semibold uppercase tracking-wide ${
-                  accent ? 'text-[#aec7f7]' : 'text-ink-subtle'
+                  accent ? 'text-primary-200' : 'text-ink-subtle'
                 }`}
               >
                 {label}
@@ -728,20 +728,20 @@ function WhiteLabelView() {
       {isLoading ? (
         <SkeletonCard className="h-64" />
       ) : isError ? (
-        <div className="rounded-xl border border-red-200 bg-red-50 p-6">
-          <p className="text-sm font-semibold text-red-700 mb-1">Failed to load chambers</p>
-          <p className="text-xs text-red-600 mb-4">
-            {(error as { data?: { message?: string } })?.data?.message ?? 'Could not reach /white-label/tenants — check the API and your network.'}
+        <div className="rounded-xl border border-danger-border bg-danger-bg p-6">
+          <p className="text-sm font-semibold text-danger mb-1">Failed to load chambers</p>
+          <p className="text-xs text-danger mb-4">
+            {(error as { data?: { message?: string } })?.data?.message ?? 'Could not load chambers. Check your network and try again.'}
           </p>
           <button
             onClick={() => refetch()}
-            className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-red-300 text-red-700 hover:bg-red-100 transition-colors"
+            className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-danger-border text-danger hover:bg-danger-bg transition-colors"
           >
             Retry
           </button>
         </div>
       ) : tenants.length === 0 ? (
-        <div className="text-center py-16 text-gray-400">
+        <div className="text-center py-16 text-ink-subtle">
           No chambers yet. Create the first chamber above.
         </div>
       ) : (
@@ -755,7 +755,7 @@ function WhiteLabelView() {
                   <div className="flex items-center gap-4">
                     <div
                       className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-                      style={{ background: tenant.primaryColor ?? '#023293' }}
+                      style={{ background: tenant.primaryColor ?? 'rgb(var(--c-primary))' }}
                     >
                       <span className="text-white font-bold text-sm">{tenant.name[0]}</span>
                     </div>
@@ -803,7 +803,7 @@ function WhiteLabelView() {
                     {tenant.status === 'active' && (
                       <button
                         onClick={() => handleStatusChange(tenant, 'suspended')}
-                        className="rounded-lg border border-[#ffdad6] px-3 py-1.5 text-xs font-semibold text-[#93000a] hover:bg-[#ffdad6] transition-colors"
+                        className="rounded-lg border border-danger-bg px-3 py-1.5 text-xs font-semibold text-danger hover:bg-danger-bg transition-colors"
                       >
                         Suspend
                       </button>
@@ -812,7 +812,7 @@ function WhiteLabelView() {
                       <button
                         onClick={() => handleStatusChange(tenant, 'active')}
                         className="rounded-lg px-3 py-1.5 text-xs font-semibold text-white"
-                        style={{ background: '#023293' }}
+                        style={{ background: 'rgb(var(--c-primary))' }}
                       >
                         Reinstate
                       </button>
@@ -821,7 +821,7 @@ function WhiteLabelView() {
                       <button
                         onClick={() => handleStatusChange(tenant, 'active')}
                         className="rounded-lg px-3 py-1.5 text-xs font-semibold text-white"
-                        style={{ background: '#0b6c4b' }}
+                        style={{ background: 'rgb(var(--c-success))' }}
                       >
                         Activate
                       </button>
@@ -836,7 +836,7 @@ function WhiteLabelView() {
                       <span
                         key={mod}
                         className="rounded-full px-2.5 py-0.5 text-xs font-medium"
-                        style={{ background: '#d6e3ff', color: '#023293' }}
+                        style={{ background: 'rgb(var(--c-primary-soft))', color: 'rgb(var(--c-primary))' }}
                       >
                         {mod}
                       </span>
@@ -872,14 +872,14 @@ export function WhiteLabelPage() {
         <div className="text-center">
           <div
             className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
-            style={{ background: '#ffdad6' }}
+            style={{ background: 'rgb(var(--c-danger-bg))' }}
           >
             <span
               className="material-symbols-outlined"
               style={{
                 fontSize: 32,
                 fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 32`,
-                color: '#93000a',
+                color: 'rgb(var(--c-danger))',
               }}
             >
               lock
