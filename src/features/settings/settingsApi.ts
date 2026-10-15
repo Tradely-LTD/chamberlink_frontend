@@ -8,6 +8,8 @@ export interface PlatformSetting {
   description: string;
   defaultValue: string;
   type: 'percent' | 'number' | 'string';
+  /** A fixed set of allowed values (e.g. the payment order) — rendered as a select. */
+  options?: { value: string; label: string }[];
   value: string;
 }
 

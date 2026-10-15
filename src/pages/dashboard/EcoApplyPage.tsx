@@ -12,6 +12,8 @@ import {
   useGetHsCodesQuery,
   useGetDocumentRequirementsQuery,
   useGetFxRateQuery,
+  useGetFeeRatesQuery,
+  formatRatePct,
   useGetOnboardedTenantsQuery,
 } from '@features/eco/ecoApi';
 import type { NewECertPayload } from '@features/eco/ecoApi';
@@ -342,6 +344,9 @@ export function EcoApplyPage() {
   // NGN invoice: nothing is converted, and a cache miss on this endpoint costs
   // an outbound call to the rate provider.
   const { data: fxRate } = useGetFxRateQuery(undefined, { skip: form.invoiceCurrency !== 'USD' });
+  // The selected type's own rates (or the platform's), straight from the server.
+  const { data: feeRates } = useGetFeeRatesQuery(form.certificateTypeCode || undefined);
+  const payFirst = feeRates?.paymentOrder === 'pay_first';
 
   // Which documents this application needs (RFP §4.1.7) — decided server-side
   // from the certificate type AND the mode of transport, so the form renders
@@ -662,10 +667,10 @@ export function EcoApplyPage() {
   const feeEstimateNgnTotal = form.invoiceTotal
     ? Number(form.invoiceTotal) * (form.invoiceCurrency === 'USD' ? usdToNgn : 1)
     : 0;
-  const feeEstimate = form.invoiceTotal
+  const feeEstimate = form.invoiceTotal && feeRates
     ? {
-      verified: feeEstimateNgnTotal * 0.0011,
-      unverified: feeEstimateNgnTotal * 0.00125,
+      verified: feeEstimateNgnTotal * (feeRates.memberRatePct / 100),
+      unverified: feeEstimateNgnTotal * (feeRates.nonMemberRatePct / 100),
     }
     : null;
 
@@ -681,7 +686,10 @@ export function EcoApplyPage() {
         {isRevisionRequested ? 'Resubmit Application' : isEditing ? 'Continue Draft' : 'Apply for a Certificate'}
       </h1>
       <p className="text-sm text-ink-subtle mb-2">
-        No chamber membership needed to apply. The chamber reviews your application first; you pay only once it&apos;s approved.
+        No chamber membership needed to apply.{' '}
+        {payFirst
+          ? 'You pay the fee when you submit; the chamber then reviews your application and issues the certificate.'
+          : 'The chamber reviews your application first; you pay only once it\u2019s approved.'}
       </p>
 
       {isRevisionRequested && existingCert?.revisionNotes && (
@@ -884,7 +892,10 @@ export function EcoApplyPage() {
               <span className="text-sm text-ink">Are you a member of any chamber of commerce?</span>
             </label>
             <p className="text-xs text-ink-subtle -mt-2 pl-7">
-              Optional. Members pay 0.11% of invoice value instead of 0.125%, once the chamber verifies the membership ID.
+              Optional.{feeRates && <> Members pay {formatRatePct(feeRates.memberRatePct)} of invoice value instead of {formatRatePct(feeRates.nonMemberRatePct)}</>}
+              {payFirst
+                ? ' — paying first, the member rate applies when your membership with this chamber is already active on Chamberlink.'
+                : ', once the chamber verifies the membership ID.'}
             </p>
             {form.selfDeclaredIsMember && (
               <div className="pl-4 border-l-2 border-border space-y-3">
@@ -1104,9 +1115,9 @@ export function EcoApplyPage() {
               <div className="rounded-lg bg-success-bg border border-primary/20 px-4 py-3 text-sm text-ink">
                 <p className="font-medium mb-1">Estimated Application Fee</p>
                 <p className="text-xs text-ink-subtle">
-                  ₦{feeEstimate.verified.toLocaleString(undefined, { maximumFractionDigits: 2 })} (0.11% — if chamber membership is verified) or{' '}
-                  ₦{feeEstimate.unverified.toLocaleString(undefined, { maximumFractionDigits: 2 })} (0.125% — otherwise).
-                  The final fee is confirmed by the reviewer at approval.
+                  ₦{feeEstimate.verified.toLocaleString(undefined, { maximumFractionDigits: 2 })} ({formatRatePct(feeRates!.memberRatePct)} — if chamber membership is verified) or{' '}
+                  ₦{feeEstimate.unverified.toLocaleString(undefined, { maximumFractionDigits: 2 })} ({formatRatePct(feeRates!.nonMemberRatePct)} — otherwise).
+                  {payFirst ? ' You pay this fee on submission.' : ' The final fee is confirmed by the reviewer at approval.'}
                   {form.invoiceCurrency === 'USD' && (
                     fxRate
                       ? ` This converts your USD invoice at ₦${fxRate.rate.toLocaleString()} per $1${fxRate.isLive ? '' : ' (indicative rate)'} — the exact fee is set using the rate in effect when reviewed.`

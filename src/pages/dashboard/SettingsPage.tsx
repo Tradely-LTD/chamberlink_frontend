@@ -41,12 +41,23 @@ function SettingRow({ setting, onSaved }: { setting: PlatformSetting; onSaved: (
         <div className="flex items-center gap-2 flex-shrink-0">
           <div className="relative">
             <label className="sr-only" htmlFor={`setting-${setting.key}`}>{setting.label} value</label>
-            <input
-              id={`setting-${setting.key}`}
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-              className={`w-32 rounded-lg border border-border bg-surface px-3 py-2 text-sm text-ink text-right outline-none transition focus:ring-2 focus:ring-primary/40 ${setting.type === 'percent' ? 'pr-7' : ''}`}
-            />
+            {setting.options ? (
+              <select
+                id={`setting-${setting.key}`}
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+                className="rounded-lg border border-border bg-surface px-3 py-2 text-sm text-ink outline-none transition focus:ring-2 focus:ring-primary/40"
+              >
+                {setting.options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+            ) : (
+              <input
+                id={`setting-${setting.key}`}
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+                className={`w-32 rounded-lg border border-border bg-surface px-3 py-2 text-sm text-ink text-right outline-none transition focus:ring-2 focus:ring-primary/40 ${setting.type === 'percent' ? 'pr-7' : ''}`}
+              />
+            )}
             {setting.type === 'percent' && (
               <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-sm text-ink-subtle">%</span>
             )}
@@ -57,7 +68,9 @@ function SettingRow({ setting, onSaved }: { setting: PlatformSetting; onSaved: (
         </div>
       </div>
       {error && <p className="mt-2 text-xs text-red-600">{error}</p>}
-      <p className="mt-1.5 text-[11px] text-ink-subtle">Default: {setting.defaultValue}{setting.type === 'percent' ? '%' : ''}</p>
+      <p className="mt-1.5 text-[11px] text-ink-subtle">
+        Default: {setting.options?.find((o) => o.value === setting.defaultValue)?.label ?? setting.defaultValue}{setting.type === 'percent' ? '%' : ''}
+      </p>
     </div>
   );
 }

@@ -20,6 +20,21 @@ export type ECertStatus =
   // rather than editing this one. Distinct from 'rejected', which never issued.
   | 'revoked';
 
+/**
+ * GET /eco/fee-rates — what applicants are actually charged, as PERCENTAGES of
+ * invoice value (0.0011 means 0.0011%), and when they pay. Never hardcode
+ * either in the portal: both are super-admin settings, and a type may carry
+ * its own rates.
+ */
+export interface FeeRates {
+  memberRatePct: number;
+  nonMemberRatePct: number;
+  paymentOrder: 'review_first' | 'pay_first';
+}
+
+/** "0.0011%" — enough digits to show the real rate, no float noise. */
+export const formatRatePct = (pct: number) => `${Number(pct.toPrecision(4))}%`;
+
 export interface SolidMineral {
   id: string;
   name: string;
@@ -297,6 +312,13 @@ export const ecoApi = emptyApi.injectEndpoints({
       }),
       transformResponse: (res: ApiResponse<DocumentRequirement[]>) => res.data,
     }),
+    getFeeRates: builder.query<FeeRates, string | void>({
+      query: (certificateTypeCode) => ({
+        url: '/eco/fee-rates',
+        params: certificateTypeCode ? { certificateTypeCode } : undefined,
+      }),
+      transformResponse: (res: ApiResponse<FeeRates>) => res.data,
+    }),
     getFxRate: builder.query<FxRateInfo, void>({
       query: () => '/eco/fx-rate',
       transformResponse: (res: ApiResponse<FxRateInfo>) => res.data,
@@ -460,6 +482,7 @@ export const {
   useGetHsCodesQuery,
   useGetDocumentRequirementsQuery,
   useGetFxRateQuery,
+  useGetFeeRatesQuery,
   useGetOnboardedTenantsQuery,
   useGetEcoCertificatesQuery,
   useGetEcoCertificateQuery,

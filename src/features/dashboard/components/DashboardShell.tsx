@@ -50,22 +50,6 @@ export function DashboardShell() {
           <h1 className="text-base font-semibold text-ink">{pageTitle}</h1>
           <div className="flex items-center gap-2">
             <ChamberSwitcher />
-            <button
-              className="p-2 rounded-lg text-ink-subtle hover:bg-surface-alt transition-colors"
-              title="Notifications"
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: 20, fontVariationSettings: `'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20` }}>
-                notifications
-              </span>
-            </button>
-            <button
-              className="p-2 rounded-lg text-ink-subtle hover:bg-surface-alt transition-colors"
-              title="Help"
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: 20, fontVariationSettings: `'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20` }}>
-                help_outline
-              </span>
-            </button>
             {user && (
               <Link
                 to="/dashboard/profile"

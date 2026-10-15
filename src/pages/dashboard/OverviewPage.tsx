@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useAppSelector } from '@shared/hooks/useAppDispatch';
 import { useGetMemberProfileQuery } from '@features/dashboard/dashboardApi';
-import { useGetEcoCertificatesQuery, useGetCertificateTypesQuery } from '@features/eco/ecoApi';
+import { useGetEcoCertificatesQuery, useGetCertificateTypesQuery, useGetFeeRatesQuery, formatRatePct } from '@features/eco/ecoApi';
 import type { CertificateTypeOption } from '@features/eco/ecoApi';
 import { useGetAnalyticsSummaryQuery, useGetAnalyticsTrendsQuery, useGetAnalyticsGeoQuery } from '@features/analytics/analyticsApi';
 import { ExportFootprint } from '@features/analytics/components/geo/ExportFootprint';
@@ -141,11 +141,9 @@ const certIcon = (t: CertificateTypeOption) =>
     : ({ 'naccima-certificate-of-origin': 'verified', gsp: 'percent', 'ecowas-free-trade': 'handshake', 'movement-certificate': 'local_shipping', 'china-zero-tariff': 'public' } as Record<string, string>)[t.slug]
       ?? 'description';
 
-// The standard member/non-member rates (RFP §4.1.9) — the same figures the
-// apply form's fee estimate uses. Shown here as the reason to join a chamber.
-const MEMBER_RATE = 0.0011;
-const NON_MEMBER_RATE = 0.00125;
-const EXAMPLE_INVOICE = 10_000_000;
+// Member vs non-member rates (RFP §4.1.9) come from GET /eco/fee-rates — the
+// same source the apply form uses — as percentages of invoice value.
+const EXAMPLE_INVOICE = 100_000_000;
 const naira = (n: number) => `₦${n.toLocaleString('en-NG', { maximumFractionDigits: 0 })}`;
 
 const IN_REVIEW: string[] = ['submitted', 'under_review', 'revision_requested'];
@@ -157,6 +155,8 @@ function MemberOverview() {
   const { data: certificates, isLoading: ecoLoading, isError: ecoError, refetch: refetchEco } = useGetEcoCertificatesQuery();
   const { data: certificateTypes, isLoading: typesLoading } = useGetCertificateTypesQuery();
   const { hasConnection } = useHasChamberConnection();
+  const { data: feeRates } = useGetFeeRatesQuery();
+  const payFirst = feeRates?.paymentOrder === 'pay_first';
   const noChamberConnection = isNoActiveChamberError(profileErrorObj);
 
   const drafts = certificates?.filter((c) => c.status === 'draft').length ?? 0;
@@ -181,7 +181,9 @@ function MemberOverview() {
       <div className="mb-5">
         <h2 className="text-xl font-semibold text-ink">Welcome, {user?.firstName ?? 'Exporter'}</h2>
         <p className="text-sm text-ink-muted mt-0.5 max-w-2xl">
-          Apply for an export certificate, pay online once it&apos;s approved, and download it — with or without a chamber membership.
+          {payFirst
+            ? 'Apply for an export certificate, pay online when you submit, and download it once the chamber approves it — with or without a chamber membership.'
+            : 'Apply for an export certificate, pay online once it\u2019s approved, and download it — with or without a chamber membership.'}
         </p>
       </div>
 
@@ -306,24 +308,24 @@ function MemberOverview() {
 
         <div className="space-y-4">
           {/* Membership — an incentive when there is none, a status when there is. */}
-          {profileLoading ? (
+          {profileLoading || (noChamberConnection && !feeRates) ? (
             <SkeletonCard className="h-48" />
-          ) : noChamberConnection ? (
+          ) : noChamberConnection && feeRates ? (
             <div className="rounded-xl border border-[#cfe0d8] bg-[linear-gradient(160deg,#f2faf6_0%,#ffffff_70%)] p-5">
               <p className="text-xs font-semibold uppercase tracking-wide text-success">Chamber membership</p>
               <h3 className="mt-1 text-base font-semibold text-ink leading-snug">Members pay less on every certificate</h3>
               <dl className="mt-3 grid grid-cols-2 gap-2 text-center">
                 <div className="rounded-lg bg-white border border-border px-2 py-2">
                   <dt className="text-[11px] text-ink-subtle">Non-member</dt>
-                  <dd className="text-sm font-bold text-ink tabular-nums">{(NON_MEMBER_RATE * 100).toFixed(3).replace(/0+$/, '')}%</dd>
+                  <dd className="text-sm font-bold text-ink tabular-nums">{formatRatePct(feeRates.nonMemberRatePct)}</dd>
                 </div>
                 <div className="rounded-lg bg-white border border-success/40 px-2 py-2">
                   <dt className="text-[11px] text-success font-medium">Member</dt>
-                  <dd className="text-sm font-bold text-success tabular-nums">{(MEMBER_RATE * 100).toFixed(2)}%</dd>
+                  <dd className="text-sm font-bold text-success tabular-nums">{formatRatePct(feeRates.memberRatePct)}</dd>
                 </div>
               </dl>
               <p className="mt-3 text-xs text-ink-muted leading-relaxed">
-                of invoice value. On a {naira(EXAMPLE_INVOICE)} shipment that&apos;s {naira(EXAMPLE_INVOICE * MEMBER_RATE)} instead of {naira(EXAMPLE_INVOICE * NON_MEMBER_RATE)} — a saving on every certificate you apply for.
+                of invoice value. On a {naira(EXAMPLE_INVOICE)} shipment that&apos;s {naira(EXAMPLE_INVOICE * feeRates.memberRatePct / 100)} instead of {naira(EXAMPLE_INVOICE * feeRates.nonMemberRatePct / 100)}, on every certificate you apply for.
               </p>
               <div className="mt-4 flex flex-col gap-2">
                 <Link to="/dashboard/chamber-network" className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-success px-3 py-2 text-xs font-semibold text-white hover:opacity-90 transition-opacity">
@@ -357,7 +359,7 @@ function MemberOverview() {
               )}
               <p className="text-xs text-ink-muted mt-3">
                 {profile?.status === 'active'
-                  ? `Your certificates qualify for the ${(MEMBER_RATE * 100).toFixed(2)}% member rate once the chamber verifies your ID.`
+                  ? `Your certificates qualify for the member rate${feeRates ? ` (${formatRatePct(feeRates.memberRatePct)})` : ''} once the chamber verifies your ID.`
                   : 'Renew to get the member rate on your certificates again.'}
               </p>
               {needsRenewal && (
