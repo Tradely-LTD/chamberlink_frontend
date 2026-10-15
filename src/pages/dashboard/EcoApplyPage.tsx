@@ -246,7 +246,7 @@ function ReviewSection({ title, onEdit, rows }: {
         {rows.map((row) => (
           <div key={row.label} className="grid grid-cols-3 gap-4 px-4 py-3">
             <dt className="text-sm text-ink-subtle">{row.label}</dt>
-            <dd className="col-span-2 text-sm text-ink">{row.value}</dd>
+            <dd className="sm:col-span-2 text-sm text-ink">{row.value}</dd>
           </div>
         ))}
       </dl>
@@ -254,8 +254,8 @@ function ReviewSection({ title, onEdit, rows }: {
   );
 }
 
-const selectClass = 'w-full rounded-lg border border-border px-3 py-2.5 text-sm text-ink focus:outline-none focus:border-primary focus:shadow-focus focus:border-primary';
-const labelClass = 'block text-sm font-medium text-ink mb-1.5';
+const selectClass = 'min-h-10 px-3 py-2 w-full rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:text-ink-subtle disabled:cursor-not-allowed';
+const labelClass = 'block text-[13px] font-medium text-ink mb-1.5';
 
 interface FormState {
   tenantId: string;
@@ -1037,7 +1037,7 @@ export function EcoApplyPage() {
         {step === 4 && (
           <div className="space-y-4">
             <div className="mb-4">
-              <h2 className="font-medium text-ink">Compliance / Declaration Documents</h2>
+              <h2 className="text-[15px] font-semibold text-ink">Compliance / Declaration Documents</h2>
               <p className="text-xs text-ink-subtle mt-1">
                 Select from your library or upload new files. Documents marked * are required
                 {transportRequirement && `, including the ${transportRequirement.label}, because your goods travel by ${MEANS_OF_TRANSPORT_LABEL[form.meansOfTransport] ?? form.meansOfTransport}`}.
@@ -1072,7 +1072,7 @@ export function EcoApplyPage() {
 
         {step === 5 && (
           <div className="space-y-6">
-            <h2 className="font-medium text-ink">Review Your Application</h2>
+            <h2 className="text-[15px] font-semibold text-ink">Review Your Application</h2>
 
             <ReviewSection title="Product & Goods" onEdit={() => setStep(0)} rows={[
               { label: 'Chamber', value: onboardedTenants.find((t) => t.id === form.tenantId)?.name ?? form.tenantId },

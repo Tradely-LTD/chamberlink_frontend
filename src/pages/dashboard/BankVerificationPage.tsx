@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { emptyApi } from '@shared/api/emptyApi';
 import { SkeletonCard } from '@shared/ui/SkeletonCard';
+import { StatTile } from '@shared/ui/StatTile';
 import { ErrorBanner } from '@shared/ui/ErrorBanner';
 import { useAppSelector } from '@shared/hooks/useAppDispatch';
+import { PageHeader } from '@shared/ui/PageHeader';
 
 // ── Types ─────────────────────────────────────────────────────────────────
 
@@ -82,7 +84,7 @@ function VerificationResultCard({ result, onClear }: { result: VerificationResul
             <span className="material-symbols-outlined" style={{ fontSize: 24, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24`, color: rc.iconColor }}>{rc.icon}</span>
           </div>
           <div>
-            <span className="inline-flex items-center rounded-full px-3 py-1 text-sm font-bold" style={{ background: rc.bg, color: rc.text }}>{rc.label}</span>
+            <span className="inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold" style={{ background: rc.bg, color: rc.text }}>{rc.label}</span>
             <p className="text-xs text-ink-subtle mt-1">Ref: {result.verificationRef}</p>
           </div>
         </div>
@@ -145,15 +147,12 @@ function InstitutionalVerificationView() {
 
   return (
     <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-3xl">
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold text-ink">Banks & FI Verification Portal</h2>
-        <p className="text-sm text-ink-subtle mt-0.5">Verify the authenticity of NACCIMA eCO certificates and member credentials.</p>
-      </div>
+      <PageHeader title="Banks & FI Verification Portal" description="Verify the authenticity of NACCIMA eCO certificates and member credentials." />
 
-      <div className="flex gap-1 bg-surface-alt rounded-lg p-1 mb-6 w-fit border border-border">
+      <div className="flex items-end gap-6 overflow-x-auto border-b border-border mb-6">
         {([['eco', 'eCO Certificate'], ['member', 'Member ID']] as const).map(([t, label]) => (
           <button key={t} onClick={() => { setTab(t); setResult(null); setError(null); }}
-            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === t ? 'bg-surface text-ink shadow-card' : 'text-ink-subtle hover:text-ink'}`}>{label}</button>
+            className={`-mb-px border-b-2 px-1 pb-2.5 pt-1 text-sm font-medium whitespace-nowrap transition-colors focus-visible:shadow-focus ${tab === t ? 'border-primary text-ink' : 'border-transparent text-ink-subtle hover:text-ink hover:border-border-strong'}`}>{label}</button>
         ))}
       </div>
 
@@ -166,7 +165,7 @@ function InstitutionalVerificationView() {
             placeholder={tab === 'eco' ? 'e.g. NACCIMA/CO/2026/000042' : 'e.g. NACCIMA-2026-0001'}
             className="flex-1 font-mono h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed"
           />
-          <button type="submit" disabled={isLoading} className="flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50" style={{ background: 'rgb(var(--c-primary))' }}>
+          <button type="submit" disabled={isLoading} className="flex items-center gap-2 disabled:opacity-50 h-10 px-4 text-sm rounded-control bg-primary text-white font-medium shadow-card transition-colors hover:bg-primary-hover focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed">
             {isLoading ? 'Verifying…' : <><span className="material-symbols-outlined" style={{ fontSize: 16 }}>search</span>Verify</>}
           </button>
         </form>
@@ -204,10 +203,7 @@ function AdminVerificationView() {
 
   return (
     <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8">
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold text-ink">Verification Audit Log</h2>
-        <p className="text-sm text-ink-subtle mt-0.5">All eCO certificate and member ID verification queries from banks and institutions.</p>
-      </div>
+      <PageHeader title="Verification Audit Log" description="All eCO certificate and member ID verification queries from banks and institutions." />
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
         {[
@@ -215,28 +211,22 @@ function AdminVerificationView() {
           { icon: 'check_circle', label: 'Valid', value: allLogs.filter((l) => l.result === 'valid').length },
           { icon: 'schedule', label: 'Expired', value: allLogs.filter((l) => l.result === 'expired').length },
           { icon: 'search_off', label: 'Not Found', value: allLogs.filter((l) => l.result === 'not_found').length },
-        ].map(({ icon, label, value, accent }) => (
-          <div key={label} className={`rounded-card border p-4 bg-surface border-border relative overflow-hidden ${accent ? 'before:absolute before:inset-y-0 before:left-0 before:w-[3px] before:bg-primary' : ''}`} >
-            <div className="flex items-center gap-2 mb-2">
-              <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`, color: 'rgb(var(--c-ink-subtle))' }}>{icon}</span>
-              <p className={`text-2xs font-semibold uppercase text-ink-subtle`}>{label}</p>
-            </div>
-            <p className={`num text-[26px] font-semibold leading-none text-ink mt-1`}>{value}</p>
-          </div>
+        ].map(({ icon, label, value }) => (
+          <StatTile key={label} icon={icon} label={label} value={String(value)} />
         ))}
       </div>
 
       <div className="flex items-center gap-3 mb-4 flex-wrap">
-        <div className="flex gap-1 bg-surface-alt rounded-lg p-1 border border-border">
+        <div className="flex flex-wrap items-center gap-1.5">
           {(['all', 'eco', 'member'] as const).map((t) => (
-            <button key={t} onClick={() => setTypeFilter(t)} className={`px-3 py-1 rounded-md text-xs font-medium capitalize transition-colors ${typeFilter === t ? 'bg-surface shadow-card text-ink' : 'text-ink-subtle'}`}>
+            <button key={t} onClick={() => setTypeFilter(t)} className={`h-7 px-2.5 rounded-full border text-xs font-medium whitespace-nowrap transition-colors focus-visible:shadow-focus capitalize ${typeFilter === t ? 'border-primary bg-primary-soft text-primary' : 'border-border bg-surface text-ink-muted hover:border-border-strong hover:text-ink'}`}>
               {t === 'all' ? 'All Types' : t === 'eco' ? 'eCO Certs' : 'Member IDs'}
             </button>
           ))}
         </div>
-        <div className="flex gap-1 bg-surface-alt rounded-lg p-1 border border-border">
+        <div className="flex flex-wrap items-center gap-1.5">
           {(['all', 'valid', 'expired', 'not_found'] as const).map((r) => (
-            <button key={r} onClick={() => setResultFilter(r)} className={`px-3 py-1 rounded-md text-xs font-medium capitalize transition-colors ${resultFilter === r ? 'bg-surface shadow-card text-ink' : 'text-ink-subtle'}`}>
+            <button key={r} onClick={() => setResultFilter(r)} className={`h-7 px-2.5 rounded-full border text-xs font-medium whitespace-nowrap transition-colors focus-visible:shadow-focus capitalize ${resultFilter === r ? 'border-primary bg-primary-soft text-primary' : 'border-border bg-surface text-ink-muted hover:border-border-strong hover:text-ink'}`}>
               {r.replace('_', ' ')}
             </button>
           ))}
@@ -248,31 +238,31 @@ function AdminVerificationView() {
           <div className="overflow-x-auto">
             <table className="data-table w-full text-sm">
               <thead>
-                <tr className="bg-surface-alt border-b border-border">
+                <tr>
                   {['Reference Queried', 'Type', 'Institution', 'Result', 'Date & Time'].map((h) => (
-                    <th key={h} className="text-left px-4 py-3 text-2xs font-semibold text-ink-subtle uppercase">{h}</th>
+                    <th key={h}>{h}</th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border-subtle">
+              <tbody>
                 {filtered.map((log) => {
                   const rc = resultConfig[log.result];
                   return (
                     <tr key={log.id} className="hover:bg-surface-alt transition-colors">
-                      <td className="px-4 py-3 font-mono text-sm text-ink">{log.queriedRef}</td>
-                      <td className="px-4 py-3">
+                      <td className="font-mono text-sm text-ink">{log.queriedRef}</td>
+                      <td>
                         <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-2xs font-semibold uppercase" style={{ background: log.queryType === 'eco' ? 'rgb(var(--c-primary-soft))' : 'rgb(var(--c-success-bg))', color: log.queryType === 'eco' ? 'rgb(var(--c-primary))' : 'rgb(var(--c-success))' }}>
                           {log.queryType === 'eco' ? 'eCO' : 'Member'}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-ink-subtle">{log.institutionName ?? log.queriedBy}</td>
-                      <td className="px-4 py-3">
+                      <td className="text-ink-subtle">{log.institutionName ?? log.queriedBy}</td>
+                      <td>
                         <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ background: rc.bg, color: rc.text }}>
                           <span className="material-symbols-outlined" style={{ fontSize: 12, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 12` }}>{rc.icon}</span>
                           {rc.label}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-xs text-ink-subtle">
+                      <td className="text-xs text-ink-subtle">
                         {new Date(log.queriedAt).toLocaleString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                       </td>
                     </tr>

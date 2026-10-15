@@ -5,7 +5,7 @@ export function LoginPage() {
   return (
     <AuthShell
       kicker="Welcome back"
-      heading={<>Return to your<br /><em className="font-display italic font-semibold text-primary">export desk.</em></>}
+      heading={<>Return to your<br /><em className=" italic font-semibold text-primary">export desk.</em></>}
       lede="Access your Chamberlink application workspace, compliance records and certificate status."
       benefits={[
         'Continue your Certificate of Origin applications',

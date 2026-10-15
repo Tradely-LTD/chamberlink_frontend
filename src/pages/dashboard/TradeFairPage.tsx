@@ -1,6 +1,8 @@
+import { plainText } from '@shared/utils/plainText';
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { SkeletonCard } from '@shared/ui/SkeletonCard';
+import { StatTile } from '@shared/ui/StatTile';
 import { Button } from '@shared/ui/Button';
 import { ErrorBanner } from '@shared/ui/ErrorBanner';
 import { Select } from '@shared/ui/Select';
@@ -22,6 +24,7 @@ import {
   type TradeFairBooth,
   type AdminBooking,
 } from '@features/trade-fair';
+import { PageHeader } from '@shared/ui/PageHeader';
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -91,12 +94,12 @@ function BoothBookingModal({ event, onClose }: { event: TradeFairEvent; onClose:
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
-      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-surface rounded-card border border-border shadow-pop animate-fade-up w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="sticky top-0 bg-surface border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
+        <div className="sticky top-0 bg-surface border-b border-border px-5 py-4 flex items-center justify-between rounded-t-card">
           <div>
-            <h2 className="font-bold text-ink text-base">Select a Booth</h2>
-            <p className="text-sm text-ink-subtle mt-0.5">{event.title}</p>
+            <h2 className="text-[15px] font-semibold text-ink">Select a Booth</h2>
+            <p className="text-sm text-ink-subtle mt-0.5">{plainText(event.title)}</p>
           </div>
           <button onClick={onClose} className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle">
             <span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span>
@@ -132,10 +135,10 @@ function BoothBookingModal({ event, onClose }: { event: TradeFairEvent; onClose:
                           }`}
                           style={isSelected ? { background: 'rgb(var(--c-primary-soft))' } : {}}
                         >
-                          <p className="font-bold text-primary text-base">{booth.boothNumber}</p>
+                          <p className="font-semibold text-primary text-base">{booth.boothNumber}</p>
                           <p className="text-xs text-ink-subtle mt-0.5">{booth.boothType}</p>
                           <p className="text-xs text-ink-subtle">{booth.size}</p>
-                          <p className="text-sm font-bold text-ink mt-2">₦{booth.price.toLocaleString()}</p>
+                          <p className="text-sm font-semibold text-ink mt-2">₦{booth.price.toLocaleString()}</p>
                           {!isAvailable && (
                             <span className="inline-flex items-center mt-1 rounded-full px-2 py-0.5 text-xs font-medium" style={{ background: 'rgb(var(--c-danger-bg))', color: 'rgb(var(--c-danger))' }}>Reserved</span>
                           )}
@@ -161,7 +164,7 @@ function BoothBookingModal({ event, onClose }: { event: TradeFairEvent; onClose:
                     <span className="text-ink-subtle">Size</span>
                     <span className="text-ink">{selectedBooth.size}</span>
                     <span className="text-ink-subtle">Amount</span>
-                    <span className="font-bold text-primary text-base">₦{selectedBooth.price.toLocaleString()}</span>
+                    <span className="font-semibold text-primary text-base">₦{selectedBooth.price.toLocaleString()}</span>
                   </div>
                   <p className="text-xs text-ink-subtle mt-3">You will be redirected to complete payment. Booth is reserved upon payment confirmation.</p>
                 </div>
@@ -172,8 +175,8 @@ function BoothBookingModal({ event, onClose }: { event: TradeFairEvent; onClose:
                 <button
                   disabled={!selected || reserving}
                   onClick={handleReserve}
-                  className="flex-1 flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50 transition-opacity"
-                  style={{ background: 'rgb(var(--c-primary))' }}
+                  className="flex-1 flex items-center justify-center gap-2 disabled:opacity-50 h-10 px-4 text-sm rounded-control bg-primary text-white font-medium shadow-card transition-colors hover:bg-primary-hover focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
+                 
                 >
                   {reserving ? 'Processing…' : (
                     <>
@@ -217,9 +220,9 @@ function AddBoothModal({ eventId: initialEventId, events, onClose }: { eventId: 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
-      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-md">
-        <div className="border-b border-border px-6 py-4 flex items-center justify-between">
-          <h2 className="font-bold text-ink">Add New Booth</h2>
+      <div className="relative bg-surface rounded-card border border-border shadow-pop animate-fade-up w-full max-w-md">
+        <div className="border-b border-border px-5 py-4 flex items-center justify-between">
+          <h2 className="text-[15px] font-semibold text-ink">Add New Booth</h2>
           <button onClick={onClose} className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle">
             <span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span>
           </button>
@@ -229,14 +232,14 @@ function AddBoothModal({ eventId: initialEventId, events, onClose }: { eventId: 
 
           {/* Event selector */}
           <div>
-            <label className="block text-xs font-semibold text-ink-subtle mb-1">Event</label>
+            <label className="block text-[13px] font-medium text-ink mb-1.5">Event</label>
             <Select
               label="Event"
               hideLabel
               value={selectedEventId}
               onValueChange={setSelectedEventId}
               placeholder="Select an event…"
-              options={events.map((ev) => ({ value: ev.id, label: `${ev.title} (${ev.status})` }))}
+              options={events.map((ev) => ({ value: ev.id, label: `${plainText(ev.title)} (${ev.status})` }))}
             />
           </div>
 
@@ -247,7 +250,7 @@ function AddBoothModal({ eventId: initialEventId, events, onClose }: { eventId: 
             { label: 'Price (₦)', key: 'price' as const, placeholder: 'e.g. 150000' },
           ].map(({ label, key, placeholder }) => (
             <div key={key}>
-              <label className="block text-xs font-semibold text-ink-subtle mb-1">{label}</label>
+              <label className="block text-[13px] font-medium text-ink mb-1.5">{label}</label>
               <input
                 required
                 value={form[key]}
@@ -259,7 +262,7 @@ function AddBoothModal({ eventId: initialEventId, events, onClose }: { eventId: 
             </div>
           ))}
           <div>
-            <label className="block text-xs font-semibold text-ink-subtle mb-1">Booth Type</label>
+            <label className="block text-[13px] font-medium text-ink mb-1.5">Booth Type</label>
             <Select
               label="Booth Type"
               hideLabel
@@ -273,8 +276,8 @@ function AddBoothModal({ eventId: initialEventId, events, onClose }: { eventId: 
             <button
               type="submit"
               disabled={isLoading}
-              className="flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
-              style={{ background: 'rgb(var(--c-primary))' }}
+              className="inline-flex items-center justify-center gap-2 flex-1 disabled:opacity-50 h-10 px-4 text-sm rounded-control bg-primary text-white font-medium shadow-card transition-colors hover:bg-primary-hover focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
+             
             >
               {isLoading ? 'Adding…' : 'Add Booth'}
             </button>
@@ -338,9 +341,9 @@ function CreateEventModal({ onClose }: { onClose: () => void }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
-      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-        <div className="border-b border-border px-6 py-4 flex items-center justify-between">
-          <h2 className="font-bold text-ink">Create New Event</h2>
+      <div className="relative bg-surface rounded-card border border-border shadow-pop animate-fade-up w-full max-w-md max-h-[90vh] overflow-y-auto">
+        <div className="border-b border-border px-5 py-4 flex items-center justify-between">
+          <h2 className="text-[15px] font-semibold text-ink">Create New Event</h2>
           <button onClick={onClose} className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle">
             <span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span>
           </button>
@@ -348,7 +351,7 @@ function CreateEventModal({ onClose }: { onClose: () => void }) {
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {error && <ErrorBanner message={error} />}
           <div>
-            <label className="block text-xs font-semibold text-ink-subtle mb-1">Title</label>
+            <label className="block text-[13px] font-medium text-ink mb-1.5">Title</label>
             <input
               required
               value={form.title}
@@ -359,7 +362,7 @@ function CreateEventModal({ onClose }: { onClose: () => void }) {
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-ink-subtle mb-1">Venue</label>
+            <label className="block text-[13px] font-medium text-ink mb-1.5">Venue</label>
             <input
               required
               value={form.venue}
@@ -371,7 +374,7 @@ function CreateEventModal({ onClose }: { onClose: () => void }) {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-ink-subtle mb-1">Start Date</label>
+              <label className="block text-[13px] font-medium text-ink mb-1.5">Start Date</label>
               <input
                 required
                 type="date"
@@ -382,7 +385,7 @@ function CreateEventModal({ onClose }: { onClose: () => void }) {
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-ink-subtle mb-1">End Date</label>
+              <label className="block text-[13px] font-medium text-ink mb-1.5">End Date</label>
               <input
                 required
                 type="date"
@@ -394,7 +397,7 @@ function CreateEventModal({ onClose }: { onClose: () => void }) {
             </div>
           </div>
           <div>
-            <label className="block text-xs font-semibold text-ink-subtle mb-1">Registration Deadline <span className="font-normal text-ink-subtle">(optional)</span></label>
+            <label className="block text-[13px] font-medium text-ink mb-1.5">Registration Deadline <span className="font-normal text-ink-subtle">(optional)</span></label>
             <input
               type="date"
               value={form.registrationDeadline}
@@ -404,7 +407,7 @@ function CreateEventModal({ onClose }: { onClose: () => void }) {
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-ink-subtle mb-1">Description <span className="font-normal text-ink-subtle">(optional)</span></label>
+            <label className="block text-[13px] font-medium text-ink mb-1.5">Description <span className="font-normal text-ink-subtle">(optional)</span></label>
             <textarea
               value={form.description}
               onChange={setField('description')}
@@ -416,7 +419,7 @@ function CreateEventModal({ onClose }: { onClose: () => void }) {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-ink-subtle mb-1">Host Share (%)</label>
+              <label className="block text-[13px] font-medium text-ink mb-1.5">Host Share (%)</label>
               <input
                 required
                 type="number"
@@ -429,7 +432,7 @@ function CreateEventModal({ onClose }: { onClose: () => void }) {
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-ink-subtle mb-1">Tradely Share (%)</label>
+              <label className="block text-[13px] font-medium text-ink mb-1.5">Tradely Share (%)</label>
               <input
                 required
                 type="number"
@@ -450,8 +453,8 @@ function CreateEventModal({ onClose }: { onClose: () => void }) {
             <button
               type="submit"
               disabled={isLoading}
-              className="flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
-              style={{ background: 'rgb(var(--c-primary))' }}
+              className="inline-flex items-center justify-center gap-2 flex-1 disabled:opacity-50 h-10 px-4 text-sm rounded-control bg-primary text-white font-medium shadow-card transition-colors hover:bg-primary-hover focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
+             
             >
               {isLoading ? 'Creating…' : 'Create Event'}
             </button>
@@ -502,12 +505,9 @@ function MemberTradeFairView() {
       {bookingEvent && <BoothBookingModal event={bookingEvent} onClose={() => setBookingEvent(null)} />}
 
       <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="text-xl font-semibold text-ink">Trade Fair</h2>
-          <p className="text-sm text-ink-subtle mt-0.5">Upcoming events and booth registrations.</p>
-        </div>
+        <PageHeader title="Trade Fair" description="Upcoming events and booth registrations." />
         <Link to="/dashboard/trade-fair/booths">
-          <button className="flex items-center gap-2 rounded-lg border border-border bg-surface px-4 py-2 text-sm font-medium text-ink hover:border-primary hover:text-primary transition-colors">
+          <button className="flex items-center gap-2 h-10 px-4 text-sm rounded-control border border-border-strong bg-surface text-ink font-medium shadow-card transition-colors hover:bg-surface-alt focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed">
             <span className="material-symbols-outlined" style={{ fontSize: 16, fontVariationSettings: `'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 16` }}>storefront</span>
             My Booths
           </button>
@@ -515,9 +515,9 @@ function MemberTradeFairView() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-surface-alt rounded-lg p-1 mb-6 w-fit border border-border">
+      <div className="flex items-end gap-6 overflow-x-auto border-b border-border mb-6">
         {(['upcoming', 'past'] as const).map((t) => (
-          <button key={t} onClick={() => setTab(t)} className={`px-4 py-1.5 rounded-md text-sm font-medium capitalize transition-colors ${tab === t ? 'bg-surface text-ink shadow-card' : 'text-ink-subtle hover:text-ink'}`}>
+          <button key={t} onClick={() => setTab(t)} className={`-mb-px border-b-2 px-1 pb-2.5 pt-1 text-sm font-medium whitespace-nowrap transition-colors focus-visible:shadow-focus capitalize ${tab === t ? 'border-primary text-ink' : 'border-transparent text-ink-subtle hover:text-ink hover:border-border-strong'}`}>
             {t}
           </button>
         ))}
@@ -547,7 +547,7 @@ function MemberTradeFairView() {
               <div className="px-6 pt-5 pb-4">
                 <div className="flex items-start justify-between gap-4 mb-2">
                   <div>
-                    <h3 className="text-base font-bold text-ink">{event.title}</h3>
+                    <h3 className="text-base font-semibold text-ink">{plainText(event.title)}</h3>
                     <div className="flex items-center gap-1.5 mt-1">
                       <span className="material-symbols-outlined text-ink-subtle" style={{ fontSize: 14, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 14` }}>location_on</span>
                       <p className="text-sm text-ink-subtle">{event.venue}</p>
@@ -558,14 +558,14 @@ function MemberTradeFairView() {
                   </span>
                 </div>
 
-                {event.description && <p className="text-sm text-ink-subtle mb-4">{event.description}</p>}
+                {event.description && <p className="text-sm text-ink-subtle mb-4">{plainText(event.description)}</p>}
 
                 {/* Countdown timer */}
                 {cd && st !== 'completed' && st !== 'cancelled' && (
                   <div className="flex gap-3 mb-4">
                     {[{ v: cd.days, l: 'Days' }, { v: cd.hours, l: 'Hours' }, { v: cd.mins, l: 'Mins' }].map(({ v, l }) => (
                       <div key={l} className="flex flex-col items-center rounded-lg px-4 py-2.5 min-w-[64px]" style={{ background: 'rgb(var(--c-primary))' }}>
-                        <span className="text-2xl font-bold text-white leading-none">{String(v).padStart(2, '0')}</span>
+                        <span className="text-2xl font-semibold text-white leading-none">{String(v).padStart(2, '0')}</span>
                         <span className="text-xs text-primary-200 mt-0.5 font-medium">{l}</span>
                       </div>
                     ))}
@@ -595,8 +595,8 @@ function MemberTradeFairView() {
                 {st === 'open_for_registration' && (
                   <button
                     onClick={() => setBookingEvent(event)}
-                    className="flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-                    style={{ background: 'rgb(var(--c-primary))' }}
+                    className="flex items-center gap-2 h-10 px-4 text-sm rounded-control bg-primary text-white font-medium shadow-card transition-colors hover:bg-primary-hover focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
+                   
                   >
                     <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add_business</span>
                     Book a Booth
@@ -651,10 +651,10 @@ function EditBoothModal({ booth, events, onClose }: { booth: TradeFairBooth; eve
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
-      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-md">
-        <div className="border-b border-border px-6 py-4 flex items-center justify-between">
+      <div className="relative bg-surface rounded-card border border-border shadow-pop animate-fade-up w-full max-w-md">
+        <div className="border-b border-border px-5 py-4 flex items-center justify-between">
           <div>
-            <h2 className="font-bold text-ink">Edit Booth</h2>
+            <h2 className="text-[15px] font-semibold text-ink">Edit Booth</h2>
             <p className="text-xs text-ink-subtle mt-0.5">ID: {booth.id}</p>
           </div>
           <button onClick={onClose} className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle">
@@ -665,14 +665,14 @@ function EditBoothModal({ booth, events, onClose }: { booth: TradeFairBooth; eve
           {error && <ErrorBanner message={error} />}
 
           <div>
-            <label className="block text-xs font-semibold text-ink-subtle mb-1">Event *</label>
+            <label className="block text-[13px] font-medium text-ink mb-1.5">Event *</label>
             <Select
               label="Event"
               hideLabel
               value={form.eventId}
               onValueChange={(v) => setForm((f) => ({ ...f, eventId: v }))}
               placeholder="Select an event…"
-              options={events.map((ev) => ({ value: ev.id, label: `${ev.title} (${ev.status})` }))}
+              options={events.map((ev) => ({ value: ev.id, label: `${plainText(ev.title)} (${ev.status})` }))}
             />
           </div>
 
@@ -683,7 +683,7 @@ function EditBoothModal({ booth, events, onClose }: { booth: TradeFairBooth; eve
             { label: 'Price (₦)', key: 'price' as const, placeholder: 'e.g. 150000' },
           ].map(({ label, key, placeholder }) => (
             <div key={key}>
-              <label className="block text-xs font-semibold text-ink-subtle mb-1">{label}</label>
+              <label className="block text-[13px] font-medium text-ink mb-1.5">{label}</label>
               <input required value={form[key]} onChange={set(key)} placeholder={placeholder}
                 className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-primary"
                 style={{ '--tw-ring-color': 'rgb(var(--c-primary))' } as React.CSSProperties} />
@@ -691,7 +691,7 @@ function EditBoothModal({ booth, events, onClose }: { booth: TradeFairBooth; eve
           ))}
 
           <div>
-            <label className="block text-xs font-semibold text-ink-subtle mb-1">Booth Type</label>
+            <label className="block text-[13px] font-medium text-ink mb-1.5">Booth Type</label>
             <Select
               label="Booth Type"
               hideLabel
@@ -703,7 +703,7 @@ function EditBoothModal({ booth, events, onClose }: { booth: TradeFairBooth; eve
 
           <div className="flex gap-3 pt-2">
             <Button variant="outline" type="button" onClick={onClose}>Cancel</Button>
-            <button type="submit" disabled={isLoading} className="flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50" style={{ background: 'rgb(var(--c-primary))' }}>
+            <button type="submit" disabled={isLoading} className="inline-flex items-center justify-center gap-2 flex-1 disabled:opacity-50 h-10 px-4 text-sm rounded-control bg-primary text-white font-medium shadow-card transition-colors hover:bg-primary-hover focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed">
               {isLoading ? 'Saving…' : 'Save Changes'}
             </button>
           </div>
@@ -775,10 +775,7 @@ function AdminTradeFairView() {
       {editingBooth && <EditBoothModal booth={editingBooth} events={allEvents} onClose={() => setEditingBooth(null)} />}
 
       <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="text-xl font-semibold text-ink">Trade Fair Management</h2>
-          <p className="text-sm text-ink-subtle mt-0.5">Manage events, booth inventory, and member bookings.</p>
-        </div>
+        <PageHeader title="Trade Fair Management" description="Manage events, booth inventory, and member bookings." />
         <div className="flex items-center gap-3">
           <Select
             label="Event"
@@ -790,7 +787,7 @@ function AdminTradeFairView() {
           />
           <button
             onClick={() => setShowCreateEvent(true)}
-            className="flex items-center gap-2 rounded-lg border border-primary px-4 py-2 text-sm font-semibold text-primary hover:bg-primary hover:text-white transition-colors"
+            className="flex items-center gap-2 h-10 px-4 text-sm rounded-control border border-border-strong bg-surface text-ink font-medium shadow-card transition-colors hover:bg-surface-alt focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add_circle</span>
             Create Event
@@ -798,8 +795,8 @@ function AdminTradeFairView() {
           <button
             onClick={() => setShowAddBooth(true)}
             disabled={!selectedEventId}
-            className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white disabled:opacity-40 disabled:cursor-not-allowed"
-            style={{ background: 'rgb(var(--c-primary))' }}
+            className="flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed h-10 px-4 text-sm rounded-control bg-primary text-white font-medium shadow-card transition-colors hover:bg-primary-hover focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
+           
           >
             <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>
             Add Booth
@@ -814,21 +811,15 @@ function AdminTradeFairView() {
           { icon: 'check_circle', label: 'Reserved', value: reservedCount, accent: false },
           { icon: 'event_available', label: 'Available', value: availableCount, accent: false },
           { icon: 'payments', label: 'Revenue', value: `₦${(revenue / 1000).toFixed(0)}K`, accent: false },
-        ].map(({ icon, label, value, accent }) => (
-          <div key={label} className={`rounded-card border p-4 bg-surface border-border relative overflow-hidden ${accent ? 'before:absolute before:inset-y-0 before:left-0 before:w-[3px] before:bg-primary' : ''}`} style={accent ? { background: 'rgb(var(--c-primary))' } : {}}>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`, color: 'rgb(var(--c-ink-subtle))' }}>{icon}</span>
-              <p className={`text-2xs font-semibold uppercase text-ink-subtle`}>{label}</p>
-            </div>
-            <p className={`num text-[26px] font-semibold leading-none text-ink mt-1`}>{value}</p>
-          </div>
+        ].map(({ icon, label, value }) => (
+          <StatTile key={label} icon={icon} label={label} value={String(value)} />
         ))}
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-surface-alt rounded-lg p-1 mb-6 w-fit border border-border">
+      <div className="flex items-end gap-6 overflow-x-auto border-b border-border mb-6">
         {([['overview', 'Event Info'], ['booths', 'Booth Inventory'], ['bookings', 'All Bookings']] as const).map(([id, label]) => (
-          <button key={id} onClick={() => setTab(id)} className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === id ? 'bg-surface text-ink shadow-card' : 'text-ink-subtle hover:text-ink'}`}>
+          <button key={id} onClick={() => setTab(id)} className={`-mb-px border-b-2 px-1 pb-2.5 pt-1 text-sm font-medium whitespace-nowrap transition-colors focus-visible:shadow-focus ${tab === id ? 'border-primary text-ink' : 'border-transparent text-ink-subtle hover:text-ink hover:border-border-strong'}`}>
             {label}
           </button>
         ))}
@@ -851,7 +842,7 @@ function AdminTradeFairView() {
               <div key={event.id} className="bg-surface rounded-card border border-border p-6">
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <h3 className="font-bold text-ink">{event.title}</h3>
+                    <h3 className="font-semibold text-ink">{plainText(event.title)}</h3>
                     <div className="flex items-center gap-1 mt-1">
                       <span className="material-symbols-outlined text-ink-subtle" style={{ fontSize: 14, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 14` }}>location_on</span>
                       <p className="text-sm text-ink-subtle">{event.venue}</p>
@@ -859,12 +850,12 @@ function AdminTradeFairView() {
                   </div>
                   <span className="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold" style={{ background: cfg.bg, color: cfg.text }}>{cfg.label}</span>
                 </div>
-                {event.description && <p className="text-sm text-ink-subtle mb-4">{event.description}</p>}
+                {event.description && <p className="text-sm text-ink-subtle mb-4">{plainText(event.description)}</p>}
                 {cd && event.status !== 'completed' && (
                   <div className="flex gap-3 mb-4">
                     {[{ v: cd.days, l: 'Days' }, { v: cd.hours, l: 'Hours' }, { v: cd.mins, l: 'Mins' }].map(({ v, l }) => (
                       <div key={l} className="flex flex-col items-center rounded-lg px-4 py-2.5" style={{ background: 'rgb(var(--c-primary))' }}>
-                        <span className="text-xl font-bold text-white leading-none">{String(v).padStart(2, '0')}</span>
+                        <span className="text-xl font-semibold text-white leading-none">{String(v).padStart(2, '0')}</span>
                         <span className="text-xs text-primary-200 mt-0.5">{l}</span>
                       </div>
                     ))}
@@ -889,7 +880,7 @@ function AdminTradeFairView() {
                           key={next.value}
                           disabled={isLoading}
                           onClick={() => handleStatusChange(event.id, next.value)}
-                          className="rounded-lg px-3 py-1 text-xs font-semibold border transition-colors disabled:opacity-50"
+                          className="inline-flex items-center justify-center gap-2 disabled:opacity-50 h-8 px-3 text-[13px] rounded-control border border-border-strong bg-surface text-ink font-medium shadow-card transition-colors hover:bg-surface-alt focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
                           style={isCancel
                             ? { borderColor: 'rgb(var(--c-danger))', color: 'rgb(var(--c-danger))', background: 'transparent' }
                             : { borderColor: 'rgb(var(--c-primary))', color: 'rgb(var(--c-primary))', background: 'transparent' }}
@@ -911,9 +902,9 @@ function AdminTradeFairView() {
       {tab === 'booths' && (
         <div>
           <div className="flex items-center gap-3 mb-4">
-            <div className="flex gap-1 bg-surface-alt rounded-lg p-1 border border-border">
+            <div className="flex flex-wrap items-center gap-1.5">
               {(['all', 'available', 'reserved'] as const).map((f) => (
-                <button key={f} onClick={() => setBoothFilter(f)} className={`px-3 py-1 rounded-md text-xs font-medium capitalize transition-colors ${boothFilter === f ? 'bg-surface shadow-card text-ink' : 'text-ink-subtle'}`}>
+                <button key={f} onClick={() => setBoothFilter(f)} className={`h-7 px-2.5 rounded-full border text-xs font-medium whitespace-nowrap transition-colors focus-visible:shadow-focus capitalize ${boothFilter === f ? 'border-primary bg-primary-soft text-primary' : 'border-border bg-surface text-ink-muted hover:border-border-strong hover:text-ink'}`}>
                   {f}
                 </button>
               ))}
@@ -932,7 +923,7 @@ function AdminTradeFairView() {
                     style={{ borderColor: booth.status === 'available' ? 'rgb(var(--c-border))' : booth.status === 'paid' ? 'rgb(var(--c-primary))' : '#ffc300' }}
                   >
                     <div className="flex items-start justify-between mb-2">
-                      <p className="font-bold text-primary text-lg leading-none">{booth.boothNumber}</p>
+                      <p className="font-semibold text-primary text-lg leading-none">{booth.boothNumber}</p>
                       <span
                         className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold"
                         style={booth.status === 'available'
@@ -947,7 +938,7 @@ function AdminTradeFairView() {
                     <p className="text-xs font-semibold text-ink-subtle">{booth.boothType}</p>
                     <p className="text-xs text-ink-subtle mt-0.5">{booth.zone}</p>
                     <p className="text-xs text-ink-subtle">{booth.size}</p>
-                    <p className="text-sm font-bold text-ink mt-1">₦{booth.price.toLocaleString()}</p>
+                    <p className="text-sm font-semibold text-ink mt-1">₦{booth.price.toLocaleString()}</p>
                     {eventName ? (
                       <p className="text-xs text-ink-subtle mt-1 truncate" title={eventName}>{eventName}</p>
                     ) : (
@@ -955,7 +946,7 @@ function AdminTradeFairView() {
                     )}
                     <button
                       onClick={() => setEditingBooth(booth)}
-                      className="mt-2 w-full rounded-lg border border-border px-2 py-1 text-xs font-semibold text-ink-subtle hover:border-primary hover:text-primary transition-colors"
+                      className="inline-flex items-center justify-center gap-2 mt-2 w-full h-8 px-3 text-[13px] rounded-control border border-border-strong bg-surface text-ink font-medium shadow-card transition-colors hover:bg-surface-alt focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Edit
                     </button>
@@ -982,36 +973,36 @@ function AdminTradeFairView() {
             <div className="overflow-x-auto">
               <table className="data-table w-full text-sm">
                 <thead>
-                  <tr className="bg-surface-alt border-b border-border">
+                  <tr>
                     {['Booth', 'Member', 'Type / Zone', 'Amount', 'Status', 'Payment Ref'].map((h) => (
-                      <th key={h} className="text-left px-4 py-3 text-2xs font-semibold text-ink-subtle uppercase">{h}</th>
+                      <th key={h}>{h}</th>
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border-subtle">
+                <tbody>
                   {allBookings.map((b) => {
                     const bsc = bookingStatusConfig[b.status];
                     return (
                       <tr key={b.id} className="hover:bg-surface-alt transition-colors">
-                        <td className="px-4 py-3">
-                          <p className="font-bold text-primary">{b.boothNumber}</p>
+                        <td>
+                          <p className="font-semibold text-primary">{b.boothNumber}</p>
                           <p className="text-xs text-ink-subtle">{b.size}</p>
                         </td>
-                        <td className="px-4 py-3">
+                        <td>
                           <p className="font-medium text-ink">{b.memberName ?? '–'}</p>
                           <p className="text-xs text-ink-subtle">{b.memberEmail ?? '–'}</p>
                         </td>
-                        <td className="px-4 py-3">
+                        <td>
                           <p className="text-ink">{b.boothType}</p>
                           <p className="text-xs text-ink-subtle">{b.zone}</p>
                         </td>
-                        <td className="px-4 py-3 font-semibold text-ink">₦{b.amount.toLocaleString()}</td>
-                        <td className="px-4 py-3">
+                        <td className="font-semibold text-ink">₦{b.amount.toLocaleString()}</td>
+                        <td>
                           <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ background: bsc.bg, color: bsc.text }}>
                             {bsc.label}
                           </span>
                         </td>
-                        <td className="px-4 py-3 font-mono text-xs text-ink-subtle">{b.paymentRef ?? '–'}</td>
+                        <td className="font-mono text-xs text-ink-subtle">{b.paymentRef ?? '–'}</td>
                       </tr>
                     );
                   })}

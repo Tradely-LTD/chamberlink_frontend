@@ -8,6 +8,7 @@ import {
   useVerifyBoothPaymentMutation,
   type MyBooth,
 } from '@features/trade-fair';
+import { PageHeader } from '@shared/ui/PageHeader';
 
 // ── Demo data ─────────────────────────────────────────────────────────────
 
@@ -84,8 +85,7 @@ export function TradeFairBoothsPage() {
         <span className="text-ink font-medium">My Booths</span>
       </div>
 
-      <h1 className="text-xl font-semibold text-ink mb-1">My Booth Reservations</h1>
-      <p className="text-sm text-ink-subtle mb-6">Your reserved exhibition booths.</p>
+      <PageHeader title="My Booth Reservations" description="Your reserved exhibition booths." />
 
       {/* Payment verification banner */}
       {verifying && (
@@ -118,7 +118,7 @@ export function TradeFairBoothsPage() {
           <h3 className="text-base font-semibold text-ink mb-1">No booth reservations yet</h3>
           <p className="text-sm text-ink-subtle mb-4">Book a booth at an upcoming trade fair event.</p>
           <Link to="/dashboard/trade-fair">
-            <button className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white" style={{ background: 'rgb(var(--c-primary))' }}>
+            <button className="inline-flex items-center justify-center gap-2 h-10 px-4 text-sm rounded-control bg-primary text-white font-medium shadow-card transition-colors hover:bg-primary-hover focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed">
               Browse Events
             </button>
           </Link>
@@ -133,10 +133,10 @@ export function TradeFairBoothsPage() {
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 rounded-card flex items-center justify-center flex-shrink-0" style={{ background: 'rgb(var(--c-primary-soft))' }}>
-                        <span className="font-bold text-primary text-sm leading-none text-center">{booth.boothNumber}</span>
+                        <span className="font-semibold text-primary text-sm leading-none text-center">{booth.boothNumber}</span>
                       </div>
                       <div>
-                        <p className="font-bold text-ink">{booth.boothType} Booth</p>
+                        <p className="font-semibold text-ink">{booth.boothType} Booth</p>
                         {booth.zone && <p className="text-xs text-ink-subtle mt-0.5">{booth.zone}</p>}
                       </div>
                     </div>
@@ -164,7 +164,7 @@ export function TradeFairBoothsPage() {
                     )}
                     <div>
                       <dt className="text-xs text-ink-subtle mb-0.5">Amount Paid</dt>
-                      <dd className="font-bold text-ink">₦{booth.amount.toLocaleString()}</dd>
+                      <dd className="font-semibold text-ink">₦{booth.amount.toLocaleString()}</dd>
                     </div>
                     {booth.paymentRef && (
                       <div>
@@ -179,8 +179,8 @@ export function TradeFairBoothsPage() {
                       <button
                         disabled={payLoading && payingId === booth.id}
                         onClick={() => handlePay(booth.id)}
-                        className="flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
-                        style={{ background: 'rgb(var(--c-primary))' }}
+                        className="flex items-center gap-2 disabled:opacity-50 h-10 px-4 text-sm rounded-control bg-primary text-white font-medium shadow-card transition-colors hover:bg-primary-hover focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
+                       
                       >
                         <span className="material-symbols-outlined" style={{ fontSize: 16 }}>payments</span>
                         {payLoading && payingId === booth.id ? 'Processing…' : 'Complete Payment'}

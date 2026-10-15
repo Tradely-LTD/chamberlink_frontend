@@ -11,6 +11,7 @@ import { ErrorBanner } from '@shared/ui/ErrorBanner';
 import { EmptyState } from '@shared/ui/EmptyState';
 import { Button } from '@shared/ui/Button';
 import { Toast } from '@shared/ui/Toast';
+import { PageHeader } from '@shared/ui/PageHeader';
 
 const statusColors: Record<string, string> = {
   active: 'bg-success-bg text-success',
@@ -84,12 +85,7 @@ export function MyConnectionsPage() {
   return (
     <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-4xl">
       <div className="flex items-start justify-between gap-4 mb-6">
-        <div>
-          <h1 className="text-2xl font-semibold text-ink mb-1">My Chambers</h1>
-          <p className="text-sm text-ink-subtle">
-            Every chamber your Chamberlink account is connected to, each with its own status, tier and dues.
-          </p>
-        </div>
+        <PageHeader title="My Chambers" description="Every chamber your Chamberlink account is connected to, each with its own status, tier and dues." />
         <Button onClick={() => setConnectModalOpen(true)} className="flex-shrink-0">
           Connect a chamber
         </Button>

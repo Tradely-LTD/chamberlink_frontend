@@ -295,7 +295,7 @@ function AdminEcoQueue({ isReadOnly }: { isReadOnly: boolean }) {
                     <td><CertStatus status={item.status} /></td>
                     <td className="num whitespace-nowrap text-ink-subtle">{fmtDate(item.createdAt)}</td>
                     <td>
-                      <div className="flex flex-nowrap items-center justify-end gap-2">
+                      <div className="flex flex-wrap items-center justify-end gap-2">
                         {/* submitted — admin can start review or wait for payment */}
                         {item.status === 'submitted' && !isReadOnly && (
                           <Button size="sm" loading={startingReviewId === item.id} onClick={() => handleAction(item, 'start_review')}>

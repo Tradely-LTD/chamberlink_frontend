@@ -56,10 +56,10 @@ export function AuthShell({
             <img src="/naccima-seal.png" alt="" className="h-9 w-9 object-contain" />
           </span>
           <span className="leading-tight">
-            <span className="block text-[17px] font-extrabold text-primary tracking-tight">Chamberlink</span>
+            <span className="block text-[17px] font-semibold text-primary tracking-tight">Chamberlink</span>
           </span>
         </a>
-        <span className="hidden sm:inline text-[10px] font-extrabold uppercase tracking-[0.1em] text-ink-subtle">
+        <span className="hidden sm:inline text-[10px] font-semibold uppercase tracking-[0.1em] text-ink-subtle">
           Export certificate platform
         </span>
       </div>
@@ -67,7 +67,7 @@ export function AuthShell({
       <main className="grid lg:grid-cols-[1fr_440px] gap-14 lg:gap-24 items-center max-w-[1060px] mx-auto">
         {/* Intro / benefits */}
         <section>
-          <div className="flex items-center gap-2 text-primary text-[11px] font-extrabold uppercase tracking-[0.13em] mb-3">
+          <div className="flex items-center gap-2 text-primary text-[11px] font-semibold uppercase tracking-[0.13em] mb-3">
             <span className="h-1.5 w-1.5 rounded-full bg-[#DA0001] shadow-[0_0_0_5px_rgba(218,0,1,0.12)]" aria-hidden="true" />
             {kicker}
           </div>
@@ -77,7 +77,7 @@ export function AuthShell({
           <p className="max-w-md text-sm leading-[1.85] text-ink-subtle mb-8">{lede}</p>
           <div className="grid gap-3.5">
             {benefits.map((b) => (
-              <div key={b} className="flex items-center gap-2.5 text-[13px] font-bold text-ink">
+              <div key={b} className="flex items-center gap-2.5 text-[13px] font-semibold text-ink">
                 <span
                   className="material-symbols-outlined flex-shrink-0 text-success"
                   style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18` }}
@@ -110,7 +110,7 @@ export function AuthShell({
 
           <Link
             to={secondaryLinkTo}
-            className="flex items-center justify-center w-full rounded-lg border border-primary/30 py-2.5 text-xs font-bold text-primary hover:bg-primary/5 transition-colors"
+            className="flex items-center justify-center w-full rounded-lg border border-primary/30 py-2.5 text-xs font-semibold text-primary hover:bg-primary/5 transition-colors"
           >
             {secondaryLinkLabel}
           </Link>

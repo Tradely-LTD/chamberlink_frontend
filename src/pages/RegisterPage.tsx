@@ -5,7 +5,7 @@ export function RegisterPage() {
   return (
     <AuthShell
       kicker="Join Chamberlink"
-      heading={<>Start your<br /><em className="font-display italic font-semibold text-primary">export journey.</em></>}
+      heading={<>Start your<br /><em className=" italic font-semibold text-primary">export journey.</em></>}
       lede="Create your Chamberlink ID to apply for a Certificate of Origin, connect with a chamber, or manage your export documentation."
       benefits={[
         'One ChamberLink ID works across every chamber you connect with',

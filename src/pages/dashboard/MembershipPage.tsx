@@ -6,9 +6,11 @@ import { SkeletonCard } from '@shared/ui/SkeletonCard';
 import { ErrorBanner } from '@shared/ui/ErrorBanner';
 import { EmptyState } from '@shared/ui/EmptyState';
 import { Button } from '@shared/ui/Button';
-import { Spinner } from '@shared/ui/Spinner';
 import { Toast } from '@shared/ui/Toast';
 import { isNoActiveChamberError } from '@shared/utils';
+import { PageHeader } from '@shared/ui/PageHeader';
+import { Status, StatusBadge } from '@shared/ui/StatusBadge';
+import { SectionCard, DetailGrid } from '@shared/ui/SectionCard';
 
 interface PaymentResult { authorizationUrl: string; reference: string; }
 interface ApiResponse<T> { success: boolean; data: T; }
@@ -28,19 +30,7 @@ const membershipPayApi = emptyApi.injectEndpoints({
 });
 const { useInitiateDuesPaymentMutation } = membershipPayApi;
 
-const tierColors: Record<string, string> = {
-  ordinary: 'bg-border-subtle text-ink-muted',
-  associate: 'bg-primary-soft text-primary',
-  patron: 'bg-warning-bg text-warning',
-  corporate: 'bg-success-bg text-success',
-};
 
-const statusColors: Record<string, string> = {
-  active: 'bg-success-bg text-success',
-  pending_payment: 'bg-warning-bg text-warning',
-  expired: 'bg-danger-bg text-danger',
-  suspended: 'bg-border-subtle text-ink-muted',
-};
 
 export function MembershipPage() {
   const { data: status, isLoading: statusLoading, isError: statusError, error: statusErrorObj } = useGetMembershipStatusQuery();
@@ -69,8 +59,7 @@ export function MembershipPage() {
     if (isNoActiveChamberError(statusErrorObj)) {
       return (
         <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-3xl">
-          <h1 className="text-2xl font-semibold text-ink mb-1">Membership</h1>
-          <p className="text-sm text-ink-subtle mb-6">View your membership status and available tiers.</p>
+          <PageHeader title="Membership" description="View your membership status and available tiers." />
           <EmptyState
             icon="corporate_fare"
             title="You're not connected to a chamber yet"
@@ -94,81 +83,64 @@ export function MembershipPage() {
   const memberSince = status?.memberSince ? new Date(status.memberSince).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'long', year: 'numeric' }) : null;
   const needsPayment = status?.status === 'expired' || status?.status === 'pending_payment';
 
+  const fmt = (n: number) => `₦${n.toLocaleString('en-NG', { maximumFractionDigits: 0 })}`;
+
   return (
-    <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-3xl">
-      <h1 className="text-2xl font-semibold text-ink mb-1">Membership</h1>
-      <p className="text-sm text-ink-subtle mb-6">View your membership status and available tiers.</p>
+    <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8">
+      <PageHeader title="Membership" description="Your plan with this chamber, and the plans you can move to." />
+      <div className="max-w-4xl space-y-8">
+        {payError && <ErrorBanner message={payError} />}
 
-      {payError && <div className="mb-4"><ErrorBanner message={payError} /></div>}
-
-      {/* Current Status Card */}
-      <div className="bg-surface rounded-card border border-border overflow-hidden mb-6">
-        <div className="px-6 py-4 border-b border-border flex items-center justify-between">
-          <h2 className="font-medium text-ink">Current Membership</h2>
-          {status?.status && (
-            <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${statusColors[status.status] ?? 'bg-border-subtle text-ink-muted'}`}>
-              {status.status.replace(/_/g, ' ')}
-            </span>
-          )}
-        </div>
-        <dl className="divide-y divide-border-subtle">
-          {[
-            { label: 'Tier', value: status?.tierName ?? '–' },
-            { label: 'Member Since', value: memberSince ?? '–' },
-            { label: 'Expires', value: expiresAt ?? '–' },
-            { label: 'Member ID', value: status?.memberId ?? '–' },
-          ].map((row) => (
-            <div key={row.label} className="grid grid-cols-3 gap-4 px-6 py-4">
-              <dt className="text-sm font-medium text-ink-subtle">{row.label}</dt>
-              <dd className="col-span-2 text-sm text-ink capitalize">{row.value}</dd>
-            </div>
-          ))}
-        </dl>
-        {needsPayment && (
-          <div className="px-6 py-4 border-t border-border">
-            <Button
-              className="bg-gold hover:bg-gold-hover text-white"
-              loading={payLoading && payingTierId === 'current'}
-              onClick={() => handlePay(status?.tierId)}
-            >
-              {status?.status === 'expired' ? 'Renew Membership' : 'Complete Payment'}
+        <SectionCard
+          title="Your membership"
+          description={status?.tierName ? `${status.tierName.replace(/^\w/, (c) => c.toUpperCase())} plan` : undefined}
+          action={status?.status && <Status status={status.status} />}
+          footer={needsPayment && (
+            <Button loading={payLoading && payingTierId === 'current'} onClick={() => handlePay(status?.tierId)}>
+              {status?.status === 'expired' ? 'Renew membership' : 'Pay to activate'}
             </Button>
-          </div>
-        )}
-      </div>
+          )}
+        >
+          <DetailGrid items={[
+            { label: 'Member ID', value: status?.memberId && <span className="font-mono text-[13px]">{status.memberId}</span> },
+            { label: 'Plan', value: status?.tierName && <span className="capitalize">{status.tierName}</span> },
+            { label: 'Member since', value: memberSince },
+            { label: status?.status === 'expired' ? 'Expired on' : 'Renews on', value: expiresAt },
+          ]} />
+        </SectionCard>
 
-      {/* Available Tiers */}
-      <h2 className="text-lg font-semibold text-ink mb-4">Available Tiers</h2>
-      <div className="grid gap-4 sm:grid-cols-2">
-        {(tiers ?? []).map((tier) => {
-          const isCurrentActive = status?.tierName?.toLowerCase() === tier.name.toLowerCase() && status?.status === 'active';
-          const isBusy = payLoading && payingTierId === tier.id;
-          return (
-            <div key={tier.id} className="bg-surface rounded-card border border-border p-5">
-              <div className="flex items-start justify-between mb-3">
-                <div>
-                  <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${tierColors[tier.name.toLowerCase()] ?? 'bg-border-subtle text-ink-muted'}`}>
-                    {tier.name}
-                  </span>
-                  <p className="text-xl font-bold text-primary mt-2">
-                    ₦{Number(tier.annualDues ?? 0).toLocaleString()}
-                    <span className="text-sm font-normal text-ink-subtle">/year</span>
-                  </p>
-                </div>
-              </div>
-              <p className="text-sm text-ink-subtle mb-4">Full NACCIMA membership benefits.</p>
-              <Button
-                variant={isCurrentActive ? 'outline' : 'primary'}
-                className="w-full"
-                disabled={isCurrentActive || (payLoading && payingTierId !== tier.id)}
-                loading={isBusy}
-                onClick={() => !isCurrentActive && handlePay(tier.id)}
-              >
-                {isBusy ? <Spinner size="sm" /> : isCurrentActive ? 'Current Plan' : 'Select Plan'}
-              </Button>
-            </div>
-          );
-        })}
+        <section aria-labelledby="plans">
+          <div className="mb-3 flex items-baseline justify-between">
+            <h2 id="plans" className="text-[15px] font-semibold text-ink">Plans</h2>
+            <p className="text-[13px] text-ink-subtle">Annual dues, paid online</p>
+          </div>
+          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {(tiers ?? []).map((tier) => {
+              const isCurrentActive = status?.tierName?.toLowerCase() === tier.name.toLowerCase() && status?.status === 'active';
+              const isBusy = payLoading && payingTierId === tier.id;
+              return (
+                <li key={tier.id} className={`flex flex-col rounded-card border bg-surface p-5 ${isCurrentActive ? 'border-primary shadow-focus' : 'border-border'}`}>
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-sm font-semibold capitalize text-ink">{tier.name}</p>
+                    {isCurrentActive && <StatusBadge tone="info">Your plan</StatusBadge>}
+                  </div>
+                  <p className="mt-3 num text-[26px] font-semibold leading-none text-ink">{fmt(Number(tier.annualDues ?? 0))}</p>
+                  <p className="mt-1 text-xs text-ink-subtle">per year</p>
+                  <Button
+                    size="sm"
+                    variant={isCurrentActive ? 'secondary' : 'primary'}
+                    className="mt-5 w-full"
+                    disabled={isCurrentActive || (payLoading && payingTierId !== tier.id)}
+                    loading={isBusy}
+                    onClick={() => !isCurrentActive && handlePay(tier.id)}
+                  >
+                    {isCurrentActive ? 'Current plan' : 'Choose plan'}
+                  </Button>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
       </div>
     </div>
   );

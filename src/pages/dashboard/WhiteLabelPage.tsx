@@ -1,3 +1,4 @@
+import { StatTile } from '@shared/ui/StatTile';
 import { useState } from 'react';
 import { SkeletonCard } from '@shared/ui/SkeletonCard';
 import { Button } from '@shared/ui/Button';
@@ -11,6 +12,7 @@ import {
   MODULE_KEYS,
 } from '@features/white-label';
 import type { Tenant, CreateTenantPayload } from '@features/white-label';
+import { PageHeader } from '@shared/ui/PageHeader';
 
 // ── Status config ─────────────────────────────────────────────────────────
 
@@ -90,9 +92,9 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
-      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-surface border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
-          <h2 className="font-bold text-ink">Create New Chamber</h2>
+      <div className="relative bg-surface rounded-card border border-border shadow-pop animate-fade-up w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-surface border-b border-border px-5 py-4 flex items-center justify-between rounded-t-card">
+          <h2 className="text-[15px] font-semibold text-ink">Create New Chamber</h2>
           <button
             onClick={onClose}
             className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle"
@@ -106,7 +108,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
 
           {/* Required fields */}
           <div>
-            <label className="block text-xs font-semibold text-ink-subtle mb-1">
+            <label className="block text-[13px] font-medium text-ink mb-1.5">
               Organisation Name <span className="text-danger">*</span>
             </label>
             <input
@@ -119,7 +121,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-ink-subtle mb-1">
+            <label className="block text-[13px] font-medium text-ink mb-1.5">
               Slug (URL identifier) <span className="text-danger">*</span>{' '}
               <span className="text-ink-subtle font-normal">(lowercase letters and hyphens only)</span>
             </label>
@@ -134,7 +136,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-ink-subtle mb-1">
+            <label className="block text-[13px] font-medium text-ink mb-1.5">
               Region / State <span className="text-danger">*</span>
             </label>
             <input
@@ -147,7 +149,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-ink-subtle mb-1">
+            <label className="block text-[13px] font-medium text-ink mb-1.5">
               RC Number <span className="text-danger">*</span>
             </label>
             <input
@@ -166,7 +168,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
             </p>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-semibold text-ink-subtle mb-1">
+                <label className="block text-[13px] font-medium text-ink mb-1.5">
                   First Name <span className="text-danger">*</span>
                 </label>
                 <input
@@ -178,7 +180,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-ink-subtle mb-1">
+                <label className="block text-[13px] font-medium text-ink mb-1.5">
                   Last Name <span className="text-danger">*</span>
                 </label>
                 <input
@@ -191,7 +193,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
               </div>
             </div>
             <div className="mt-3">
-              <label className="block text-xs font-semibold text-ink-subtle mb-1">
+              <label className="block text-[13px] font-medium text-ink mb-1.5">
                 Admin Email <span className="text-danger">*</span>
               </label>
               <input
@@ -212,7 +214,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
             </p>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-semibold text-ink-subtle mb-1">
+                <label className="block text-[13px] font-medium text-ink mb-1.5">
                   Primary Colour
                 </label>
                 <div className="flex items-center gap-2">
@@ -226,7 +228,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-ink-subtle mb-1">
+                <label className="block text-[13px] font-medium text-ink mb-1.5">
                   Secondary Colour
                 </label>
                 <div className="flex items-center gap-2">
@@ -242,7 +244,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
             </div>
             <div className="grid grid-cols-2 gap-3 mt-3">
               <div>
-                <label className="block text-xs font-semibold text-ink-subtle mb-1">
+                <label className="block text-[13px] font-medium text-ink mb-1.5">
                   Tagline
                 </label>
                 <input
@@ -253,7 +255,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-ink-subtle mb-1">
+                <label className="block text-[13px] font-medium text-ink mb-1.5">
                   City
                 </label>
                 <input
@@ -268,7 +270,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
 
           {/* Module selection */}
           <div className="border-t border-border pt-4">
-            <label className="block text-sm font-medium mb-2 text-ink-subtle">
+            <label className="block text-[13px] font-medium text-ink mb-1.5">
               Enabled Modules
             </label>
             <div className="grid grid-cols-2 gap-2">
@@ -293,8 +295,8 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
             <button
               type="submit"
               disabled={isLoading}
-              className="flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
-              style={{ background: 'rgb(var(--c-primary))' }}
+              className="inline-flex items-center justify-center gap-2 flex-1 disabled:opacity-50 h-10 px-4 text-sm rounded-control bg-primary text-white font-medium shadow-card transition-colors hover:bg-primary-hover focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
+             
             >
               {isLoading ? 'Creating…' : 'Create Chamber'}
             </button>
@@ -370,10 +372,10 @@ function EditTenantModal({ tenant, onClose }: { tenant: Tenant; onClose: () => v
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
-      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-surface border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
+      <div className="relative bg-surface rounded-card border border-border shadow-pop animate-fade-up w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-surface border-b border-border px-5 py-4 flex items-center justify-between rounded-t-card">
           <div>
-            <h2 className="font-bold text-ink">Edit Chamber</h2>
+            <h2 className="text-[15px] font-semibold text-ink">Edit Chamber</h2>
             <p className="text-xs text-ink-subtle mt-0.5 font-mono">/{tenant.slug}</p>
           </div>
           <button
@@ -389,7 +391,7 @@ function EditTenantModal({ tenant, onClose }: { tenant: Tenant; onClose: () => v
 
           {/* Core details */}
           <div>
-            <label className="block text-xs font-semibold text-ink-subtle mb-1">
+            <label className="block text-[13px] font-medium text-ink mb-1.5">
               Organisation Name <span className="text-danger">*</span>
             </label>
             <input
@@ -402,7 +404,7 @@ function EditTenantModal({ tenant, onClose }: { tenant: Tenant; onClose: () => v
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-ink-subtle mb-1">Region / State</label>
+              <label className="block text-[13px] font-medium text-ink mb-1.5">Region / State</label>
               <input
                 value={form.region}
                 onChange={setField('region')}
@@ -411,7 +413,7 @@ function EditTenantModal({ tenant, onClose }: { tenant: Tenant; onClose: () => v
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-ink-subtle mb-1">City</label>
+              <label className="block text-[13px] font-medium text-ink mb-1.5">City</label>
               <input
                 value={form.city}
                 onChange={setField('city')}
@@ -422,7 +424,7 @@ function EditTenantModal({ tenant, onClose }: { tenant: Tenant; onClose: () => v
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-ink-subtle mb-1">Status</label>
+            <label className="block text-[13px] font-medium text-ink mb-1.5">Status</label>
             <Select
               label="Status"
               hideLabel
@@ -441,7 +443,7 @@ function EditTenantModal({ tenant, onClose }: { tenant: Tenant; onClose: () => v
           <div className="border-t border-border pt-4">
             <p className="text-xs font-semibold text-ink-subtle mb-3 uppercase tracking-wide">Branding</p>
             <div>
-              <label className="block text-xs font-semibold text-ink-subtle mb-1">Tagline</label>
+              <label className="block text-[13px] font-medium text-ink mb-1.5">Tagline</label>
               <input
                 value={form.tagline}
                 onChange={setField('tagline')}
@@ -451,7 +453,7 @@ function EditTenantModal({ tenant, onClose }: { tenant: Tenant; onClose: () => v
             </div>
             <div className="grid grid-cols-2 gap-3 mt-3">
               <div>
-                <label className="block text-xs font-semibold text-ink-subtle mb-1">Primary Colour</label>
+                <label className="block text-[13px] font-medium text-ink mb-1.5">Primary Colour</label>
                 <div className="flex items-center gap-2">
                   <input
                     type="color"
@@ -463,7 +465,7 @@ function EditTenantModal({ tenant, onClose }: { tenant: Tenant; onClose: () => v
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-ink-subtle mb-1">Secondary Colour</label>
+                <label className="block text-[13px] font-medium text-ink mb-1.5">Secondary Colour</label>
                 <div className="flex items-center gap-2">
                   <input
                     type="color"
@@ -482,7 +484,7 @@ function EditTenantModal({ tenant, onClose }: { tenant: Tenant; onClose: () => v
             <p className="text-xs font-semibold text-ink-subtle mb-3 uppercase tracking-wide">Contact Details</p>
             <div className="space-y-3">
               <div>
-                <label className="block text-xs font-semibold text-ink-subtle mb-1">Address</label>
+                <label className="block text-[13px] font-medium text-ink mb-1.5">Address</label>
                 <input
                   value={form.address}
                   onChange={setField('address')}
@@ -492,7 +494,7 @@ function EditTenantModal({ tenant, onClose }: { tenant: Tenant; onClose: () => v
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-ink-subtle mb-1">Phone</label>
+                  <label className="block text-[13px] font-medium text-ink mb-1.5">Phone</label>
                   <input
                     value={form.phone}
                     onChange={setField('phone')}
@@ -501,7 +503,7 @@ function EditTenantModal({ tenant, onClose }: { tenant: Tenant; onClose: () => v
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-ink-subtle mb-1">Public Email</label>
+                  <label className="block text-[13px] font-medium text-ink mb-1.5">Public Email</label>
                   <input
                     type="email"
                     value={form.email}
@@ -512,7 +514,7 @@ function EditTenantModal({ tenant, onClose }: { tenant: Tenant; onClose: () => v
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-ink-subtle mb-1">Website</label>
+                <label className="block text-[13px] font-medium text-ink mb-1.5">Website</label>
                 <input
                   value={form.website}
                   onChange={setField('website')}
@@ -528,8 +530,8 @@ function EditTenantModal({ tenant, onClose }: { tenant: Tenant; onClose: () => v
             <button
               type="submit"
               disabled={isLoading}
-              className="flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
-              style={{ background: 'rgb(var(--c-primary))' }}
+              className="inline-flex items-center justify-center gap-2 flex-1 disabled:opacity-50 h-10 px-4 text-sm rounded-control bg-primary text-white font-medium shadow-card transition-colors hover:bg-primary-hover focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
+             
             >
               {isLoading ? 'Saving…' : 'Save Changes'}
             </button>
@@ -563,10 +565,10 @@ function ModuleConfigPanel({ tenant, onClose }: { tenant: Tenant; onClose: () =>
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
-      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-surface border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
+      <div className="relative bg-surface rounded-card border border-border shadow-pop animate-fade-up w-full max-w-md max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-surface border-b border-border px-5 py-4 flex items-center justify-between rounded-t-card">
           <div>
-            <h2 className="font-bold text-ink">Module Configuration</h2>
+            <h2 className="text-[15px] font-semibold text-ink">Module Configuration</h2>
             <p className="text-xs text-ink-subtle mt-0.5">{tenant.name}</p>
           </div>
           <button
@@ -615,8 +617,8 @@ function ModuleConfigPanel({ tenant, onClose }: { tenant: Tenant; onClose: () =>
             <button
               disabled={isLoading}
               onClick={handleSave}
-              className="flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
-              style={{ background: 'rgb(var(--c-primary))' }}
+              className="inline-flex items-center justify-center gap-2 flex-1 disabled:opacity-50 h-10 px-4 text-sm rounded-control bg-primary text-white font-medium shadow-card transition-colors hover:bg-primary-hover focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
+             
             >
               {isLoading ? 'Saving…' : 'Save Modules'}
             </button>
@@ -653,18 +655,11 @@ function WhiteLabelView() {
       )}
 
       <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="text-xl font-semibold text-ink">
-            Multi-Chamber White-Label Console
-          </h2>
-          <p className="text-sm text-ink-subtle mt-0.5">
-            Manage Chamberlink ERP chambers, branding, and module access.
-          </p>
-        </div>
+        <PageHeader title="Multi-Chamber White-Label Console" description="Manage Chamberlink ERP chambers, branding, and module access." />
         <button
           onClick={() => setShowCreate(true)}
-          className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white"
-          style={{ background: 'rgb(var(--c-primary))' }}
+          className="flex items-center gap-2 h-10 px-4 text-sm rounded-control bg-primary text-white font-medium shadow-card transition-colors hover:bg-primary-hover focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
+         
         >
           <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>
           New Chamber
@@ -692,35 +687,8 @@ function WhiteLabelView() {
             value: tenants.filter((t) => t.status === 'trial').length,
             accent: false,
           },
-        ].map(({ icon, label, value, accent }) => (
-          <div
-            key={label}
-            className={`rounded-card border p-4 bg-surface border-border relative overflow-hidden ${accent ? 'before:absolute before:inset-y-0 before:left-0 before:w-[3px] before:bg-primary' : ''}`}
-            
-          >
-            <div className="flex items-center gap-2 mb-2">
-              <span
-                className="material-symbols-outlined"
-                style={{
-                  fontSize: 18,
-                  fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`,
-                  color: 'rgb(var(--c-ink-subtle))',
-                }}
-              >
-                {icon}
-              </span>
-              <p
-                className={`text-2xs font-semibold uppercase ${
-                  'text-ink-subtle'
-                }`}
-              >
-                {label}
-              </p>
-            </div>
-            <p className={`num text-[26px] font-semibold leading-none text-ink mt-1`}>
-              {value}
-            </p>
-          </div>
+        ].map(({ icon, label, value }) => (
+          <StatTile key={label} icon={icon} label={label} value={String(value)} />
         ))}
       </div>
 
@@ -735,7 +703,7 @@ function WhiteLabelView() {
           </p>
           <button
             onClick={() => refetch()}
-            className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-danger-border text-danger hover:bg-danger-bg transition-colors"
+            className="inline-flex items-center justify-center gap-2 h-8 px-3 text-[13px] rounded-control border border-border-strong bg-surface text-ink font-medium shadow-card transition-colors hover:bg-surface-alt focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Retry
           </button>
@@ -757,11 +725,11 @@ function WhiteLabelView() {
                       className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
                       style={{ background: tenant.primaryColor ?? 'rgb(var(--c-primary))' }}
                     >
-                      <span className="text-white font-bold text-sm">{tenant.name[0]}</span>
+                      <span className="text-white font-semibold text-sm">{tenant.name[0]}</span>
                     </div>
                     <div>
                       <div className="flex items-center gap-2 flex-wrap mb-1">
-                        <h3 className="font-bold text-ink">{tenant.name}</h3>
+                        <h3 className="font-semibold text-ink">{tenant.name}</h3>
                         <span
                           className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold"
                           style={{ background: sc.bg, color: sc.text }}
@@ -784,7 +752,7 @@ function WhiteLabelView() {
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <button
                       onClick={() => setEditTenant(tenant)}
-                      className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-semibold text-ink hover:border-primary hover:text-primary transition-colors"
+                      className="flex items-center gap-1.5 h-8 px-3 text-[13px] rounded-control border border-border-strong bg-surface text-ink font-medium shadow-card transition-colors hover:bg-surface-alt focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
                         edit
@@ -793,7 +761,7 @@ function WhiteLabelView() {
                     </button>
                     <button
                       onClick={() => setModulesTenant(tenant)}
-                      className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-semibold text-ink hover:border-primary hover:text-primary transition-colors"
+                      className="flex items-center gap-1.5 h-8 px-3 text-[13px] rounded-control border border-border-strong bg-surface text-ink font-medium shadow-card transition-colors hover:bg-surface-alt focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
                         tune
@@ -803,7 +771,7 @@ function WhiteLabelView() {
                     {tenant.status === 'active' && (
                       <button
                         onClick={() => handleStatusChange(tenant, 'suspended')}
-                        className="rounded-lg border border-danger-bg px-3 py-1.5 text-xs font-semibold text-danger hover:bg-danger-bg transition-colors"
+                        className="inline-flex items-center justify-center gap-2 h-8 px-3 text-[13px] rounded-control border border-border-strong bg-surface text-ink font-medium shadow-card transition-colors hover:bg-surface-alt focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         Suspend
                       </button>
@@ -811,8 +779,8 @@ function WhiteLabelView() {
                     {tenant.status === 'suspended' && (
                       <button
                         onClick={() => handleStatusChange(tenant, 'active')}
-                        className="rounded-lg px-3 py-1.5 text-xs font-semibold text-white"
-                        style={{ background: 'rgb(var(--c-primary))' }}
+                        className="inline-flex items-center justify-center gap-2 h-8 px-3 text-[13px] rounded-control bg-primary text-white font-medium shadow-card transition-colors hover:bg-primary-hover focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
+                       
                       >
                         Reinstate
                       </button>
@@ -885,7 +853,7 @@ export function WhiteLabelPage() {
               lock
             </span>
           </div>
-          <h2 className="font-bold text-ink mb-2">Access Restricted</h2>
+          <h2 className="font-semibold text-ink mb-2">Access Restricted</h2>
           <p className="text-sm text-ink-subtle">
             This console is available to Super Admins only.
           </p>

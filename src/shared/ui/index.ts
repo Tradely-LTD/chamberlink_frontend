@@ -20,3 +20,4 @@ export type { StatusTone } from './StatusBadge';
 export { TableCard } from './TableCard';
 export { SegmentedTabs } from './SegmentedTabs';
 export { Modal } from './Modal';
+export { SectionCard, DetailGrid } from './SectionCard';

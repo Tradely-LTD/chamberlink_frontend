@@ -1,7 +1,9 @@
+import { plainText } from '@shared/utils/plainText';
 import { useState } from 'react';
 import { Button } from '@shared/ui/Button';
 import { Select } from '@shared/ui/Select';
 import { SkeletonCard } from '@shared/ui/SkeletonCard';
+import { StatTile } from '@shared/ui/StatTile';
 import { ErrorBanner } from '@shared/ui/ErrorBanner';
 import { useAppSelector } from '@shared/hooks/useAppDispatch';
 import {
@@ -19,6 +21,7 @@ import {
   useUploadCourseMaterialMutation,
 } from '@features/academy/academyApi';
 import type { Course, Enrollment, CourseSection } from '@features/academy/academyApi';
+import { PageHeader } from '@shared/ui/PageHeader';
 
 // ── Constants ─────────────────────────────────────────────────────────────
 
@@ -104,9 +107,9 @@ function CourseFormModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
-      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-surface border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
-          <h2 className="font-bold text-ink">{course ? 'Edit Course' : 'Add New Course'}</h2>
+      <div className="relative bg-surface rounded-card border border-border shadow-pop animate-fade-up w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-surface border-b border-border px-5 py-4 flex items-center justify-between rounded-t-card">
+          <h2 className="text-[15px] font-semibold text-ink">{course ? 'Edit Course' : 'Add New Course'}</h2>
           <button onClick={onClose} className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle">
             <span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span>
           </button>
@@ -115,20 +118,20 @@ function CourseFormModal({
           {error && <ErrorBanner message={error} />}
 
           <div>
-            <label className="block text-xs font-semibold text-ink-subtle mb-1">Course Title</label>
+            <label className="block text-[13px] font-medium text-ink mb-1.5">Course Title</label>
             <input required value={form.title} onChange={set('title')} placeholder="e.g. Export Documentation Fundamentals" className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed" />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-ink-subtle mb-1">Description</label>
+            <label className="block text-[13px] font-medium text-ink mb-1.5">Description</label>
             <textarea required rows={3} value={form.description} onChange={set('description')} className="w-full resize-none px-2.5 py-2 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed" />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-ink-subtle mb-1">Category</label>
+              <label className="block text-[13px] font-medium text-ink mb-1.5">Category</label>
               <input required value={form.category} onChange={set('category')} placeholder="e.g. Export" className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed" />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-ink-subtle mb-1">Duration</label>
+              <label className="block text-[13px] font-medium text-ink mb-1.5">Duration</label>
               <input required value={form.duration} onChange={set('duration')} placeholder="e.g. 4 hours" className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed" />
             </div>
           </div>
@@ -138,13 +141,13 @@ function CourseFormModal({
                 options={[{ value: 'beginner', label: 'Beginner' }, { value: 'intermediate', label: 'Intermediate' }, { value: 'advanced', label: 'Advanced' }]} />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-ink-subtle mb-1">Instructor</label>
+              <label className="block text-[13px] font-medium text-ink mb-1.5">Instructor</label>
               <input value={form.instructorName} onChange={set('instructorName')} placeholder="e.g. NACCIMA Trade Desk" className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed" />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-ink-subtle mb-1">Price (&#x20A6;)</label>
+              <label className="block text-[13px] font-medium text-ink mb-1.5">Price (&#x20A6;)</label>
               <input type="number" min="0" value={form.price} onChange={set('price')} className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed" />
             </div>
             <div className="flex flex-col gap-2 pt-5">
@@ -159,7 +162,7 @@ function CourseFormModal({
             </div>
           </div>
           <div>
-            <label className="block text-xs font-semibold text-ink-subtle mb-1">
+            <label className="block text-[13px] font-medium text-ink mb-1.5">
               Intro Video URL (YouTube/Vimeo) <span className="font-normal text-ink-subtle">(optional, shown before enrolment)</span>
             </label>
             <input
@@ -187,7 +190,7 @@ function CourseFormModal({
 
           <div className="flex gap-3 pt-2">
             <Button variant="outline" type="button" onClick={onClose}>Cancel</Button>
-            <button type="submit" disabled={isLoading} className="flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50" style={{ background: 'rgb(var(--c-primary))' }}>
+            <button type="submit" disabled={isLoading} className="inline-flex items-center justify-center gap-2 flex-1 disabled:opacity-50 h-10 px-4 text-sm rounded-control bg-primary text-white font-medium shadow-card transition-colors hover:bg-primary-hover focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed">
               {isLoading ? 'Saving...' : (course ? 'Save Changes' : 'Create Course')}
             </button>
           </div>
@@ -291,17 +294,17 @@ function SectionManagerModal({ course, onClose }: { course: Course; onClose: () 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
-      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
-        <div className="sticky top-0 bg-surface border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
+      <div className="relative bg-surface rounded-card border border-border shadow-pop animate-fade-up w-full max-w-2xl max-h-[90vh] flex flex-col">
+        <div className="sticky top-0 bg-surface border-b border-border px-5 py-4 flex items-center justify-between rounded-t-card">
           <div>
-            <h2 className="font-bold text-ink">Course Content</h2>
-            <p className="text-xs text-ink-subtle mt-0.5 max-w-md truncate">{course.title}</p>
+            <h2 className="text-[15px] font-semibold text-ink">Course Content</h2>
+            <p className="text-xs text-ink-subtle mt-0.5 max-w-md truncate">{plainText(course.title)}</p>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={() => { setShowAddForm(true); setEditingId(null); }}
-              className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-white"
-              style={{ background: 'rgb(var(--c-primary))' }}
+              className="flex items-center gap-1.5 h-8 px-3 text-[13px] rounded-control bg-primary text-white font-medium shadow-card transition-colors hover:bg-primary-hover focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
+             
             >
               <span className="material-symbols-outlined" style={{ fontSize: 14 }}>add</span>
               Add Section
@@ -316,7 +319,7 @@ function SectionManagerModal({ course, onClose }: { course: Course; onClose: () 
 
           {/* ── PDF Course Materials ─────────────────────────────────────── */}
           <div>
-            <p className="text-xs font-bold text-ink-subtle uppercase tracking-wide mb-2">Course Materials (PDF)</p>
+            <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide mb-2">Course Materials (PDF)</p>
             <div className="rounded-card border border-border bg-surface-alt p-4">
               {pdfUrl ? (
                 <div className="flex items-center gap-3">
@@ -355,7 +358,7 @@ function SectionManagerModal({ course, onClose }: { course: Course; onClose: () 
 
           {/* ── Video Sections ───────────────────────────────────────────── */}
           <div>
-            <p className="text-xs font-bold text-ink-subtle uppercase tracking-wide mb-2">Video Sections</p>
+            <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide mb-2">Video Sections</p>
           </div>
 
           {error && <div className="mb-2"><ErrorBanner message={error} /></div>}
@@ -367,7 +370,7 @@ function SectionManagerModal({ course, onClose }: { course: Course; onClose: () 
               <span className="material-symbols-outlined text-ink-subtle mb-2 block" style={{ fontSize: 32, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 32` }}>video_library</span>
               <p className="text-sm font-semibold text-ink-subtle mb-1">No sections yet</p>
               <p className="text-xs text-ink-subtle mb-4">Add YouTube or Vimeo video links as course sections.</p>
-              <button onClick={() => setShowAddForm(true)} className="rounded-lg px-4 py-2 text-xs font-semibold text-white" style={{ background: 'rgb(var(--c-primary))' }}>
+              <button onClick={() => setShowAddForm(true)} className="inline-flex items-center justify-center gap-2 h-8 px-3 text-[13px] rounded-control bg-primary text-white font-medium shadow-card transition-colors hover:bg-primary-hover focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed">
                 Add First Section
               </button>
             </div>
@@ -379,32 +382,32 @@ function SectionManagerModal({ course, onClose }: { course: Course; onClose: () 
                 <div className="p-4 space-y-3">
                   <div className="grid grid-cols-2 gap-3">
                     <div className="col-span-2">
-                      <label className="block text-xs font-semibold text-ink-subtle mb-1">Section Title</label>
+                      <label className="block text-[13px] font-medium text-ink mb-1.5">Section Title</label>
                       <input required value={editForm.title} onChange={setEdit('title')} className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed" />
                     </div>
                     <div className="col-span-2">
-                      <label className="block text-xs font-semibold text-ink-subtle mb-1">Video URL (YouTube/Vimeo)</label>
+                      <label className="block text-[13px] font-medium text-ink mb-1.5">Video URL (YouTube/Vimeo)</label>
                       <input required value={editForm.videoUrl} onChange={setEdit('videoUrl')} placeholder="https://www.youtube.com/watch?v=..." className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed" />
                     </div>
                     <div className="col-span-2">
-                      <label className="block text-xs font-semibold text-ink-subtle mb-1">Description <span className="font-normal text-ink-subtle">(optional)</span></label>
+                      <label className="block text-[13px] font-medium text-ink mb-1.5">Description <span className="font-normal text-ink-subtle">(optional)</span></label>
                       <textarea rows={2} value={editForm.description} onChange={setEdit('description')} className="w-full resize-none px-2.5 py-2 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed" />
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold text-ink-subtle mb-1">Order</label>
+                      <label className="block text-[13px] font-medium text-ink mb-1.5">Order</label>
                       <input type="number" min="0" value={editForm.sortOrder} onChange={setEdit('sortOrder')} className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed" />
                     </div>
                   </div>
                   <div className="flex gap-2 pt-1">
-                    <button onClick={() => setEditingId(null)} className="rounded-lg px-3 py-1.5 text-xs font-semibold border border-border text-ink-subtle">Cancel</button>
-                    <button onClick={() => handleUpdate(s.id)} disabled={!!updatingId} className="rounded-lg px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50" style={{ background: 'rgb(var(--c-primary))' }}>
+                    <button onClick={() => setEditingId(null)} className="inline-flex items-center justify-center gap-2 h-8 px-3 text-[13px] rounded-control border border-border-strong bg-surface text-ink font-medium shadow-card transition-colors hover:bg-surface-alt focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed">Cancel</button>
+                    <button onClick={() => handleUpdate(s.id)} disabled={!!updatingId} className="inline-flex items-center justify-center gap-2 disabled:opacity-50 h-8 px-3 text-[13px] rounded-control bg-primary text-white font-medium shadow-card transition-colors hover:bg-primary-hover focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed">
                       {updatingId ? 'Saving…' : 'Save Changes'}
                     </button>
                   </div>
                 </div>
               ) : (
                 <div className="flex items-center gap-3 p-4">
-                  <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold" style={{ background: 'rgb(var(--c-primary-soft))', color: 'rgb(var(--c-primary))' }}>
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-semibold" style={{ background: 'rgb(var(--c-primary-soft))', color: 'rgb(var(--c-primary))' }}>
                     {idx + 1}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -427,27 +430,27 @@ function SectionManagerModal({ course, onClose }: { course: Course; onClose: () 
           {/* Add section form */}
           {showAddForm && (
             <div className="bg-surface-alt rounded-card border border-primary/20 p-4">
-              <p className="text-xs font-bold text-primary mb-3 uppercase tracking-wide">New Section</p>
+              <p className="text-xs font-semibold text-primary mb-3 uppercase tracking-wide">New Section</p>
               <form onSubmit={handleAdd} className="space-y-3">
                 <div>
-                  <label className="block text-xs font-semibold text-ink-subtle mb-1">Section Title</label>
+                  <label className="block text-[13px] font-medium text-ink mb-1.5">Section Title</label>
                   <input required value={addForm.title} onChange={setAdd('title')} placeholder="e.g. Introduction to HS Codes" className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed" />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-ink-subtle mb-1">Video URL (YouTube/Vimeo)</label>
+                  <label className="block text-[13px] font-medium text-ink mb-1.5">Video URL (YouTube/Vimeo)</label>
                   <input required value={addForm.videoUrl} onChange={setAdd('videoUrl')} placeholder="https://www.youtube.com/watch?v=..." className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed" />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-ink-subtle mb-1">Description <span className="font-normal text-ink-subtle">(optional)</span></label>
+                  <label className="block text-[13px] font-medium text-ink mb-1.5">Description <span className="font-normal text-ink-subtle">(optional)</span></label>
                   <textarea rows={2} value={addForm.description} onChange={setAdd('description')} className="w-full resize-none px-2.5 py-2 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed" />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-ink-subtle mb-1">Order <span className="font-normal text-ink-subtle">(leave blank to add at the end)</span></label>
+                  <label className="block text-[13px] font-medium text-ink mb-1.5">Order <span className="font-normal text-ink-subtle">(leave blank to add at the end)</span></label>
                   <input type="number" min="0" value={addForm.sortOrder} onChange={setAdd('sortOrder')} placeholder={String(sections.length)} className="w-full max-w-[120px] h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed" />
                 </div>
                 <div className="flex gap-2 pt-1">
-                  <button type="button" onClick={() => { setShowAddForm(false); setAddForm(blank); }} className="rounded-lg px-3 py-1.5 text-xs font-semibold border border-border text-ink-subtle">Cancel</button>
-                  <button type="submit" disabled={adding} className="rounded-lg px-4 py-1.5 text-xs font-semibold text-white disabled:opacity-50" style={{ background: 'rgb(var(--c-primary))' }}>
+                  <button type="button" onClick={() => { setShowAddForm(false); setAddForm(blank); }} className="inline-flex items-center justify-center gap-2 h-8 px-3 text-[13px] rounded-control border border-border-strong bg-surface text-ink font-medium shadow-card transition-colors hover:bg-surface-alt focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed">Cancel</button>
+                  <button type="submit" disabled={adding} className="inline-flex items-center justify-center gap-2 disabled:opacity-50 h-8 px-3 text-[13px] rounded-control bg-primary text-white font-medium shadow-card transition-colors hover:bg-primary-hover focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed">
                     {adding ? 'Adding…' : 'Add Section'}
                   </button>
                 </div>
@@ -499,15 +502,12 @@ function AdminAcademyView() {
       )}
 
       <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="text-xl font-semibold text-ink">E-Learning Management</h2>
-          <p className="text-sm text-ink-subtle mt-0.5">Manage courses, content, and track member progress.</p>
-        </div>
+        <PageHeader title="E-Learning Management" description="Manage courses, content, and track member progress." />
         {tab === 'courses' && (
           <button
             onClick={() => setShowForm(true)}
-            className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white"
-            style={{ background: 'rgb(var(--c-primary))' }}
+            className="flex items-center gap-2 h-10 px-4 text-sm rounded-control bg-primary text-white font-medium shadow-card transition-colors hover:bg-primary-hover focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
+           
           >
             <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>
             Add Course
@@ -522,21 +522,15 @@ function AdminAcademyView() {
           { icon: 'group', label: 'Enrollments', value: totalEnrollments },
           { icon: 'verified', label: 'Completed', value: completedCount },
           { icon: 'trending_up', label: 'Avg Progress', value: `${avgProgress}%` },
-        ].map(({ icon, label, value, accent }) => (
-          <div key={label} className={`rounded-card border p-4 bg-surface border-border relative overflow-hidden ${accent ? 'before:absolute before:inset-y-0 before:left-0 before:w-[3px] before:bg-primary' : ''}`} >
-            <div className="flex items-center gap-2 mb-2">
-              <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`, color: 'rgb(var(--c-ink-subtle))' }}>{icon}</span>
-              <p className={`text-2xs font-semibold uppercase text-ink-subtle`}>{label}</p>
-            </div>
-            <p className={`num text-[26px] font-semibold leading-none text-ink mt-1`}>{value}</p>
-          </div>
+        ].map(({ icon, label, value }) => (
+          <StatTile key={label} icon={icon} label={label} value={String(value)} />
         ))}
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-surface-alt rounded-lg p-1 mb-6 w-fit border border-border">
+      <div className="flex items-end gap-6 overflow-x-auto border-b border-border mb-6">
         {([['courses', 'Course Catalog'], ['enrollments', 'Member Enrollments']] as const).map(([id, label]) => (
-          <button key={id} onClick={() => setTab(id)} className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === id ? 'bg-surface text-ink shadow-card' : 'text-ink-subtle hover:text-ink'}`}>
+          <button key={id} onClick={() => setTab(id)} className={`-mb-px border-b-2 px-1 pb-2.5 pt-1 text-sm font-medium whitespace-nowrap transition-colors focus-visible:shadow-focus ${tab === id ? 'border-primary text-ink' : 'border-transparent text-ink-subtle hover:text-ink hover:border-border-strong'}`}>
             {label}
           </button>
         ))}
@@ -559,28 +553,28 @@ function AdminAcademyView() {
             <div className="bg-surface rounded-card border border-border overflow-hidden">
               <table className="data-table w-full text-sm">
                 <thead>
-                  <tr className="bg-surface-alt border-b border-border">
+                  <tr>
                     {['Course', 'Category', 'Level', 'Price', 'Enrolled', 'Status', 'Actions'].map((h) => (
-                      <th key={h} className="text-left px-4 py-3 text-2xs font-semibold text-ink-subtle uppercase">{h}</th>
+                      <th key={h}>{h}</th>
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border-subtle">
+                <tbody>
                   {filteredCourses.map((course) => {
                     const lc = levelColor[course.level];
                     return (
                       <tr key={course.id} className="hover:bg-surface-alt transition-colors">
-                        <td className="px-4 py-3">
-                          <p className="font-semibold text-ink max-w-[220px]">{course.title}</p>
+                        <td>
+                          <p className="font-semibold text-ink max-w-[220px]">{plainText(course.title)}</p>
                           {course.instructorName && <p className="text-xs text-ink-subtle">{course.instructorName}</p>}
                         </td>
-                        <td className="px-4 py-3 text-ink-subtle">{course.category}</td>
-                        <td className="px-4 py-3">
+                        <td className="text-ink-subtle">{course.category}</td>
+                        <td>
                           <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize" style={{ background: lc.bg, color: lc.text }}>{course.level}</span>
                         </td>
-                        <td className="px-4 py-3 font-medium text-ink">{course.isFree ? 'Free' : `₦${course.price.toLocaleString()}`}</td>
-                        <td className="px-4 py-3 text-ink">{course.enrolledCount.toLocaleString()}</td>
-                        <td className="px-4 py-3">
+                        <td className="font-medium text-ink">{course.isFree ? 'Free' : `₦${course.price.toLocaleString()}`}</td>
+                        <td className="text-ink">{course.enrolledCount.toLocaleString()}</td>
+                        <td>
                           <span
                             className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold"
                             style={course.isPublished ? { background: 'rgb(var(--c-success-bg))', color: 'rgb(var(--c-success))' } : { background: 'rgb(var(--c-border))', color: 'rgb(var(--c-ink-muted))' }}
@@ -588,18 +582,18 @@ function AdminAcademyView() {
                             {course.isPublished ? 'Published' : 'Draft'}
                           </span>
                         </td>
-                        <td className="px-4 py-3">
+                        <td>
                           <div className="flex items-center gap-2">
                             <button
                               onClick={() => setEditCourse(course)}
-                              className="rounded-lg border border-border px-2.5 py-1 text-xs font-semibold text-ink-subtle hover:border-primary hover:text-primary transition-colors"
+                              className="inline-flex items-center justify-center gap-2 h-8 px-3 text-[13px] rounded-control border border-border-strong bg-surface text-ink font-medium shadow-card transition-colors hover:bg-surface-alt focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                               Edit
                             </button>
                             <button
                               onClick={() => setManagingSections(course)}
-                              className="flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-semibold text-white transition-colors"
-                              style={{ background: 'rgb(var(--c-primary))' }}
+                              className="flex items-center gap-1 h-8 px-3 text-[13px] rounded-control bg-primary text-white font-medium shadow-card transition-colors hover:bg-primary-hover focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
+                             
                             >
                               <span className="material-symbols-outlined" style={{ fontSize: 13, fontVariationSettings: `'FILL' 1` }}>video_library</span>
                               Content
@@ -629,21 +623,21 @@ function AdminAcademyView() {
           ) : (
             <table className="data-table w-full text-sm">
               <thead>
-                <tr className="bg-surface-alt border-b border-border">
+                <tr>
                   {['Member', 'Course', 'Progress', 'Enrolled', 'Status'].map((h) => (
-                    <th key={h} className="text-left px-4 py-3 text-2xs font-semibold text-ink-subtle uppercase">{h}</th>
+                    <th key={h}>{h}</th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border-subtle">
+              <tbody>
                 {allEnrollments.map((e) => (
                   <tr key={e.id} className="hover:bg-surface-alt transition-colors">
-                    <td className="px-4 py-3">
+                    <td>
                       <p className="font-medium text-ink">{e.memberName ?? '–'}</p>
                       <p className="text-xs text-ink-subtle">{e.memberEmail ?? '–'}</p>
                     </td>
-                    <td className="px-4 py-3 text-ink max-w-[200px]">{e.courseTitle}</td>
-                    <td className="px-4 py-3 min-w-[120px]">
+                    <td className="text-ink max-w-[200px]">{e.courseTitle}</td>
+                    <td className="min-w-[120px]">
                       <div className="flex items-center gap-2">
                         <div className="flex-1 h-1.5 bg-border rounded-full overflow-hidden">
                           <div className="h-full rounded-full" style={{ width: `${e.progress}%`, background: e.progress === 100 ? 'rgb(var(--c-success))' : 'rgb(var(--c-primary))' }} />
@@ -651,10 +645,10 @@ function AdminAcademyView() {
                         <span className="text-xs font-semibold text-ink-subtle w-8 text-right">{e.progress}%</span>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-ink-subtle text-xs">
+                    <td className="text-ink-subtle text-xs">
                       {new Date(e.enrolledAt).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'short', year: 'numeric' })}
                     </td>
-                    <td className="px-4 py-3">
+                    <td>
                       <span
                         className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold"
                         style={e.completedAt ? { background: 'rgb(var(--c-success-bg))', color: 'rgb(var(--c-success))' } : { background: 'rgb(var(--c-warning-bg))', color: 'rgb(var(--c-warning))' }}
@@ -685,11 +679,11 @@ function CoursePlayerModal({ enrollment, onClose }: { enrollment: Enrollment; on
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
-      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
+      <div className="relative bg-surface rounded-card border border-border shadow-pop animate-fade-up w-full max-w-4xl max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="border-b border-border px-6 py-4 flex items-center justify-between flex-shrink-0">
+        <div className="border-b border-border px-5 py-4 flex items-center justify-between flex-shrink-0">
           <div>
-            <h2 className="font-bold text-ink">{enrollment.courseTitle}</h2>
+            <h2 className="text-[15px] font-semibold text-ink">{enrollment.courseTitle}</h2>
             {active && <p className="text-xs text-ink-subtle mt-0.5">Section {activeIdx + 1} of {sections.length}: {active.title}</p>}
           </div>
           <button onClick={onClose} className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle">
@@ -721,7 +715,7 @@ function CoursePlayerModal({ enrollment, onClose }: { enrollment: Enrollment; on
                   >
                     <div className="flex items-center gap-2.5">
                       <span
-                        className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+                        className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0"
                         style={i === activeIdx ? { background: 'rgba(255,255,255,0.2)', color: 'white' } : { background: 'rgb(var(--c-primary-soft))', color: 'rgb(var(--c-primary))' }}
                       >
                         {i + 1}
@@ -769,7 +763,7 @@ function CoursePlayerModal({ enrollment, onClose }: { enrollment: Enrollment; on
             <button
               disabled={activeIdx === 0}
               onClick={() => setActiveIdx((i) => i - 1)}
-              className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold border border-border text-ink disabled:opacity-40"
+              className="flex items-center gap-1.5 disabled:opacity-40 h-8 px-3 text-[13px] rounded-control border border-border-strong bg-surface text-ink font-medium shadow-card transition-colors hover:bg-surface-alt focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_back</span>
               Previous
@@ -778,7 +772,7 @@ function CoursePlayerModal({ enrollment, onClose }: { enrollment: Enrollment; on
             <button
               disabled={activeIdx === sections.length - 1}
               onClick={() => setActiveIdx((i) => i + 1)}
-              className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold border border-border text-ink disabled:opacity-40"
+              className="flex items-center gap-1.5 disabled:opacity-40 h-8 px-3 text-[13px] rounded-control border border-border-strong bg-surface text-ink font-medium shadow-card transition-colors hover:bg-surface-alt focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Next
               <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_forward</span>
@@ -820,7 +814,7 @@ function EnrolledCourseCard({
   return (
     <div className="bg-surface rounded-card border border-border p-5">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-bold text-ink">{enrollment.courseTitle}</h3>
+        <h3 className="text-sm font-semibold text-ink">{enrollment.courseTitle}</h3>
         <span
           className="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold"
           style={enrollment.completedAt ? { background: 'rgb(var(--c-success-bg))', color: 'rgb(var(--c-success))' } : { background: 'rgb(var(--c-warning-bg))', color: 'rgb(var(--c-warning))' }}
@@ -845,7 +839,7 @@ function EnrolledCourseCard({
           <button
             onClick={handleDownloadMaterial}
             disabled={loadingMaterial}
-            className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-semibold text-ink hover:border-primary hover:text-primary transition-colors disabled:opacity-50"
+            className="flex items-center gap-1.5 disabled:opacity-50 h-8 px-3 text-[13px] rounded-control border border-border-strong bg-surface text-ink font-medium shadow-card transition-colors hover:bg-surface-alt focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <span className="material-symbols-outlined" style={{ fontSize: 14, fontVariationSettings: `'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 14` }}>download</span>
             {loadingMaterial ? 'Loading...' : 'PDF Materials'}
@@ -853,8 +847,8 @@ function EnrolledCourseCard({
           {!enrollment.completedAt && (
             <button
               onClick={() => onContinue(enrollment)}
-              className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-white transition-colors"
-              style={{ background: 'rgb(var(--c-primary))' }}
+              className="flex items-center gap-1.5 h-8 px-3 text-[13px] rounded-control bg-primary text-white font-medium shadow-card transition-colors hover:bg-primary-hover focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
+             
             >
               <span className="material-symbols-outlined" style={{ fontSize: 14, fontVariationSettings: `'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 14` }}>play_arrow</span>
               Continue Learning
@@ -889,10 +883,10 @@ function CourseDetailModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
-      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-surface rounded-card border border-border shadow-pop animate-fade-up w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="sticky top-0 bg-surface border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
-          <h2 className="font-bold text-ink pr-8 leading-snug">{course.title}</h2>
+        <div className="sticky top-0 bg-surface border-b border-border px-5 py-4 flex items-center justify-between rounded-t-card z-10">
+          <h2 className="text-[15px] font-semibold text-ink pr-8 leading-snug">{plainText(course.title)}</h2>
           <button onClick={onClose} className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle flex-shrink-0">
             <span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span>
           </button>
@@ -934,7 +928,7 @@ function CourseDetailModal({
                 className="absolute inset-0 w-full h-full"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
-                title={`${course.title}: intro`}
+                title={`${plainText(course.title)}: intro`}
               />
             </div>
           ) : (
@@ -949,14 +943,14 @@ function CourseDetailModal({
           {/* Description */}
           <div className="mb-6">
             <p className="text-2xs font-semibold text-ink-subtle uppercase mb-2">About this course</p>
-            <p className="text-sm text-ink-subtle leading-relaxed whitespace-pre-wrap">{course.description}</p>
+            <p className="text-sm text-ink-subtle leading-relaxed whitespace-pre-wrap">{plainText(course.description)}</p>
           </div>
 
           {/* Price + CTA */}
           <div className="flex items-center justify-between gap-4 pt-4 border-t border-border">
             <div>
               <p className="text-xs text-ink-subtle mb-0.5">Price</p>
-              <p className="text-xl font-bold" style={{ color: course.isFree ? 'rgb(var(--c-success))' : 'rgb(var(--c-ink))' }}>
+              <p className="text-xl font-semibold" style={{ color: course.isFree ? 'rgb(var(--c-success))' : 'rgb(var(--c-ink))' }}>
                 {course.isFree ? 'Free' : `₦${course.price.toLocaleString()}`}
               </p>
             </div>
@@ -973,8 +967,8 @@ function CourseDetailModal({
               <button
                 onClick={onEnroll}
                 disabled={enrolling}
-                className="flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
-                style={{ background: 'rgb(var(--c-primary))' }}
+                className="flex items-center gap-2 disabled:opacity-50 h-10 px-4 text-sm rounded-control bg-primary text-white font-medium shadow-card transition-colors hover:bg-primary-hover focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
+               
               >
                 <span className="material-symbols-outlined" style={{ fontSize: 16, fontVariationSettings: `'FILL' 1` }}>school</span>
                 {enrolling ? 'Enrolling…' : 'Enroll Now'}
@@ -1017,7 +1011,7 @@ function MemberAcademyView() {
         setTab('my-courses');
       }
     } catch {
-      setEnrollError(`Failed to enroll in "${course.title}". Please try again.`);
+      setEnrollError(`Failed to enroll in "${plainText(course.title)}". Please try again.`);
     } finally {
       setEnrollingId(null);
     }
@@ -1037,18 +1031,15 @@ function MemberAcademyView() {
         />
       )}
 
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold text-ink">E-Learning</h2>
-        <p className="text-sm text-ink-subtle mt-0.5">Training and capacity building for chamber members.</p>
-      </div>
+      <PageHeader title="E-Learning" description="Training and capacity building for chamber members." />
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-surface-alt rounded-lg p-1 mb-6 w-fit border border-border">
+      <div className="flex flex-wrap items-center gap-1.5 mb-6">
         {([['catalog', 'Course Catalog'], ['my-courses', 'My Learning']] as const).map(([t, label]) => (
-          <button key={t} onClick={() => setTab(t)} className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === t ? 'bg-surface text-ink shadow-card' : 'text-ink-subtle hover:text-ink'}`}>
+          <button key={t} onClick={() => setTab(t)} className={`-mb-px border-b-2 px-1 pb-2.5 pt-1 text-sm font-medium whitespace-nowrap transition-colors focus-visible:shadow-focus ${tab === t ? 'border-primary text-ink' : 'border-transparent text-ink-subtle hover:text-ink hover:border-border-strong'}`}>
             {label}
             {t === 'my-courses' && myEnrollments.length > 0 && (
-              <span className="ml-1.5 rounded-full px-1.5 py-0.5 text-xs text-white font-bold" style={{ background: 'rgb(var(--c-primary))' }}>{myEnrollments.length}</span>
+              <span className="ml-1.5 rounded-full px-1.5 py-0.5 text-xs text-white font-semibold" style={{ background: 'rgb(var(--c-primary))' }}>{myEnrollments.length}</span>
             )}
           </button>
         ))}
@@ -1080,8 +1071,8 @@ function MemberAcademyView() {
                     {/* Clickable banner → opens detail modal */}
                     <button
                       onClick={() => setPreviewCourse(course)}
-                      className="h-24 w-full flex items-center justify-center px-4 relative group"
-                      style={{ background: 'rgb(var(--c-primary))' }}
+                      className="w-full flex items-center justify-center h-10 px-4 text-sm rounded-control bg-primary text-white font-medium shadow-card transition-colors hover:bg-primary-hover focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
+                     
                     >
                       <div className="text-center">
                         <span className="material-symbols-outlined text-white/60" style={{ fontSize: 28, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 28` }}>school</span>
@@ -1096,9 +1087,9 @@ function MemberAcademyView() {
                     </button>
                     <div className="p-4 flex flex-col flex-1">
                       <button onClick={() => setPreviewCourse(course)} className="text-left">
-                        <h3 className="text-sm font-bold text-ink line-clamp-2 mb-1 hover:text-primary transition-colors">{course.title}</h3>
+                        <h3 className="text-sm font-semibold text-ink line-clamp-2 mb-1 hover:text-primary transition-colors">{plainText(course.title)}</h3>
                       </button>
-                      <p className="text-xs text-ink-subtle mb-3 line-clamp-2 flex-1">{course.description}</p>
+                      <p className="text-xs text-ink-subtle mb-3 line-clamp-2 flex-1">{plainText(course.description)}</p>
                       {course.instructorName && <p className="text-xs text-ink-subtle mb-2">by {course.instructorName}</p>}
                       <div className="flex items-center gap-2 mb-3 flex-wrap">
                         <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold capitalize" style={{ background: lc.bg, color: lc.text }}>{course.level}</span>
@@ -1106,13 +1097,13 @@ function MemberAcademyView() {
                         <span className="text-xs text-ink-subtle">· {course.enrolledCount.toLocaleString()} enrolled</span>
                       </div>
                       <div className="flex items-center justify-between gap-2">
-                        <span className="text-sm font-bold" style={{ color: course.isFree ? 'rgb(var(--c-success))' : 'rgb(var(--c-ink))' }}>
+                        <span className="text-sm font-semibold" style={{ color: course.isFree ? 'rgb(var(--c-success))' : 'rgb(var(--c-ink))' }}>
                           {course.isFree ? 'Free' : `₦${course.price.toLocaleString()}`}
                         </span>
                         <div className="flex items-center gap-1.5">
                           <button
                             onClick={() => setPreviewCourse(course)}
-                            className="rounded-lg px-2.5 py-1.5 text-xs font-semibold border border-border text-ink-subtle hover:border-primary hover:text-primary transition-colors"
+                            className="inline-flex items-center justify-center gap-2 h-8 px-3 text-[13px] rounded-control border border-border-strong bg-surface text-ink font-medium shadow-card transition-colors hover:bg-surface-alt focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             Details
                           </button>
@@ -1146,7 +1137,7 @@ function MemberAcademyView() {
           ) : myEnrollments.length === 0 ? (
             <div className="bg-surface rounded-card border border-border p-12 text-center">
               <p className="text-sm text-ink-subtle mb-4">You haven&apos;t enrolled in any courses yet.</p>
-              <button onClick={() => setTab('catalog')} className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white" style={{ background: 'rgb(var(--c-primary))' }}>
+              <button onClick={() => setTab('catalog')} className="inline-flex items-center justify-center gap-2 h-10 px-4 text-sm rounded-control bg-primary text-white font-medium shadow-card transition-colors hover:bg-primary-hover focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed">
                 Browse Catalog
               </button>
             </div>

@@ -328,7 +328,7 @@ export function Sidebar() {
                       className={({ isActive }) =>
                         `group relative flex h-9 items-center rounded-control px-3 text-[13.5px] transition-colors duration-150 focus-visible:shadow-focus ${collapsed ? 'justify-center' : 'gap-3'} ${
                           isActive
-                            ? 'bg-primary-soft font-semibold text-primary before:absolute before:-left-3 before:top-1.5 before:bottom-1.5 before:w-[3px] before:rounded-r before:bg-primary'
+                            ? 'bg-primary-soft font-semibold text-primary'
                             : 'font-medium text-ink-muted hover:bg-surface-alt hover:text-ink'
                         }`
                       }

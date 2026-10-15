@@ -1,3 +1,4 @@
+import { StatTile } from '@shared/ui/StatTile';
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SkeletonCard } from '@shared/ui/SkeletonCard';
@@ -16,6 +17,7 @@ import {
 } from '@features/export-documents';
 import type { DocType, ExportDocument } from '@features/export-documents';
 import { DocumentLibraryView } from '@pages/dashboard/DocumentsPage';
+import { PageHeader } from '@shared/ui/PageHeader';
 
 // ── Config ─────────────────────────────────────────────────────────────────
 
@@ -76,9 +78,9 @@ function CreateDocModal({ onClose }: { onClose: () => void }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
-      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-lg">
-        <div className="border-b border-border px-6 py-4 flex items-center justify-between">
-          <h2 className="font-bold text-ink">Generate Export Document</h2>
+      <div className="relative bg-surface rounded-card border border-border shadow-pop animate-fade-up w-full max-w-lg">
+        <div className="border-b border-border px-5 py-4 flex items-center justify-between">
+          <h2 className="text-[15px] font-semibold text-ink">Generate Export Document</h2>
           <button
             onClick={onClose}
             className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle"
@@ -89,7 +91,7 @@ function CreateDocModal({ onClose }: { onClose: () => void }) {
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {error && <ErrorBanner message={error} />}
           <div>
-            <label className="block text-xs font-semibold text-ink-subtle mb-1">Document Type</label>
+            <label className="block text-[13px] font-medium text-ink mb-1.5">Document Type</label>
             <Select
               label="Document Type"
               hideLabel
@@ -106,7 +108,7 @@ function CreateDocModal({ onClose }: { onClose: () => void }) {
             ] as const
           ).map(({ label, key, placeholder }) => (
             <div key={key}>
-              <label className="block text-xs font-semibold text-ink-subtle mb-1">{label}</label>
+              <label className="block text-[13px] font-medium text-ink mb-1.5">{label}</label>
               <input
                 required
                 value={form[key]}
@@ -117,7 +119,7 @@ function CreateDocModal({ onClose }: { onClose: () => void }) {
             </div>
           ))}
           <div>
-            <label className="block text-xs font-semibold text-ink-subtle mb-1">Products &amp; Quantities</label>
+            <label className="block text-[13px] font-medium text-ink mb-1.5">Products &amp; Quantities</label>
             <textarea
               required
               rows={3}
@@ -132,8 +134,8 @@ function CreateDocModal({ onClose }: { onClose: () => void }) {
             <button
               type="submit"
               disabled={isLoading}
-              className="flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
-              style={{ background: 'rgb(var(--c-primary))' }}
+              className="inline-flex items-center justify-center gap-2 flex-1 disabled:opacity-50 h-10 px-4 text-sm rounded-control bg-primary text-white font-medium shadow-card transition-colors hover:bg-primary-hover focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
+             
             >
               {isLoading ? 'Generating…' : 'Generate Document'}
             </button>
@@ -182,9 +184,9 @@ function MarkReadyModal({ docId, onClose }: MarkReadyModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
-      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-md">
-        <div className="border-b border-border px-6 py-4 flex items-center justify-between">
-          <h2 className="font-bold text-ink">Upload &amp; Mark Ready</h2>
+      <div className="relative bg-surface rounded-card border border-border shadow-pop animate-fade-up w-full max-w-md">
+        <div className="border-b border-border px-5 py-4 flex items-center justify-between">
+          <h2 className="text-[15px] font-semibold text-ink">Upload &amp; Mark Ready</h2>
           <button
             onClick={onClose}
             className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle"
@@ -197,7 +199,7 @@ function MarkReadyModal({ docId, onClose }: MarkReadyModalProps) {
           {error && <ErrorBanner message={error} />}
 
           <div>
-            <label className="block text-xs font-semibold text-ink-subtle mb-1">
+            <label className="block text-[13px] font-medium text-ink mb-1.5">
               Document File <span className="text-danger">*</span>
             </label>
             <div
@@ -227,7 +229,7 @@ function MarkReadyModal({ docId, onClose }: MarkReadyModalProps) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-ink-subtle mb-1">Notes (optional)</label>
+            <label className="block text-[13px] font-medium text-ink mb-1.5">Notes (optional)</label>
             <textarea
               rows={3}
               value={notes}
@@ -325,16 +327,13 @@ function MemberExportDocsView() {
 
       {/* Page header — stacks on mobile */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-        <div>
-          <h2 className="text-xl font-semibold text-ink">Export Documents</h2>
-          <p className="text-sm text-ink-subtle mt-0.5">Generate trade documents and manage your file library.</p>
-        </div>
+        <PageHeader title="Export Documents" description="Generate trade documents and manage your file library." />
         {mainTab === 'generated' && (
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => navigate('/dashboard/export-documents/generate')}
-              className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-white"
-              style={{ background: 'rgb(var(--c-primary))' }}
+              className="flex items-center gap-2 h-10 px-4 text-sm rounded-control bg-primary text-white font-medium shadow-card transition-colors hover:bg-primary-hover focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
+             
             >
               <span className="material-symbols-outlined" style={{ fontSize: 16 }}>receipt_long</span>
               <span className="hidden sm:inline">Generate Invoice / Packing List</span>
@@ -342,7 +341,7 @@ function MemberExportDocsView() {
             </button>
             <button
               onClick={() => setShowCreate(true)}
-              className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold border border-border text-ink hover:border-primary transition-colors"
+              className="flex items-center gap-2 h-10 px-4 text-sm rounded-control border border-border-strong bg-surface text-ink font-medium shadow-card transition-colors hover:bg-surface-alt focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>
               <span className="hidden sm:inline">Other Document</span>
@@ -378,14 +377,12 @@ function MemberExportDocsView() {
       {mainTab === 'generated' && (
         <>
           {/* Status filter — scrollable on mobile */}
-          <div className="flex gap-1 bg-surface-alt rounded-lg p-1 mb-5 border border-border overflow-x-auto">
+          <div className="flex items-end gap-6 overflow-x-auto border-b border-border mb-5">
             {(['all', 'draft', 'processing', 'ready', 'downloaded'] as const).map((s) => (
               <button
                 key={s}
                 onClick={() => setStatusFilter(s)}
-                className={`flex-shrink-0 px-3 py-1.5 rounded-md text-sm font-medium capitalize transition-colors ${
-                  statusFilter === s ? 'bg-surface text-ink shadow-card' : 'text-ink-subtle hover:text-ink'
-                }`}
+                className={`-mb-px border-b-2 px-1 pb-2.5 pt-1 text-sm font-medium whitespace-nowrap transition-colors focus-visible:shadow-focus flex-shrink-0 capitalize ${statusFilter === s ? 'border-primary text-ink' : 'border-transparent text-ink-subtle hover:text-ink hover:border-border-strong'}`}
               >
                 {s === 'all' ? 'All' : s.charAt(0).toUpperCase() + s.slice(1)}
               </button>
@@ -403,8 +400,8 @@ function MemberExportDocsView() {
                   <p className="text-sm text-ink-subtle mb-4">No documents found.</p>
                   <button
                     onClick={() => navigate('/dashboard/export-documents/generate')}
-                    className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white"
-                    style={{ background: 'rgb(var(--c-primary))' }}
+                    className="inline-flex items-center justify-center gap-2 h-10 px-4 text-sm rounded-control bg-primary text-white font-medium shadow-card transition-colors hover:bg-primary-hover focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
+                   
                   >
                     Generate First Document
                   </button>
@@ -433,7 +430,7 @@ function MemberExportDocsView() {
                           <div className="flex items-start justify-between gap-2">
                             <div className="min-w-0">
                               <div className="flex items-center gap-2 flex-wrap mb-1">
-                                <p className="font-bold text-ink text-sm">{dtc.label}</p>
+                                <p className="font-semibold text-ink text-sm">{dtc.label}</p>
                                 <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold"
                                   style={{ background: dsc.bg, color: dsc.text }}>
                                   {dsc.label}
@@ -462,7 +459,7 @@ function MemberExportDocsView() {
                             {(doc.type === 'commercial_invoice' || doc.type === 'packing_list') && doc.draftId && doc.status !== 'processing' && (
                               <button
                                 onClick={() => navigate(`/dashboard/export-documents/generate/${doc.draftId}`)}
-                                className="flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-xs font-semibold text-ink hover:border-primary hover:text-primary transition-colors"
+                                className="flex items-center gap-1 h-8 px-3 text-[13px] rounded-control border border-border-strong bg-surface text-ink font-medium shadow-card transition-colors hover:bg-surface-alt focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
                               >
                                 <span className="material-symbols-outlined" style={{ fontSize: 13 }}>edit</span>
                                 Edit
@@ -475,7 +472,7 @@ function MemberExportDocsView() {
                                 <button
                                   disabled={isBusy}
                                   onClick={() => handleView(doc)}
-                                  className="flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-xs font-semibold text-ink hover:border-primary hover:text-primary transition-colors disabled:opacity-50"
+                                  className="flex items-center gap-1 disabled:opacity-50 h-8 px-3 text-[13px] rounded-control border border-border-strong bg-surface text-ink font-medium shadow-card transition-colors hover:bg-surface-alt focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                   {isBusy ? '…' : (
                                     <>
@@ -487,7 +484,7 @@ function MemberExportDocsView() {
                                 <button
                                   disabled={isBusy}
                                   onClick={() => handleDownload(doc)}
-                                  className="flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-xs font-semibold text-ink-subtle hover:border-primary hover:text-primary transition-colors disabled:opacity-50"
+                                  className="flex items-center gap-1 disabled:opacity-50 h-8 px-3 text-[13px] rounded-control border border-border-strong bg-surface text-ink font-medium shadow-card transition-colors hover:bg-surface-alt focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                   {isBusy ? '…' : (
                                     <>
@@ -514,7 +511,7 @@ function MemberExportDocsView() {
                                   </button>
                                   <button
                                     onClick={() => setConfirmDeleteId(null)}
-                                    className="rounded-lg border border-border px-2.5 py-1.5 text-xs font-semibold text-ink"
+                                    className="inline-flex items-center justify-center gap-2 h-8 px-3 text-[13px] rounded-control border border-border-strong bg-surface text-ink font-medium shadow-card transition-colors hover:bg-surface-alt focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
                                   >
                                     No
                                   </button>
@@ -522,7 +519,7 @@ function MemberExportDocsView() {
                               ) : (
                                 <button
                                   onClick={() => setConfirmDeleteId(doc.id)}
-                                  className="flex items-center gap-1 rounded-lg border border-border px-2 py-1.5 text-xs font-semibold text-ink-subtle hover:border-danger-border hover:text-danger transition-colors"
+                                  className="flex items-center gap-1 h-8 px-3 text-[13px] rounded-control border border-border-strong bg-surface text-ink font-medium shadow-card transition-colors hover:bg-surface-alt focus-visible:shadow-focus disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                   <span className="material-symbols-outlined" style={{ fontSize: 13 }}>delete</span>
                                 </button>
@@ -586,12 +583,7 @@ function AdminExportDocsView() {
         />
       )}
 
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold text-ink">Export documents (admin)</h2>
-        <p className="text-sm text-ink-subtle mt-0.5">
-          Review and process member export document requests.
-        </p>
-      </div>
+      <PageHeader title="Export documents (admin)" description="Review and process member export document requests." />
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
         {(
@@ -601,35 +593,8 @@ function AdminExportDocsView() {
             { icon: 'pending', label: 'Processing', value: allDocs.filter((d) => d.status === 'processing').length, accent: false },
             { icon: 'edit_note', label: 'Drafts', value: allDocs.filter((d) => d.status === 'draft').length, accent: false },
           ] as { icon: string; label: string; value: number; accent: boolean }[]
-        ).map(({ icon, label, value, accent }) => (
-          <div
-            key={label}
-            className={`rounded-card border p-4 bg-surface border-border relative overflow-hidden ${accent ? 'before:absolute before:inset-y-0 before:left-0 before:w-[3px] before:bg-primary' : ''}`}
-            
-          >
-            <div className="flex items-center gap-2 mb-2">
-              <span
-                className="material-symbols-outlined"
-                style={{
-                  fontSize: 18,
-                  fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`,
-                  color: 'rgb(var(--c-ink-subtle))',
-                }}
-              >
-                {icon}
-              </span>
-              <p
-                className={`text-2xs font-semibold uppercase ${
-                  'text-ink-subtle'
-                }`}
-              >
-                {label}
-              </p>
-            </div>
-            <p className={`num text-[26px] font-semibold leading-none text-ink mt-1`}>
-              {value}
-            </p>
-          </div>
+        ).map(({ icon, label, value }) => (
+          <StatTile key={label} icon={icon} label={label} value={String(value)} />
         ))}
       </div>
 
@@ -641,14 +606,12 @@ function AdminExportDocsView() {
           onChange={(e) => setSearch(e.target.value)}
           className="w-64 h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed"
         />
-        <div className="flex gap-1 bg-surface-alt rounded-lg p-1 border border-border">
+        <div className="flex flex-wrap items-center gap-1.5">
           {(['all', 'draft', 'processing', 'ready', 'downloaded'] as const).map((s) => (
             <button
               key={s}
               onClick={() => setStatusFilter(s)}
-              className={`px-3 py-1 rounded-md text-xs font-medium capitalize transition-colors ${
-                statusFilter === s ? 'bg-surface shadow-card text-ink' : 'text-ink-subtle'
-              }`}
+              className={`h-7 px-2.5 rounded-full border text-xs font-medium whitespace-nowrap transition-colors focus-visible:shadow-focus capitalize ${statusFilter === s ? 'border-primary bg-primary-soft text-primary' : 'border-border bg-surface text-ink-muted hover:border-border-strong hover:text-ink'}`}
             >
               {s === 'all' ? 'All' : s}
             </button>
@@ -669,12 +632,11 @@ function AdminExportDocsView() {
           <div className="overflow-x-auto">
             <table className="data-table w-full text-sm">
               <thead>
-                <tr className="bg-surface-alt border-b border-border">
+                <tr>
                   {['Document', 'Member', 'Consignee', 'Destination', 'Status', 'Created', 'Actions'].map(
                     (h) => (
                       <th
                         key={h}
-                        className="text-left px-4 py-3 text-2xs font-semibold text-ink-subtle uppercase"
                       >
                         {h}
                       </th>
@@ -682,23 +644,23 @@ function AdminExportDocsView() {
                   )}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border-subtle">
+              <tbody>
                 {filtered.map((doc) => {
                   const dtc = docTypeConfig[doc.type];
                   const dsc = docStatusConfig[doc.status];
                   const isBusy = processingId === doc.id;
                   return (
                     <tr key={doc.id} className="hover:bg-surface-alt transition-colors">
-                      <td className="px-4 py-3">
+                      <td>
                         <p className="font-semibold text-ink">{dtc.label}</p>
                         <p className="text-xs font-mono text-ink-subtle">{doc.referenceNo}</p>
                       </td>
-                      <td className="px-4 py-3 text-ink-subtle">{doc.memberName ?? '–'}</td>
-                      <td className="px-4 py-3 text-ink-subtle max-w-[140px] truncate">
+                      <td className="text-ink-subtle">{doc.memberName ?? '–'}</td>
+                      <td className="text-ink-subtle max-w-[140px] truncate">
                         {doc.consignee}
                       </td>
-                      <td className="px-4 py-3 text-ink-subtle">{doc.destinationCountry}</td>
-                      <td className="px-4 py-3">
+                      <td className="text-ink-subtle">{doc.destinationCountry}</td>
+                      <td>
                         <span
                           className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold"
                           style={{ background: dsc.bg, color: dsc.text }}
@@ -706,7 +668,7 @@ function AdminExportDocsView() {
                           {dsc.label}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-xs text-ink-subtle">
+                      <td className="text-xs text-ink-subtle">
                         {new Date(doc.createdAt).toLocaleDateString('en-NG', {
                           timeZone: 'Africa/Lagos',
                           day: 'numeric',
@@ -714,7 +676,7 @@ function AdminExportDocsView() {
                           year: 'numeric',
                         })}
                       </td>
-                      <td className="px-4 py-3">
+                      <td>
                         {doc.status === 'draft' && (
                           <button
                             disabled={isBusy}

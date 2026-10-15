@@ -14,6 +14,7 @@ import { ErrorBanner } from '@shared/ui/ErrorBanner';
 import { SkeletonCard } from '@shared/ui/SkeletonCard';
 import { Toast } from '@shared/ui/Toast';
 import type { Role } from '@entities/user/types';
+import { PageHeader } from '@shared/ui/PageHeader';
 
 const ALL_ROLES: Role[] = [
   'super_admin',
@@ -88,10 +89,10 @@ function EditUserModal({ user, tenants, onClose }: {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-ink/50" onClick={() => onClose()} />
-      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-surface border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
+      <div className="relative bg-surface rounded-card border border-border shadow-pop animate-fade-up w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-surface border-b border-border px-5 py-4 flex items-center justify-between rounded-t-card">
           <div>
-            <h2 className="font-bold text-ink">Edit User</h2>
+            <h2 className="text-[15px] font-semibold text-ink">Edit User</h2>
             <p className="text-xs text-ink-subtle mt-0.5">{user.firstName} {user.lastName} · {user.email}</p>
           </div>
           <button onClick={() => onClose()} className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle">
@@ -119,7 +120,7 @@ function EditUserModal({ user, tenants, onClose }: {
 
           {role === 'member' && (
             <div>
-              <label className="block text-sm font-medium text-ink mb-1.5">Connected Chambers</label>
+              <label className="block text-[13px] font-medium text-ink mb-1.5">Connected Chambers</label>
               <div className="max-h-48 overflow-y-auto rounded-lg border border-border divide-y divide-border">
                 {tenants.map((t) => (
                   <label key={t.id} className="flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-surface-alt">
@@ -189,10 +190,10 @@ function ResetPasswordModal({ user, onClose }: {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-ink/50" onClick={() => onClose()} />
-      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-md">
-        <div className="border-b border-border px-6 py-4 flex items-center justify-between">
+      <div className="relative bg-surface rounded-card border border-border shadow-pop animate-fade-up w-full max-w-md">
+        <div className="border-b border-border px-5 py-4 flex items-center justify-between">
           <div>
-            <h2 className="font-bold text-ink">Reset Password</h2>
+            <h2 className="text-[15px] font-semibold text-ink">Reset Password</h2>
             <p className="text-xs text-ink-subtle mt-0.5">{user.firstName} {user.lastName} · {user.email}</p>
           </div>
           <button onClick={() => onClose()} className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle">
@@ -328,10 +329,7 @@ function AllUsersView() {
         <ResetPasswordModal user={resettingUser} onClose={handleResetClose} />
       )}
 
-      <div className="mb-6">
-        <h1 className="text-xl font-semibold text-ink">Manage All Users</h1>
-        <p className="text-sm text-ink-subtle mt-0.5">Every Chamberlink account across every chamber. Edit roles and chamber assignments.</p>
-      </div>
+      <PageHeader title="Manage All Users" description="Every Chamberlink account across every chamber. Edit roles and chamber assignments." />
 
       {warnings.length > 0 && (
         <div className="mb-4 rounded-lg bg-warning-bg border border-warning/30 px-4 py-3 text-sm text-warning-text">
@@ -380,31 +378,31 @@ function AllUsersView() {
           <div className="overflow-x-auto">
             <table className="data-table w-full text-sm">
               <thead>
-                <tr className="border-b border-border bg-surface-alt">
+                <tr>
                   {['Name / Email', 'Role', 'Chamber', 'Status', ''].map((h) => (
-                    <th key={h} className="text-left px-4 py-3 font-medium text-ink-subtle text-xs uppercase tracking-wide">{h}</th>
+                    <th key={h}>{h}</th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border">
+              <tbody>
                 {items.map((u) => (
                   <tr key={u.id} className="hover:bg-surface-alt transition-colors">
-                    <td className="px-4 py-3">
+                    <td>
                       <p className="font-medium text-ink">{u.firstName} {u.lastName}</p>
                       <p className="text-xs text-ink-subtle">{u.email}</p>
                     </td>
-                    <td className="px-4 py-3">
+                    <td>
                       <Badge variant={roleBadgeVariant(u.role)}>{ROLE_LABELS[u.role]}</Badge>
                     </td>
-                    <td className="px-4 py-3 text-ink">
+                    <td className="text-ink">
                       {isStaffTierRole(u.role) ? (u.tenantName ?? '–')
                         : u.role === 'member' ? (u.connections.length > 0 ? `${u.connections.length} chamber${u.connections.length === 1 ? '' : 's'}` : '–')
                         : '–'}
                     </td>
-                    <td className="px-4 py-3">
+                    <td>
                       <Badge variant={u.isActive ? 'success' : 'error'}>{u.isActive ? 'Active' : 'Inactive'}</Badge>
                     </td>
-                    <td className="px-4 py-3 text-right">
+                    <td className="text-right">
                       {u.id === currentUserId ? (
                         <span className="text-xs text-ink-subtle italic">This is you</span>
                       ) : (
@@ -447,7 +445,7 @@ export function AllUsersPage() {
               lock
             </span>
           </div>
-          <h2 className="font-bold text-ink mb-2">Access Restricted</h2>
+          <h2 className="font-semibold text-ink mb-2">Access Restricted</h2>
           <p className="text-sm text-ink-subtle">This page is available to Super Admins only.</p>
         </div>
       </div>

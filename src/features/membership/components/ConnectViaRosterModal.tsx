@@ -88,7 +88,7 @@ export function ConnectViaRosterModal({ tenantId, tenantName, onClose, onConnect
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-ink/50 px-4">
       <div className="w-full max-w-md rounded-card bg-surface shadow-pop">
         <div className="flex items-center justify-between border-b border-border px-5 py-4">
-          <h2 className="text-base font-semibold text-ink">Connect with existing ID: {tenantName}</h2>
+          <h2 className="text-[15px] font-semibold text-ink">Connect with existing ID: {tenantName}</h2>
           <button
             onClick={onClose}
             className="rounded-lg p-1.5 text-ink-subtle hover:bg-surface-alt transition-colors"
