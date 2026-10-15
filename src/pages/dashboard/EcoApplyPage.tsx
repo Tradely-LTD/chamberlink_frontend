@@ -236,7 +236,7 @@ function ReviewSection({ title, onEdit, rows }: {
   return (
     <Card padding="none">
       <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-        <h3 className="text-xs font-semibold text-ink-subtle uppercase tracking-wide">{title}</h3>
+        <h3 className="text-2xs font-semibold text-ink-subtle uppercase">{title}</h3>
         <button onClick={onEdit} className="text-xs font-medium text-primary hover:underline flex items-center gap-1">
           <span className="material-symbols-outlined" style={{ fontSize: 14 }} aria-hidden="true">edit</span>
           Edit
@@ -748,7 +748,7 @@ export function EcoApplyPage() {
           <div className="space-y-4">
             <h2 className="text-[17px] font-semibold text-ink mb-1">Product & Goods Details</h2>
 
-            <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide">Certificate & Chamber</p>
+            <p className="text-2xs font-semibold text-ink-subtle uppercase">Certificate & Chamber</p>
 
             <div>
               <Select label="Certificate Type *" value={form.certificateTypeCode}
@@ -823,7 +823,7 @@ export function EcoApplyPage() {
               </div>
             )}
 
-            <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide pt-2">Goods Details</p>
+            <p className="text-2xs font-semibold text-ink-subtle uppercase pt-2">Goods Details</p>
             <Textarea label="Description of Goods *" rows={3} placeholder="Describe the goods being exported"
               value={form.descriptionOfGoods} onChange={(e) => set('descriptionOfGoods', e.target.value)} error={errors.descriptionOfGoods} />
 
@@ -849,7 +849,7 @@ export function EcoApplyPage() {
                 options={[{ value: 'KG', label: 'KG' }, { value: 'MT', label: 'MT' }]} />
             </div>
 
-            <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide pt-2">Origin & Destination</p>
+            <p className="text-2xs font-semibold text-ink-subtle uppercase pt-2">Origin & Destination</p>
 
             <div className="grid sm:grid-cols-2 gap-3">
               <Select label="Origin of Goods: State *" value={form.originStates[0] ?? ''}
@@ -906,7 +906,7 @@ export function EcoApplyPage() {
             <Input label="Company Email *" type="email" value={form.companyEmail} onChange={(e) => set('companyEmail', e.target.value)} error={errors.companyEmail} />
             <Input label="Company Phone *" value={form.companyPhone} onChange={(e) => set('companyPhone', e.target.value)} error={errors.companyPhone} />
 
-            <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide pt-2">Chamber Membership</p>
+            <p className="text-2xs font-semibold text-ink-subtle uppercase pt-2">Chamber Membership</p>
             <label className="flex items-center gap-3 cursor-pointer">
               <input type="checkbox" checked={form.selfDeclaredIsMember} onChange={(e) => set('selfDeclaredIsMember', e.target.checked)}
                 className="w-4 h-4 rounded border-border text-primary focus:ring-primary/30" />
@@ -931,7 +931,7 @@ export function EcoApplyPage() {
               </div>
             )}
 
-            <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide pt-2">Consignee</p>
+            <p className="text-2xs font-semibold text-ink-subtle uppercase pt-2">Consignee</p>
             <Input label="Consignee Full Legal Name *" value={form.consigneeName} onChange={(e) => set('consigneeName', e.target.value)} error={errors.consigneeName} />
             <Textarea label="Consignee Address *" rows={2} value={form.consigneeAddress} onChange={(e) => set('consigneeAddress', e.target.value)} error={errors.consigneeAddress} />
           </div>

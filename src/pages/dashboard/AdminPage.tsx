@@ -1,5 +1,9 @@
 import { emptyApi } from '@shared/api/emptyApi';
 import { SkeletonCard } from '@shared/ui/SkeletonCard';
+import { PageHeader } from '@shared/ui/PageHeader';
+import { ErrorBanner } from '@shared/ui/ErrorBanner';
+import { EmptyState } from '@shared/ui/EmptyState';
+import { TableCard } from '@shared/ui/TableCard';
 
 interface AuditEntry {
   id: string;
@@ -25,49 +29,44 @@ const adminApi = emptyApi.injectEndpoints({
 
 const { useGetAuditLogQuery } = adminApi;
 
-const demoAudit: AuditEntry[] = [
-  { id: 'a1', actorName: 'Admin User', action: 'MEMBER_APPROVED', resourceType: 'member', resourceId: 'KAC-2025-0003', createdAt: '2025-05-22T10:00:00Z', ipAddress: '102.89.45.12' },
-  { id: 'a2', actorName: 'Staff Operator', action: 'ECO_REVIEWED', resourceType: 'eco_certificate', resourceId: 'ECO-2025-041', createdAt: '2025-05-21T15:30:00Z', ipAddress: '102.89.45.13' },
-  { id: 'a3', actorName: 'Admin User', action: 'USER_DEACTIVATED', resourceType: 'user', resourceId: 'u4', createdAt: '2025-05-20T09:00:00Z', ipAddress: '102.89.45.12' },
-  { id: 'a4', actorName: 'member@demo.naccima', action: 'ECO_SUBMITTED', resourceType: 'eco_certificate', resourceId: 'ECO-2025-042', createdAt: '2025-05-19T13:00:00Z', ipAddress: '197.211.52.44' },
-];
+
+const fmtAction = (a: string) => a.replace(/_/g, ' ').toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
 
 function AuditLogTab() {
-  const { data, isLoading } = useGetAuditLogQuery({ page: 1 });
-  const entries = data ?? demoAudit;
-  if (isLoading) return <SkeletonCard className="h-64" />;
+  const { data, isLoading, isError, refetch } = useGetAuditLogQuery({ page: 1 });
+  if (isLoading) return <div className="space-y-2">{[1, 2, 3, 4, 5].map((i) => <SkeletonCard key={i} className="h-12 min-h-0" />)}</div>;
+  if (isError) return <ErrorBanner message="Couldn't load the audit log." onRetry={refetch} />;
+  const entries = data ?? [];
+  if (entries.length === 0) {
+    return <EmptyState icon="history" title="No activity recorded yet" message="Every payment, review decision and document action is written here as it happens." />;
+  }
   return (
-    <div className="bg-surface rounded-card border border-border overflow-hidden">
-      <div className="px-4 py-3 border-b border-border bg-surface-alt">
-        <p className="text-xs font-medium text-ink-subtle uppercase tracking-wide">Immutable audit trail: an append-only log of every financial and document action</p>
-      </div>
-      <div className="divide-y divide-border-subtle">
-        {entries.map((entry) => (
-          <div key={entry.id} className="px-4 py-3 flex items-start gap-4 hover:bg-surface-alt">
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-xs font-mono bg-primary/10 text-primary px-2 py-0.5 rounded">{entry.action}</span>
-                <span className="text-sm text-ink">{entry.actorName}</span>
-                <span className="text-xs text-ink-subtle">on</span>
-                <span className="text-xs font-mono text-ink-subtle">{entry.resourceType}/{entry.resourceId}</span>
-              </div>
-              {entry.ipAddress && <p className="text-xs text-border mt-0.5">IP: {entry.ipAddress}</p>}
-            </div>
-            <span className="text-xs text-ink-subtle flex-shrink-0">
-              {new Date(entry.createdAt).toLocaleString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
-            </span>
-          </div>
-        ))}
-      </div>
-    </div>
+    <TableCard footer={`Showing the latest ${entries.length} entries. Entries cannot be edited or deleted.`}>
+      <table className="data-table">
+        <thead>
+          <tr><th scope="col">When</th><th scope="col">Action</th><th scope="col">By</th><th scope="col">Record</th></tr>
+        </thead>
+        <tbody>
+          {entries.map((entry) => (
+            <tr key={entry.id}>
+              <td className="num whitespace-nowrap text-ink-subtle">
+                {new Date(entry.createdAt).toLocaleString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+              </td>
+              <td className="whitespace-nowrap font-medium">{fmtAction(entry.action)}</td>
+              <td>{entry.actorName || '–'}</td>
+              <td className="font-mono text-[12px] text-ink-muted">{entry.resourceType}/{entry.resourceId}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </TableCard>
   );
 }
 
 export function AdminPage() {
   return (
     <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8">
-      <h1 className="text-2xl font-semibold text-ink mb-1">Audit Log</h1>
-      <p className="text-sm text-ink-subtle mb-6">Immutable, append-only record of all financial and document actions.</p>
+      <PageHeader title="Audit log" description="An append-only record of every financial and document action, with who did it and when." />
       <AuditLogTab />
     </div>
   );

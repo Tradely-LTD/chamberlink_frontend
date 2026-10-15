@@ -114,7 +114,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
               value={form.name}
               onChange={setField('name')}
               placeholder="e.g. Kaduna Chamber of Commerce"
-              className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary"
+              className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed"
             />
           </div>
 
@@ -129,7 +129,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
               onChange={setField('slug')}
               placeholder="e.g. kadccima"
               pattern="[a-z0-9\-]+"
-              className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary"
+              className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed"
             />
           </div>
 
@@ -142,7 +142,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
               value={form.region}
               onChange={setField('region')}
               placeholder="e.g. Kano State"
-              className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary"
+              className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed"
             />
           </div>
 
@@ -155,7 +155,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
               value={form.rcNumber}
               onChange={setField('rcNumber')}
               placeholder="e.g. RC1234567"
-              className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary"
+              className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed"
             />
           </div>
 
@@ -174,7 +174,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
                   value={form.chamberAdminFirstName}
                   onChange={setField('chamberAdminFirstName')}
                   placeholder="First name"
-                  className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary"
+                  className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed"
                 />
               </div>
               <div>
@@ -186,7 +186,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
                   value={form.chamberAdminLastName}
                   onChange={setField('chamberAdminLastName')}
                   placeholder="Last name"
-                  className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary"
+                  className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed"
                 />
               </div>
             </div>
@@ -200,7 +200,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
                 value={form.chamberAdminEmail}
                 onChange={setField('chamberAdminEmail')}
                 placeholder="admin@organisation.ng"
-                className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary"
+                className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed"
               />
             </div>
           </div>
@@ -249,7 +249,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
                   value={form.tagline ?? ''}
                   onChange={setField('tagline')}
                   placeholder="e.g. Growing Commerce Together"
-                  className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary"
+                  className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed"
                 />
               </div>
               <div>
@@ -260,7 +260,7 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
                   value={form.city ?? ''}
                   onChange={setField('city')}
                   placeholder="e.g. Kaduna"
-                  className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary"
+                  className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed"
                 />
               </div>
             </div>
@@ -396,7 +396,7 @@ function EditTenantModal({ tenant, onClose }: { tenant: Tenant; onClose: () => v
               required
               value={form.name}
               onChange={setField('name')}
-              className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary"
+              className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed"
             />
           </div>
 
@@ -407,7 +407,7 @@ function EditTenantModal({ tenant, onClose }: { tenant: Tenant; onClose: () => v
                 value={form.region}
                 onChange={setField('region')}
                 placeholder="e.g. Kano State"
-                className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary"
+                className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed"
               />
             </div>
             <div>
@@ -416,7 +416,7 @@ function EditTenantModal({ tenant, onClose }: { tenant: Tenant; onClose: () => v
                 value={form.city}
                 onChange={setField('city')}
                 placeholder="e.g. Kano"
-                className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary"
+                className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed"
               />
             </div>
           </div>
@@ -446,7 +446,7 @@ function EditTenantModal({ tenant, onClose }: { tenant: Tenant; onClose: () => v
                 value={form.tagline}
                 onChange={setField('tagline')}
                 placeholder="e.g. Growing Commerce Together"
-                className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary"
+                className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed"
               />
             </div>
             <div className="grid grid-cols-2 gap-3 mt-3">
@@ -487,7 +487,7 @@ function EditTenantModal({ tenant, onClose }: { tenant: Tenant; onClose: () => v
                   value={form.address}
                   onChange={setField('address')}
                   placeholder="Chamber street address"
-                  className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary"
+                  className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed"
                 />
               </div>
               <div className="grid grid-cols-2 gap-3">
@@ -497,7 +497,7 @@ function EditTenantModal({ tenant, onClose }: { tenant: Tenant; onClose: () => v
                     value={form.phone}
                     onChange={setField('phone')}
                     placeholder="+234 700 000 0000"
-                    className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary"
+                    className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed"
                   />
                 </div>
                 <div>
@@ -507,7 +507,7 @@ function EditTenantModal({ tenant, onClose }: { tenant: Tenant; onClose: () => v
                     value={form.email}
                     onChange={setField('email')}
                     placeholder="info@chamber.ng"
-                    className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary"
+                    className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed"
                   />
                 </div>
               </div>
@@ -517,7 +517,7 @@ function EditTenantModal({ tenant, onClose }: { tenant: Tenant; onClose: () => v
                   value={form.website}
                   onChange={setField('website')}
                   placeholder="https://chamber.ng"
-                  className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary"
+                  className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed"
                 />
               </div>
             </div>
@@ -695,8 +695,8 @@ function WhiteLabelView() {
         ].map(({ icon, label, value, accent }) => (
           <div
             key={label}
-            className={`rounded-card border p-4 ${accent ? '' : 'bg-surface border-border'}`}
-            style={accent ? { background: 'rgb(var(--c-primary))', borderColor: 'rgb(var(--c-primary))' } : {}}
+            className={`rounded-card border p-4 bg-surface border-border relative overflow-hidden ${accent ? 'before:absolute before:inset-y-0 before:left-0 before:w-[3px] before:bg-primary' : ''}`}
+            
           >
             <div className="flex items-center gap-2 mb-2">
               <span
@@ -704,20 +704,20 @@ function WhiteLabelView() {
                 style={{
                   fontSize: 18,
                   fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`,
-                  color: accent ? 'rgb(var(--c-primary-200))' : 'rgb(var(--c-ink-subtle))',
+                  color: 'rgb(var(--c-ink-subtle))',
                 }}
               >
                 {icon}
               </span>
               <p
-                className={`text-xs font-semibold uppercase tracking-wide ${
-                  accent ? 'text-primary-200' : 'text-ink-subtle'
+                className={`text-2xs font-semibold uppercase ${
+                  'text-ink-subtle'
                 }`}
               >
                 {label}
               </p>
             </div>
-            <p className={`text-2xl font-bold ${accent ? 'text-white' : 'text-ink'}`}>
+            <p className={`num text-[26px] font-semibold leading-none text-ink mt-1`}>
               {value}
             </p>
           </div>

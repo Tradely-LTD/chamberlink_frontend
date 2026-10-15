@@ -151,11 +151,6 @@ const {
 
 // ── Demo data (admin fallback only) ──────────────────────────────────────
 
-const demoAllProfiles: ExporterProfile[] = [
-  { id: 'p1', memberId: 'm1', companyName: 'Kano Leather Exports Ltd', sector: 'Leather & Hides', products: ['Finished Leather', 'Wet Blue Hides'], description: 'Leading exporter of premium Nigerian leather products.', certifications: ['NAFDAC', 'NES'], tier: 'featured', status: 'active', contactEmail: 'export@kanoleather.ng', viewCount: 342, inquiryCount: 27, listedAt: '2025-01-15T00:00:00Z', memberName: 'Amina Musa' },
-  { id: 'p2', memberId: 'm2', companyName: 'Arewa Groundnut Co.', sector: 'Agriculture', products: ['Groundnuts', 'Sesame'], description: 'Large-scale oilseed exporter from Northern Nigeria.', certifications: ['NAFDAC'], tier: 'premium', status: 'active', contactEmail: 'trade@arewa.ng', viewCount: 891, inquiryCount: 64, listedAt: '2024-11-01T00:00:00Z', memberName: 'Ibrahim Dantata' },
-  { id: 'p3', memberId: 'm3', companyName: 'Kano Textiles Export', sector: 'Textiles', products: ['Ankara', 'Adire'], description: 'Exporter of traditional Nigerian textiles.', certifications: ['SON'], tier: 'standard', status: 'pending_review', contactEmail: 'kano@textileexport.ng', viewCount: 112, inquiryCount: 8, listedAt: '2025-03-20T00:00:00Z', memberName: 'Fatima Abubakar' },
-];
 
 const tierConfig = {
   standard: { label: 'Standard', bg: 'rgb(var(--c-border))', text: 'rgb(var(--c-ink-muted))', accent: 'rgb(var(--c-ink-subtle))', price: 0 },
@@ -194,14 +189,14 @@ function ProfileFormFields({ form, set }: { form: ProfileFormData; set: (k: keyo
         <div key={key}>
           <label className="block text-xs font-semibold text-ink-subtle mb-1">{label}</label>
           <input required={required} value={form[key]} onChange={set(key)} placeholder={placeholder}
-            className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary" />
+            className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed" />
         </div>
       ))}
       <div>
         <label className="block text-xs font-semibold text-ink-subtle mb-1">Business Description</label>
         <textarea required rows={3} value={form.description} onChange={set('description')}
           placeholder="Describe your export business…"
-          className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary resize-none" />
+          className="w-full resize-none px-2.5 py-2 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed" />
       </div>
     </>
   );
@@ -405,14 +400,14 @@ function ExporterDetailModal({
 
           {profile.description && (
             <div>
-              <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide mb-1">About</p>
+              <p className="text-2xs font-semibold text-ink-subtle uppercase mb-1">About</p>
               <p className="text-sm text-ink leading-relaxed">{profile.description}</p>
             </div>
           )}
 
           {profile.products.length > 0 && (
             <div>
-              <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide mb-2">Products & Services</p>
+              <p className="text-2xs font-semibold text-ink-subtle uppercase mb-2">Products & Services</p>
               <div className="flex flex-wrap gap-2">
                 {profile.products.map((p, i) => <span key={i} className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium" style={{ background: 'rgb(var(--c-primary-soft))', color: 'rgb(var(--c-primary))' }}>{p}</span>)}
               </div>
@@ -421,7 +416,7 @@ function ExporterDetailModal({
 
           {profile.certifications.length > 0 && (
             <div>
-              <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide mb-2">Certifications</p>
+              <p className="text-2xs font-semibold text-ink-subtle uppercase mb-2">Certifications</p>
               <div className="flex flex-wrap gap-2">
                 {profile.certifications.map((c, i) => <span key={i} className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium" style={{ background: '#e6f5ef', color: 'rgb(var(--c-primary))' }}>{c}</span>)}
               </div>
@@ -449,7 +444,7 @@ function ExporterDetailModal({
                 value={rejectReason}
                 onChange={(e) => setRejectReason(e.target.value)}
                 placeholder="e.g. Incomplete company information. Please provide a valid export registration number."
-                className="w-full rounded-lg border border-danger-bg px-3 py-2 text-sm focus:outline-none focus:border-danger resize-none"
+                className="w-full resize-none px-2.5 py-2 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed"
               />
               <div className="flex gap-2 mt-2">
                 <button onClick={() => setShowRejectForm(false)} className="rounded-lg border border-border px-3 py-1.5 text-xs font-semibold text-ink-subtle">Cancel</button>
@@ -680,7 +675,7 @@ function AdminExporterView() {
   const [detailProfile, setDetailProfile] = useState<ExporterProfile | null>(null);
 
   // Fall back to demo data only when no real data is available (dev/loading)
-  const allProfiles = (profiles && profiles.length > 0) ? profiles : (isLoading ? [] : demoAllProfiles);
+  const allProfiles = profiles ?? [];
 
   const filtered = allProfiles.filter((p) => {
     const matchSearch = p.companyName.toLowerCase().includes(search.toLowerCase()) || p.sector.toLowerCase().includes(search.toLowerCase());
@@ -716,18 +711,18 @@ function AdminExporterView() {
           { icon: 'star',              label: 'Featured',        value: allProfiles.filter((p) => p.tier === 'featured').length },
           { icon: 'pending',           label: 'Pending Review',  value: allProfiles.filter((p) => p.status === 'pending_review').length },
         ].map(({ icon, label, value, accent }) => (
-          <div key={label} className={`rounded-card border p-4 ${accent ? '' : 'bg-surface border-border'}`} style={accent ? { background: 'rgb(var(--c-primary))', borderColor: 'rgb(var(--c-primary))' } : {}}>
+          <div key={label} className={`rounded-card border p-4 bg-surface border-border relative overflow-hidden ${accent ? 'before:absolute before:inset-y-0 before:left-0 before:w-[3px] before:bg-primary' : ''}`} >
             <div className="flex items-center gap-2 mb-2">
-              <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`, color: accent ? 'rgb(var(--c-primary-200))' : 'rgb(var(--c-ink-subtle))' }}>{icon}</span>
-              <p className={`text-xs font-semibold uppercase tracking-wide ${accent ? 'text-primary-200' : 'text-ink-subtle'}`}>{label}</p>
+              <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`, color: 'rgb(var(--c-ink-subtle))' }}>{icon}</span>
+              <p className={`text-2xs font-semibold uppercase text-ink-subtle`}>{label}</p>
             </div>
-            <p className={`text-2xl font-bold ${accent ? 'text-white' : 'text-ink'}`}>{value}</p>
+            <p className={`num text-[26px] font-semibold leading-none text-ink mt-1`}>{value}</p>
           </div>
         ))}
       </div>
 
       <div className="flex items-center gap-3 mb-4 flex-wrap">
-        <input type="search" placeholder="Search by company or sector…" value={search} onChange={(e) => setSearch(e.target.value)} className="rounded-lg border border-border px-4 py-2 text-sm focus:outline-none focus:border-primary w-64" />
+        <input type="search" placeholder="Search by company or sector…" value={search} onChange={(e) => setSearch(e.target.value)} className="w-64 h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed" />
         <div className="flex gap-1 bg-surface-alt rounded-lg p-1 border border-border">
           {(['all', 'active', 'pending_review', 'suspended', 'rejected'] as const).map((s) => (
             <button key={s} onClick={() => setStatusFilter(s)} className={`px-3 py-1 rounded-md text-xs font-medium capitalize transition-colors ${statusFilter === s ? 'bg-surface shadow-card text-ink' : 'text-ink-subtle'}`}>{s.replace('_', ' ')}</button>
@@ -745,7 +740,7 @@ function AdminExporterView() {
                 <thead>
                   <tr className="bg-surface-alt border-b border-border">
                     {['Company', 'Member', 'Sector', 'Tier', 'Status', 'Views', 'Inquiries', 'Actions'].map((h) => (
-                      <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-ink-subtle uppercase tracking-wide">{h}</th>
+                      <th key={h} className="text-left px-4 py-3 text-2xs font-semibold text-ink-subtle uppercase">{h}</th>
                     ))}
                   </tr>
                 </thead>

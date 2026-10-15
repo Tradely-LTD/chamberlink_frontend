@@ -212,7 +212,7 @@ function StepParties({ form, setForm }: { form: GeneratorForm; setForm: React.Di
       </div>
 
       <div className="rounded-lg border border-border p-4 space-y-3">
-        <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide">
+        <p className="text-2xs font-semibold text-ink-subtle uppercase">
           {isPacking ? 'Consignee (Receiver)' : 'Buyer (Importer / Consignee)'}
         </p>
         <Input label={`${isPacking ? 'Consignee' : 'Buyer'} Name *`} value={form.buyerName}
@@ -582,7 +582,7 @@ function StepDetails({ form, setForm }: { form: GeneratorForm; setForm: React.Di
         <label className="block text-sm font-medium text-ink mb-1.5">Notes (optional)</label>
         <textarea rows={3} value={form.notes} onChange={set('notes')}
           placeholder="Any additional notes to appear on the document"
-          className="w-full rounded-lg border border-border px-3 py-2.5 text-sm text-ink placeholder:text-ink-subtle/80 focus:outline-none focus:border-primary focus:shadow-focus focus:border-primary resize-none" />
+          className="w-full resize-none px-2.5 py-2 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed" />
       </div>
     </div>
   );
@@ -633,7 +633,7 @@ function StepReview({ form }: { form: GeneratorForm }) {
 
       <div className="rounded-card border border-border overflow-hidden">
         <div className="px-4 py-2 bg-surface-alt border-b border-border">
-          <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide">Line Items</p>
+          <p className="text-2xs font-semibold text-ink-subtle uppercase">Line Items</p>
         </div>
         <div className="overflow-x-auto">
           <table className="data-table w-full text-xs">

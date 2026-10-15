@@ -9,6 +9,7 @@ import {
   useBulkImportMembersMutation,
 } from '@features/admin/memberManagementApi';
 import type { AdminUser, PaymentRecord } from '@features/admin/memberManagementApi';
+import { Status } from '@shared/ui/StatusBadge';
 import { SkeletonCard } from '@shared/ui/SkeletonCard';
 import { ErrorBanner } from '@shared/ui/ErrorBanner';
 import { Button } from '@shared/ui/Button';
@@ -18,54 +19,21 @@ import { Select } from '@shared/ui/Select';
 // Status badge helpers
 // ---------------------------------------------------------------------------
 
-type StatusKey = 'active' | 'pending_payment' | 'expired' | 'suspended';
 
-const statusBadgeStyle: Record<StatusKey, React.CSSProperties> = {
-  active:          { background: 'rgb(var(--c-success-bg))', color: 'rgb(var(--c-success))' },
-  pending_payment: { background: 'rgb(var(--c-warning-bg))', color: 'rgb(var(--c-warning))' },
-  expired:         { background: 'rgb(var(--c-danger-bg))', color: 'rgb(var(--c-danger))' },
-  suspended:       { background: 'rgb(var(--c-border))', color: 'rgb(var(--c-ink-muted))' },
-};
 
-const nullBadgeStyle: React.CSSProperties = { background: 'rgb(var(--c-border))', color: 'rgb(var(--c-ink-muted))' };
 
-function getStatusStyle(status: string | null): React.CSSProperties {
-  if (!status) return nullBadgeStyle;
-  return statusBadgeStyle[status as StatusKey] ?? nullBadgeStyle;
-}
 
 function StatusBadge({ status }: { status: string | null }) {
-  const label = status ? status.replace(/_/g, ' ') : 'unknown';
-  return (
-    <span
-      className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize"
-      style={getStatusStyle(status)}
-    >
-      {label}
-    </span>
-  );
+  return <Status status={status ?? 'unknown'} label={status ? undefined : 'Unknown'} />;
 }
 
 // ---------------------------------------------------------------------------
 // Payment status badge
 // ---------------------------------------------------------------------------
 
-const paymentStatusStyle: Record<PaymentRecord['status'], React.CSSProperties> = {
-  success:  { background: 'rgb(var(--c-success-bg))', color: 'rgb(var(--c-success))' },
-  pending:  { background: 'rgb(var(--c-warning-bg))', color: 'rgb(var(--c-warning))' },
-  failed:   { background: 'rgb(var(--c-danger-bg))', color: 'rgb(var(--c-danger))' },
-  refunded: { background: 'rgb(var(--c-border))', color: 'rgb(var(--c-ink-muted))' },
-};
 
 function PaymentStatusBadge({ status }: { status: PaymentRecord['status'] }) {
-  return (
-    <span
-      className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize"
-      style={paymentStatusStyle[status]}
-    >
-      {status}
-    </span>
-  );
+  return <Status status={status === 'refunded' ? 'cancelled' : status} label={status.replace(/^\w/, (c) => c.toUpperCase())} />;
 }
 
 // ---------------------------------------------------------------------------
@@ -235,7 +203,7 @@ function MemberDetailModal({ member, onClose, isChamberAdmin }: MemberDetailModa
                         {['Date', 'Amount', 'Purpose', 'Gateway', 'Reference', 'Status'].map((h) => (
                           <th
                             key={h}
-                            className="text-left px-3 py-2 text-xs font-semibold uppercase tracking-wide text-ink-subtle"
+                            className="text-left px-3 py-2 text-2xs font-semibold uppercase text-ink-subtle"
                           >
                             {h}
                           </th>
@@ -435,7 +403,7 @@ function BulkImportModal({ onClose }: BulkImportModalProps) {
                           {['Row #', 'Email', 'Reason'].map((h) => (
                             <th
                               key={h}
-                              className="text-left px-3 py-2 text-xs font-semibold uppercase tracking-wide text-ink-subtle"
+                              className="text-left px-3 py-2 text-2xs font-semibold uppercase text-ink-subtle"
                             >
                               {h}
                             </th>
@@ -575,7 +543,7 @@ export function MemberManagementPage() {
           placeholder="Search by name, email or business..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full max-w-sm rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary"
+          className="w-full max-w-sm h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed"
         />
 
         <Select
@@ -641,7 +609,7 @@ export function MemberManagementPage() {
                       (h) => (
                         <th
                           key={h}
-                          className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-ink-subtle"
+                          className="text-left px-4 py-3 text-2xs font-semibold uppercase text-ink-subtle"
                         >
                           {h}
                         </th>
@@ -655,7 +623,7 @@ export function MemberManagementPage() {
                       key={member.id}
                       className="border-b border-border hover:bg-surface-alt transition-colors"
                     >
-                      <td className="px-4 py-3 font-mono text-xs text-primary">
+                      <td className="px-4 py-3 font-mono text-xs text-primary whitespace-nowrap">
                         {member.memberId ?? '–'}
                       </td>
                       <td className="px-4 py-3">
@@ -665,11 +633,11 @@ export function MemberManagementPage() {
                         <p className="text-xs text-ink-subtle">{member.email}</p>
                       </td>
                       <td className="px-4 py-3 text-ink-subtle">{member.businessName ?? '–'}</td>
-                      <td className="px-4 py-3 text-ink">{member.tierName ?? '–'}</td>
+                      <td className="px-4 py-3 text-ink whitespace-nowrap">{member.tierName ?? '–'}</td>
                       <td className="px-4 py-3">
                         <StatusBadge status={member.memberStatus} />
                       </td>
-                      <td className="px-4 py-3 text-ink-subtle">
+                      <td className="px-4 py-3 text-ink-subtle whitespace-nowrap num">
                         {member.expiresAt
                           ? new Date(member.expiresAt).toLocaleDateString('en-NG', {
                               timeZone: 'Africa/Lagos',
@@ -680,7 +648,7 @@ export function MemberManagementPage() {
                           : '–'}
                       </td>
                       <td className="px-4 py-3">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-3 whitespace-nowrap">
                           <button
                             onClick={() => setViewMember(member)}
                             className="text-xs font-medium text-primary hover:underline"

@@ -57,27 +57,8 @@ const { useVerifyEcoCertMutation, useVerifyMemberMutation, useGetVerificationLog
 
 // ── Demo data ─────────────────────────────────────────────────────────────
 
-const demoEcoResult: VerificationResult = {
-  type: 'eco', certNumber: 'ECO-2025-KAN-004821',
-  holderName: 'Amina Abdullahi', companyName: 'Kano Leather Exports Ltd',
-  status: 'valid', issuedAt: '2025-03-01T00:00:00Z', expiresAt: '2026-03-01T00:00:00Z',
-  issuedBy: 'NACCIMA Secretariat', products: ['Finished Leather', 'Wet Blue Hides'],
-  verificationRef: 'VER-2025-001234',
-};
 
-const demoMemberResult: VerificationResult = {
-  type: 'member', memberId: 'KAC-M-00214',
-  holderName: 'Ibrahim Garba Dantata', companyName: 'Arewa Groundnut Co. Ltd',
-  status: 'valid', issuedAt: '2024-01-15T00:00:00Z', expiresAt: '2025-01-15T00:00:00Z',
-  membershipTier: 'Patron Member', verificationRef: 'VER-2025-001235',
-};
 
-const demoLogs: VerificationLog[] = [
-  { id: 'l1', queriedRef: 'ECO-2025-KAN-004821', queryType: 'eco', result: 'valid', queriedAt: '2025-04-10T09:22:00Z', queriedBy: 'First Bank of Nigeria PLC', institutionName: 'First Bank' },
-  { id: 'l2', queriedRef: 'KAC-M-00214', queryType: 'member', result: 'valid', queriedAt: '2025-04-09T14:05:00Z', queriedBy: 'Zenith Bank PLC', institutionName: 'Zenith Bank' },
-  { id: 'l3', queriedRef: 'ECO-2024-KAN-003100', queryType: 'eco', result: 'expired', queriedAt: '2025-04-08T11:30:00Z', queriedBy: 'Access Bank PLC', institutionName: 'Access Bank' },
-  { id: 'l4', queriedRef: 'KAC-M-00999', queryType: 'member', result: 'not_found', queriedAt: '2025-04-07T16:48:00Z', queriedBy: 'GTBank PLC', institutionName: 'GTBank' },
-];
 
 const resultConfig = {
   valid:     { icon: 'verified', label: 'Valid',     bg: 'rgb(var(--c-success-bg))', text: 'rgb(var(--c-success))', iconColor: 'rgb(var(--c-success))' },
@@ -157,8 +138,8 @@ function InstitutionalVerificationView() {
         const r = await verifyMember({ memberId: memberInput.trim() }).unwrap();
         setResult(r);
       }
-    } catch {
-      setResult(tab === 'eco' ? demoEcoResult : demoMemberResult);
+    } catch (err: unknown) {
+      setError((err as { data?: { message?: string } })?.data?.message ?? 'Verification could not be completed. Check the reference and try again.');
     }
   };
 
@@ -182,8 +163,8 @@ function InstitutionalVerificationView() {
             required
             value={tab === 'eco' ? certInput : memberInput}
             onChange={(e) => tab === 'eco' ? setCertInput(e.target.value) : setMemberInput(e.target.value)}
-            placeholder={tab === 'eco' ? 'e.g. ECO-2025-KAN-004821' : 'e.g. KAC-M-00214'}
-            className="flex-1 rounded-lg border border-border px-4 py-2.5 text-sm focus:outline-none focus:border-primary font-mono"
+            placeholder={tab === 'eco' ? 'e.g. NACCIMA/CO/2026/000042' : 'e.g. NACCIMA-2026-0001'}
+            className="flex-1 font-mono h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed"
           />
           <button type="submit" disabled={isLoading} className="flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50" style={{ background: 'rgb(var(--c-primary))' }}>
             {isLoading ? 'Verifying…' : <><span className="material-symbols-outlined" style={{ fontSize: 16 }}>search</span>Verify</>}
@@ -214,7 +195,7 @@ function AdminVerificationView() {
   const [typeFilter, setTypeFilter] = useState<'all' | 'eco' | 'member'>('all');
   const [resultFilter, setResultFilter] = useState<'all' | VerificationResult['status']>('all');
 
-  const allLogs = logs ?? demoLogs;
+  const allLogs = logs ?? [];
   const filtered = allLogs.filter((l) => {
     const matchType = typeFilter === 'all' || l.queryType === typeFilter;
     const matchResult = resultFilter === 'all' || l.result === resultFilter;
@@ -235,12 +216,12 @@ function AdminVerificationView() {
           { icon: 'schedule', label: 'Expired', value: allLogs.filter((l) => l.result === 'expired').length },
           { icon: 'search_off', label: 'Not Found', value: allLogs.filter((l) => l.result === 'not_found').length },
         ].map(({ icon, label, value, accent }) => (
-          <div key={label} className={`rounded-card border p-4 ${accent ? '' : 'bg-surface border-border'}`} style={accent ? { background: 'rgb(var(--c-primary))', borderColor: 'rgb(var(--c-primary))' } : {}}>
+          <div key={label} className={`rounded-card border p-4 bg-surface border-border relative overflow-hidden ${accent ? 'before:absolute before:inset-y-0 before:left-0 before:w-[3px] before:bg-primary' : ''}`} >
             <div className="flex items-center gap-2 mb-2">
-              <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`, color: accent ? 'rgb(var(--c-primary-200))' : 'rgb(var(--c-ink-subtle))' }}>{icon}</span>
-              <p className={`text-xs font-semibold uppercase tracking-wide ${accent ? 'text-primary-200' : 'text-ink-subtle'}`}>{label}</p>
+              <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`, color: 'rgb(var(--c-ink-subtle))' }}>{icon}</span>
+              <p className={`text-2xs font-semibold uppercase text-ink-subtle`}>{label}</p>
             </div>
-            <p className={`text-2xl font-bold ${accent ? 'text-white' : 'text-ink'}`}>{value}</p>
+            <p className={`num text-[26px] font-semibold leading-none text-ink mt-1`}>{value}</p>
           </div>
         ))}
       </div>
@@ -269,7 +250,7 @@ function AdminVerificationView() {
               <thead>
                 <tr className="bg-surface-alt border-b border-border">
                   {['Reference Queried', 'Type', 'Institution', 'Result', 'Date & Time'].map((h) => (
-                    <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-ink-subtle uppercase tracking-wide">{h}</th>
+                    <th key={h} className="text-left px-4 py-3 text-2xs font-semibold text-ink-subtle uppercase">{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -280,7 +261,7 @@ function AdminVerificationView() {
                     <tr key={log.id} className="hover:bg-surface-alt transition-colors">
                       <td className="px-4 py-3 font-mono text-sm text-ink">{log.queriedRef}</td>
                       <td className="px-4 py-3">
-                        <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide" style={{ background: log.queryType === 'eco' ? 'rgb(var(--c-primary-soft))' : 'rgb(var(--c-success-bg))', color: log.queryType === 'eco' ? 'rgb(var(--c-primary))' : 'rgb(var(--c-success))' }}>
+                        <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-2xs font-semibold uppercase" style={{ background: log.queryType === 'eco' ? 'rgb(var(--c-primary-soft))' : 'rgb(var(--c-success-bg))', color: log.queryType === 'eco' ? 'rgb(var(--c-primary))' : 'rgb(var(--c-success))' }}>
                           {log.queryType === 'eco' ? 'eCO' : 'Member'}
                         </span>
                       </td>

@@ -168,31 +168,10 @@ const {
 
 // ── Demo data ─────────────────────────────────────────────────────────────
 
-const demoCorridors: TradeCorridor[] = [
-  { id: 'c1', title: 'Nigeria–China Trade Corridor', origin: 'Kano, Nigeria', destination: 'Guangzhou, China', category: 'Manufacturing & Textiles', description: 'Facilitating exports of leather, hides, and agricultural products to China, with return imports of machinery and electronics.', status: 'active', memberCount: 214, tradeVolume: '$42M / year', sponsors: [{ id: 's1', companyName: 'Dantata & Sawoe Ltd', tier: 'gold' }, { id: 's2', companyName: 'Kano Textile Mills', tier: 'silver' }], sponsorSlotsAvailable: 1, sponsorPriceGold: 500000, sponsorPriceSilver: 250000, isFollowing: true },
-  { id: 'c2', title: 'Nigeria–UAE Trade Corridor', origin: 'Kano, Nigeria', destination: 'Dubai, UAE', category: 'Agriculture & Food', description: 'Promoting Nigerian groundnuts, sesame seeds, and shea butter to the Gulf market and connecting Nigerian businesses to UAE investors.', status: 'active', memberCount: 178, tradeVolume: '$28M / year', sponsors: [{ id: 's3', companyName: 'Arewa Agro Exports', tier: 'gold' }], sponsorSlotsAvailable: 2, sponsorPriceGold: 500000, sponsorPriceSilver: 250000, isFollowing: false },
-  { id: 'c3', title: 'Nigeria–UK Trade Corridor', origin: 'Kano, Nigeria', destination: 'London, UK', category: 'Creative & Cultural Goods', description: 'Connecting Northern Nigerian artisans, leather craftsmen, and cultural goods exporters to UK buyers and diaspora markets.', status: 'active', memberCount: 132, tradeVolume: '$12M / year', sponsors: [], sponsorSlotsAvailable: 3, sponsorPriceGold: 500000, sponsorPriceSilver: 250000, isFollowing: false },
-  { id: 'c4', title: 'Nigeria–West Africa Intra-Regional', origin: 'Kano, Nigeria', destination: 'Accra / Abidjan / Dakar', category: 'ECOWAS Free Trade', description: 'Leveraging ECOWAS protocols to facilitate preferential-tariff trade across West Africa for NACCIMA members.', status: 'upcoming', memberCount: 0, sponsors: [], sponsorSlotsAvailable: 3, sponsorPriceGold: 350000, sponsorPriceSilver: 175000, isFollowing: false },
-];
 
-const demoMyApplications: SponsorApplication[] = [
-  { id: 'a1', corridorId: 'c1', corridorTitle: 'Nigeria–China Trade Corridor', companyName: 'My Company Ltd', tier: 'silver', status: 'approved', createdAt: '2025-02-10T00:00:00Z', appliedAt: '2025-02-10T00:00:00Z', amount: 250000 },
-];
 
-const demoAllApplications: SponsorApplication[] = [
-  { id: 'a1', corridorId: 'c1', corridorTitle: 'Nigeria–China Trade Corridor', companyName: 'My Company Ltd', tier: 'silver', status: 'approved', createdAt: '2025-02-10T00:00:00Z', appliedAt: '2025-02-10T00:00:00Z', amount: 250000, memberName: 'Amina Musa' },
-  { id: 'a2', corridorId: 'c3', corridorTitle: 'Nigeria–UK Trade Corridor', companyName: 'Kano Export House', tier: 'gold', status: 'pending_review', createdAt: '2025-04-01T00:00:00Z', appliedAt: '2025-04-01T00:00:00Z', amount: 500000, memberName: 'Ibrahim Dantata' },
-];
 
-const demoMyMemberships: CorridorMembershipItem[] = [
-  { corridorId: 'c1', corridorTitle: 'Nigeria–China Trade Corridor', joinedAt: '2025-03-15T00:00:00Z', source: 'manual' },
-  { corridorId: 'c2', corridorTitle: 'Nigeria–UAE Trade Corridor', joinedAt: '2025-04-20T00:00:00Z', source: 'eco-auto' },
-];
 
-const demoCorridorMembers: CorridorMemberRow[] = [
-  { id: 'm1', name: 'Amina Musa', companyName: 'Arewa Exports Ltd', memberId: 'KAC-2024-001', joinedAt: '2025-03-01T00:00:00Z', source: 'manual' },
-  { id: 'm2', name: 'Ibrahim Dantata', companyName: 'Dantata Trading Co', memberId: 'KAC-2024-002', joinedAt: '2025-04-10T00:00:00Z', source: 'eco-auto' },
-];
 
 const tierConfig = {
   gold:   { label: 'Gold',   bg: 'rgb(var(--c-warning-bg))', text: 'rgb(var(--c-warning))', accent: 'rgb(var(--c-gold-light))' },
@@ -288,8 +267,8 @@ function SponsorModal({ corridor, onClose }: { corridor: TradeCorridor; onClose:
 
 function MemberCorridorsView() {
   const { data: corridors, isLoading, isError: corridorsError } = useGetTradeCorridorsQuery();
-  const { data: myApps, isLoading: appsLoading } = useGetMyCorridorApplicationsQuery();
-  const { data: myMemberships, isLoading: membershipsLoading } = useGetMyCorridorMembershipsQuery();
+  const { data: myApps } = useGetMyCorridorApplicationsQuery();
+  const { data: myMemberships } = useGetMyCorridorMembershipsQuery();
   const [join] = useJoinCorridorMutation();
   const [leave] = useLeaveCorridorMutation();
   const [verifyCorridorSponsor, { isLoading: verifying }] = useVerifyCorridorSponsorMutation();
@@ -365,9 +344,9 @@ function MemberCorridorsView() {
   };
 
   // Only use demo data while loading — never on error (fake IDs cause 404 on follow)
-  const allCorridors = corridors ?? (isLoading ? demoCorridors : []);
-  const apps = myApps ?? (appsLoading ? demoMyApplications : []);
-  const memberships = myMemberships ?? (membershipsLoading ? demoMyMemberships : []);
+  const allCorridors = corridors ?? [];
+  const apps = myApps ?? [];
+  const memberships = myMemberships ?? [];
 
   return (
     <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-4xl">
@@ -466,7 +445,7 @@ function MemberCorridorsView() {
                     {/* Current sponsors */}
                     {c.sponsors.length > 0 && (
                       <div className="flex items-center gap-2 mb-4 flex-wrap">
-                        <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide">Current sponsors:</p>
+                        <p className="text-2xs font-semibold text-ink-subtle uppercase">Current sponsors:</p>
                         {c.sponsors.map((s) => (
                           <span key={s.id} className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ background: tierConfig[s.tier].bg, color: tierConfig[s.tier].text }}>
                             <span className="material-symbols-outlined" style={{ fontSize: 11, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 11` }}>workspace_premium</span>
@@ -541,7 +520,7 @@ function MemberCorridorsView() {
         <div className="space-y-6">
           {/* Corridors I Follow */}
           <div>
-            <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide mb-3">Corridors I Follow</p>
+            <p className="text-2xs font-semibold text-ink-subtle uppercase mb-3">Corridors I Follow</p>
             {memberships.length === 0 ? (
               <div className="bg-surface rounded-card border border-border p-10 text-center">
                 <p className="text-sm text-ink-subtle mb-4">You are not following any corridors yet.</p>
@@ -569,7 +548,7 @@ function MemberCorridorsView() {
 
           {/* Sponsorship Applications */}
           <div>
-            <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide mb-3">My Sponsorship Applications</p>
+            <p className="text-2xs font-semibold text-ink-subtle uppercase mb-3">My Sponsorship Applications</p>
             {apps.length === 0 ? (
               <div className="bg-surface rounded-card border border-border p-10 text-center">
                 <p className="text-sm text-ink-subtle mb-4">No sponsorship applications yet.</p>
@@ -638,7 +617,7 @@ function ApplicationDetailModal({
         <div className="p-6 space-y-5">
           {/* Applicant */}
           <div>
-            <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide mb-2">Applicant</p>
+            <p className="text-2xs font-semibold text-ink-subtle uppercase mb-2">Applicant</p>
             <div className="rounded-card border border-border divide-y divide-border-subtle">
               {[
                 { label: 'Member Name', value: app.memberName ?? '–' },
@@ -659,7 +638,7 @@ function ApplicationDetailModal({
           {/* Corridor detail */}
           {corridor && (
             <div>
-              <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide mb-2">Corridor</p>
+              <p className="text-2xs font-semibold text-ink-subtle uppercase mb-2">Corridor</p>
               <div className="rounded-card border border-border p-4 space-y-2">
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="font-semibold text-sm text-ink">{corridor.title}</span>
@@ -718,15 +697,15 @@ function CorridorMembersSection({ corridorId, isExpanded }: { corridorId: string
     { skip: !isExpanded }
   );
 
-  const items = membersData?.data ?? (isExpanded ? demoCorridorMembers : []);
-  const total = membersData?.total ?? (isExpanded ? demoCorridorMembers.length : 0);
+  const items = membersData?.data ?? [];
+  const total = membersData?.total ?? 0;
 
   if (!isExpanded) return null;
   if (isLoading) return <div className="pt-2"><SkeletonCard /></div>;
 
   return (
     <div>
-      <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide mb-3">Members</p>
+      <p className="text-2xs font-semibold text-ink-subtle uppercase mb-3">Members</p>
       {items.length === 0 ? (
         <p className="text-xs text-ink-subtle">No active members in this corridor yet.</p>
       ) : (
@@ -736,7 +715,7 @@ function CorridorMembersSection({ corridorId, isExpanded }: { corridorId: string
               <thead>
                 <tr className="bg-surface-alt border-b border-border">
                   {['Name', 'Company', 'Member ID', 'Joined', 'Source'].map((h) => (
-                    <th key={h} className="text-left px-4 py-2.5 text-xs font-semibold text-ink-subtle uppercase tracking-wide">{h}</th>
+                    <th key={h} className="text-left px-4 py-2.5 text-2xs font-semibold text-ink-subtle uppercase">{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -915,8 +894,8 @@ function AdminCorridorsView() {
   const [showCreateCorridor, setShowCreateCorridor] = useState(false);
   const [editCorridor, setEditCorridor] = useState<TradeCorridor | null>(null);
 
-  const allCorridors = corridors ?? (corridorsLoading ? demoCorridors : []);
-  const allApps = applications ?? (appsLoading ? demoAllApplications : []);
+  const allCorridors = corridors ?? [];
+  const allApps = applications ?? [];
   const pending = allApps.filter((a) => a.status === 'pending_review').length;
 
   const handleUpdate = async (status: 'approved' | 'rejected') => {
@@ -966,12 +945,12 @@ function AdminCorridorsView() {
           { icon: 'pending', label: 'Pending Applications', value: pending },
           { icon: 'workspace_premium', label: 'Total Sponsors', value: allCorridors.reduce((s, c) => s + c.sponsors.length, 0) },
         ].map(({ icon, label, value, accent }) => (
-          <div key={label} className={`rounded-card border p-4 ${accent ? '' : 'bg-surface border-border'}`} style={accent ? { background: 'rgb(var(--c-primary))', borderColor: 'rgb(var(--c-primary))' } : {}}>
+          <div key={label} className={`rounded-card border p-4 bg-surface border-border relative overflow-hidden ${accent ? 'before:absolute before:inset-y-0 before:left-0 before:w-[3px] before:bg-primary' : ''}`} >
             <div className="flex items-center gap-2 mb-2">
-              <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`, color: accent ? 'rgb(var(--c-primary-200))' : 'rgb(var(--c-ink-subtle))' }}>{icon}</span>
-              <p className={`text-xs font-semibold uppercase tracking-wide ${accent ? 'text-primary-200' : 'text-ink-subtle'}`}>{label}</p>
+              <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`, color: 'rgb(var(--c-ink-subtle))' }}>{icon}</span>
+              <p className={`text-2xs font-semibold uppercase text-ink-subtle`}>{label}</p>
             </div>
-            <p className={`text-2xl font-bold ${accent ? 'text-white' : 'text-ink'}`}>{value}</p>
+            <p className={`num text-[26px] font-semibold leading-none text-ink mt-1`}>{value}</p>
           </div>
         ))}
       </div>
@@ -1024,7 +1003,7 @@ function AdminCorridorsView() {
 
                     {/* Sponsors */}
                     <div>
-                      <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide mb-2">Current Sponsors</p>
+                      <p className="text-2xs font-semibold text-ink-subtle uppercase mb-2">Current Sponsors</p>
                       {c.sponsors.length === 0 ? (
                         <p className="text-xs text-ink-subtle">No sponsors yet.</p>
                       ) : (
@@ -1042,7 +1021,7 @@ function AdminCorridorsView() {
 
                     {/* Pricing */}
                     <div>
-                      <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide mb-2">Sponsorship Pricing (member-facing)</p>
+                      <p className="text-2xs font-semibold text-ink-subtle uppercase mb-2">Sponsorship Pricing (member-facing)</p>
                       <div className="flex gap-3 flex-wrap">
                         {(['gold', 'silver'] as const).map((t) => {
                           const tc = tierConfig[t];
@@ -1080,7 +1059,7 @@ function AdminCorridorsView() {
                 <thead>
                   <tr className="bg-surface-alt border-b border-border">
                     {['Applicant', 'Corridor', 'Tier', 'Amount', 'Applied', 'Status', ''].map((h) => (
-                      <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-ink-subtle uppercase tracking-wide">{h}</th>
+                      <th key={h} className="text-left px-4 py-3 text-2xs font-semibold text-ink-subtle uppercase">{h}</th>
                     ))}
                   </tr>
                 </thead>

@@ -1,23 +1,21 @@
 import { useGetAnalyticsSummaryQuery, useGetAnalyticsTrendsQuery } from '@features/analytics/analyticsApi';
 import { SkeletonCard } from '@shared/ui/SkeletonCard';
+import { PageHeader } from '@shared/ui/PageHeader';
+import { ErrorBanner } from '@shared/ui/ErrorBanner';
 import { StatTile } from '@shared/ui/StatTile';
 import { Card, CardTitle } from '@shared/ui/Card';
 import { RevenueTrendChart } from '@features/analytics/components/RevenueTrendChart';
 import { MembershipTrendChart } from '@features/analytics/components/MembershipTrendChart';
 import { MembershipStatusBar } from '@features/analytics/components/MembershipStatusBar';
 
-const demoData = {
-  totalMembers: 4821, activeMembers: 3964, pendingRenewals: 412,
-  ecoCertificatesIssued: 1243, revenueThisMonth: 18750000,
-  revenueLastMonth: 15200000, newMembersThisMonth: 87, tradeFairRegistrations: 234,
-};
 
-const sectionLabelClass = 'text-xs font-semibold text-ink-subtle uppercase tracking-wide mb-3';
+const sectionLabelClass = 'text-2xs font-semibold text-ink-subtle uppercase mb-3';
 
 export function AnalyticsPage() {
-  const { data, isLoading } = useGetAnalyticsSummaryQuery();
+  const { data, isLoading, isError, refetch } = useGetAnalyticsSummaryQuery();
   const { data: trends, isLoading: trendsLoading } = useGetAnalyticsTrendsQuery(6);
-  const stats = data ?? demoData;
+  // Zeros, never invented figures: on failure the error banner says so.
+  const stats = data ?? { totalMembers: 0, activeMembers: 0, pendingRenewals: 0, ecoCertificatesIssued: 0, revenueThisMonth: 0, revenueLastMonth: 0, newMembersThisMonth: 0, tradeFairRegistrations: 0 };
 
   const revenueGrowth = stats.revenueLastMonth > 0
     ? ((stats.revenueThisMonth - stats.revenueLastMonth) / stats.revenueLastMonth * 100).toFixed(1)
@@ -26,8 +24,8 @@ export function AnalyticsPage() {
 
   return (
     <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-5xl">
-      <h1 className="text-xl font-semibold text-ink mb-1">Analytics Hub</h1>
-      <p className="text-sm text-ink-subtle mb-6">Chamber performance metrics and key indicators.</p>
+      <PageHeader title="Analytics" description="Members, revenue, certificates and events, with six-month trends." />
+      {isError && <div className="mb-6"><ErrorBanner message="Couldn't load the analytics summary. Figures below are not current." onRetry={refetch} /></div>}
 
       {isLoading ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -38,7 +36,7 @@ export function AnalyticsPage() {
           <p className={sectionLabelClass}>Membership</p>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
             <StatTile icon="group" label="Total Members" value={stats.totalMembers.toLocaleString()} accent />
-            <StatTile icon="verified_user" label="Active Members" value={stats.activeMembers.toLocaleString()} sublabel={`${((stats.activeMembers / stats.totalMembers) * 100).toFixed(0)}% active rate`} />
+            <StatTile icon="verified_user" label="Active Members" value={stats.activeMembers.toLocaleString()} sublabel={stats.totalMembers > 0 ? `${((stats.activeMembers / stats.totalMembers) * 100).toFixed(0)}% active rate` : 'No members yet'} />
             <StatTile icon="pending_actions" label="Pending Renewals" value={stats.pendingRenewals.toLocaleString()} sublabel="Require follow-up" />
             <StatTile icon="person_add" label="New This Month" value={`+${stats.newMembersThisMonth}`} sublabel="New registrations" />
           </div>

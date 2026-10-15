@@ -82,23 +82,8 @@ const {
 
 // ── Demo data ─────────────────────────────────────────────────────────────
 
-const demoApiKeys: ApiKey[] = [
-  { id: 'k1', name: 'Production Key', keyPrefix: 'kac_live_8f2a...', permissions: ['member.verify', 'eco.verify', 'trade.stats'], status: 'active', createdAt: '2025-01-10T00:00:00Z', lastUsedAt: '2025-04-10T08:30:00Z', requestsThisMonth: 2847, requestLimit: 10000 },
-  { id: 'k2', name: 'Testing Key', keyPrefix: 'kac_test_3c9b...', permissions: ['member.verify', 'eco.verify'], status: 'active', createdAt: '2025-01-10T00:00:00Z', lastUsedAt: '2025-04-05T14:22:00Z', requestsThisMonth: 142, requestLimit: 1000 },
-];
 
-const demoUsageStats: ApiUsageStat[] = [
-  { endpoint: 'GET /v1/members/verify', calls: 1243, latencyP95Ms: 87 },
-  { endpoint: 'GET /v1/eco/verify', calls: 982, latencyP95Ms: 92 },
-  { endpoint: 'GET /v1/trade/stats', calls: 621, latencyP95Ms: 145 },
-  { endpoint: 'GET /v1/members/{id}', calls: 143, latencyP95Ms: 78 },
-];
 
-const demoConsumers: ApiConsumer[] = [
-  { id: 'c1', institutionName: 'First Bank of Nigeria PLC', apiKeyCount: 2, requestsThisMonth: 3842, status: 'active', createdAt: '2024-11-01T00:00:00Z' },
-  { id: 'c2', institutionName: 'Zenith Bank PLC', apiKeyCount: 1, requestsThisMonth: 1204, status: 'active', createdAt: '2025-01-15T00:00:00Z' },
-  { id: 'c3', institutionName: 'Access Bank PLC', apiKeyCount: 1, requestsThisMonth: 0, status: 'suspended', createdAt: '2025-02-01T00:00:00Z' },
-];
 
 const availablePermissions = [
   { id: 'member.verify', label: 'Member Verification', description: 'Verify member ID and status' },
@@ -141,7 +126,7 @@ function CreateKeyModal({ onClose, onCreated }: { onClose: () => void; onCreated
           {error && <ErrorBanner message={error} />}
           <div>
             <label className="block text-xs font-semibold text-ink-subtle mb-1">Key Name</label>
-            <input required value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Production Key, Test Key" className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary" />
+            <input required value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Production Key, Test Key" className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed" />
           </div>
           <div>
             <label className="block text-xs font-semibold text-ink-subtle mb-2">Permissions</label>
@@ -211,8 +196,8 @@ function InstitutionalApiView() {
   const [newKey, setNewKey] = useState<string | null>(null);
   const [tab, setTab] = useState<'keys' | 'usage' | 'docs'>('keys');
 
-  const allKeys = keys ?? demoApiKeys;
-  const stats = usageStats ?? demoUsageStats;
+  const allKeys = keys ?? [];
+  const stats = usageStats ?? [];
   const totalRequests = allKeys.reduce((s, k) => s + k.requestsThisMonth, 0);
 
   return (
@@ -234,12 +219,12 @@ function InstitutionalApiView() {
           { icon: 'api', label: 'Requests This Month', value: totalRequests.toLocaleString() },
           { icon: 'integration_instructions', label: 'Endpoints', value: stats.length },
         ].map(({ icon, label, value, accent }) => (
-          <div key={label} className={`rounded-card border p-4 ${accent ? '' : 'bg-surface border-border'}`} style={accent ? { background: 'rgb(var(--c-primary))', borderColor: 'rgb(var(--c-primary))' } : {}}>
+          <div key={label} className={`rounded-card border p-4 bg-surface border-border relative overflow-hidden ${accent ? 'before:absolute before:inset-y-0 before:left-0 before:w-[3px] before:bg-primary' : ''}`} >
             <div className="flex items-center gap-2 mb-2">
-              <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`, color: accent ? 'rgb(var(--c-primary-200))' : 'rgb(var(--c-ink-subtle))' }}>{icon}</span>
-              <p className={`text-xs font-semibold uppercase tracking-wide ${accent ? 'text-primary-200' : 'text-ink-subtle'}`}>{label}</p>
+              <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`, color: 'rgb(var(--c-ink-subtle))' }}>{icon}</span>
+              <p className={`text-2xs font-semibold uppercase text-ink-subtle`}>{label}</p>
             </div>
-            <p className={`text-2xl font-bold ${accent ? 'text-white' : 'text-ink'}`}>{value}</p>
+            <p className={`num text-[26px] font-semibold leading-none text-ink mt-1`}>{value}</p>
           </div>
         ))}
       </div>
@@ -304,7 +289,7 @@ function InstitutionalApiView() {
             <thead>
               <tr className="bg-surface-alt border-b border-border">
                 {['Endpoint', 'Calls', 'P95 Latency'].map((h) => (
-                  <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-ink-subtle uppercase tracking-wide">{h}</th>
+                  <th key={h} className="text-left px-4 py-3 text-2xs font-semibold text-ink-subtle uppercase">{h}</th>
                 ))}
               </tr>
             </thead>
@@ -365,7 +350,7 @@ function AdminApiView() {
   const { data: consumers, isLoading } = useGetAllConsumersQuery();
   const [updateStatus] = useUpdateConsumerStatusMutation();
 
-  const allConsumers = consumers ?? demoConsumers;
+  const allConsumers = consumers ?? [];
   const totalRequests = allConsumers.reduce((s, c) => s + c.requestsThisMonth, 0);
 
   return (
@@ -382,12 +367,12 @@ function AdminApiView() {
           { icon: 'api', label: 'Total API Keys', value: allConsumers.reduce((s, c) => s + c.apiKeyCount, 0) },
           { icon: 'trending_up', label: 'Requests / Mo', value: totalRequests.toLocaleString() },
         ].map(({ icon, label, value, accent }) => (
-          <div key={label} className={`rounded-card border p-4 ${accent ? '' : 'bg-surface border-border'}`} style={accent ? { background: 'rgb(var(--c-primary))', borderColor: 'rgb(var(--c-primary))' } : {}}>
+          <div key={label} className={`rounded-card border p-4 bg-surface border-border relative overflow-hidden ${accent ? 'before:absolute before:inset-y-0 before:left-0 before:w-[3px] before:bg-primary' : ''}`} >
             <div className="flex items-center gap-2 mb-2">
-              <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`, color: accent ? 'rgb(var(--c-primary-200))' : 'rgb(var(--c-ink-subtle))' }}>{icon}</span>
-              <p className={`text-xs font-semibold uppercase tracking-wide ${accent ? 'text-primary-200' : 'text-ink-subtle'}`}>{label}</p>
+              <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`, color: 'rgb(var(--c-ink-subtle))' }}>{icon}</span>
+              <p className={`text-2xs font-semibold uppercase text-ink-subtle`}>{label}</p>
             </div>
-            <p className={`text-2xl font-bold ${accent ? 'text-white' : 'text-ink'}`}>{value}</p>
+            <p className={`num text-[26px] font-semibold leading-none text-ink mt-1`}>{value}</p>
           </div>
         ))}
       </div>
@@ -399,7 +384,7 @@ function AdminApiView() {
               <thead>
                 <tr className="bg-surface-alt border-b border-border">
                   {['Institution', 'API Keys', 'Requests / Month', 'Status', 'Onboarded', 'Actions'].map((h) => (
-                    <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-ink-subtle uppercase tracking-wide">{h}</th>
+                    <th key={h} className="text-left px-4 py-3 text-2xs font-semibold text-ink-subtle uppercase">{h}</th>
                   ))}
                 </tr>
               </thead>

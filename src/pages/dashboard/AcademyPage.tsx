@@ -116,20 +116,20 @@ function CourseFormModal({
 
           <div>
             <label className="block text-xs font-semibold text-ink-subtle mb-1">Course Title</label>
-            <input required value={form.title} onChange={set('title')} placeholder="e.g. Export Documentation Fundamentals" className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary" />
+            <input required value={form.title} onChange={set('title')} placeholder="e.g. Export Documentation Fundamentals" className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed" />
           </div>
           <div>
             <label className="block text-xs font-semibold text-ink-subtle mb-1">Description</label>
-            <textarea required rows={3} value={form.description} onChange={set('description')} className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary resize-none" />
+            <textarea required rows={3} value={form.description} onChange={set('description')} className="w-full resize-none px-2.5 py-2 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed" />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-ink-subtle mb-1">Category</label>
-              <input required value={form.category} onChange={set('category')} placeholder="e.g. Export" className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none" />
+              <input required value={form.category} onChange={set('category')} placeholder="e.g. Export" className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed" />
             </div>
             <div>
               <label className="block text-xs font-semibold text-ink-subtle mb-1">Duration</label>
-              <input required value={form.duration} onChange={set('duration')} placeholder="e.g. 4 hours" className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none" />
+              <input required value={form.duration} onChange={set('duration')} placeholder="e.g. 4 hours" className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed" />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -139,13 +139,13 @@ function CourseFormModal({
             </div>
             <div>
               <label className="block text-xs font-semibold text-ink-subtle mb-1">Instructor</label>
-              <input value={form.instructorName} onChange={set('instructorName')} placeholder="e.g. NACCIMA Trade Desk" className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none" />
+              <input value={form.instructorName} onChange={set('instructorName')} placeholder="e.g. NACCIMA Trade Desk" className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed" />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-ink-subtle mb-1">Price (&#x20A6;)</label>
-              <input type="number" min="0" value={form.price} onChange={set('price')} className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none" />
+              <input type="number" min="0" value={form.price} onChange={set('price')} className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed" />
             </div>
             <div className="flex flex-col gap-2 pt-5">
               <label className="flex items-center gap-2 cursor-pointer">
@@ -166,7 +166,7 @@ function CourseFormModal({
               value={form.videoUrl}
               onChange={set('videoUrl')}
               placeholder="https://www.youtube.com/watch?v=..."
-              className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary"
+              className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed"
             />
           </div>
 
@@ -380,19 +380,19 @@ function SectionManagerModal({ course, onClose }: { course: Course; onClose: () 
                   <div className="grid grid-cols-2 gap-3">
                     <div className="col-span-2">
                       <label className="block text-xs font-semibold text-ink-subtle mb-1">Section Title</label>
-                      <input required value={editForm.title} onChange={setEdit('title')} className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary" />
+                      <input required value={editForm.title} onChange={setEdit('title')} className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed" />
                     </div>
                     <div className="col-span-2">
                       <label className="block text-xs font-semibold text-ink-subtle mb-1">Video URL (YouTube/Vimeo)</label>
-                      <input required value={editForm.videoUrl} onChange={setEdit('videoUrl')} placeholder="https://www.youtube.com/watch?v=..." className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary" />
+                      <input required value={editForm.videoUrl} onChange={setEdit('videoUrl')} placeholder="https://www.youtube.com/watch?v=..." className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed" />
                     </div>
                     <div className="col-span-2">
                       <label className="block text-xs font-semibold text-ink-subtle mb-1">Description <span className="font-normal text-ink-subtle">(optional)</span></label>
-                      <textarea rows={2} value={editForm.description} onChange={setEdit('description')} className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary resize-none" />
+                      <textarea rows={2} value={editForm.description} onChange={setEdit('description')} className="w-full resize-none px-2.5 py-2 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed" />
                     </div>
                     <div>
                       <label className="block text-xs font-semibold text-ink-subtle mb-1">Order</label>
-                      <input type="number" min="0" value={editForm.sortOrder} onChange={setEdit('sortOrder')} className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none" />
+                      <input type="number" min="0" value={editForm.sortOrder} onChange={setEdit('sortOrder')} className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed" />
                     </div>
                   </div>
                   <div className="flex gap-2 pt-1">
@@ -431,19 +431,19 @@ function SectionManagerModal({ course, onClose }: { course: Course; onClose: () 
               <form onSubmit={handleAdd} className="space-y-3">
                 <div>
                   <label className="block text-xs font-semibold text-ink-subtle mb-1">Section Title</label>
-                  <input required value={addForm.title} onChange={setAdd('title')} placeholder="e.g. Introduction to HS Codes" className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary" />
+                  <input required value={addForm.title} onChange={setAdd('title')} placeholder="e.g. Introduction to HS Codes" className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed" />
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-ink-subtle mb-1">Video URL (YouTube/Vimeo)</label>
-                  <input required value={addForm.videoUrl} onChange={setAdd('videoUrl')} placeholder="https://www.youtube.com/watch?v=..." className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary" />
+                  <input required value={addForm.videoUrl} onChange={setAdd('videoUrl')} placeholder="https://www.youtube.com/watch?v=..." className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed" />
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-ink-subtle mb-1">Description <span className="font-normal text-ink-subtle">(optional)</span></label>
-                  <textarea rows={2} value={addForm.description} onChange={setAdd('description')} className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary resize-none" />
+                  <textarea rows={2} value={addForm.description} onChange={setAdd('description')} className="w-full resize-none px-2.5 py-2 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed" />
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-ink-subtle mb-1">Order <span className="font-normal text-ink-subtle">(leave blank to add at the end)</span></label>
-                  <input type="number" min="0" value={addForm.sortOrder} onChange={setAdd('sortOrder')} placeholder={String(sections.length)} className="w-full max-w-[120px] rounded-lg border border-border px-3 py-2 text-sm focus:outline-none" />
+                  <input type="number" min="0" value={addForm.sortOrder} onChange={setAdd('sortOrder')} placeholder={String(sections.length)} className="w-full max-w-[120px] h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed" />
                 </div>
                 <div className="flex gap-2 pt-1">
                   <button type="button" onClick={() => { setShowAddForm(false); setAddForm(blank); }} className="rounded-lg px-3 py-1.5 text-xs font-semibold border border-border text-ink-subtle">Cancel</button>
@@ -523,12 +523,12 @@ function AdminAcademyView() {
           { icon: 'verified', label: 'Completed', value: completedCount },
           { icon: 'trending_up', label: 'Avg Progress', value: `${avgProgress}%` },
         ].map(({ icon, label, value, accent }) => (
-          <div key={label} className={`rounded-card border p-4 ${accent ? '' : 'bg-surface border-border'}`} style={accent ? { background: 'rgb(var(--c-primary))', borderColor: 'rgb(var(--c-primary))' } : {}}>
+          <div key={label} className={`rounded-card border p-4 bg-surface border-border relative overflow-hidden ${accent ? 'before:absolute before:inset-y-0 before:left-0 before:w-[3px] before:bg-primary' : ''}`} >
             <div className="flex items-center gap-2 mb-2">
-              <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`, color: accent ? 'rgb(var(--c-primary-200))' : 'rgb(var(--c-ink-subtle))' }}>{icon}</span>
-              <p className={`text-xs font-semibold uppercase tracking-wide ${accent ? 'text-primary-200' : 'text-ink-subtle'}`}>{label}</p>
+              <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`, color: 'rgb(var(--c-ink-subtle))' }}>{icon}</span>
+              <p className={`text-2xs font-semibold uppercase text-ink-subtle`}>{label}</p>
             </div>
-            <p className={`text-2xl font-bold ${accent ? 'text-white' : 'text-ink'}`}>{value}</p>
+            <p className={`num text-[26px] font-semibold leading-none text-ink mt-1`}>{value}</p>
           </div>
         ))}
       </div>
@@ -546,7 +546,7 @@ function AdminAcademyView() {
       {tab === 'courses' && (
         <>
           <div className="mb-4">
-            <input type="search" placeholder="Search courses..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-full max-w-sm rounded-lg border border-border px-4 py-2 text-sm focus:outline-none focus:border-primary" />
+            <input type="search" placeholder="Search courses..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-full max-w-sm h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed" />
           </div>
           {coursesError && <div className="mb-4"><ErrorBanner message="Failed to load courses. Please refresh." /></div>}
           {coursesLoading ? (
@@ -561,7 +561,7 @@ function AdminAcademyView() {
                 <thead>
                   <tr className="bg-surface-alt border-b border-border">
                     {['Course', 'Category', 'Level', 'Price', 'Enrolled', 'Status', 'Actions'].map((h) => (
-                      <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-ink-subtle uppercase tracking-wide">{h}</th>
+                      <th key={h} className="text-left px-4 py-3 text-2xs font-semibold text-ink-subtle uppercase">{h}</th>
                     ))}
                   </tr>
                 </thead>
@@ -631,7 +631,7 @@ function AdminAcademyView() {
               <thead>
                 <tr className="bg-surface-alt border-b border-border">
                   {['Member', 'Course', 'Progress', 'Enrolled', 'Status'].map((h) => (
-                    <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-ink-subtle uppercase tracking-wide">{h}</th>
+                    <th key={h} className="text-left px-4 py-3 text-2xs font-semibold text-ink-subtle uppercase">{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -948,7 +948,7 @@ function CourseDetailModal({
 
           {/* Description */}
           <div className="mb-6">
-            <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide mb-2">About this course</p>
+            <p className="text-2xs font-semibold text-ink-subtle uppercase mb-2">About this course</p>
             <p className="text-sm text-ink-subtle leading-relaxed whitespace-pre-wrap">{course.description}</p>
           </div>
 
@@ -1060,7 +1060,7 @@ function MemberAcademyView() {
         <>
           <div className="mb-5">
             <input type="search" placeholder="Search courses..." value={search} onChange={(e) => setSearch(e.target.value)}
-              className="w-full max-w-md rounded-lg border border-border px-4 py-2.5 text-sm focus:outline-none focus:border-primary" />
+              className="w-full max-w-md h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed" />
           </div>
           {coursesError && <div className="mb-4"><ErrorBanner message="Failed to load courses. Please refresh." /></div>}
           {coursesLoading ? (

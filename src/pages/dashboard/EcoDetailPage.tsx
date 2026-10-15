@@ -306,7 +306,7 @@ export function EcoDetailPage() {
             rows={3}
             maxLength={1000}
             placeholder="Why is this certificate being revoked? The applicant will see this."
-            className="w-full rounded-control border border-border-input bg-surface px-3 py-2 text-sm text-ink placeholder:text-ink-subtle/80 outline-none focus:border-primary focus:shadow-focus"
+            className="w-full px-2.5 py-2 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed"
           />
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <Button

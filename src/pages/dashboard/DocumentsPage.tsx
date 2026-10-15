@@ -108,7 +108,7 @@ function UploadModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: (
             <label className="block text-xs font-semibold text-ink-subtle mb-1">Document Name <span className="text-danger">*</span></label>
             <input type="text" required value={docName} onChange={(e) => setDocName(e.target.value)}
               placeholder="e.g. Business Registration Certificate"
-              className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary focus:shadow-focus focus:border-primary" />
+              className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed" />
           </div>
           <Select label="Category" value={category} onValueChange={(v) => setCategory(v as DocumentCategory)}
             options={(Object.keys(CATEGORY_LABELS) as DocumentCategory[]).map((k) => ({ value: k, label: CATEGORY_LABELS[k] }))} />

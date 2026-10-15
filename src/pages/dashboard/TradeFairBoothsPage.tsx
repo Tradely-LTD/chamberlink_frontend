@@ -11,24 +11,6 @@ import {
 
 // ── Demo data ─────────────────────────────────────────────────────────────
 
-const demoBooths: MyBooth[] = [
-  {
-    id: '1',
-    boothId: 'b1',
-    eventId: 'evt-1',
-    boothNumber: 'A-01',
-    boothType: 'Standard',
-    zone: 'Zone A: Textile & Apparel',
-    eventTitle: 'NACCIMA Annual Trade Fair 2025',
-    eventStartDate: '2025-11-10T00:00:00Z',
-    size: '3×3m',
-    amount: 150000,
-    status: 'reserved',
-    paymentRef: 'PAY-TF-2025-001',
-    receiptUrl: null,
-    createdAt: '2025-08-01T00:00:00Z',
-  },
-];
 
 const statusConfig: Record<MyBooth['status'], { label: string; bg: string; text: string }> = {
   reserved:        { label: 'Reserved',        bg: 'rgb(var(--c-success-bg))', text: 'rgb(var(--c-success))' },
@@ -73,7 +55,7 @@ export function TradeFairBoothsPage() {
       });
   }, [callbackRef, verifyPayment, setSearchParams]);
 
-  const booths = data ?? (isLoading ? [] : demoBooths);
+  const booths = data ?? [];
 
   const handlePay = async (reservationId: string) => {
     setPayError(null);

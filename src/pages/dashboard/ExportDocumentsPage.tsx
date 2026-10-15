@@ -112,7 +112,7 @@ function CreateDocModal({ onClose }: { onClose: () => void }) {
                 value={form[key]}
                 onChange={set(key)}
                 placeholder={placeholder}
-                className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary"
+                className="w-full h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed"
               />
             </div>
           ))}
@@ -124,7 +124,7 @@ function CreateDocModal({ onClose }: { onClose: () => void }) {
               value={form.products}
               onChange={set('products')}
               placeholder="e.g. Wet Blue Hides (500 pcs), Finished Leather (200 sqm)"
-              className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary resize-none"
+              className="w-full resize-none px-2.5 py-2 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed"
             />
           </div>
           <div className="flex gap-3 pt-2">
@@ -233,7 +233,7 @@ function MarkReadyModal({ docId, onClose }: MarkReadyModalProps) {
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Any notes for the member…"
-              className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary resize-none"
+              className="w-full resize-none px-2.5 py-2 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed"
             />
           </div>
 
@@ -604,8 +604,8 @@ function AdminExportDocsView() {
         ).map(({ icon, label, value, accent }) => (
           <div
             key={label}
-            className={`rounded-card border p-4 ${accent ? '' : 'bg-surface border-border'}`}
-            style={accent ? { background: 'rgb(var(--c-primary))', borderColor: 'rgb(var(--c-primary))' } : {}}
+            className={`rounded-card border p-4 bg-surface border-border relative overflow-hidden ${accent ? 'before:absolute before:inset-y-0 before:left-0 before:w-[3px] before:bg-primary' : ''}`}
+            
           >
             <div className="flex items-center gap-2 mb-2">
               <span
@@ -613,20 +613,20 @@ function AdminExportDocsView() {
                 style={{
                   fontSize: 18,
                   fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`,
-                  color: accent ? 'rgb(var(--c-primary-200))' : 'rgb(var(--c-ink-subtle))',
+                  color: 'rgb(var(--c-ink-subtle))',
                 }}
               >
                 {icon}
               </span>
               <p
-                className={`text-xs font-semibold uppercase tracking-wide ${
-                  accent ? 'text-primary-200' : 'text-ink-subtle'
+                className={`text-2xs font-semibold uppercase ${
+                  'text-ink-subtle'
                 }`}
               >
                 {label}
               </p>
             </div>
-            <p className={`text-2xl font-bold ${accent ? 'text-white' : 'text-ink'}`}>
+            <p className={`num text-[26px] font-semibold leading-none text-ink mt-1`}>
               {value}
             </p>
           </div>
@@ -639,7 +639,7 @@ function AdminExportDocsView() {
           placeholder="Search by ref or member…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="rounded-lg border border-border px-4 py-2 text-sm focus:outline-none focus:border-primary w-64"
+          className="w-64 h-10 px-3 rounded-control border border-border-input bg-surface text-sm text-ink placeholder:text-ink-subtle/80 outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:shadow-focus disabled:bg-surface-alt disabled:cursor-not-allowed"
         />
         <div className="flex gap-1 bg-surface-alt rounded-lg p-1 border border-border">
           {(['all', 'draft', 'processing', 'ready', 'downloaded'] as const).map((s) => (
@@ -674,7 +674,7 @@ function AdminExportDocsView() {
                     (h) => (
                       <th
                         key={h}
-                        className="text-left px-4 py-3 text-xs font-semibold text-ink-subtle uppercase tracking-wide"
+                        className="text-left px-4 py-3 text-2xs font-semibold text-ink-subtle uppercase"
                       >
                         {h}
                       </th>

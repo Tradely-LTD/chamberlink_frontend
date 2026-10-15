@@ -112,7 +112,7 @@ function BoothBookingModal({ event, onClose }: { event: TradeFairEvent; onClose:
                 <div key={zone} className="mb-6">
                   <div className="flex items-center gap-2 mb-3">
                     <span className="material-symbols-outlined text-ink-subtle" style={{ fontSize: 16, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 16` }}>location_on</span>
-                    <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide">{zone}</p>
+                    <p className="text-2xs font-semibold text-ink-subtle uppercase">{zone}</p>
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     {allBooths.filter((b) => b.zone === zone).map((booth) => {
@@ -815,12 +815,12 @@ function AdminTradeFairView() {
           { icon: 'event_available', label: 'Available', value: availableCount, accent: false },
           { icon: 'payments', label: 'Revenue', value: `₦${(revenue / 1000).toFixed(0)}K`, accent: false },
         ].map(({ icon, label, value, accent }) => (
-          <div key={label} className={`rounded-card border p-4 ${accent ? 'border-primary' : 'bg-surface border-border'}`} style={accent ? { background: 'rgb(var(--c-primary))' } : {}}>
+          <div key={label} className={`rounded-card border p-4 bg-surface border-border relative overflow-hidden ${accent ? 'before:absolute before:inset-y-0 before:left-0 before:w-[3px] before:bg-primary' : ''}`} style={accent ? { background: 'rgb(var(--c-primary))' } : {}}>
             <div className="flex items-center gap-2 mb-2">
-              <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`, color: accent ? 'rgb(var(--c-primary-200))' : 'rgb(var(--c-ink-subtle))' }}>{icon}</span>
-              <p className={`text-xs font-semibold uppercase tracking-wide ${accent ? 'text-primary-200' : 'text-ink-subtle'}`}>{label}</p>
+              <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`, color: 'rgb(var(--c-ink-subtle))' }}>{icon}</span>
+              <p className={`text-2xs font-semibold uppercase text-ink-subtle`}>{label}</p>
             </div>
-            <p className={`text-2xl font-bold ${accent ? 'text-white' : 'text-ink'}`}>{value}</p>
+            <p className={`num text-[26px] font-semibold leading-none text-ink mt-1`}>{value}</p>
           </div>
         ))}
       </div>
@@ -984,7 +984,7 @@ function AdminTradeFairView() {
                 <thead>
                   <tr className="bg-surface-alt border-b border-border">
                     {['Booth', 'Member', 'Type / Zone', 'Amount', 'Status', 'Payment Ref'].map((h) => (
-                      <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-ink-subtle uppercase tracking-wide">{h}</th>
+                      <th key={h} className="text-left px-4 py-3 text-2xs font-semibold text-ink-subtle uppercase">{h}</th>
                     ))}
                   </tr>
                 </thead>
