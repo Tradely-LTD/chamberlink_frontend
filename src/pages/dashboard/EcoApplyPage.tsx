@@ -694,9 +694,9 @@ export function EcoApplyPage() {
           : 'The chamber reviews your application first, and you pay only once it\u2019s approved.'}</>}
       />
 
-      <div className="grid gap-8 lg:grid-cols-[232px_minmax(0,1fr)]">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[232px_minmax(0,1fr)]">
         {/* Steps — vertical, always fully readable; completed steps are clickable. */}
-        <nav aria-label="Application steps" className="lg:sticky lg:top-6 lg:self-start">
+        <nav aria-label="Application steps" className="min-w-0 lg:sticky lg:top-6 lg:self-start">
           <ol className="flex gap-2 overflow-x-auto pb-1 lg:block lg:space-y-1 lg:overflow-visible">
             {STEPS.map((label, i) => {
               const done = i < step;

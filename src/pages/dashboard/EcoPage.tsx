@@ -539,10 +539,10 @@ function MemberEcoView() {
             <thead>
               <tr>
                 <th scope="col">Reference</th>
-                <th scope="col">Destination</th>
+                <th scope="col" className="hidden md:table-cell">Destination</th>
                 <th scope="col">Status</th>
-                <th scope="col" className="text-right">Fee</th>
-                <th scope="col">Submitted</th>
+                <th scope="col" className="hidden sm:table-cell text-right">Fee</th>
+                <th scope="col" className="hidden lg:table-cell">Submitted</th>
                 <th scope="col" className="text-right"><span className="sr-only">Actions</span></th>
               </tr>
             </thead>
@@ -565,15 +565,15 @@ function MemberEcoView() {
                         {chamberFilter === 'all' && cert.tenantId ? ` · ${tenantNameById.get(cert.tenantId) ?? ''}` : ''}
                       </p>
                     </td>
-                    <td className="whitespace-nowrap">{cert.destinationCountry || '–'}</td>
+                    <td className="hidden md:table-cell whitespace-nowrap">{cert.destinationCountry || '–'}</td>
                     <td>
                       <CertStatus status={cert.status} />
-                      {hint && <p className="mt-1 text-xs text-ink-subtle whitespace-nowrap">{hint}</p>}
+                      {hint && <p className="mt-1 text-xs text-ink-subtle sm:whitespace-nowrap">{hint}</p>}
                     </td>
-                    <td className="num whitespace-nowrap text-right">
+                    <td className="hidden sm:table-cell num whitespace-nowrap text-right">
                       {cert.applicationFee != null && cert.applicationFee > 0 ? `₦${cert.applicationFee.toLocaleString('en-NG', { maximumFractionDigits: 2 })}` : '–'}
                     </td>
-                    <td className="num whitespace-nowrap text-ink-subtle">{fmtDate(cert.createdAt)}</td>
+                    <td className="hidden lg:table-cell num whitespace-nowrap text-ink-subtle">{fmtDate(cert.createdAt)}</td>
                     <td>
                       <div className="flex items-center justify-end gap-2">
                         {isPayable && <PayButton certId={cert.id} />}

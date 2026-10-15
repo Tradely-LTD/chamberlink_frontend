@@ -216,7 +216,7 @@ export function EcoDetailPage() {
         description={[certificateTypes?.find((t) => t.code === cert.certificateTypeCode)?.name ?? 'Certificate of Origin', cert.solidMineralName, cert.destinationCountry && `to ${cert.destinationCountry}`].filter(Boolean).join(' · ')}
       />
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
         <aside className="order-first space-y-4 lg:order-last lg:sticky lg:top-6 lg:self-start">
           <section className="rounded-card border border-border bg-surface p-5">
             <p className="text-2xs font-semibold uppercase text-ink-subtle">Status</p>
