@@ -4,34 +4,35 @@ import { MobileNav } from './MobileNav';
 import { useAppSelector } from '@shared/hooks/useAppDispatch';
 import { ChamberSwitcher } from '@features/membership/components/ChamberSwitcher';
 
-const pageTitles: Record<string, string> = {
+// Routes that aren't sidebar items; everything else is labelled from the
+// sidebar entry it belongs to (longest matching path wins).
+const extraTitles: Record<string, string> = {
   '/dashboard': 'Overview',
-  '/dashboard/profile': 'My Profile',
-  '/dashboard/connections': 'My Chambers',
-  '/dashboard/chamber-network': 'Chamber Network',
-  '/dashboard/membership': 'Membership',
-  '/dashboard/eco': 'Certificate Applications',
-  '/dashboard/eco/apply': 'New Certificate Application',
+  '/dashboard/eco/apply': 'New application',
   '/dashboard/documents': 'Documents',
-  '/dashboard/trade-fair': 'Trade Fair',
-  '/dashboard/trade-fair/booths': 'My Booths',
-  '/dashboard/academy': 'E-Learning',
-  '/dashboard/analytics': 'Analytics',
-  '/dashboard/admin': 'Audit Log',
-  '/dashboard/trade-corridors': 'Trade Corridors',
-  '/dashboard/exporter-visibility': 'Exporter Visibility',
-  '/dashboard/export-documents': 'Export Documents',
-  '/dashboard/bank-verification': 'Bank & FI Verification',
-  '/dashboard/trade-data-api': 'Trade Data API',
-  '/dashboard/members': 'Member Management',
-  '/dashboard/white-label': 'White-Label Console',
-  '/dashboard/settings': 'Platform Settings',
+  '/dashboard/trade-fair/booths': 'My booths',
+  '/dashboard/export-documents/generate': 'New export document',
+};
+const navTitles: Record<string, string> = {
+  '/dashboard/profile': 'My Profile', '/dashboard/connections': 'My Chambers', '/dashboard/chamber-network': 'Chamber Network',
+  '/dashboard/membership': 'Membership', '/dashboard/eco': 'Certificate Applications', '/dashboard/trade-fair': 'Trade Fair',
+  '/dashboard/academy': 'E-Learning', '/dashboard/analytics': 'Analytics', '/dashboard/admin': 'Audit Log',
+  '/dashboard/trade-corridors': 'Trade Corridors', '/dashboard/exporter-visibility': 'Exporter Visibility',
+  '/dashboard/export-documents': 'Export Documents', '/dashboard/bank-verification': 'Bank Verification',
+  '/dashboard/trade-data-api': 'Trade Data API', '/dashboard/members': 'Member Management', '/dashboard/white-label': 'White-Label',
+  '/dashboard/settings': 'Settings', '/dashboard/company': 'My Company', '/dashboard/company-verification': 'Company Verification',
+  '/dashboard/all-users': 'All Users',
+};
+const titleFor = (path: string) => {
+  if (extraTitles[path]) return extraTitles[path];
+  const match = Object.keys(navTitles).filter((p) => path === p || path.startsWith(`${p}/`)).sort((a, b) => b.length - a.length)[0];
+  return match ? navTitles[match] : 'Chamberlink';
 };
 
 export function DashboardShell() {
   const location = useLocation();
   const user = useAppSelector((s) => s.auth.user);
-  const pageTitle = pageTitles[location.pathname] ?? 'Dashboard';
+  const pageTitle = titleFor(location.pathname);
 
   return (
     <div className="flex h-screen bg-canvas">

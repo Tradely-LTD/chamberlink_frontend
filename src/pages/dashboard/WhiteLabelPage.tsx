@@ -89,9 +89,9 @@ function CreateTenantModal({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
+      <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
+      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-surface border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
           <h2 className="font-bold text-ink">Create New Chamber</h2>
           <button
             onClick={onClose}
@@ -369,9 +369,9 @@ function EditTenantModal({ tenant, onClose }: { tenant: Tenant; onClose: () => v
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
+      <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
+      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-surface border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
           <div>
             <h2 className="font-bold text-ink">Edit Chamber</h2>
             <p className="text-xs text-ink-subtle mt-0.5 font-mono">/{tenant.slug}</p>
@@ -428,7 +428,7 @@ function EditTenantModal({ tenant, onClose }: { tenant: Tenant; onClose: () => v
               hideLabel
               value={form.status}
               onValueChange={(v) => setForm((f) => ({ ...f, status: v as Tenant['status'] }))}
-              className="bg-white"
+              className="bg-surface"
               options={[
                 { value: 'active', label: 'Active' },
                 { value: 'trial', label: 'Trial' },
@@ -562,9 +562,9 @@ function ModuleConfigPanel({ tenant, onClose }: { tenant: Tenant; onClose: () =>
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
+      <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
+      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-surface border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
           <div>
             <h2 className="font-bold text-ink">Module Configuration</h2>
             <p className="text-xs text-ink-subtle mt-0.5">{tenant.name}</p>
@@ -594,7 +594,7 @@ function ModuleConfigPanel({ tenant, onClose }: { tenant: Tenant; onClose: () =>
                   style={enabled ? { background: 'rgb(var(--c-primary))' } : { background: 'rgb(var(--c-border))' }}
                 >
                   <div
-                    className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${
+                    className={`absolute top-0.5 w-4 h-4 rounded-full bg-surface shadow transition-transform ${
                       enabled ? 'translate-x-4' : 'translate-x-0.5'
                     }`}
                   />
@@ -695,7 +695,7 @@ function WhiteLabelView() {
         ].map(({ icon, label, value, accent }) => (
           <div
             key={label}
-            className={`rounded-xl border p-4 ${accent ? '' : 'bg-white border-border'}`}
+            className={`rounded-card border p-4 ${accent ? '' : 'bg-surface border-border'}`}
             style={accent ? { background: 'rgb(var(--c-primary))', borderColor: 'rgb(var(--c-primary))' } : {}}
           >
             <div className="flex items-center gap-2 mb-2">
@@ -728,7 +728,7 @@ function WhiteLabelView() {
       {isLoading ? (
         <SkeletonCard className="h-64" />
       ) : isError ? (
-        <div className="rounded-xl border border-danger-border bg-danger-bg p-6">
+        <div className="rounded-card border border-danger-border bg-danger-bg p-6">
           <p className="text-sm font-semibold text-danger mb-1">Failed to load chambers</p>
           <p className="text-xs text-danger mb-4">
             {(error as { data?: { message?: string } })?.data?.message ?? 'Could not load chambers. Check your network and try again.'}
@@ -750,7 +750,7 @@ function WhiteLabelView() {
             const sc = tenantStatusConfig[tenant.status];
             const enabledCount = tenant.enabledModules.length;
             return (
-              <div key={tenant.id} className="bg-white rounded-xl border border-border p-6">
+              <div key={tenant.id} className="bg-surface rounded-card border border-border p-6">
                 <div className="flex items-start justify-between gap-4 mb-4">
                   <div className="flex items-center gap-4">
                     <div

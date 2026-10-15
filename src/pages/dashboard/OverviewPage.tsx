@@ -438,7 +438,7 @@ function ExecutiveOverview() {
 function InstitutionalOverview() {
   const user = useAppSelector((s) => s.auth.user);
   return (
-    <div className="mx-auto w-full max-w-4xl px-4 py-6 sm:px-8 sm:py-8">
+    <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-4xl">
       <PageHeader
         eyebrow="Institutional"
         title={`Welcome, ${user?.firstName ?? 'Institution'}`}

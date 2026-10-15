@@ -129,10 +129,10 @@ function MemberDetailModal({ member, onClose, isChamberAdmin }: MemberDetailModa
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+      <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
+      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
         {/* Sticky header */}
-        <div className="sticky top-0 bg-white border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
+        <div className="sticky top-0 bg-surface border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
           <h2 className="font-semibold text-ink">Member Details</h2>
           <button
             onClick={onClose}
@@ -148,7 +148,7 @@ function MemberDetailModal({ member, onClose, isChamberAdmin }: MemberDetailModa
           </button>
         </div>
 
-        <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8">
+        <div className="p-6">
           {localError && (
             <div className="mb-4">
               <ErrorBanner message={localError} />
@@ -163,7 +163,7 @@ function MemberDetailModal({ member, onClose, isChamberAdmin }: MemberDetailModa
                 onClick={() => setActiveTab(tab)}
                 className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors capitalize ${
                   activeTab === tab
-                    ? 'bg-white text-ink shadow-sm'
+                    ? 'bg-surface text-ink shadow-card'
                     : 'text-ink-subtle hover:text-ink'
                 }`}
               >
@@ -229,7 +229,7 @@ function MemberDetailModal({ member, onClose, isChamberAdmin }: MemberDetailModa
                 <p className="text-sm text-ink-subtle text-center py-8">No payments on record.</p>
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
+                  <table className="data-table w-full text-sm">
                     <thead>
                       <tr className="border-b border-border bg-surface-alt">
                         {['Date', 'Amount', 'Purpose', 'Gateway', 'Reference', 'Status'].map((h) => (
@@ -349,10 +349,10 @@ function BulkImportModal({ onClose }: BulkImportModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+      <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
+      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
         {/* Sticky header */}
-        <div className="sticky top-0 bg-white border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
+        <div className="sticky top-0 bg-surface border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
           <h2 className="font-semibold text-ink">Bulk Import Members</h2>
           <button
             onClick={onClose}
@@ -368,7 +368,7 @@ function BulkImportModal({ onClose }: BulkImportModalProps) {
           </button>
         </div>
 
-        <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8">
+        <div className="p-6">
           {importError && (
             <div className="mb-4">
               <ErrorBanner message="Import failed. Please check the file and try again." />
@@ -429,7 +429,7 @@ function BulkImportModal({ onClose }: BulkImportModalProps) {
                     {importResult.failed.length} row{importResult.failed.length !== 1 ? 's' : ''} failed:
                   </p>
                   <div className="overflow-x-auto">
-                    <table className="w-full text-sm border border-border rounded-lg overflow-hidden">
+                    <table className="data-table w-full text-sm border border-border rounded-lg overflow-hidden">
                       <thead>
                         <tr className="bg-surface-alt border-b border-border">
                           {['Row #', 'Email', 'Reason'].map((h) => (
@@ -583,7 +583,7 @@ export function MemberManagementPage() {
           hideLabel
           value={statusFilter}
           onValueChange={handleStatusChange}
-          className="bg-white"
+          className="bg-surface"
           options={[
             { value: '', label: 'All' },
             { value: 'active', label: 'Active' },
@@ -597,7 +597,7 @@ export function MemberManagementPage() {
           <button
             onClick={() => void handleExport()}
             disabled={isExporting}
-            className="rounded-lg border border-border bg-white px-4 py-2 text-sm font-semibold text-ink hover:border-primary hover:text-primary disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+            className="rounded-lg border border-border bg-surface px-4 py-2 text-sm font-semibold text-ink hover:border-primary hover:text-primary disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
           >
             {isExporting ? 'Exporting...' : 'Export CSV'}
           </button>
@@ -621,20 +621,20 @@ export function MemberManagementPage() {
           <ErrorBanner message="Failed to load members." />
           <button
             onClick={() => void refetch()}
-            className="rounded-lg border border-border bg-white px-4 py-2 text-sm font-semibold text-ink hover:border-primary transition-colors"
+            className="rounded-lg border border-border bg-surface px-4 py-2 text-sm font-semibold text-ink hover:border-primary transition-colors"
           >
             Retry
           </button>
         </div>
       ) : !members || members.items.length === 0 ? (
-        <div className="bg-white rounded-xl border border-border py-16 text-center">
+        <div className="bg-surface rounded-card border border-border py-16 text-center">
           <p className="text-sm text-ink-subtle">No members found.</p>
         </div>
       ) : (
         <>
-          <div className="bg-white rounded-xl border border-border overflow-hidden">
+          <div className="bg-surface rounded-card border border-border overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="data-table w-full text-sm">
                 <thead>
                   <tr className="border-b border-border bg-surface-alt">
                     {['Member ID', 'Full Name / Email', 'Business', 'Tier', 'Status', 'Expiry', 'Actions'].map(
@@ -721,14 +721,14 @@ export function MemberManagementPage() {
               <button
                 disabled={page === 1}
                 onClick={() => setPage((p) => p - 1)}
-                className="rounded-lg border border-border bg-white px-3 py-1.5 text-sm font-medium text-ink hover:border-primary disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="rounded-lg border border-border bg-surface px-3 py-1.5 text-sm font-medium text-ink hover:border-primary disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 Prev
               </button>
               <button
                 disabled={page * PAGE_SIZE >= total}
                 onClick={() => setPage((p) => p + 1)}
-                className="rounded-lg border border-border bg-white px-3 py-1.5 text-sm font-medium text-ink hover:border-primary disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="rounded-lg border border-border bg-surface px-3 py-1.5 text-sm font-medium text-ink hover:border-primary disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 Next
               </button>

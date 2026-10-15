@@ -1,6 +1,6 @@
 export function RecentActivityPlaceholder() {
   return (
-    <div className="rounded-xl border border-border/40 bg-white p-5">
+    <div className="rounded-card border border-border bg-surface p-5">
       <p className="text-xs font-medium text-ink-subtle uppercase tracking-wide mb-4">
         Recent Activity
       </p>

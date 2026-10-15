@@ -28,8 +28,8 @@ export function ConnectChamberModal({ onClose, onConnected }: Props) {
   const handleConnect = connect;
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 px-4">
-      <div className="w-full max-w-md rounded-xl bg-white shadow-xl">
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-ink/50 px-4">
+      <div className="w-full max-w-md rounded-card bg-surface shadow-pop">
         <div className="flex items-center justify-between border-b border-border px-5 py-4">
           <h2 className="text-base font-semibold text-ink">Connect a new chamber</h2>
           <button
@@ -78,10 +78,10 @@ export function ConnectChamberModal({ onClose, onConnected }: Props) {
                         <img
                           src={chamber.logoUrl}
                           alt=""
-                          className="h-8 w-8 rounded-md object-contain border border-border/40 bg-white flex-shrink-0"
+                          className="h-8 w-8 rounded-md object-contain border border-border bg-surface flex-shrink-0"
                         />
                       ) : (
-                        <div className="h-8 w-8 rounded-md bg-surface-alt border border-border/40 flex items-center justify-center flex-shrink-0">
+                        <div className="h-8 w-8 rounded-md bg-surface-alt border border-border flex items-center justify-center flex-shrink-0">
                           <span className="material-symbols-outlined text-ink-subtle" style={{ fontSize: 16 }}>
                             corporate_fare
                           </span>

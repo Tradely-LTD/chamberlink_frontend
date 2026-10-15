@@ -75,8 +75,8 @@ function CreateDocModal({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg">
+      <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
+      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-lg">
         <div className="border-b border-border px-6 py-4 flex items-center justify-between">
           <h2 className="font-bold text-ink">Generate Export Document</h2>
           <button
@@ -181,8 +181,8 @@ function MarkReadyModal({ docId, onClose }: MarkReadyModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md">
+      <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
+      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-md">
         <div className="border-b border-border px-6 py-4 flex items-center justify-between">
           <h2 className="font-bold text-ink">Upload &amp; Mark Ready</h2>
           <button
@@ -320,7 +320,7 @@ function MemberExportDocsView() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-8 sm:py-8">
+    <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-5xl">
       {showCreate && <CreateDocModal onClose={() => setShowCreate(false)} />}
 
       {/* Page header — stacks on mobile */}
@@ -353,7 +353,7 @@ function MemberExportDocsView() {
       </div>
 
       {/* Main tabs: Generated | Document Library */}
-      <div className="flex gap-1 bg-surface-alt rounded-xl p-1 mb-6 border border-border w-full sm:w-fit">
+      <div className="flex gap-1 bg-surface-alt rounded-card p-1 mb-6 border border-border w-full sm:w-fit">
         {([
           { key: 'generated', label: 'Generated Documents', shortLabel: 'Generated', icon: 'receipt_long' },
           { key: 'library',   label: 'Document Library',    shortLabel: 'My Files',  icon: 'folder_open' },
@@ -363,7 +363,7 @@ function MemberExportDocsView() {
             onClick={() => setMainTab(key)}
             className={`flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               mainTab === key
-                ? 'bg-white text-ink shadow-sm'
+                ? 'bg-surface text-ink shadow-card'
                 : 'text-ink-subtle hover:text-ink'
             }`}
           >
@@ -384,7 +384,7 @@ function MemberExportDocsView() {
                 key={s}
                 onClick={() => setStatusFilter(s)}
                 className={`flex-shrink-0 px-3 py-1.5 rounded-md text-sm font-medium capitalize transition-colors ${
-                  statusFilter === s ? 'bg-white text-ink shadow-sm' : 'text-ink-subtle hover:text-ink'
+                  statusFilter === s ? 'bg-surface text-ink shadow-card' : 'text-ink-subtle hover:text-ink'
                 }`}
               >
                 {s === 'all' ? 'All' : s.charAt(0).toUpperCase() + s.slice(1)}
@@ -399,7 +399,7 @@ function MemberExportDocsView() {
           ) : (
             <div className="space-y-3">
               {filtered.length === 0 ? (
-                <div className="bg-white rounded-xl border border-border p-10 sm:p-12 text-center">
+                <div className="bg-surface rounded-card border border-border p-10 sm:p-12 text-center">
                   <p className="text-sm text-ink-subtle mb-4">No documents found.</p>
                   <button
                     onClick={() => navigate('/dashboard/export-documents/generate')}
@@ -415,7 +415,7 @@ function MemberExportDocsView() {
                   const dsc = docStatusConfig[doc.status];
                   const isBusy = downloading && downloadingId === doc.id;
                   return (
-                    <div key={doc.id} className="bg-white rounded-xl border border-border p-4 sm:p-5">
+                    <div key={doc.id} className="bg-surface rounded-card border border-border p-4 sm:p-5">
                       <div className="flex items-start gap-3 sm:gap-4">
                         {/* Doc type icon */}
                         <div
@@ -604,7 +604,7 @@ function AdminExportDocsView() {
         ).map(({ icon, label, value, accent }) => (
           <div
             key={label}
-            className={`rounded-xl border p-4 ${accent ? '' : 'bg-white border-border'}`}
+            className={`rounded-card border p-4 ${accent ? '' : 'bg-surface border-border'}`}
             style={accent ? { background: 'rgb(var(--c-primary))', borderColor: 'rgb(var(--c-primary))' } : {}}
           >
             <div className="flex items-center gap-2 mb-2">
@@ -647,7 +647,7 @@ function AdminExportDocsView() {
               key={s}
               onClick={() => setStatusFilter(s)}
               className={`px-3 py-1 rounded-md text-xs font-medium capitalize transition-colors ${
-                statusFilter === s ? 'bg-white shadow-sm text-ink' : 'text-ink-subtle'
+                statusFilter === s ? 'bg-surface shadow-card text-ink' : 'text-ink-subtle'
               }`}
             >
               {s === 'all' ? 'All' : s}
@@ -661,13 +661,13 @@ function AdminExportDocsView() {
       ) : isError ? (
         <ErrorBanner message="Failed to load export documents. Please refresh and try again." />
       ) : filtered.length === 0 ? (
-        <div className="bg-white rounded-xl border border-border p-12 text-center">
+        <div className="bg-surface rounded-card border border-border p-12 text-center">
           <p className="text-sm text-ink-subtle">No documents match the current filters.</p>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-border overflow-hidden">
+        <div className="bg-surface rounded-card border border-border overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="data-table w-full text-sm">
               <thead>
                 <tr className="bg-surface-alt border-b border-border">
                   {['Document', 'Member', 'Consignee', 'Destination', 'Status', 'Created', 'Actions'].map(

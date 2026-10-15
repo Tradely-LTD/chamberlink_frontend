@@ -32,7 +32,7 @@ function SettingRow({ setting, onSaved }: { setting: PlatformSetting; onSaved: (
   };
 
   return (
-    <div className="px-6 py-5 border-b border-border/30 last:border-0">
+    <div className="px-6 py-5 border-b border-border last:border-0">
       <div className="flex flex-wrap items-end gap-3 justify-between">
         <div className="min-w-0 flex-1">
           <p className="text-sm font-medium text-ink">{setting.label}</p>
@@ -46,7 +46,7 @@ function SettingRow({ setting, onSaved }: { setting: PlatformSetting; onSaved: (
                 id={`setting-${setting.key}`}
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
-                className="rounded-lg border border-border bg-surface px-3 py-2 text-sm text-ink outline-none transition focus:ring-2 focus:ring-primary/40"
+                className="rounded-lg border border-border bg-surface px-3 py-2 text-sm text-ink outline-none transition focus:border-primary focus:shadow-focus"
               >
                 {setting.options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
@@ -55,7 +55,7 @@ function SettingRow({ setting, onSaved }: { setting: PlatformSetting; onSaved: (
                 id={`setting-${setting.key}`}
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
-                className={`w-32 rounded-lg border border-border bg-surface px-3 py-2 text-sm text-ink text-right outline-none transition focus:ring-2 focus:ring-primary/40 ${setting.type === 'percent' ? 'pr-7' : ''}`}
+                className={`w-32 rounded-lg border border-border bg-surface px-3 py-2 text-sm text-ink text-right outline-none transition focus:border-primary focus:shadow-focus ${setting.type === 'percent' ? 'pr-7' : ''}`}
               />
             )}
             {setting.type === 'percent' && (
@@ -80,7 +80,7 @@ function SettingsView() {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 sm:py-8">
+    <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-3xl">
       <div className="mb-6">
         <h1 className="text-2xl font-semibold text-ink mb-1">Platform Settings</h1>
         <p className="text-sm text-ink-subtle">
@@ -104,7 +104,7 @@ function SettingsView() {
       )}
 
       {!isLoading && !isError && (
-        <div className="bg-white rounded-xl border border-border/40 overflow-hidden">
+        <div className="bg-surface rounded-card border border-border overflow-hidden">
           {(settings ?? []).map((setting) => (
             <SettingRow key={setting.key} setting={setting} onSaved={(message) => setToast({ message, type: 'success' })} />
           ))}

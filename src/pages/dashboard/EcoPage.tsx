@@ -10,25 +10,35 @@ import {
   type ECertStatus,
   type EcoQueueItem,
 } from '@features/eco/ecoApi';
+import { useGetCertificateTypesQuery } from '@features/eco/ecoApi';
 import { useGetMyConnectionsQuery } from '@features/membership';
 import { SkeletonCard } from '@shared/ui/SkeletonCard';
 import { ErrorBanner } from '@shared/ui/ErrorBanner';
 import { Button } from '@shared/ui/Button';
-import { Badge } from '@shared/ui/Badge';
+import { PageHeader } from '@shared/ui/PageHeader';
+import { StatusBadge, type StatusTone } from '@shared/ui/StatusBadge';
+import { TableCard } from '@shared/ui/TableCard';
+import { EmptyState } from '@shared/ui/EmptyState';
+import { SegmentedTabs } from '@shared/ui/SegmentedTabs';
+import { Modal } from '@shared/ui/Modal';
+import { Textarea } from '@shared/ui/Textarea';
 
 // ── Shared status config ───────────────────────────────────────────────────
 
-const statusVariant: Record<ECertStatus, 'success' | 'warning' | 'error' | 'default'> = {
-  issued: 'success', approved: 'warning',
-  submitted: 'warning', under_review: 'warning', pending_payment: 'warning',
-  draft: 'default',
-  rejected: 'error', revision_requested: 'error', revoked: 'error',
+const statusTone: Record<ECertStatus, StatusTone> = {
+  draft: 'neutral', submitted: 'info', under_review: 'warning', revision_requested: 'warning',
+  approved: 'gold', pending_payment: 'gold', issued: 'success', rejected: 'danger', revoked: 'danger',
 };
+const CertStatus = ({ status }: { status: ECertStatus }) => <StatusBadge tone={statusTone[status]}>{statusLabel[status]}</StatusBadge>;
+
+const fmtDate = (d: string) => new Date(d).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'short', year: 'numeric' });
+
+const linkBtn = 'inline-flex h-8 items-center gap-1.5 rounded-control border border-border-strong bg-surface px-3 text-[13px] font-medium text-ink shadow-card transition-colors hover:bg-surface-alt focus-visible:shadow-focus';
 
 const statusLabel: Record<ECertStatus, string> = {
-  draft: 'Draft', submitted: 'Submitted', under_review: 'Under Review',
-  pending_payment: 'Awaiting Payment', approved: 'Approved, awaiting payment', issued: 'Issued',
-  rejected: 'Rejected', revision_requested: 'Revision Required', revoked: 'Revoked',
+  draft: 'Draft', submitted: 'Submitted', under_review: 'Under review',
+  pending_payment: 'Awaiting payment', approved: 'Approved', issued: 'Issued',
+  rejected: 'Rejected', revision_requested: 'Changes requested', revoked: 'Revoked',
 };
 
 const ADMIN_ROLES = ['super_admin', 'chamber_admin', 'staff_operator', 'chamber_executive'];
@@ -39,9 +49,9 @@ const READ_ONLY_ROLES = ['chamber_executive']; // can view queue but not take ac
 const FILTER_OPTIONS: { label: string; value: string }[] = [
   { label: 'All', value: '' },
   { label: 'Submitted', value: 'submitted' },
-  { label: 'Under Review', value: 'under_review' },
-  { label: 'Approved, awaiting payment', value: 'approved' },
-  { label: 'Awaiting Payment', value: 'pending_payment' },
+  { label: 'Under review', value: 'under_review' },
+  { label: 'Approved', value: 'approved' },
+  { label: 'Awaiting payment', value: 'pending_payment' },
   { label: 'Issued', value: 'issued' },
   { label: 'Rejected', value: 'rejected' },
   // Revoked certificates need their own filter, not to be folded into Rejected:
@@ -66,50 +76,35 @@ function ReviewNotesModal({
   const [notes, setNotes] = useState('');
   const requiresNotes = action === 'reject' || action === 'request_revision';
 
+  const title = action === 'start_review' ? 'Start review' : action === 'request_revision' ? 'Request changes' : action === 'approve' ? 'Approve application' : 'Reject application';
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-md">
-        <div className="border-b border-border/40 px-6 py-4 flex items-center justify-between">
-          <h3 className="font-semibold text-ink capitalize">
-            {action === 'start_review' ? 'Start Review' : action === 'request_revision' ? 'Request Revision' : action === 'approve' ? 'Approve Application' : 'Reject Application'}
-          </h3>
-          <button onClick={onClose} className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle">
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-        <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8">
-          <p className="text-sm text-ink-subtle mb-4">
-            Application by <span className="font-medium text-ink">{item.applicantFirstName} {item.applicantLastName}</span>: {item.solidMineralName ?? '–'} → {item.destinationCountry ?? '–'}
-          </p>
-          <div className="mb-4">
-            <label className="block text-xs font-semibold text-ink-subtle mb-1">
-              {requiresNotes ? 'Notes (required)' : 'Notes (optional)'}
-            </label>
-            <textarea
-              rows={3}
-              className="w-full rounded-lg border border-border/60 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
-              placeholder={action === 'approve' ? 'Optional remarks for the applicant…' : 'Reason or instructions for the applicant…'}
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-            />
-          </div>
-          <div className="flex gap-3">
-            <Button variant="outline" onClick={onClose}>Cancel</Button>
-            <Button
-              loading={isLoading}
-              disabled={requiresNotes && !notes.trim()}
-              className={action === 'approve' ? 'bg-primary hover:bg-primary-hover text-white' : 'bg-danger hover:bg-danger text-white'}
-              onClick={() => onConfirm(notes)}
-            >
-              Confirm
-            </Button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <Modal
+      title={title}
+      onClose={onClose}
+      footer={<>
+        <Button variant="secondary" onClick={onClose}>Cancel</Button>
+        <Button
+          variant={action === 'reject' ? 'danger' : 'primary'}
+          loading={isLoading}
+          disabled={requiresNotes && !notes.trim()}
+          onClick={() => onConfirm(notes)}
+        >
+          {action === 'approve' ? 'Approve' : action === 'reject' ? 'Reject application' : action === 'request_revision' ? 'Send request' : 'Confirm'}
+        </Button>
+      </>}
+    >
+      <p className="mb-4 text-[13px] text-ink-muted">
+        {item.applicantFirstName} {item.applicantLastName} · {item.solidMineralName ?? '–'} to {item.destinationCountry ?? '–'}
+      </p>
+      <Textarea
+        label={requiresNotes ? 'Reason for the applicant *' : 'Note for the applicant (optional)'}
+        rows={4}
+        placeholder={action === 'approve' ? 'Optional remarks for the applicant…' : 'What needs to change, or why it was refused…'}
+        hint={requiresNotes ? 'The applicant sees this exactly as written.' : undefined}
+        value={notes}
+        onChange={(e) => setNotes(e.target.value)}
+      />
+    </Modal>
   );
 }
 
@@ -146,32 +141,21 @@ function CertActionButtons({ certId, compact = false }: { certId: string; compac
   if (compact) {
     return (
       <div className="flex items-center gap-2">
-        {error && <span className="text-xs text-danger" title={error}>⚠</span>}
-        <button disabled={busy} onClick={() => open('view')}
-          className="flex items-center gap-1 rounded-lg border border-border/60 px-2.5 py-1.5 text-xs font-semibold text-primary hover:bg-success-bg transition-colors disabled:opacity-50">
-          <span className="material-symbols-outlined" style={{ fontSize: 13 }}>visibility</span>
-          {busy ? '…' : 'View'}
-        </button>
-        <button disabled={busy} onClick={() => open('download')}
-          className="flex items-center gap-1 rounded-lg border border-border/60 px-2.5 py-1.5 text-xs font-semibold text-ink-subtle hover:bg-surface-alt transition-colors disabled:opacity-50">
-          <span className="material-symbols-outlined" style={{ fontSize: 13 }}>download</span>
-          {busy ? '…' : 'Download'}
-        </button>
+        {error && <span className="material-symbols-outlined text-danger" title={error} aria-label={error} style={{ fontSize: 16 }}>error</span>}
+        <Button size="sm" disabled={busy} onClick={() => open('download')}>
+          <span className="material-symbols-outlined" aria-hidden="true" style={{ fontSize: 16 }}>download</span>
+          {busy ? 'Opening…' : 'Download'}
+        </Button>
+        <Button size="sm" variant="secondary" disabled={busy} onClick={() => open('view')}>View</Button>
       </div>
     );
   }
 
   return (
     <div className="flex items-center gap-2">
-      {error && <span className="text-xs text-danger" title={error}>⚠ {error}</span>}
-      <button disabled={busy} onClick={() => open('view')}
-        className="text-xs font-medium text-primary hover:underline disabled:opacity-50">
-        {busy ? '…' : 'View'}
-      </button>
-      <button disabled={busy} onClick={() => open('download')}
-        className="text-xs font-medium text-ink-subtle hover:underline disabled:opacity-50">
-        {busy ? '…' : 'Download'}
-      </button>
+      {error && <span className="text-xs text-danger">{error}</span>}
+      <Button size="sm" variant="secondary" disabled={busy} onClick={() => open('view')}>View</Button>
+      <Button size="sm" variant="ghost" disabled={busy} onClick={() => open('download')}>Download</Button>
     </div>
   );
 }
@@ -198,13 +182,10 @@ function VerifyMembershipButton({ item, onDone }: { item: EcoQueueItem; onDone: 
 
   return (
     <div className="flex flex-col gap-1">
-      <button
-        disabled={isLoading}
-        onClick={handleVerify}
-        className="text-xs font-semibold text-success border border-success-bg bg-success-bg rounded-md px-2.5 py-1 hover:bg-success-bg/40 transition-colors disabled:opacity-50"
-      >
-        {isLoading ? 'Verifying…' : 'Mark Membership Verified'}
-      </button>
+      <Button size="sm" variant="secondary" loading={isLoading} onClick={handleVerify}>
+        <span className="material-symbols-outlined text-success" aria-hidden="true" style={{ fontSize: 16 }}>verified</span>
+        Verify membership
+      </Button>
       {error && <span className="text-xs text-danger">{error}</span>}
     </div>
   );
@@ -273,112 +254,59 @@ function AdminEcoQueue({ isReadOnly }: { isReadOnly: boolean }) {
         />
       )}
 
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-semibold text-ink">eCO Review Queue</h1>
-          <p className="text-sm text-ink-subtle mt-0.5">
-            {isReadOnly ? 'View all eCO applications.' : 'Review, approve, or reject Certificate of Origin applications.'}
-          </p>
-        </div>
-        {!isLoading && (
-          <div className="flex items-center gap-2 text-sm text-ink-subtle">
-            <span className="font-medium text-ink">{items.length}</span> applications
-          </div>
-        )}
-      </div>
+      <PageHeader
+        eyebrow="Review"
+        title="Certificate queue"
+        description={isReadOnly ? 'Every certificate application for your chamber (read-only).' : 'Review, approve or reject certificate applications. Approved applications are issued once paid.'}
+        actions={!isLoading ? <span className="num text-[13px] text-ink-subtle"><span className="font-semibold text-ink">{items.length}</span> {items.length === 1 ? 'application' : 'applications'}</span> : undefined}
+      />
 
       {reviewError && <div className="mb-4"><ErrorBanner message={reviewError} /></div>}
 
-      {/* Status filter tabs */}
-      <div className="flex gap-1 bg-surface-alt rounded-lg p-1 mb-6 w-fit border border-border/40 overflow-x-auto">
-        {FILTER_OPTIONS.map((opt) => (
-          <button
-            key={opt.value}
-            onClick={() => setStatusFilter(opt.value)}
-            className={`px-3 py-1.5 rounded-md text-xs font-medium whitespace-nowrap transition-colors ${
-              statusFilter === opt.value
-                ? 'bg-white text-ink shadow-sm'
-                : 'text-ink-subtle hover:text-ink'
-            }`}
-          >
-            {opt.label}
-          </button>
-        ))}
-      </div>
+      <SegmentedTabs className="mb-5" label="Filter by status" tabs={FILTER_OPTIONS} value={statusFilter} onChange={setStatusFilter} />
 
       {isLoading && (
-        <div className="space-y-3">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-white rounded-xl border border-border/40 p-5 animate-pulse">
-              <div className="flex items-center gap-4">
-                <div className="flex-1 space-y-2">
-                  <div className="h-4 bg-border-subtle rounded w-1/4" />
-                  <div className="h-3 bg-border-subtle rounded w-1/3" />
-                </div>
-                <div className="h-6 bg-border-subtle rounded-full w-20" />
-                <div className="h-4 bg-border-subtle rounded w-16" />
-              </div>
-            </div>
-          ))}
-        </div>
+        <div className="space-y-2">{[1, 2, 3, 4].map((i) => <SkeletonCard key={i} className="h-14 min-h-0" />)}</div>
       )}
-      {isError && <ErrorBanner message="Failed to load eCO queue." />}
+      {isError && <ErrorBanner message="Couldn't load the certificate queue." onRetry={refetch} />}
 
       {!isLoading && !isError && items.length === 0 && (
-        <div className="bg-white rounded-xl border border-border/40 p-12 text-center">
-          <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-            <span className="material-symbols-outlined text-primary" style={{ fontSize: 32, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 32` }}>task_alt</span>
-          </div>
-          <h3 className="text-base font-medium text-ink mb-1">Queue is empty</h3>
-          <p className="text-sm text-ink-subtle">No applications match the selected filter.</p>
-        </div>
+        <EmptyState icon="task_alt" title="Nothing here" message="No applications match this filter." />
       )}
 
       {!isLoading && !isError && items.length > 0 && (
-        <div className="bg-white rounded-xl border border-border/40 overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+        <TableCard>
+            <table className="data-table">
               <thead>
-                <tr className="border-b border-border/40 bg-surface-alt">
-                  {['Applicant', 'Mineral', 'Destination', 'Status', 'Submitted', 'Actions'].map((h) => (
-                    <th key={h} className="text-left px-4 py-3 font-medium text-ink-subtle text-xs uppercase tracking-wide">{h}</th>
-                  ))}
+                <tr>
+                  <th scope="col">Applicant</th><th scope="col">Goods</th><th scope="col">Destination</th>
+                  <th scope="col">Status</th><th scope="col">Submitted</th><th scope="col" className="text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border/20">
+              <tbody>
                 {items.map((item) => (
-                  <tr key={item.id} className="hover:bg-surface-alt transition-colors">
-                    <td className="px-4 py-3">
-                      <p className="font-medium text-ink">{item.applicantFirstName} {item.applicantLastName}</p>
-                      {item.memberId && <p className="text-xs text-ink-subtle font-mono">{item.memberId}</p>}
+                  <tr key={item.id}>
+                    <td>
+                      <p className="font-medium text-ink whitespace-nowrap">{item.applicantFirstName} {item.applicantLastName}</p>
+                      {item.memberId && <p className="font-mono text-[11.5px] text-ink-subtle whitespace-nowrap">{item.memberId}</p>}
                     </td>
-                    <td className="px-4 py-3">
-                      <p className="text-ink max-w-[200px] truncate">{item.solidMineralName ?? '–'}</p>
-                    </td>
-                    <td className="px-4 py-3 text-ink">{item.destinationCountry ?? '–'}</td>
-                    <td className="px-4 py-3">
-                      <Badge variant={statusVariant[item.status]}>{statusLabel[item.status]}</Badge>
-                    </td>
-                    <td className="px-4 py-3 text-ink-subtle text-xs">
-                      {new Date(item.createdAt).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'short', year: 'numeric' })}
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex flex-wrap gap-2 items-center">
+                    <td><p className="max-w-[220px] truncate" title={item.solidMineralName ?? undefined}>{item.solidMineralName ?? '–'}</p></td>
+                    <td className="whitespace-nowrap">{item.destinationCountry ?? '–'}</td>
+                    <td><CertStatus status={item.status} /></td>
+                    <td className="num whitespace-nowrap text-ink-subtle">{fmtDate(item.createdAt)}</td>
+                    <td>
+                      <div className="flex flex-nowrap items-center justify-end gap-2">
                         {/* submitted — admin can start review or wait for payment */}
                         {item.status === 'submitted' && !isReadOnly && (
-                          <button
-                            onClick={() => handleAction(item, 'start_review')}
-                            disabled={startingReviewId === item.id}
-                            className="text-xs font-semibold text-white bg-primary hover:bg-[#001533] disabled:opacity-60 rounded-md px-2.5 py-1 transition-colors"
-                          >
-                            {startingReviewId === item.id ? 'Starting…' : 'Start Review'}
-                          </button>
+                          <Button size="sm" loading={startingReviewId === item.id} onClick={() => handleAction(item, 'start_review')}>
+                            Start review
+                          </Button>
                         )}
                         {item.status === 'submitted' && isReadOnly && (
-                          <span className="text-xs text-ink-subtle italic">Awaiting review</span>
+                          <span className="text-xs text-ink-subtle">Awaiting review</span>
                         )}
                         {(item.status === 'pending_payment' || item.status === 'approved') && (
-                          <span className="text-xs text-ink-subtle italic">Awaiting applicant payment…</span>
+                          <span className="text-xs text-ink-subtle whitespace-nowrap">Awaiting payment</span>
                         )}
 
                         {/* Mark Membership Verified — under_review + self-declared member only */}
@@ -390,27 +318,12 @@ function AdminEcoQueue({ isReadOnly }: { isReadOnly: boolean }) {
                             Note: reject / request_revision are also valid from 'approved' so a
                             reviewer can walk back a mistaken approval before the applicant pays. */}
                         {!isReadOnly && ['under_review', 'revision_requested'].includes(item.status) && (
-                          <button
-                            onClick={() => handleAction(item, 'approve')}
-                            className="text-xs font-semibold text-white bg-primary hover:bg-primary-hover rounded-md px-2.5 py-1 transition-colors"
-                          >
-                            Approve
-                          </button>
+                          <Button size="sm" onClick={() => handleAction(item, 'approve')}>Approve</Button>
                         )}
                         {!isReadOnly && ['under_review', 'approved'].includes(item.status) && (
                           <>
-                            <button
-                              onClick={() => handleAction(item, 'request_revision')}
-                              className="text-xs font-medium text-gold border border-border/60 rounded-md px-2.5 py-1 hover:bg-surface-alt transition-colors"
-                            >
-                              Request Revision
-                            </button>
-                            <button
-                              onClick={() => handleAction(item, 'reject')}
-                              className="text-xs font-medium text-danger border border-danger-border rounded-md px-2.5 py-1 hover:bg-danger-bg transition-colors"
-                            >
-                              Reject
-                            </button>
+                            <Button size="sm" variant="secondary" onClick={() => handleAction(item, 'request_revision')}>Request changes</Button>
+                            <Button size="sm" variant="danger" onClick={() => handleAction(item, 'reject')}>Reject</Button>
                           </>
                         )}
 
@@ -420,11 +333,8 @@ function AdminEcoQueue({ isReadOnly }: { isReadOnly: boolean }) {
                         )}
 
                         {/* View detail — always visible */}
-                        <Link
-                          to={`/dashboard/eco/${item.id}`}
-                          className="text-xs font-medium text-primary hover:underline"
-                        >
-                          Details
+                        <Link to={`/dashboard/eco/${item.id}`} className="text-[13px] font-medium text-primary hover:underline underline-offset-2 whitespace-nowrap">
+                          Open
                         </Link>
                       </div>
                     </td>
@@ -432,8 +342,7 @@ function AdminEcoQueue({ isReadOnly }: { isReadOnly: boolean }) {
                 ))}
               </tbody>
             </table>
-          </div>
-        </div>
+        </TableCard>
       )}
     </div>
   );
@@ -461,17 +370,10 @@ function PayButton({ certId }: { certId: string }) {
 
   return (
     <div className="flex flex-col gap-1">
-      <button
-        disabled={isLoading}
-        onClick={handlePay}
-        className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-white transition-colors disabled:opacity-60"
-        style={{ background: 'rgb(var(--c-primary))' }}
-      >
-        <span className="material-symbols-outlined" style={{ fontSize: 13 }}>
-          {isLoading ? 'hourglass_empty' : 'payments'}
-        </span>
-        {isLoading ? 'Redirecting…' : 'Pay Application Fee'}
-      </button>
+      <Button size="sm" loading={isLoading} onClick={handlePay}>
+        {!isLoading && <span className="material-symbols-outlined" aria-hidden="true" style={{ fontSize: 16 }}>payments</span>}
+        {isLoading ? 'Redirecting…' : 'Pay fee'}
+      </Button>
       {error && <p className="text-xs text-danger">{error}</p>}
     </div>
   );
@@ -514,17 +416,9 @@ function VerifyPaymentButton({ certRef, onConfirmed }: { certRef: string; onConf
 
   return (
     <div className="flex flex-col gap-1">
-      <button
-        disabled={isLoading}
-        onClick={handleVerify}
-        className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-white transition-colors disabled:opacity-60"
-        style={{ background: 'rgb(var(--c-gold))' }}
-      >
-        <span className="material-symbols-outlined" style={{ fontSize: 13 }}>
-          {isLoading ? 'hourglass_empty' : 'verified'}
-        </span>
-        {isLoading ? 'Verifying…' : 'I already paid, verify payment'}
-      </button>
+      <Button size="sm" variant="secondary" loading={isLoading} onClick={handleVerify}>
+        {isLoading ? 'Checking…' : 'I’ve paid, check payment'}
+      </Button>
       {status === 'failed' && (
         <p className="text-xs text-danger">Could not confirm the payment. Please try again.</p>
       )}
@@ -561,178 +455,146 @@ function MemberEcoView() {
   // hasCachedData: a previous successful load exists — show stale data rather than a hard error
   const hasCachedData = Array.isArray(certs);
 
+  const { data: certificateTypes } = useGetCertificateTypesQuery();
+  const typeName = (code: string) => certificateTypes?.find((t) => t.code === code)?.name ?? 'Certificate of Origin';
+
+  // One line telling the applicant what happens next — never just a status word.
+  const nextStep = (status: ECertStatus, hasPaymentRef: boolean): string | null => {
+    switch (status) {
+      case 'draft': return 'Not submitted yet';
+      case 'submitted': return 'Waiting for the chamber to start review';
+      case 'under_review': return 'The chamber is reviewing it';
+      case 'revision_requested': return 'Changes requested: edit and resubmit';
+      case 'approved': return 'Approved: pay the fee to issue';
+      case 'pending_payment': return hasPaymentRef ? 'Payment started: confirm it below' : 'Pay the fee to continue';
+      case 'issued': return 'Ready to download';
+      default: return null;
+    }
+  };
+
   return (
-    <div className="mx-auto w-full max-w-4xl px-4 py-6 sm:px-8 sm:py-8">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-semibold text-ink">Certificate Applications</h1>
-          <p className="text-sm text-ink-subtle mt-0.5">Your export certificate applications: drafts, reviews, payments and issued certificates.</p>
-        </div>
-        <Link to="/dashboard/eco/apply">
-          <Button>+ New Application</Button>
-        </Link>
-      </div>
+    <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8">
+      <PageHeader
+        title="Certificate applications"
+        description="Drafts, reviews, payments and issued certificates, in one place."
+        actions={
+          <Link to="/dashboard/eco/apply" className="inline-flex h-10 items-center gap-2 rounded-control bg-primary px-4 text-sm font-medium text-white shadow-card transition-colors hover:bg-primary-hover focus-visible:shadow-focus">
+            <span className="material-symbols-outlined" aria-hidden="true" style={{ fontSize: 18 }}>add</span>
+            New application
+          </Link>
+        }
+      />
 
       {canFilterByChamber && (
-        <div className="flex gap-1 bg-surface-alt rounded-lg p-1 mb-4 w-fit border border-border">
-          {([
-            ['active', tenantNameById.get(activeTenantId!) ?? 'Current Chamber'],
-            ['all', 'All Chambers'],
-          ] as const).map(([value, label]) => (
-            <button
-              key={value}
-              onClick={() => setChamberFilter(value)}
-              className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                chamberFilter === value ? 'bg-white text-ink shadow-sm' : 'text-ink-subtle hover:text-ink'
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
+        <SegmentedTabs
+          className="mb-5"
+          label="Filter by chamber"
+          value={chamberFilter}
+          onChange={setChamberFilter}
+          tabs={[
+            { value: 'active', label: tenantNameById.get(activeTenantId!) ?? 'Current chamber' },
+            { value: 'all', label: 'All chambers', count: (certs ?? []).length },
+          ]}
+        />
       )}
 
-      {isLoading && <SkeletonCard />}
+      {isLoading && <div className="space-y-2">{[1, 2, 3, 4].map((i) => <SkeletonCard key={i} className="h-14 min-h-0" />)}</div>}
 
       {/* Hard error: only when there is no cached data to show */}
-      {isError && !hasCachedData && <ErrorBanner message="Failed to load certificates." />}
+      {isError && !hasCachedData && <ErrorBanner message="Couldn't load your applications." onRetry={() => refetch()} />}
 
       {/* Soft error: when a background refetch fails but cached data is still visible */}
       {isError && hasCachedData && (
-        <div className="flex items-center gap-2 mb-4 px-3 py-2 rounded-lg text-xs text-gold bg-[#fff2e2] border border-[#ffc641]/40">
-          <span className="material-symbols-outlined" style={{ fontSize: 14 }}>sync_problem</span>
+        <div className="mb-4 flex items-center gap-2 rounded-control border border-warning-border bg-warning-bg px-3 py-2 text-[13px] text-warning">
+          <span className="material-symbols-outlined" aria-hidden="true" style={{ fontSize: 16 }}>sync_problem</span>
           Could not refresh. Showing the last loaded data.
-          <button onClick={() => refetch()} disabled={isFetching} className="ml-auto underline disabled:opacity-50">
+          <button onClick={() => refetch()} disabled={isFetching} className="ml-auto font-medium underline-offset-2 hover:underline disabled:opacity-50">
             {isFetching ? 'Refreshing…' : 'Retry'}
           </button>
         </div>
       )}
 
       {!isLoading && !isError && displayedCerts.length === 0 && (certs ?? []).length === 0 && (
-        <div className="bg-white rounded-xl border border-border/40 p-12 text-center">
-          <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-          </div>
-          <h3 className="text-base font-medium text-ink mb-1">No certificates yet</h3>
-          <p className="text-sm text-ink-subtle mb-4">Apply for your first Certificate of Origin to get started.</p>
-          <Link to="/dashboard/eco/apply"><Button>Apply Now</Button></Link>
-        </div>
+        <EmptyState
+          icon="description"
+          title="No applications yet"
+          message="Choose a certificate and fill in the application. You can save a draft and finish later."
+          action={<Link to="/dashboard/eco/apply" className="inline-flex h-10 items-center rounded-control bg-primary px-4 text-sm font-medium text-white hover:bg-primary-hover">Start an application</Link>}
+        />
       )}
 
       {/* Filtered-to-empty: certs exist, just none for the selected chamber */}
       {!isLoading && !isError && displayedCerts.length === 0 && (certs ?? []).length > 0 && (
-        <div className="bg-white rounded-xl border border-border/40 p-12 text-center">
-          <h3 className="text-base font-medium text-ink mb-1">No certificates for this chamber</h3>
-          <p className="text-sm text-ink-subtle mb-4">You have certificates from other chambers. Switch the filter above to see them.</p>
-          <button onClick={() => setChamberFilter('all')} className="text-sm text-primary hover:underline">Show All Chambers</button>
-        </div>
+        <EmptyState
+          icon="filter_alt"
+          title="None for this chamber"
+          message="You have applications with other chambers."
+          action={<Button variant="secondary" onClick={() => setChamberFilter('all')}>Show all chambers</Button>}
+        />
       )}
 
-      {!isLoading && !isError && displayedCerts.length > 0 && (
-        <div className="space-y-3">
-          {displayedCerts.map((cert) => {
-            const isEditableDraft = cert.status === 'draft' || cert.status === 'revision_requested';
-            const isPayable = cert.status === 'approved' || (cert.status === 'pending_payment' && !cert.paymentRef);
-            const isAwaitingReview = cert.status === 'submitted' || cert.status === 'under_review';
-            const isPendingPaymentWithRef = cert.status === 'pending_payment' && !!cert.paymentRef;
-            const isIssued = cert.status === 'issued';
-            return (
-              <div key={cert.id}
-                className={`bg-white rounded-xl border p-4 sm:p-5 transition-colors ${
-                  isPayable
-                    ? 'border-warning-border bg-warning-bg/30 hover:bg-warning-bg/60'
-                    : 'border-border/40 hover:bg-surface-alt'
-                }`}>
-                {/* Top row: cert number + status badge */}
-                <div className="flex items-start justify-between gap-3 mb-2">
-                  <div className="flex items-center gap-2 flex-wrap min-w-0">
-                    <Link to={`/dashboard/eco/${cert.id}`}
-                      className="text-sm font-mono font-semibold text-primary hover:underline flex-shrink-0">
-                      {cert.certificateNumber ?? cert.id.slice(0, 8).toUpperCase()}
-                    </Link>
-                    <Badge variant={statusVariant[cert.status]}>{statusLabel[cert.status]}</Badge>
-                  </div>
-                  <span className="text-xs text-ink-subtle flex-shrink-0">
-                    {new Date(cert.createdAt).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'short', year: 'numeric' })}
-                  </span>
-                </div>
-
-                {/* Status banners */}
-                {isAwaitingReview && (
-                  <div className="flex items-center gap-2 mb-3 px-3 py-2 rounded-lg bg-primary-soft border border-primary/20">
-                    <span className="material-symbols-outlined text-primary flex-shrink-0" style={{ fontSize: 16 }}>hourglass_top</span>
-                    <p className="text-xs text-primary font-medium">Awaiting chamber review.</p>
-                  </div>
-                )}
-                {cert.status === 'approved' && (
-                  <div className="flex items-center gap-2 mb-3 px-3 py-2 rounded-lg bg-warning-bg border border-warning-border">
-                    <span className="material-symbols-outlined text-warning flex-shrink-0" style={{ fontSize: 16, fontVariationSettings: `'FILL' 1` }}>warning</span>
-                    <p className="text-xs text-warning font-medium">Approved. Pay to proceed to issuance.</p>
-                  </div>
-                )}
-                {isPendingPaymentWithRef && (
-                  <div className="flex items-center gap-2 mb-3 px-3 py-2 rounded-lg bg-warning-bg border border-warning-border">
-                    <span className="material-symbols-outlined text-warning flex-shrink-0" style={{ fontSize: 16, fontVariationSettings: `'FILL' 1` }}>warning</span>
-                    <p className="text-xs text-warning font-medium">
-                      Payment started. If you completed it, click &quot;I already paid, verify payment&quot; below.
-                    </p>
-                  </div>
-                )}
-
-                {/* Details row */}
-                <div className="flex flex-wrap gap-x-4 gap-y-0.5 mb-3">
-                  <span className="text-xs text-ink-subtle">
-                    <span className="font-medium text-ink-subtle">To:</span> {cert.destinationCountry || '–'}
-                  </span>
-                  <span className="text-xs text-ink-subtle truncate max-w-xs">
-                    <span className="font-medium text-ink-subtle">Mineral:</span> {cert.solidMineralName || '–'}
-                  </span>
-                  {chamberFilter === 'all' && cert.tenantId && (
-                    <span className="text-xs text-ink-subtle">
-                      <span className="font-medium text-ink-subtle">Chamber:</span> {tenantNameById.get(cert.tenantId) ?? '–'}
-                    </span>
-                  )}
-                  {cert.applicationFee != null && cert.applicationFee > 0 && (
-                    <span className="text-xs text-ink-subtle">
-                      <span className="font-medium text-ink-subtle">Fee:</span> ₦{cert.applicationFee.toLocaleString()}
-                    </span>
-                  )}
-                </div>
-
-                {/* Actions */}
-                <div className="flex flex-wrap items-start gap-2">
-                  {isPayable && <PayButton certId={cert.id} />}
-                  {isPendingPaymentWithRef && (
-                    <VerifyPaymentButton certRef={cert.paymentRef!} onConfirmed={refetch} />
-                  )}
-
-                  <Link to={`/dashboard/eco/${cert.id}`}
-                    className="flex items-center gap-1 rounded-lg border border-border/60 px-2.5 py-1.5 text-xs font-semibold text-ink-subtle hover:border-ink transition-colors">
-                    <span className="material-symbols-outlined" style={{ fontSize: 13 }}>info</span>
-                    Details
-                  </Link>
-                  {isEditableDraft && (
-                    <Link to={`/dashboard/eco/apply/${cert.id}`}
-                      className="flex items-center gap-1 rounded-lg border border-border/60 px-2.5 py-1.5 text-xs font-semibold text-primary hover:bg-success-bg transition-colors">
-                      <span className="material-symbols-outlined" style={{ fontSize: 13 }}>edit</span>
-                      {cert.status === 'draft' ? 'Continue' : 'Edit & Resubmit'}
-                    </Link>
-                  )}
-                  {isIssued && <CertActionButtons certId={cert.id} compact />}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {/* "Try again" only when the hard error state is showing (no cached data) */}
-      {isError && !hasCachedData && (
-        <button onClick={() => refetch()} className="mt-4 text-sm text-primary hover:underline">
-          Try again
-        </button>
+      {!isLoading && displayedCerts.length > 0 && (
+        <TableCard>
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th scope="col">Reference</th>
+                <th scope="col">Destination</th>
+                <th scope="col">Status</th>
+                <th scope="col" className="text-right">Fee</th>
+                <th scope="col">Submitted</th>
+                <th scope="col" className="text-right"><span className="sr-only">Actions</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              {displayedCerts.map((cert) => {
+                const isEditableDraft = cert.status === 'draft' || cert.status === 'revision_requested';
+                const isPayable = cert.status === 'approved' || (cert.status === 'pending_payment' && !cert.paymentRef);
+                const isPendingPaymentWithRef = cert.status === 'pending_payment' && !!cert.paymentRef;
+                const isIssued = cert.status === 'issued';
+                const hint = nextStep(cert.status, !!cert.paymentRef);
+                return (
+                  <tr key={cert.id} className={isPayable ? 'bg-gold-soft/40' : ''}>
+                    <td>
+                      <Link to={`/dashboard/eco/${cert.id}`} className="font-mono text-[12.5px] font-medium text-ink hover:text-primary">
+                        {cert.certificateNumber ?? <span className="font-sans text-[13px] text-ink-subtle">Not yet numbered</span>}
+                      </Link>
+                      <p className="text-xs text-ink-subtle">
+                        {typeName(cert.certificateTypeCode)}
+                        {cert.solidMineralName ? ` · ${cert.solidMineralName}` : ''}
+                        {chamberFilter === 'all' && cert.tenantId ? ` · ${tenantNameById.get(cert.tenantId) ?? ''}` : ''}
+                      </p>
+                    </td>
+                    <td className="whitespace-nowrap">{cert.destinationCountry || '–'}</td>
+                    <td>
+                      <CertStatus status={cert.status} />
+                      {hint && <p className="mt-1 text-xs text-ink-subtle whitespace-nowrap">{hint}</p>}
+                    </td>
+                    <td className="num whitespace-nowrap text-right">
+                      {cert.applicationFee != null && cert.applicationFee > 0 ? `₦${cert.applicationFee.toLocaleString('en-NG', { maximumFractionDigits: 2 })}` : '–'}
+                    </td>
+                    <td className="num whitespace-nowrap text-ink-subtle">{fmtDate(cert.createdAt)}</td>
+                    <td>
+                      <div className="flex items-center justify-end gap-2">
+                        {isPayable && <PayButton certId={cert.id} />}
+                        {isPendingPaymentWithRef && <VerifyPaymentButton certRef={cert.paymentRef!} onConfirmed={refetch} />}
+                        {isEditableDraft && (
+                          <Link to={`/dashboard/eco/apply/${cert.id}`} className={linkBtn}>
+                            {cert.status === 'draft' ? 'Continue' : 'Edit and resubmit'}
+                          </Link>
+                        )}
+                        {isIssued && <CertActionButtons certId={cert.id} compact />}
+                        <Link to={`/dashboard/eco/${cert.id}`} className="text-[13px] font-medium text-primary hover:underline underline-offset-2 whitespace-nowrap">
+                          Open
+                        </Link>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </TableCard>
       )}
     </div>
   );

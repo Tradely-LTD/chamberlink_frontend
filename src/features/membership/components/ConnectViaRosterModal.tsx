@@ -85,8 +85,8 @@ export function ConnectViaRosterModal({ tenantId, tenantName, onClose, onConnect
   const memberSinceYear = preview ? formatMemberSince(preview.memberSince) : null;
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 px-4">
-      <div className="w-full max-w-md rounded-xl bg-white shadow-xl">
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-ink/50 px-4">
+      <div className="w-full max-w-md rounded-card bg-surface shadow-pop">
         <div className="flex items-center justify-between border-b border-border px-5 py-4">
           <h2 className="text-base font-semibold text-ink">Connect with existing ID: {tenantName}</h2>
           <button

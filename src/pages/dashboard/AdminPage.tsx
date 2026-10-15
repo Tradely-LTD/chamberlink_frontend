@@ -37,11 +37,11 @@ function AuditLogTab() {
   const entries = data ?? demoAudit;
   if (isLoading) return <SkeletonCard className="h-64" />;
   return (
-    <div className="bg-white rounded-xl border border-border/40 overflow-hidden">
-      <div className="px-4 py-3 border-b border-border/40 bg-surface-alt">
+    <div className="bg-surface rounded-card border border-border overflow-hidden">
+      <div className="px-4 py-3 border-b border-border bg-surface-alt">
         <p className="text-xs font-medium text-ink-subtle uppercase tracking-wide">Immutable audit trail: an append-only log of every financial and document action</p>
       </div>
-      <div className="divide-y divide-border/20">
+      <div className="divide-y divide-border-subtle">
         {entries.map((entry) => (
           <div key={entry.id} className="px-4 py-3 flex items-start gap-4 hover:bg-surface-alt">
             <div className="flex-1 min-w-0">

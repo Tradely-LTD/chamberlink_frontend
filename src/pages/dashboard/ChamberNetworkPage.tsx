@@ -52,7 +52,7 @@ export function ChamberNetworkPage() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-4xl px-4 py-6 sm:px-8 sm:py-8">
+    <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-4xl">
       <div className="mb-6">
         <h1 className="text-2xl font-semibold text-ink mb-1">Chamber Network</h1>
         <p className="text-sm text-ink-subtle">
@@ -87,17 +87,17 @@ export function ChamberNetworkPage() {
           {availableChambers.map((chamber) => (
             <li
               key={chamber.id}
-              className="flex flex-wrap items-center justify-between gap-4 bg-white rounded-xl border border-border/40 px-6 py-4"
+              className="flex flex-wrap items-center justify-between gap-4 bg-surface rounded-card border border-border px-6 py-4"
             >
               <div className="flex items-center gap-3 min-w-0">
                 {chamber.logoUrl ? (
                   <img
                     src={chamber.logoUrl}
                     alt=""
-                    className="h-11 w-11 rounded-lg object-contain border border-border/40 bg-white flex-shrink-0"
+                    className="h-11 w-11 rounded-lg object-contain border border-border bg-surface flex-shrink-0"
                   />
                 ) : (
-                  <div className="h-11 w-11 rounded-lg bg-surface-alt border border-border/40 flex items-center justify-center flex-shrink-0">
+                  <div className="h-11 w-11 rounded-lg bg-surface-alt border border-border flex items-center justify-center flex-shrink-0">
                     <span className="material-symbols-outlined text-ink-subtle" style={{ fontSize: 22 }}>
                       corporate_fare
                     </span>

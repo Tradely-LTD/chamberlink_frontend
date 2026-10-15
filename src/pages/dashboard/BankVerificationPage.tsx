@@ -94,7 +94,7 @@ function VerificationResultCard({ result, onClear }: { result: VerificationResul
   const rc = resultConfig[result.status];
 
   return (
-    <div className={`rounded-xl border-2 p-6`} style={{ borderColor: result.status === 'valid' ? 'rgb(var(--c-success))' : result.status === 'not_found' ? '#c4c6cf' : 'rgb(var(--c-danger))', background: rc.bg + '20' }}>
+    <div className={`rounded-card border-2 p-6`} style={{ borderColor: result.status === 'valid' ? 'rgb(var(--c-success))' : result.status === 'not_found' ? '#c4c6cf' : 'rgb(var(--c-danger))', background: rc.bg + '20' }}>
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: rc.bg }}>
@@ -163,7 +163,7 @@ function InstitutionalVerificationView() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 sm:py-8">
+    <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-3xl">
       <div className="mb-6">
         <h2 className="text-xl font-semibold text-ink">Banks & FI Verification Portal</h2>
         <p className="text-sm text-ink-subtle mt-0.5">Verify the authenticity of NACCIMA eCO certificates and member credentials.</p>
@@ -172,11 +172,11 @@ function InstitutionalVerificationView() {
       <div className="flex gap-1 bg-surface-alt rounded-lg p-1 mb-6 w-fit border border-border">
         {([['eco', 'eCO Certificate'], ['member', 'Member ID']] as const).map(([t, label]) => (
           <button key={t} onClick={() => { setTab(t); setResult(null); setError(null); }}
-            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === t ? 'bg-white text-ink shadow-sm' : 'text-ink-subtle hover:text-ink'}`}>{label}</button>
+            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === t ? 'bg-surface text-ink shadow-card' : 'text-ink-subtle hover:text-ink'}`}>{label}</button>
         ))}
       </div>
 
-      <div className="bg-white rounded-xl border border-border p-6 mb-6">
+      <div className="bg-surface rounded-card border border-border p-6 mb-6">
         <form onSubmit={handleVerify} className="flex gap-3">
           <input
             required
@@ -194,7 +194,7 @@ function InstitutionalVerificationView() {
 
       {result && <VerificationResultCard result={result} onClear={() => setResult(null)} />}
 
-      <div className="mt-6 rounded-xl border border-border p-4 bg-surface-alt">
+      <div className="mt-6 rounded-card border border-border p-4 bg-surface-alt">
         <div className="flex items-start gap-3">
           <span className="material-symbols-outlined text-ink-subtle flex-shrink-0 mt-0.5" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18` }}>info</span>
           <div className="text-xs text-ink-subtle space-y-1">
@@ -235,7 +235,7 @@ function AdminVerificationView() {
           { icon: 'schedule', label: 'Expired', value: allLogs.filter((l) => l.result === 'expired').length },
           { icon: 'search_off', label: 'Not Found', value: allLogs.filter((l) => l.result === 'not_found').length },
         ].map(({ icon, label, value, accent }) => (
-          <div key={label} className={`rounded-xl border p-4 ${accent ? '' : 'bg-white border-border'}`} style={accent ? { background: 'rgb(var(--c-primary))', borderColor: 'rgb(var(--c-primary))' } : {}}>
+          <div key={label} className={`rounded-card border p-4 ${accent ? '' : 'bg-surface border-border'}`} style={accent ? { background: 'rgb(var(--c-primary))', borderColor: 'rgb(var(--c-primary))' } : {}}>
             <div className="flex items-center gap-2 mb-2">
               <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`, color: accent ? 'rgb(var(--c-primary-200))' : 'rgb(var(--c-ink-subtle))' }}>{icon}</span>
               <p className={`text-xs font-semibold uppercase tracking-wide ${accent ? 'text-primary-200' : 'text-ink-subtle'}`}>{label}</p>
@@ -248,14 +248,14 @@ function AdminVerificationView() {
       <div className="flex items-center gap-3 mb-4 flex-wrap">
         <div className="flex gap-1 bg-surface-alt rounded-lg p-1 border border-border">
           {(['all', 'eco', 'member'] as const).map((t) => (
-            <button key={t} onClick={() => setTypeFilter(t)} className={`px-3 py-1 rounded-md text-xs font-medium capitalize transition-colors ${typeFilter === t ? 'bg-white shadow-sm text-ink' : 'text-ink-subtle'}`}>
+            <button key={t} onClick={() => setTypeFilter(t)} className={`px-3 py-1 rounded-md text-xs font-medium capitalize transition-colors ${typeFilter === t ? 'bg-surface shadow-card text-ink' : 'text-ink-subtle'}`}>
               {t === 'all' ? 'All Types' : t === 'eco' ? 'eCO Certs' : 'Member IDs'}
             </button>
           ))}
         </div>
         <div className="flex gap-1 bg-surface-alt rounded-lg p-1 border border-border">
           {(['all', 'valid', 'expired', 'not_found'] as const).map((r) => (
-            <button key={r} onClick={() => setResultFilter(r)} className={`px-3 py-1 rounded-md text-xs font-medium capitalize transition-colors ${resultFilter === r ? 'bg-white shadow-sm text-ink' : 'text-ink-subtle'}`}>
+            <button key={r} onClick={() => setResultFilter(r)} className={`px-3 py-1 rounded-md text-xs font-medium capitalize transition-colors ${resultFilter === r ? 'bg-surface shadow-card text-ink' : 'text-ink-subtle'}`}>
               {r.replace('_', ' ')}
             </button>
           ))}
@@ -263,9 +263,9 @@ function AdminVerificationView() {
       </div>
 
       {isLoading ? <SkeletonCard /> : (
-        <div className="bg-white rounded-xl border border-border overflow-hidden">
+        <div className="bg-surface rounded-card border border-border overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="data-table w-full text-sm">
               <thead>
                 <tr className="bg-surface-alt border-b border-border">
                   {['Reference Queried', 'Type', 'Institution', 'Result', 'Date & Time'].map((h) => (

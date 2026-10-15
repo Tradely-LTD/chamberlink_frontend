@@ -19,11 +19,13 @@ export function AnalyticsPage() {
   const { data: trends, isLoading: trendsLoading } = useGetAnalyticsTrendsQuery(6);
   const stats = data ?? demoData;
 
-  const revenueGrowth = ((stats.revenueThisMonth - stats.revenueLastMonth) / stats.revenueLastMonth * 100).toFixed(1);
+  const revenueGrowth = stats.revenueLastMonth > 0
+    ? ((stats.revenueThisMonth - stats.revenueLastMonth) / stats.revenueLastMonth * 100).toFixed(1)
+    : null;
   const isGrowthPositive = stats.revenueThisMonth >= stats.revenueLastMonth;
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-8 sm:py-8">
+    <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-5xl">
       <h1 className="text-xl font-semibold text-ink mb-1">Analytics Hub</h1>
       <p className="text-sm text-ink-subtle mb-6">Chamber performance metrics and key indicators.</p>
 
@@ -47,7 +49,7 @@ export function AnalyticsPage() {
               icon="payments"
               label="Revenue This Month"
               value={`₦${(stats.revenueThisMonth / 1000000).toFixed(1)}M`}
-              sublabel={`${isGrowthPositive ? '+' : ''}${revenueGrowth}% vs last month`}
+              sublabel={revenueGrowth === null ? 'No revenue last month' : `${isGrowthPositive ? '+' : ''}${revenueGrowth}% vs last month`}
               accent
             />
             <StatTile icon="calendar_month" label="Revenue Last Month" value={`₦${(stats.revenueLastMonth / 1000000).toFixed(1)}M`} />

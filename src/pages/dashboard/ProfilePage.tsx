@@ -96,7 +96,7 @@ function MfaSecurityRow() {
         </div>
       </div>
       {stage === 'confirm-disable' && (
-        <div className="mt-3 flex items-end gap-3 rounded-lg bg-surface-alt border border-border/40 px-4 py-3">
+        <div className="mt-3 flex items-end gap-3 rounded-lg bg-surface-alt border border-border px-4 py-3">
           <Input
             label="Enter the code we emailed you"
             value={code}
@@ -306,16 +306,16 @@ export function ProfilePage() {
   if (isError && isMember) {
     if (isNoActiveChamberError(error)) {
       return (
-        <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 sm:py-8">
+        <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-3xl">
           <h1 className="text-2xl font-semibold text-ink mb-1">My Profile</h1>
           <p className="text-sm text-ink-subtle mb-6">Manage your personal and business information.</p>
 
           {/* Basic ChamberLink identity is global, not chamber-scoped — always available. */}
-          <div className="bg-white rounded-xl border border-border/40 overflow-hidden mb-6">
-            <div className="px-6 py-4 border-b border-border/40">
+          <div className="bg-surface rounded-card border border-border overflow-hidden mb-6">
+            <div className="px-6 py-4 border-b border-border">
               <h2 className="font-medium text-ink">Account Details</h2>
             </div>
-            <dl className="divide-y divide-border/30">
+            <dl className="divide-y divide-border-subtle">
               {[
                 { label: 'Full Name', value: `${user?.firstName ?? '–'} ${user?.lastName ?? ''}`.trim() },
                 { label: 'Email Address', value: user?.email ?? '–' },
@@ -355,7 +355,7 @@ export function ProfilePage() {
   // Admin/staff see an organisation-focused profile
   if (!isMember) {
     return (
-      <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 sm:py-8">
+      <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-3xl">
         <h1 className="text-2xl font-semibold text-ink mb-1">My Profile</h1>
         <p className="text-sm text-ink-subtle mb-6">Your account and organisation details.</p>
 
@@ -367,11 +367,11 @@ export function ProfilePage() {
 
         {/* Platform identity card — super_admin only */}
         {isSuperAdmin ? (
-          <div className="bg-white rounded-xl border border-border/40 overflow-hidden mb-6">
-            <div className="px-6 py-4 border-b border-border/40">
+          <div className="bg-surface rounded-card border border-border overflow-hidden mb-6">
+            <div className="px-6 py-4 border-b border-border">
               <h2 className="font-medium text-ink">Platform Identity</h2>
             </div>
-            <dl className="divide-y divide-border/30">
+            <dl className="divide-y divide-border-subtle">
               {[
                 { label: 'Platform', value: 'Chamberlink, the chamber digital portal' },
                 { label: 'Operated by', value: 'Tradely LTD.' },
@@ -385,8 +385,8 @@ export function ProfilePage() {
             </dl>
           </div>
         ) : (
-          <div className="bg-white rounded-xl border border-border/40 overflow-hidden mb-6">
-            <div className="px-6 py-4 border-b border-border/40 flex items-center justify-between">
+          <div className="bg-surface rounded-card border border-border overflow-hidden mb-6">
+            <div className="px-6 py-4 border-b border-border flex items-center justify-between">
               <h2 className="font-medium text-ink">Organisation</h2>
               {user?.role === 'chamber_admin' && !editingOrg && (
                 <Button variant="outline" onClick={startOrgEdit}>Edit</Button>
@@ -396,19 +396,19 @@ export function ProfilePage() {
             {/* Chamber logo — separate from any personal identity, shown as a
                 storefront placeholder (not an avatar) when empty. Upload only
                 available to chamber_admin, matching the Edit button above. */}
-            <div className="px-6 py-5 border-b border-border/30 flex items-center gap-5">
+            <div className="px-6 py-5 border-b border-border flex items-center gap-5">
               <div className="relative flex-shrink-0">
                 {isUploadingOrgLogo ? (
-                  <div className="w-16 h-16 rounded-xl bg-surface-alt border border-border/40 flex items-center justify-center">
+                  <div className="w-16 h-16 rounded-card bg-surface-alt border border-border flex items-center justify-center">
                     <svg className="w-5 h-5 animate-spin text-primary" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                     </svg>
                   </div>
                 ) : myTenant?.logoUrl ? (
-                  <img src={myTenant.logoUrl} alt="Chamber logo" className="w-16 h-16 rounded-xl object-contain border border-border/40 bg-white" />
+                  <img src={myTenant.logoUrl} alt="Chamber logo" className="w-16 h-16 rounded-card object-contain border border-border bg-surface" />
                 ) : (
-                  <div className="w-16 h-16 rounded-xl bg-surface-alt border-2 border-dashed border-border/60 flex items-center justify-center text-ink-subtle">
+                  <div className="w-16 h-16 rounded-card bg-surface-alt border-2 border-dashed border-border flex items-center justify-center text-ink-subtle">
                     <span className="material-symbols-outlined" style={{ fontSize: 28 }}>storefront</span>
                   </div>
                 )}
@@ -425,7 +425,7 @@ export function ProfilePage() {
                     <button
                       onClick={() => orgLogoInputRef.current?.click()}
                       disabled={isUploadingOrgLogo}
-                      className="text-xs font-medium px-3 py-1.5 rounded-lg border border-border/60 text-primary hover:bg-surface-alt transition-colors disabled:opacity-50"
+                      className="text-xs font-medium px-3 py-1.5 rounded-lg border border-border text-primary hover:bg-surface-alt transition-colors disabled:opacity-50"
                     >
                       {myTenant?.logoUrl ? 'Replace Logo' : 'Upload Logo'}
                     </button>
@@ -467,7 +467,7 @@ export function ProfilePage() {
                 </div>
               </div>
             ) : (
-              <dl className="divide-y divide-border/30">
+              <dl className="divide-y divide-border-subtle">
                 {[
                   { label: 'Organisation', value: myTenant?.name ?? '–' },
                   { label: 'Region', value: myTenant?.region ?? '–' },
@@ -489,8 +489,8 @@ export function ProfilePage() {
         )}
 
         {/* Account card */}
-        <div className="bg-white rounded-xl border border-border/40 overflow-hidden mb-6">
-          <div className="px-6 py-4 border-b border-border/40 flex items-center justify-between">
+        <div className="bg-surface rounded-card border border-border overflow-hidden mb-6">
+          <div className="px-6 py-4 border-b border-border flex items-center justify-between">
             <h2 className="font-medium text-ink">Account Details</h2>
             {!editing && <Button variant="outline" onClick={startEdit}>Edit</Button>}
           </div>
@@ -507,7 +507,7 @@ export function ProfilePage() {
               </div>
             </div>
           ) : (
-            <dl className="divide-y divide-border/30">
+            <dl className="divide-y divide-border-subtle">
               {[
                 { label: 'Full Name', value: `${user?.firstName ?? '–'} ${user?.lastName ?? ''}`.trim() },
                 { label: 'Email Address', value: user?.email ?? '–' },
@@ -522,8 +522,8 @@ export function ProfilePage() {
         </div>
 
         {/* Security */}
-        <div className="bg-white rounded-xl border border-border/40 overflow-hidden">
-          <div className="px-6 py-4 border-b border-border/40">
+        <div className="bg-surface rounded-card border border-border overflow-hidden">
+          <div className="px-6 py-4 border-b border-border">
             <h2 className="font-medium text-ink">Security</h2>
           </div>
           <div className="px-6 py-5 space-y-4">
@@ -545,7 +545,7 @@ export function ProfilePage() {
 
   // Member profile view
   return (
-    <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 sm:py-8">
+    <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-3xl">
       <h1 className="text-2xl font-semibold text-ink mb-1">My Profile</h1>
       <p className="text-sm text-ink-subtle mb-6">Manage your personal and business information.</p>
 
@@ -556,8 +556,8 @@ export function ProfilePage() {
       )}
 
       {/* Personal Information */}
-      <div className="bg-white rounded-xl border border-border/40 overflow-hidden mb-6">
-        <div className="px-6 py-4 border-b border-border/40 flex items-center justify-between">
+      <div className="bg-surface rounded-card border border-border overflow-hidden mb-6">
+        <div className="px-6 py-4 border-b border-border flex items-center justify-between">
           <h2 className="font-medium text-ink">Personal Information</h2>
           {!editing && <Button variant="outline" onClick={startEdit}>Edit</Button>}
         </div>
@@ -576,17 +576,17 @@ export function ProfilePage() {
             </div>
           </div>
         ) : (
-          <dl className="divide-y divide-border/30">
+          <dl className="divide-y divide-border-subtle">
             {[
               { label: 'Full Name', value: `${profile?.firstName ?? user?.firstName ?? '–'} ${profile?.lastName ?? user?.lastName ?? ''}`.trim() },
               { label: 'Email Address', value: user?.email ?? '–' },
               { label: 'Business Name', value: profile?.businessName ?? '–' },
               { label: 'Member ID', value: profile?.memberId ?? '–' },
-              { label: 'Account Status', value: profile?.status ? profile.status.replace(/_/g, ' ') : '–' },
+              { label: 'Account Status', value: profile?.status ? profile.status.replace(/_/g, ' ').replace(/^\w/, (c) => c.toUpperCase()) : '–' },
             ].map((row) => (
               <div key={row.label} className="grid grid-cols-3 gap-4 px-6 py-4">
                 <dt className="text-sm font-medium text-ink-subtle">{row.label}</dt>
-                <dd className="col-span-2 text-sm text-ink capitalize">{row.value}</dd>
+                <dd className="col-span-2 text-sm text-ink break-words">{row.value}</dd>
               </div>
             ))}
           </dl>
@@ -594,8 +594,8 @@ export function ProfilePage() {
       </div>
 
       {/* Business Information */}
-      <div className="bg-white rounded-xl border border-border/40 overflow-hidden mb-6">
-        <div className="px-6 py-4 border-b border-border/40 flex items-center justify-between">
+      <div className="bg-surface rounded-card border border-border overflow-hidden mb-6">
+        <div className="px-6 py-4 border-b border-border flex items-center justify-between">
           <h2 className="font-medium text-ink">Business Information</h2>
           {!editingBusiness && <Button variant="outline" onClick={startBizEdit}>Edit</Button>}
         </div>
@@ -603,19 +603,19 @@ export function ProfilePage() {
         {/* Company logo — deliberately distinct from the personal identity in
             Personal Information above: a storefront placeholder, not an
             avatar, since this is your business's mark, not a photo of you. */}
-        <div className="px-6 py-5 border-b border-border/30 flex items-center gap-5">
+        <div className="px-6 py-5 border-b border-border flex items-center gap-5">
           <div className="relative flex-shrink-0">
             {isUploadingLogo ? (
-              <div className="w-16 h-16 rounded-xl bg-surface-alt border border-border/40 flex items-center justify-center">
+              <div className="w-16 h-16 rounded-card bg-surface-alt border border-border flex items-center justify-center">
                 <svg className="w-5 h-5 animate-spin text-primary" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                 </svg>
               </div>
             ) : logoUrl ? (
-              <img src={logoUrl} alt="Company logo" className="w-16 h-16 rounded-xl object-contain border border-border/40 bg-white" />
+              <img src={logoUrl} alt="Company logo" className="w-16 h-16 rounded-card object-contain border border-border bg-surface" />
             ) : (
-              <div className="w-16 h-16 rounded-xl bg-surface-alt border-2 border-dashed border-border/60 flex items-center justify-center text-ink-subtle">
+              <div className="w-16 h-16 rounded-card bg-surface-alt border-2 border-dashed border-border flex items-center justify-center text-ink-subtle">
                 <span className="material-symbols-outlined" style={{ fontSize: 28 }}>storefront</span>
               </div>
             )}
@@ -628,7 +628,7 @@ export function ProfilePage() {
             <button
               onClick={() => logoInputRef.current?.click()}
               disabled={isUploadingLogo}
-              className="text-xs font-medium px-3 py-1.5 rounded-lg border border-border/60 text-primary hover:bg-surface-alt transition-colors disabled:opacity-50"
+              className="text-xs font-medium px-3 py-1.5 rounded-lg border border-border text-primary hover:bg-surface-alt transition-colors disabled:opacity-50"
             >
               {logoUrl ? 'Replace Logo' : 'Upload Logo'}
             </button>
@@ -671,7 +671,7 @@ export function ProfilePage() {
             </div>
           </div>
         ) : (
-          <dl className="divide-y divide-border/30">
+          <dl className="divide-y divide-border-subtle">
             {[
               { label: 'CAC Number', value: profile?.registrationNumber ?? '–' },
               { label: 'Industry', value: profile?.industry ?? '–' },
@@ -689,8 +689,8 @@ export function ProfilePage() {
 
       {/* Membership Plan */}
       {membership && (
-        <div className="bg-white rounded-xl border border-border/40 overflow-hidden mb-6">
-          <div className="px-6 py-4 border-b border-border/40 flex items-center justify-between">
+        <div className="bg-surface rounded-card border border-border overflow-hidden mb-6">
+          <div className="px-6 py-4 border-b border-border flex items-center justify-between">
             <h2 className="font-medium text-ink">Membership Plan</h2>
             {membership.status && (
               <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${membershipStatusColors[membership.status] ?? 'bg-border-subtle text-ink-muted'}`}>
@@ -698,7 +698,7 @@ export function ProfilePage() {
               </span>
             )}
           </div>
-          <dl className="divide-y divide-border/30">
+          <dl className="divide-y divide-border-subtle">
             {[
               { label: 'Plan', value: membership.tierName ?? '–' },
               {
@@ -716,7 +716,7 @@ export function ProfilePage() {
             ].map((row) => (
               <div key={row.label} className="grid grid-cols-3 gap-4 px-6 py-4">
                 <dt className="text-sm font-medium text-ink-subtle">{row.label}</dt>
-                <dd className="col-span-2 text-sm text-ink capitalize">{row.value}</dd>
+                <dd className="col-span-2 text-sm text-ink break-words">{row.value}</dd>
               </div>
             ))}
           </dl>
@@ -724,8 +724,8 @@ export function ProfilePage() {
       )}
 
       {/* Security */}
-      <div className="bg-white rounded-xl border border-border/40 overflow-hidden">
-        <div className="px-6 py-4 border-b border-border/40">
+      <div className="bg-surface rounded-card border border-border overflow-hidden">
+        <div className="px-6 py-4 border-b border-border">
           <h2 className="font-medium text-ink">Security</h2>
         </div>
         <div className="px-6 py-5 space-y-4">

@@ -236,8 +236,8 @@ function SponsorModal({ corridor, onClose }: { corridor: TradeCorridor; onClose:
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md">
+      <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
+      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-md">
         <div className="border-b border-border px-6 py-4 flex items-center justify-between">
           <div>
             <h2 className="font-bold text-ink">Apply for Sponsorship</h2>
@@ -253,7 +253,7 @@ function SponsorModal({ corridor, onClose }: { corridor: TradeCorridor; onClose:
             const tc = tierConfig[t];
             const p = t === 'gold' ? corridor.sponsorPriceGold : corridor.sponsorPriceSilver;
             return (
-              <button key={t} onClick={() => setTier(t)} className={`w-full rounded-xl border-2 p-4 text-left transition-all ${tier === t ? '' : 'border-border'}`}
+              <button key={t} onClick={() => setTier(t)} className={`w-full rounded-card border-2 p-4 text-left transition-all ${tier === t ? '' : 'border-border'}`}
                 style={tier === t ? { borderColor: tc.accent, background: tc.bg + '50' } : {}}>
                 <div className="flex items-center justify-between mb-1">
                   <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ background: tc.bg, color: tc.text }}>{tc.label} Sponsor</span>
@@ -263,7 +263,7 @@ function SponsorModal({ corridor, onClose }: { corridor: TradeCorridor; onClose:
               </button>
             );
           })}
-          <div className="rounded-xl border border-border p-4 bg-surface-alt">
+          <div className="rounded-card border border-border p-4 bg-surface-alt">
             <p className="text-xs text-ink-subtle">Sponsorship status is granted on verified payment confirmation only. Annual renewal required.</p>
             <div className="flex justify-between text-sm font-semibold mt-2">
               <span className="text-ink-subtle">Amount due</span>
@@ -370,12 +370,12 @@ function MemberCorridorsView() {
   const memberships = myMemberships ?? (membershipsLoading ? demoMyMemberships : []);
 
   return (
-    <div className="mx-auto w-full max-w-4xl px-4 py-6 sm:px-8 sm:py-8">
+    <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-4xl">
       {sponsorCorridor && <SponsorModal corridor={sponsorCorridor} onClose={() => setSponsorCorridor(null)} />}
 
       {/* DB / network error — shown instead of fake demo data */}
       {corridorsError && !isLoading && (
-        <div className="mb-4 flex items-center gap-3 rounded-xl border border-danger-bg bg-[#fff5f5] px-4 py-3 text-sm text-danger">
+        <div className="mb-4 flex items-center gap-3 rounded-card border border-danger-bg bg-[#fff5f5] px-4 py-3 text-sm text-danger">
           <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1` }}>wifi_off</span>
           Could not load corridors. Check your connection and <button onClick={() => window.location.reload()} className="underline font-semibold ml-1">refresh</button>.
         </div>
@@ -383,14 +383,14 @@ function MemberCorridorsView() {
 
       {/* Payment verification banners */}
       {verifying && (
-        <div className="mb-4 flex items-center gap-3 rounded-xl border border-primary-soft bg-primary-soft px-4 py-3 text-sm text-primary">
+        <div className="mb-4 flex items-center gap-3 rounded-card border border-primary-soft bg-primary-soft px-4 py-3 text-sm text-primary">
           <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent flex-shrink-0" />
           Verifying your sponsorship payment…
         </div>
       )}
       {sponsorMsg && !verifying && (
         <div
-          className="mb-4 flex items-center gap-3 rounded-xl border px-4 py-3 text-sm"
+          className="mb-4 flex items-center gap-3 rounded-card border px-4 py-3 text-sm"
           style={sponsorMsg.confirmed
             ? { borderColor: 'rgb(var(--c-success-bg))', background: '#f0fdf6', color: 'rgb(var(--c-success))' }
             : { borderColor: 'rgb(var(--c-warning-bg))', background: 'rgb(var(--c-warning-bg))', color: 'rgb(var(--c-warning))' }}
@@ -413,7 +413,7 @@ function MemberCorridorsView() {
       </div>
 
       {/* How it works banner */}
-      <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 mb-6 flex items-start gap-3">
+      <div className="rounded-card border border-primary/20 bg-primary/5 p-4 mb-6 flex items-start gap-3">
         <span className="material-symbols-outlined flex-shrink-0 mt-0.5" style={{ fontSize: 20, color: 'rgb(var(--c-primary))', fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20` }}>info</span>
         <div>
           <p className="text-sm font-semibold text-ink mb-1">How sponsorships work</p>
@@ -427,7 +427,7 @@ function MemberCorridorsView() {
 
       <div className="flex gap-1 bg-surface-alt rounded-lg p-1 mb-6 w-fit border border-border">
         {([['corridors', 'All Corridors'], ['my-activity', 'My Activity']] as const).map(([t, label]) => (
-          <button key={t} onClick={() => setTab(t)} className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === t ? 'bg-white text-ink shadow-sm' : 'text-ink-subtle hover:text-ink'}`}>
+          <button key={t} onClick={() => setTab(t)} className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === t ? 'bg-surface text-ink shadow-card' : 'text-ink-subtle hover:text-ink'}`}>
             {label}
             {t === 'my-activity' && (memberships.length + apps.length) > 0 && <span className="ml-1.5 rounded-full px-1.5 py-0.5 text-xs text-white font-bold" style={{ background: 'rgb(var(--c-primary))' }}>{memberships.length + apps.length}</span>}
           </button>
@@ -442,8 +442,8 @@ function MemberCorridorsView() {
               const st = corridorStatusConfig[c.status];
               const canSponsor = c.sponsorSlotsAvailable > 0 && c.status !== 'inactive';
               return (
-                <div key={c.id} className="bg-white rounded-xl border border-border overflow-hidden">
-                  <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8">
+                <div key={c.id} className="bg-surface rounded-card border border-border overflow-hidden">
+                  <div className="p-6">
                     <div className="flex items-start justify-between gap-4 mb-3">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 flex-wrap mb-1">
@@ -483,7 +483,7 @@ function MemberCorridorsView() {
                       <button
                         disabled={leavingId === c.id}
                         onClick={() => handleLeave(c.id)}
-                        className="flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium border border-border bg-white text-ink-subtle hover:bg-surface-alt disabled:opacity-50 transition-colors"
+                        className="flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium border border-border bg-surface text-ink-subtle hover:bg-surface-alt disabled:opacity-50 transition-colors"
                       >
                         <span className="material-symbols-outlined" style={{ fontSize: 16 }}>bookmark_remove</span>
                         {leavingId === c.id ? 'Unfollowing…' : 'Unfollow'}
@@ -518,7 +518,7 @@ function MemberCorridorsView() {
                         </p>
                       </div>
                       <button onClick={() => setSponsorCorridor(c)}
-                        className="flex-shrink-0 flex items-center gap-1.5 rounded-lg px-5 py-2.5 text-sm font-semibold text-white shadow-sm"
+                        className="flex-shrink-0 flex items-center gap-1.5 rounded-lg px-5 py-2.5 text-sm font-semibold text-white shadow-card"
                         style={{ background: 'rgb(var(--c-primary))' }}>
                         <span className="material-symbols-outlined" style={{ fontSize: 16 }}>workspace_premium</span>
                         Become a Sponsor
@@ -543,14 +543,14 @@ function MemberCorridorsView() {
           <div>
             <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide mb-3">Corridors I Follow</p>
             {memberships.length === 0 ? (
-              <div className="bg-white rounded-xl border border-border p-10 text-center">
+              <div className="bg-surface rounded-card border border-border p-10 text-center">
                 <p className="text-sm text-ink-subtle mb-4">You are not following any corridors yet.</p>
                 <button onClick={() => setTab('corridors')} className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white" style={{ background: 'rgb(var(--c-primary))' }}>Browse Corridors</button>
               </div>
             ) : (
               <div className="space-y-2">
                 {memberships.map((m) => (
-                  <div key={m.corridorId} className="bg-white rounded-xl border border-border px-5 py-4 flex items-center justify-between gap-4">
+                  <div key={m.corridorId} className="bg-surface rounded-card border border-border px-5 py-4 flex items-center justify-between gap-4">
                     <div>
                       <p className="font-semibold text-sm text-ink">{m.corridorTitle}</p>
                       <p className="text-xs text-ink-subtle mt-0.5">
@@ -571,7 +571,7 @@ function MemberCorridorsView() {
           <div>
             <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide mb-3">My Sponsorship Applications</p>
             {apps.length === 0 ? (
-              <div className="bg-white rounded-xl border border-border p-10 text-center">
+              <div className="bg-surface rounded-card border border-border p-10 text-center">
                 <p className="text-sm text-ink-subtle mb-4">No sponsorship applications yet.</p>
                 <button onClick={() => setTab('corridors')} className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white" style={{ background: 'rgb(var(--c-primary))' }}>Browse Corridors</button>
               </div>
@@ -581,7 +581,7 @@ function MemberCorridorsView() {
                   const ac = appStatusConfig[app.status];
                   const tc = tierConfig[app.tier];
                   return (
-                    <div key={app.id} className="bg-white rounded-xl border border-border p-5">
+                    <div key={app.id} className="bg-surface rounded-card border border-border p-5">
                       <div className="flex items-start justify-between">
                         <div>
                           <p className="font-bold text-ink text-sm">{app.corridorTitle}</p>
@@ -624,8 +624,8 @@ function ApplicationDetailModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-lg">
+      <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
+      <div className="relative bg-surface rounded-card shadow-pop w-full max-w-lg">
         <div className="border-b border-border px-6 py-4 flex items-center justify-between">
           <div>
             <h2 className="font-semibold text-ink">Sponsorship Application</h2>
@@ -639,7 +639,7 @@ function ApplicationDetailModal({
           {/* Applicant */}
           <div>
             <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide mb-2">Applicant</p>
-            <div className="rounded-xl border border-border divide-y divide-border-subtle">
+            <div className="rounded-card border border-border divide-y divide-border-subtle">
               {[
                 { label: 'Member Name', value: app.memberName ?? '–' },
                 { label: 'Company', value: app.companyName },
@@ -660,7 +660,7 @@ function ApplicationDetailModal({
           {corridor && (
             <div>
               <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide mb-2">Corridor</p>
-              <div className="rounded-xl border border-border p-4 space-y-2">
+              <div className="rounded-card border border-border p-4 space-y-2">
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="font-semibold text-sm text-ink">{corridor.title}</span>
                   <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold"
@@ -731,8 +731,8 @@ function CorridorMembersSection({ corridorId, isExpanded }: { corridorId: string
         <p className="text-xs text-ink-subtle">No active members in this corridor yet.</p>
       ) : (
         <>
-          <div className="rounded-xl border border-border overflow-hidden mb-3">
-            <table className="w-full text-sm">
+          <div className="rounded-card border border-border overflow-hidden mb-3">
+            <table className="data-table w-full text-sm">
               <thead>
                 <tr className="bg-surface-alt border-b border-border">
                   {['Name', 'Company', 'Member ID', 'Joined', 'Source'].map((h) => (
@@ -764,9 +764,9 @@ function CorridorMembersSection({ corridorId, isExpanded }: { corridorId: string
             <span>Showing {items.length} of {total} members</span>
             <div className="flex gap-2">
               <button disabled={page === 1} onClick={() => setPage(p => p - 1)}
-                className="px-3 py-1.5 rounded-md border border-border bg-white disabled:opacity-40 hover:bg-surface-alt">Previous</button>
+                className="px-3 py-1.5 rounded-md border border-border bg-surface disabled:opacity-40 hover:bg-surface-alt">Previous</button>
               <button disabled={items.length < 20} onClick={() => setPage(p => p + 1)}
-                className="px-3 py-1.5 rounded-md border border-border bg-white disabled:opacity-40 hover:bg-surface-alt">Next</button>
+                className="px-3 py-1.5 rounded-md border border-border bg-surface disabled:opacity-40 hover:bg-surface-alt">Next</button>
             </div>
           </div>
         </>
@@ -823,9 +823,9 @@ function CreateCorridorModal({ initial, onClose }: { initial?: TradeCorridor; on
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
+      <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
+      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-surface border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
           <h2 className="font-bold text-ink">{initial ? 'Edit Corridor' : 'Create New Corridor'}</h2>
           <button onClick={onClose} className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle">
             <span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span>
@@ -966,7 +966,7 @@ function AdminCorridorsView() {
           { icon: 'pending', label: 'Pending Applications', value: pending },
           { icon: 'workspace_premium', label: 'Total Sponsors', value: allCorridors.reduce((s, c) => s + c.sponsors.length, 0) },
         ].map(({ icon, label, value, accent }) => (
-          <div key={label} className={`rounded-xl border p-4 ${accent ? '' : 'bg-white border-border'}`} style={accent ? { background: 'rgb(var(--c-primary))', borderColor: 'rgb(var(--c-primary))' } : {}}>
+          <div key={label} className={`rounded-card border p-4 ${accent ? '' : 'bg-surface border-border'}`} style={accent ? { background: 'rgb(var(--c-primary))', borderColor: 'rgb(var(--c-primary))' } : {}}>
             <div className="flex items-center gap-2 mb-2">
               <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`, color: accent ? 'rgb(var(--c-primary-200))' : 'rgb(var(--c-ink-subtle))' }}>{icon}</span>
               <p className={`text-xs font-semibold uppercase tracking-wide ${accent ? 'text-primary-200' : 'text-ink-subtle'}`}>{label}</p>
@@ -978,7 +978,7 @@ function AdminCorridorsView() {
 
       <div className="flex gap-1 bg-surface-alt rounded-lg p-1 mb-6 w-fit border border-border">
         {([['corridors', 'Corridors'], ['applications', `Applications${pending > 0 ? ` (${pending})` : ''}`]] as const).map(([t, label]) => (
-          <button key={t} onClick={() => setTab(t)} className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === t ? 'bg-white text-ink shadow-sm' : 'text-ink-subtle hover:text-ink'}`}>{label}</button>
+          <button key={t} onClick={() => setTab(t)} className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === t ? 'bg-surface text-ink shadow-card' : 'text-ink-subtle hover:text-ink'}`}>{label}</button>
         ))}
       </div>
 
@@ -988,7 +988,7 @@ function AdminCorridorsView() {
             const st = corridorStatusConfig[c.status];
             const isExpanded = expandedId === c.id;
             return (
-              <div key={c.id} className="bg-white rounded-xl border border-border overflow-hidden">
+              <div key={c.id} className="bg-surface rounded-card border border-border overflow-hidden">
                 <button
                   onClick={() => setExpandedId(isExpanded ? null : c.id)}
                   className="w-full text-left p-5 flex items-start justify-between hover:bg-surface-alt transition-colors"
@@ -1054,7 +1054,7 @@ function AdminCorridorsView() {
                             </div>
                           );
                         })}
-                        <div className="rounded-lg border border-border bg-white px-4 py-2.5 flex items-center gap-2">
+                        <div className="rounded-lg border border-border bg-surface px-4 py-2.5 flex items-center gap-2">
                           <span className="text-xs text-ink-subtle">Open slots:</span>
                           <span className="font-bold text-sm text-ink">{c.sponsorSlotsAvailable}</span>
                         </div>
@@ -1073,10 +1073,10 @@ function AdminCorridorsView() {
       )}
 
       {tab === 'applications' && (
-        <div className="bg-white rounded-xl border border-border overflow-hidden">
-          {appsLoading ? <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8"><SkeletonCard /></div> : (
+        <div className="bg-surface rounded-card border border-border overflow-hidden">
+          {appsLoading ? <div className="p-6"><SkeletonCard /></div> : (
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="data-table w-full text-sm">
                 <thead>
                   <tr className="bg-surface-alt border-b border-border">
                     {['Applicant', 'Corridor', 'Tier', 'Amount', 'Applied', 'Status', ''].map((h) => (

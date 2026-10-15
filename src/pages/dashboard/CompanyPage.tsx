@@ -92,7 +92,7 @@ function RegisterCompanyForm() {
   };
 
   return (
-    <div className="bg-white rounded-xl border border-border/40 p-6 max-w-xl">
+    <div className="bg-surface rounded-card border border-border p-6 max-w-xl">
       <h2 className="text-lg font-semibold text-ink">Register your exporting company</h2>
       <p className="mt-1 mb-5 text-sm text-ink-subtle">
         Your company is identified by its Tax Identification Number. Once NACCIMA has confirmed it
@@ -185,8 +185,8 @@ function SubUsers({ data }: { data: MyCompanyResponse & { company: ExporterCompa
   };
 
   return (
-    <div className="bg-white rounded-xl border border-border/40 overflow-hidden max-w-2xl">
-      <div className="px-6 py-4 border-b border-border/40">
+    <div className="bg-surface rounded-card border border-border overflow-hidden max-w-2xl">
+      <div className="px-6 py-4 border-b border-border">
         <h2 className="text-sm font-semibold text-ink">Who can apply for this company</h2>
         <p className="mt-0.5 text-xs text-ink-subtle">
           {isOwner
@@ -195,7 +195,7 @@ function SubUsers({ data }: { data: MyCompanyResponse & { company: ExporterCompa
         </p>
       </div>
 
-      <div className="divide-y divide-border/20">
+      <div className="divide-y divide-border-subtle">
         {data.members.map((m) => (
           <div key={m.userId} className="flex items-center gap-3 px-6 py-3">
             <div className="min-w-0 flex-1">
@@ -215,7 +215,7 @@ function SubUsers({ data }: { data: MyCompanyResponse & { company: ExporterCompa
       </div>
 
       {isOwner && (
-        <div className="border-t border-border/40 px-6 py-4">
+        <div className="border-t border-border px-6 py-4">
           {error && <div className="mb-3"><ErrorBanner message={error} /></div>}
           {atLimit ? (
             <p className="text-xs text-ink-subtle">
@@ -262,10 +262,10 @@ function SubUsers({ data }: { data: MyCompanyResponse & { company: ExporterCompa
 export function CompanyPage() {
   const { data, isLoading, isError, refetch } = useGetMyCompanyQuery();
 
-  if (isLoading) return <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 sm:py-8"><SkeletonCard /></div>;
+  if (isLoading) return <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-3xl"><SkeletonCard /></div>;
   if (isError || !data) {
     return (
-      <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 sm:py-8">
+      <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-3xl">
         <ErrorBanner message="Failed to load your company details." />
         <Button variant="outline" onClick={() => refetch()} className="mt-4">Try again</Button>
       </div>
@@ -273,7 +273,7 @@ export function CompanyPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 sm:py-8">
+    <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-3xl">
       <div className="mb-6">
         <h1 className="text-2xl font-semibold text-ink">My Company</h1>
         <p className="text-sm text-ink-subtle mt-0.5">
@@ -288,8 +288,8 @@ export function CompanyPage() {
           <div>
             <StatusNotice company={data.company} />
 
-            <div className="bg-white rounded-xl border border-border/40 overflow-hidden">
-              <div className="flex items-start justify-between gap-4 px-6 py-4 border-b border-border/40">
+            <div className="bg-surface rounded-card border border-border overflow-hidden">
+              <div className="flex items-start justify-between gap-4 px-6 py-4 border-b border-border">
                 <div className="min-w-0">
                   <h2 className="text-base font-semibold text-ink truncate">{data.company.name}</h2>
                   <p className="text-xs text-ink-subtle mt-0.5">TIN {data.company.tin}</p>

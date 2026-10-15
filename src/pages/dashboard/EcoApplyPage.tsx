@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams, useSearchParams, Link } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import {
   useCreateEcoCertificateMutation,
   useCreateEcoCertificateWithFilesMutation,
@@ -30,6 +30,7 @@ import { Textarea } from '@shared/ui/Textarea';
 import { Button } from '@shared/ui/Button';
 import { ErrorBanner } from '@shared/ui/ErrorBanner';
 import { Card } from '@shared/ui/Card';
+import { PageHeader } from '@shared/ui/PageHeader';
 
 const STEPS = [
   'Product & Goods',
@@ -253,7 +254,7 @@ function ReviewSection({ title, onEdit, rows }: {
   );
 }
 
-const selectClass = 'w-full rounded-lg border border-border/60 px-3 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary';
+const selectClass = 'w-full rounded-lg border border-border px-3 py-2.5 text-sm text-ink focus:outline-none focus:border-primary focus:shadow-focus focus:border-primary';
 const labelClass = 'block text-sm font-medium text-ink mb-1.5';
 
 interface FormState {
@@ -674,58 +675,78 @@ export function EcoApplyPage() {
     }
     : null;
 
+  const stepHelp = [
+    'Certificate, chamber and the goods',
+    'Who exports, who receives',
+    'How and when it ships',
+    'Invoice and fee',
+    'Supporting documents',
+    'Check and submit',
+  ];
+
   return (
-    <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 sm:py-8">
-      <div className="flex items-center gap-2 mb-6">
-        <Link to="/dashboard/eco" className="text-sm text-ink-subtle hover:text-ink">Certificate Applications</Link>
-        <span className="text-ink-subtle">/</span>
-        <span className="text-sm text-ink">{isEditing ? 'Edit Application' : 'New Application'}</span>
-      </div>
+    <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8">
+      <PageHeader
+        breadcrumbs={[{ label: 'Certificate applications', to: '/dashboard/eco' }, { label: isEditing ? 'Edit application' : 'New application' }]}
+        title={isRevisionRequested ? 'Resubmit application' : isEditing ? 'Continue your application' : 'Apply for a certificate'}
+        description={<>No chamber membership needed to apply. {payFirst
+          ? 'You pay the fee when you submit; the chamber then reviews it and issues the certificate.'
+          : 'The chamber reviews your application first, and you pay only once it\u2019s approved.'}</>}
+      />
 
-      <h1 className="text-2xl font-semibold text-ink mb-1">
-        {isRevisionRequested ? 'Resubmit Application' : isEditing ? 'Continue Draft' : 'Apply for a Certificate'}
-      </h1>
-      <p className="text-sm text-ink-subtle mb-2">
-        No chamber membership needed to apply.{' '}
-        {payFirst
-          ? 'You pay the fee when you submit; the chamber then reviews your application and issues the certificate.'
-          : 'The chamber reviews your application first; you pay only once it\u2019s approved.'}
-      </p>
+      <div className="grid gap-8 lg:grid-cols-[232px_minmax(0,1fr)]">
+        {/* Steps — vertical, always fully readable; completed steps are clickable. */}
+        <nav aria-label="Application steps" className="lg:sticky lg:top-6 lg:self-start">
+          <ol className="flex gap-2 overflow-x-auto pb-1 lg:block lg:space-y-1 lg:overflow-visible">
+            {STEPS.map((label, i) => {
+              const done = i < step;
+              const current = i === step;
+              return (
+                <li key={label} className="flex-shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => done && setStep(i)}
+                    disabled={!done}
+                    aria-current={current ? 'step' : undefined}
+                    className={`group flex w-full items-start gap-3 rounded-control px-3 py-2.5 text-left transition-colors ${current ? 'bg-surface border border-border shadow-card' : 'border border-transparent'} ${done ? 'hover:bg-surface cursor-pointer' : 'cursor-default'}`}
+                  >
+                    <span className={`mt-px flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-semibold num ${
+                      done ? 'bg-primary text-white' : current ? 'bg-primary-soft text-primary ring-1 ring-primary' : 'bg-surface text-ink-subtle ring-1 ring-border-strong'
+                    }`}>
+                      {done ? <span className="material-symbols-outlined" aria-hidden="true" style={{ fontSize: 15 }}>check</span> : i + 1}
+                    </span>
+                    <span className="min-w-0">
+                      <span className={`block whitespace-nowrap text-[13.5px] ${current ? 'font-semibold text-ink' : done ? 'font-medium text-ink' : 'text-ink-subtle'}`}>{label}</span>
+                      <span className="hidden text-xs text-ink-subtle lg:block">{stepHelp[i]}</span>
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ol>
+        </nav>
 
+        <div className="min-w-0 max-w-3xl">
       {isRevisionRequested && existingCert?.revisionNotes && (
-        <div className="mb-4 rounded-lg bg-warning-bg border border-warning-border px-4 py-3 text-sm text-warning">
-          <p className="font-semibold mb-1">Admin revision notes:</p>
+        <div className="mb-4 rounded-control border border-warning-border bg-warning-bg px-4 py-3 text-sm text-warning">
+          <p className="font-semibold mb-1">The chamber asked for these changes</p>
           <p>{existingCert.revisionNotes}</p>
         </div>
       )}
 
       {draftSaved && (
-        <div className="mb-4 rounded-lg bg-success-bg border border-success-border px-4 py-2 text-sm text-success">
+        <div role="status" className="mb-4 flex items-center gap-2 rounded-control border border-success-border bg-success-bg px-4 py-2.5 text-sm text-success">
+          <span className="material-symbols-outlined" aria-hidden="true" style={{ fontSize: 18 }}>check_circle</span>
           Draft saved. You can close this page and continue later.
         </div>
       )}
 
-      {/* Step indicator */}
-      <div className="flex items-center gap-0 mb-8 overflow-x-auto">
-        {STEPS.map((label, i) => (
-          <div key={label} className="flex items-center flex-1 last:flex-none">
-            <div className="flex flex-col items-center">
-              <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-medium flex-shrink-0 transition-colors ${i <= step ? 'bg-primary text-white shadow-sm' : 'bg-surface-alt text-ink-subtle border border-border'}`}>
-                {i < step ? <span className="material-symbols-outlined" style={{ fontSize: 18 }}>check</span> : i + 1}
-              </div>
-              <span className={`text-xs mt-1.5 whitespace-nowrap ${i === step ? 'text-primary font-semibold' : 'text-ink-subtle'}`}>{label}</span>
-            </div>
-            {i < STEPS.length - 1 && <div className={`flex-1 mx-2 mb-6 min-w-[16px] border-t-2 rounded-full ${i < step ? 'border-primary' : 'border-border'}`} />}
-          </div>
-        ))}
-      </div>
+      {error && <div className="mb-4"><ErrorBanner message={error} /></div>}
 
-      {error && <ErrorBanner message={error} />}
-
-      <Card>
+      <Card padding="lg">
         {step === 0 && (
           <div className="space-y-4">
-            <h2 className="font-medium text-ink mb-4">Product & Goods Details</h2>
+            <h2 className="text-[17px] font-semibold text-ink mb-1">Product & Goods Details</h2>
 
             <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide">Certificate & Chamber</p>
 
@@ -860,7 +881,7 @@ export function EcoApplyPage() {
 
         {step === 1 && (
           <div className="space-y-4">
-            <h2 className="font-medium text-ink mb-4">Exporter/Company & Consignee Details</h2>
+            <h2 className="text-[17px] font-semibold text-ink mb-1">Exporter/Company & Consignee Details</h2>
 
             {/* Mining-licence questions belong only to types that declare
                 requiresMiningLicence — asking a cocoa exporter for a mining
@@ -918,7 +939,7 @@ export function EcoApplyPage() {
 
         {step === 2 && (
           <div className="space-y-4">
-            <h2 className="font-medium text-ink mb-1">Shipment & Transport</h2>
+            <h2 className="text-[17px] font-semibold text-ink mb-1">Shipment & Transport</h2>
             <p className="text-xs text-ink-subtle mb-3">
               If any of these details aren&apos;t known yet, tick &quot;I don&apos;t know yet&quot; and we&apos;ll record it as unknown ({UNKNOWN_VALUE}).
             </p>
@@ -980,7 +1001,7 @@ export function EcoApplyPage() {
 
         {step === 3 && (
           <div className="space-y-4">
-            <h2 className="font-medium text-ink mb-4">Commercial Information</h2>
+            <h2 className="text-[17px] font-semibold text-ink mb-1">Commercial Information</h2>
             <Input label="Invoice Number" placeholder="Optional" value={form.invoiceNumber} onChange={(e) => set('invoiceNumber', e.target.value)} />
             <Input label="Invoice Date *" type="date" value={form.invoiceDate} onChange={(e) => set('invoiceDate', e.target.value)} />
             <div className="grid grid-cols-3 gap-3 items-start">
@@ -1132,10 +1153,11 @@ export function EcoApplyPage() {
         )}
       </Card>
 
-      <div className="sticky bottom-0 -mx-6 mt-6 flex items-center justify-between bg-surface border-t border-border px-6 py-4">
-        <Button variant="outline" onClick={() => step === 0 ? navigate('/dashboard/eco') : setStep((s) => s - 1)}>
+      <div className="sticky bottom-0 z-10 mt-4 flex items-center justify-between gap-3 rounded-card border border-border bg-surface/95 px-4 py-3 shadow-pop backdrop-blur">
+        <Button variant="secondary" onClick={() => step === 0 ? navigate('/dashboard/eco') : setStep((s) => s - 1)}>
           {step === 0 ? 'Cancel' : 'Back'}
         </Button>
+        <span className="hidden text-[13px] text-ink-subtle sm:block num">Step {step + 1} of {STEPS.length}</span>
 
         <div className="flex items-center gap-3">
           {/* Save Draft button — visible on every step except the final one */}
@@ -1145,7 +1167,7 @@ export function EcoApplyPage() {
               loading={isSavingDraft || isUpdating}
               onClick={handleSaveDraft}
             >
-              Save Draft
+              Save draft
             </Button>
           )}
 
@@ -1155,9 +1177,11 @@ export function EcoApplyPage() {
             </Button>
           ) : (
             <Button loading={isLoading} onClick={handleSubmit}>
-              {isRevisionRequested ? 'Resubmit Application' : 'Submit Application'}
+              {isRevisionRequested ? 'Resubmit application' : 'Submit application'}
             </Button>
           )}
+        </div>
+      </div>
         </div>
       </div>
     </div>

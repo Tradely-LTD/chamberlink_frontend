@@ -68,7 +68,7 @@ export function MembershipPage() {
   if (statusError) {
     if (isNoActiveChamberError(statusErrorObj)) {
       return (
-        <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 sm:py-8">
+        <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-3xl">
           <h1 className="text-2xl font-semibold text-ink mb-1">Membership</h1>
           <p className="text-sm text-ink-subtle mb-6">View your membership status and available tiers.</p>
           <EmptyState
@@ -95,15 +95,15 @@ export function MembershipPage() {
   const needsPayment = status?.status === 'expired' || status?.status === 'pending_payment';
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 sm:py-8">
+    <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-3xl">
       <h1 className="text-2xl font-semibold text-ink mb-1">Membership</h1>
       <p className="text-sm text-ink-subtle mb-6">View your membership status and available tiers.</p>
 
       {payError && <div className="mb-4"><ErrorBanner message={payError} /></div>}
 
       {/* Current Status Card */}
-      <div className="bg-white rounded-xl border border-border/40 overflow-hidden mb-6">
-        <div className="px-6 py-4 border-b border-border/40 flex items-center justify-between">
+      <div className="bg-surface rounded-card border border-border overflow-hidden mb-6">
+        <div className="px-6 py-4 border-b border-border flex items-center justify-between">
           <h2 className="font-medium text-ink">Current Membership</h2>
           {status?.status && (
             <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${statusColors[status.status] ?? 'bg-border-subtle text-ink-muted'}`}>
@@ -111,7 +111,7 @@ export function MembershipPage() {
             </span>
           )}
         </div>
-        <dl className="divide-y divide-border/30">
+        <dl className="divide-y divide-border-subtle">
           {[
             { label: 'Tier', value: status?.tierName ?? '–' },
             { label: 'Member Since', value: memberSince ?? '–' },
@@ -125,7 +125,7 @@ export function MembershipPage() {
           ))}
         </dl>
         {needsPayment && (
-          <div className="px-6 py-4 border-t border-border/40">
+          <div className="px-6 py-4 border-t border-border">
             <Button
               className="bg-gold hover:bg-gold-hover text-white"
               loading={payLoading && payingTierId === 'current'}
@@ -144,7 +144,7 @@ export function MembershipPage() {
           const isCurrentActive = status?.tierName?.toLowerCase() === tier.name.toLowerCase() && status?.status === 'active';
           const isBusy = payLoading && payingTierId === tier.id;
           return (
-            <div key={tier.id} className="bg-white rounded-xl border border-border/40 p-5">
+            <div key={tier.id} className="bg-surface rounded-card border border-border p-5">
               <div className="flex items-start justify-between mb-3">
                 <div>
                   <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${tierColors[tier.name.toLowerCase()] ?? 'bg-border-subtle text-ink-muted'}`}>

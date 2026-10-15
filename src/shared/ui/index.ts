@@ -18,3 +18,5 @@ export { StatusBadge, Status } from './StatusBadge';
 export { statusTone, statusLabel } from './statusStyles';
 export type { StatusTone } from './StatusBadge';
 export { TableCard } from './TableCard';
+export { SegmentedTabs } from './SegmentedTabs';
+export { Modal } from './Modal';

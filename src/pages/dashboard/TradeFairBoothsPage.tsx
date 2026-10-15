@@ -91,7 +91,7 @@ export function TradeFairBoothsPage() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 sm:py-8">
+    <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-3xl">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 mb-6 text-sm">
         <Link to="/dashboard/trade-fair" className="text-ink-subtle hover:text-ink flex items-center gap-1">
@@ -107,19 +107,19 @@ export function TradeFairBoothsPage() {
 
       {/* Payment verification banner */}
       {verifying && (
-        <div className="mb-4 flex items-center gap-3 rounded-xl border border-primary-soft bg-primary-soft px-4 py-3 text-sm text-primary">
+        <div className="mb-4 flex items-center gap-3 rounded-card border border-primary-soft bg-primary-soft px-4 py-3 text-sm text-primary">
           <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent flex-shrink-0" />
           Verifying your payment…
         </div>
       )}
       {!verifying && verifyState === 'success' && (
-        <div className="mb-4 flex items-center gap-3 rounded-xl border border-success-bg bg-[#f0fdf6] px-4 py-3 text-sm text-success">
+        <div className="mb-4 flex items-center gap-3 rounded-card border border-success-bg bg-[#f0fdf6] px-4 py-3 text-sm text-success">
           <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18` }}>check_circle</span>
           Payment confirmed! Your booth reservation is now active.
         </div>
       )}
       {!verifying && verifyState === 'pending' && (
-        <div className="mb-4 flex items-center gap-3 rounded-xl border border-warning-bg bg-warning-bg px-4 py-3 text-sm text-warning">
+        <div className="mb-4 flex items-center gap-3 rounded-card border border-warning-bg bg-warning-bg px-4 py-3 text-sm text-warning">
           <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18` }}>info</span>
           Payment is being processed. Your booking will update shortly once confirmed.
         </div>
@@ -129,7 +129,7 @@ export function TradeFairBoothsPage() {
       {isLoading && <SkeletonCard />}
 
       {!isLoading && booths.length === 0 ? (
-        <div className="bg-white rounded-xl border border-border p-12 text-center">
+        <div className="bg-surface rounded-card border border-border p-12 text-center">
           <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: 'rgb(var(--c-primary-soft))' }}>
             <span className="material-symbols-outlined" style={{ fontSize: 32, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 32`, color: 'rgb(var(--c-primary))' }}>storefront</span>
           </div>
@@ -146,11 +146,11 @@ export function TradeFairBoothsPage() {
           {booths.map((booth) => {
             const cfg = statusConfig[booth.status];
             return (
-              <div key={booth.id} className="bg-white rounded-xl border border-border overflow-hidden">
+              <div key={booth.id} className="bg-surface rounded-card border border-border overflow-hidden">
                 <div className="px-6 pt-5 pb-4">
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: 'rgb(var(--c-primary-soft))' }}>
+                      <div className="w-12 h-12 rounded-card flex items-center justify-center flex-shrink-0" style={{ background: 'rgb(var(--c-primary-soft))' }}>
                         <span className="font-bold text-primary text-sm leading-none text-center">{booth.boothNumber}</span>
                       </div>
                       <div>

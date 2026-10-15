@@ -58,7 +58,7 @@ function ReviewCard({ company }: { company: ExporterCompany }) {
   const isPending = company.verificationStatus === 'pending_review';
 
   return (
-    <div className="bg-white rounded-xl border border-border/40 overflow-hidden">
+    <div className="bg-surface rounded-card border border-border overflow-hidden">
       <div className="flex items-start justify-between gap-4 px-6 py-4">
         <div className="min-w-0">
           <h3 className="text-sm font-semibold text-ink truncate">{company.submittedName}</h3>
@@ -94,7 +94,7 @@ function ReviewCard({ company }: { company: ExporterCompany }) {
       </div>
 
       {open && (
-        <div className="border-t border-border/40 px-6 py-4">
+        <div className="border-t border-border px-6 py-4">
           {error && <div className="mb-3"><ErrorBanner message={error} /></div>}
           <p className="text-xs text-ink-subtle mb-3">
             Check this TIN against tax records, then enter the company&apos;s details exactly as the record
@@ -159,7 +159,7 @@ export function CompanyVerificationPage() {
   const { data: companies, isLoading, isError, refetch } = useGetCompanyQueueQuery(status);
 
   return (
-    <div className="mx-auto w-full max-w-4xl px-4 py-6 sm:px-8 sm:py-8">
+    <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-4xl">
       <div className="mb-6">
         <h1 className="text-2xl font-semibold text-ink">Company Verification</h1>
         <p className="text-sm text-ink-subtle mt-0.5">
@@ -176,7 +176,7 @@ export function CompanyVerificationPage() {
             className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
               status === f.value
                 ? 'bg-primary text-white'
-                : 'bg-white border border-border/60 text-ink-subtle hover:text-ink'
+                : 'bg-surface border border-border text-ink-subtle hover:text-ink'
             }`}
           >
             {f.label}

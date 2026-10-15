@@ -105,8 +105,8 @@ function totalNetWeight(items: LineItem[])   { return items.reduce((s, i) => s +
 function totalGrossWeight(items: LineItem[]) { return items.reduce((s, i) => s + (i.grossWeight ?? 0), 0); }
 function totalPackages(items: LineItem[])    { return items.reduce((s, i) => s + (i.numberOfPackages ?? i.quantity), 0); }
 
-const inputCls   = 'w-full rounded-lg border border-border/60 px-3 py-2.5 text-sm text-ink placeholder-ink-subtle focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary';
-const inputSmCls = 'w-full rounded-lg border border-border/60 px-3 py-2 text-sm text-ink placeholder-ink-subtle focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary';
+const inputCls   = 'w-full rounded-lg border border-border px-3 py-2.5 text-sm text-ink placeholder:text-ink-subtle/80 focus:outline-none focus:border-primary focus:shadow-focus focus:border-primary';
+const inputSmCls = 'w-full rounded-lg border border-border px-3 py-2 text-sm text-ink placeholder:text-ink-subtle/80 focus:outline-none focus:border-primary focus:shadow-focus focus:border-primary';
 
 // ── Step 1: Document Type ──────────────────────────────────────────────────
 
@@ -119,7 +119,7 @@ function StepDocType({ form, setForm }: { form: GeneratorForm; setForm: React.Di
           { value: 'commercial_invoice' as const, label: 'Commercial Invoice', desc: 'Invoice issued to the buyer listing goods, quantities, and agreed prices.', icon: 'receipt_long' },
           { value: 'packing_list' as const,       label: 'Packing List',       desc: 'Shipping manifest: weights, dimensions, marks and numbers. No prices.', icon: 'inventory_2' },
         ]).map((opt) => (
-          <label key={opt.value} className={`flex flex-col gap-2 p-4 rounded-xl border-2 cursor-pointer transition-all ${form.type === opt.value ? 'border-primary bg-success-bg' : 'border-border/40 hover:border-primary/40'}`}>
+          <label key={opt.value} className={`flex flex-col gap-2 p-4 rounded-card border-2 cursor-pointer transition-all ${form.type === opt.value ? 'border-primary bg-success-bg' : 'border-border hover:border-primary/40'}`}>
             <input type="radio" name="docType" value={opt.value} checked={form.type === opt.value}
               onChange={() => setForm((f) => ({ ...f, type: opt.value }))} className="sr-only" />
             <div className="flex items-center gap-2">
@@ -151,7 +151,7 @@ function StepTransport({ form, setForm }: { form: GeneratorForm; setForm: React.
         <p className="text-xs text-ink-subtle mb-4">Choose this first. It decides which fields appear on your line items.</p>
         <div className="grid grid-cols-4 gap-3">
           {MODE_META.map((m) => (
-            <label key={m.value} className={`flex flex-col items-center gap-1.5 p-4 rounded-xl border-2 cursor-pointer transition-all text-center ${form.shippingMethod === m.value ? 'border-primary bg-success-bg' : 'border-border/40 hover:border-primary/40'}`}>
+            <label key={m.value} className={`flex flex-col items-center gap-1.5 p-4 rounded-card border-2 cursor-pointer transition-all text-center ${form.shippingMethod === m.value ? 'border-primary bg-success-bg' : 'border-border hover:border-primary/40'}`}>
               <input type="radio" name="shippingMethod" value={m.value} checked={form.shippingMethod === m.value}
                 onChange={() => setForm((f) => ({ ...f, shippingMethod: m.value }))} className="sr-only" />
               <span className="material-symbols-outlined text-primary" style={{ fontSize: 28, fontVariationSettings: `'FILL' 1` }}>{m.icon}</span>
@@ -163,7 +163,7 @@ function StepTransport({ form, setForm }: { form: GeneratorForm; setForm: React.
       </div>
 
       {/* Booking checkbox */}
-      <div className="rounded-xl border border-border/40 p-4 bg-surface-alt">
+      <div className="rounded-card border border-border p-4 bg-surface-alt">
         <label className="flex items-start gap-3 cursor-pointer">
           <div className="mt-0.5">
             <input type="checkbox" checked={form.hasBooking}
@@ -196,7 +196,7 @@ function StepParties({ form, setForm }: { form: GeneratorForm; setForm: React.Di
         {isPacking ? 'Shipper & Consignee' : 'Seller & Buyer Details'}
       </h2>
 
-      <div className="rounded-lg border border-border/40 p-4 space-y-3">
+      <div className="rounded-lg border border-border p-4 space-y-3">
         <p className="text-xs font-semibold text-primary uppercase tracking-wide">
           {isPacking ? 'Shipper / Exporter (Your Company)' : 'Seller (Your Company)'}
         </p>
@@ -211,7 +211,7 @@ function StepParties({ form, setForm }: { form: GeneratorForm; setForm: React.Di
         </div>
       </div>
 
-      <div className="rounded-lg border border-border/40 p-4 space-y-3">
+      <div className="rounded-lg border border-border p-4 space-y-3">
         <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide">
           {isPacking ? 'Consignee (Receiver)' : 'Buyer (Importer / Consignee)'}
         </p>
@@ -299,7 +299,7 @@ function PackingLineItemFields({ item, idx, updateItem, mode }: {
 
       {/* Dimensions — shown for air (required) and sea (optional for CBM); hidden for road/rail */}
       {showDims && (
-        <div className={`rounded-lg p-3 border ${dimsRequired ? 'border-primary/30 bg-success-bg' : 'border-border/30 bg-surface-alt'}`}>
+        <div className={`rounded-lg p-3 border ${dimsRequired ? 'border-primary/30 bg-success-bg' : 'border-border bg-surface-alt'}`}>
           <label className="block text-xs font-semibold text-ink-subtle mb-1">
             Dimensions (L × W × H)
             {dimsRequired
@@ -372,7 +372,7 @@ function StepLineItems({ form, setForm }: { form: GeneratorForm; setForm: React.
 
       <div className="space-y-4 mb-4">
         {items.map((item, idx) => (
-          <div key={idx} className="rounded-xl border border-border/40 p-4 bg-surface-alt/50">
+          <div key={idx} className="rounded-card border border-border p-4 bg-surface-alt/50">
             <div className="flex items-center justify-between mb-3">
               <span className="text-xs font-semibold text-ink-subtle uppercase">Item {idx + 1}</span>
               {items.length > 1 && (
@@ -439,7 +439,7 @@ function StepLineItems({ form, setForm }: { form: GeneratorForm; setForm: React.
 
       {items.length < 50 && (
         <button onClick={addItem}
-          className="w-full rounded-xl border-2 border-dashed border-border/60 py-3 text-sm text-ink-subtle hover:border-primary hover:text-primary transition-colors flex items-center justify-center gap-2">
+          className="w-full rounded-card border-2 border-dashed border-border py-3 text-sm text-ink-subtle hover:border-primary hover:text-primary transition-colors flex items-center justify-center gap-2">
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
@@ -498,7 +498,7 @@ function StepDetails({ form, setForm }: { form: GeneratorForm; setForm: React.Di
 
           {/* Booking details — gated by checkbox from StepTransport */}
           {form.hasBooking ? (
-            <div className="rounded-xl border border-primary/30 bg-success-bg p-4 space-y-4">
+            <div className="rounded-card border border-primary/30 bg-success-bg p-4 space-y-4">
               <p className="text-xs font-semibold text-primary uppercase tracking-wide">Booking Details</p>
 
               <div className="grid grid-cols-2 gap-3">
@@ -560,7 +560,7 @@ function StepDetails({ form, setForm }: { form: GeneratorForm; setForm: React.Di
             </div>
           ) : (
             /* No booking yet — friendly nudge */
-            <div className="rounded-xl border border-border/40 bg-surface-alt p-4 flex gap-3">
+            <div className="rounded-card border border-border bg-surface-alt p-4 flex gap-3">
               <span className="material-symbols-outlined text-ink-subtle flex-shrink-0" style={{ fontSize: 20 }}>info</span>
               <div>
                 <p className="text-sm font-medium text-ink">No booking yet? No problem.</p>
@@ -582,7 +582,7 @@ function StepDetails({ form, setForm }: { form: GeneratorForm; setForm: React.Di
         <label className="block text-sm font-medium text-ink mb-1.5">Notes (optional)</label>
         <textarea rows={3} value={form.notes} onChange={set('notes')}
           placeholder="Any additional notes to appear on the document"
-          className="w-full rounded-lg border border-border/60 px-3 py-2.5 text-sm text-ink placeholder-ink-subtle focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none" />
+          className="w-full rounded-lg border border-border px-3 py-2.5 text-sm text-ink placeholder:text-ink-subtle/80 focus:outline-none focus:border-primary focus:shadow-focus focus:border-primary resize-none" />
       </div>
     </div>
   );
@@ -622,7 +622,7 @@ function StepReview({ form }: { form: GeneratorForm }) {
     <div className="space-y-4">
       <h2 className="font-medium text-ink mb-4">Review Before Generating</h2>
 
-      <dl className="divide-y divide-border/30 rounded-xl border border-border/40 overflow-hidden">
+      <dl className="divide-y divide-border-subtle rounded-card border border-border overflow-hidden">
         {summaryRows.map((row) => (
           <div key={row.label} className="grid grid-cols-3 gap-4 px-4 py-3">
             <dt className="text-sm text-ink-subtle">{row.label}</dt>
@@ -631,14 +631,14 @@ function StepReview({ form }: { form: GeneratorForm }) {
         ))}
       </dl>
 
-      <div className="rounded-xl border border-border/40 overflow-hidden">
-        <div className="px-4 py-2 bg-surface-alt border-b border-border/30">
+      <div className="rounded-card border border-border overflow-hidden">
+        <div className="px-4 py-2 bg-surface-alt border-b border-border">
           <p className="text-xs font-semibold text-ink-subtle uppercase tracking-wide">Line Items</p>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-xs">
+          <table className="data-table w-full text-xs">
             <thead>
-              <tr className="bg-surface-alt border-b border-border/20">
+              <tr className="bg-surface-alt border-b border-border">
                 {isPacking
                   ? ['Marks & No.', 'Description', 'HS Code', 'Pkgs / Type', 'Net Wt (kg)', 'Gross Wt (kg)', 'Dimensions'].map((h) => (
                       <th key={h} className="text-left px-3 py-2 font-semibold text-ink-subtle whitespace-nowrap">{h}</th>
@@ -651,7 +651,7 @@ function StepReview({ form }: { form: GeneratorForm }) {
             </thead>
             <tbody className="divide-y divide-border/15">
               {form.lineItems.map((item, i) => (
-                <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-surface-alt/50'}>
+                <tr key={i} className={i % 2 === 0 ? 'bg-surface' : 'bg-surface-alt/50'}>
                   {isPacking ? (
                     <>
                       <td className="px-3 py-2 text-ink-subtle">{item.marksAndNumbers || '–'}</td>
@@ -692,7 +692,7 @@ function StepReview({ form }: { form: GeneratorForm }) {
 
 function SuccessBanner({ referenceNo, downloadUrl, onEcoAttach }: { referenceNo: string; downloadUrl: string; onEcoAttach: () => void }) {
   return (
-    <div className="rounded-xl border border-success-border bg-success-bg p-5">
+    <div className="rounded-card border border-success-border bg-success-bg p-5">
       <div className="flex items-start gap-3">
         <svg className="w-6 h-6 text-success flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -852,7 +852,7 @@ export function ExportDocGeneratorPage() {
   // requireActiveMembership on the backend.
   if (!hasActiveConnection) {
     return (
-      <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 sm:py-8">
+      <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-3xl">
         <EmptyState
           icon="lock"
           title="Active Membership Required"
@@ -901,7 +901,7 @@ export function ExportDocGeneratorPage() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 sm:py-8">
+    <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-3xl">
       <div className="flex items-center gap-2 mb-6">
         <Link to="/dashboard/export-documents" className="text-sm text-ink-subtle hover:text-ink">Export Documents</Link>
         <span className="text-ink-subtle">/</span>
@@ -950,7 +950,7 @@ export function ExportDocGeneratorPage() {
         <>
           {error && <div className="mb-4"><ErrorBanner message={error} /></div>}
 
-          <div className="bg-white rounded-xl border border-border/40 p-6 mb-6">
+          <div className="bg-surface rounded-card border border-border p-6 mb-6">
             {renderStep()}
           </div>
 

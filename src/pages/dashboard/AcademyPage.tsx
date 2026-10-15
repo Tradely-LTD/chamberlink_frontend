@@ -103,9 +103,9 @@ function CourseFormModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
+      <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
+      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-surface border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
           <h2 className="font-bold text-ink">{course ? 'Edit Course' : 'Add New Course'}</h2>
           <button onClick={onClose} className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle">
             <span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span>
@@ -175,7 +175,7 @@ function CourseFormModal({
             <button
               type="button"
               onClick={onManageSections}
-              className="w-full flex items-center justify-between rounded-xl border border-dashed border-primary/30 bg-primary-soft px-4 py-3 text-sm text-primary hover:bg-[#e8eeff] transition-colors"
+              className="w-full flex items-center justify-between rounded-card border border-dashed border-primary/30 bg-primary-soft px-4 py-3 text-sm text-primary hover:bg-[#e8eeff] transition-colors"
             >
               <span className="flex items-center gap-2 font-semibold">
                 <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1` }}>video_library</span>
@@ -290,9 +290,9 @@ function SectionManagerModal({ course, onClose }: { course: Course; onClose: () 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
-        <div className="sticky top-0 bg-white border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
+      <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
+      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+        <div className="sticky top-0 bg-surface border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
           <div>
             <h2 className="font-bold text-ink">Course Content</h2>
             <p className="text-xs text-ink-subtle mt-0.5 max-w-md truncate">{course.title}</p>
@@ -317,7 +317,7 @@ function SectionManagerModal({ course, onClose }: { course: Course; onClose: () 
           {/* ── PDF Course Materials ─────────────────────────────────────── */}
           <div>
             <p className="text-xs font-bold text-ink-subtle uppercase tracking-wide mb-2">Course Materials (PDF)</p>
-            <div className="rounded-xl border border-border bg-surface-alt p-4">
+            <div className="rounded-card border border-border bg-surface-alt p-4">
               {pdfUrl ? (
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: 'rgb(var(--c-danger-bg))' }}>
@@ -363,7 +363,7 @@ function SectionManagerModal({ course, onClose }: { course: Course; onClose: () 
           {isLoading && <SkeletonCard />}
 
           {!isLoading && sections.length === 0 && !showAddForm && (
-            <div className="rounded-xl border-2 border-dashed border-border p-10 text-center">
+            <div className="rounded-card border-2 border-dashed border-border p-10 text-center">
               <span className="material-symbols-outlined text-ink-subtle mb-2 block" style={{ fontSize: 32, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 32` }}>video_library</span>
               <p className="text-sm font-semibold text-ink-subtle mb-1">No sections yet</p>
               <p className="text-xs text-ink-subtle mb-4">Add YouTube or Vimeo video links as course sections.</p>
@@ -374,7 +374,7 @@ function SectionManagerModal({ course, onClose }: { course: Course; onClose: () 
           )}
 
           {sections.map((s, idx) => (
-            <div key={s.id} className="bg-white rounded-xl border border-border overflow-hidden">
+            <div key={s.id} className="bg-surface rounded-card border border-border overflow-hidden">
               {editingId === s.id ? (
                 <div className="p-4 space-y-3">
                   <div className="grid grid-cols-2 gap-3">
@@ -426,7 +426,7 @@ function SectionManagerModal({ course, onClose }: { course: Course; onClose: () 
 
           {/* Add section form */}
           {showAddForm && (
-            <div className="bg-surface-alt rounded-xl border border-primary/20 p-4">
+            <div className="bg-surface-alt rounded-card border border-primary/20 p-4">
               <p className="text-xs font-bold text-primary mb-3 uppercase tracking-wide">New Section</p>
               <form onSubmit={handleAdd} className="space-y-3">
                 <div>
@@ -523,7 +523,7 @@ function AdminAcademyView() {
           { icon: 'verified', label: 'Completed', value: completedCount },
           { icon: 'trending_up', label: 'Avg Progress', value: `${avgProgress}%` },
         ].map(({ icon, label, value, accent }) => (
-          <div key={label} className={`rounded-xl border p-4 ${accent ? '' : 'bg-white border-border'}`} style={accent ? { background: 'rgb(var(--c-primary))', borderColor: 'rgb(var(--c-primary))' } : {}}>
+          <div key={label} className={`rounded-card border p-4 ${accent ? '' : 'bg-surface border-border'}`} style={accent ? { background: 'rgb(var(--c-primary))', borderColor: 'rgb(var(--c-primary))' } : {}}>
             <div className="flex items-center gap-2 mb-2">
               <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`, color: accent ? 'rgb(var(--c-primary-200))' : 'rgb(var(--c-ink-subtle))' }}>{icon}</span>
               <p className={`text-xs font-semibold uppercase tracking-wide ${accent ? 'text-primary-200' : 'text-ink-subtle'}`}>{label}</p>
@@ -536,7 +536,7 @@ function AdminAcademyView() {
       {/* Tabs */}
       <div className="flex gap-1 bg-surface-alt rounded-lg p-1 mb-6 w-fit border border-border">
         {([['courses', 'Course Catalog'], ['enrollments', 'Member Enrollments']] as const).map(([id, label]) => (
-          <button key={id} onClick={() => setTab(id)} className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === id ? 'bg-white text-ink shadow-sm' : 'text-ink-subtle hover:text-ink'}`}>
+          <button key={id} onClick={() => setTab(id)} className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === id ? 'bg-surface text-ink shadow-card' : 'text-ink-subtle hover:text-ink'}`}>
             {label}
           </button>
         ))}
@@ -552,12 +552,12 @@ function AdminAcademyView() {
           {coursesLoading ? (
             <SkeletonCard />
           ) : filteredCourses.length === 0 ? (
-            <div className="bg-white rounded-xl border border-border p-12 text-center">
+            <div className="bg-surface rounded-card border border-border p-12 text-center">
               <p className="text-sm text-ink-subtle">No courses available yet.</p>
             </div>
           ) : (
-            <div className="bg-white rounded-xl border border-border overflow-hidden">
-              <table className="w-full text-sm">
+            <div className="bg-surface rounded-card border border-border overflow-hidden">
+              <table className="data-table w-full text-sm">
                 <thead>
                   <tr className="bg-surface-alt border-b border-border">
                     {['Course', 'Category', 'Level', 'Price', 'Enrolled', 'Status', 'Actions'].map((h) => (
@@ -618,7 +618,7 @@ function AdminAcademyView() {
 
       {/* Member Enrollments tab */}
       {tab === 'enrollments' && (
-        <div className="bg-white rounded-xl border border-border overflow-hidden">
+        <div className="bg-surface rounded-card border border-border overflow-hidden">
           {enrollmentsError && <div className="p-4"><ErrorBanner message="Failed to load enrollments. Please refresh." /></div>}
           {enrollmentsLoading ? (
             <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8"><SkeletonCard /></div>
@@ -627,7 +627,7 @@ function AdminAcademyView() {
               <p className="text-sm text-ink-subtle">No enrollments yet.</p>
             </div>
           ) : (
-            <table className="w-full text-sm">
+            <table className="data-table w-full text-sm">
               <thead>
                 <tr className="bg-surface-alt border-b border-border">
                   {['Member', 'Course', 'Progress', 'Enrolled', 'Status'].map((h) => (
@@ -684,8 +684,8 @@ function CoursePlayerModal({ enrollment, onClose }: { enrollment: Enrollment; on
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
+      <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
+      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="border-b border-border px-6 py-4 flex items-center justify-between flex-shrink-0">
           <div>
@@ -818,7 +818,7 @@ function EnrolledCourseCard({
   };
 
   return (
-    <div className="bg-white rounded-xl border border-border p-5">
+    <div className="bg-surface rounded-card border border-border p-5">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-bold text-ink">{enrollment.courseTitle}</h3>
         <span
@@ -888,17 +888,17 @@ function CourseDetailModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
+      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="sticky top-0 bg-white border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
+        <div className="sticky top-0 bg-surface border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
           <h2 className="font-bold text-ink pr-8 leading-snug">{course.title}</h2>
           <button onClick={onClose} className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle flex-shrink-0">
             <span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span>
           </button>
         </div>
 
-        <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8">
+        <div className="p-6">
           {/* Meta chips */}
           <div className="flex flex-wrap items-center gap-2 mb-5">
             <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize" style={{ background: lc.bg, color: lc.text }}>{course.level}</span>
@@ -928,7 +928,7 @@ function CourseDetailModal({
 
           {/* Intro video */}
           {embedUrl ? (
-            <div className="relative w-full rounded-xl overflow-hidden mb-5" style={{ paddingTop: '56.25%' }}>
+            <div className="relative w-full rounded-card overflow-hidden mb-5" style={{ paddingTop: '56.25%' }}>
               <iframe
                 src={embedUrl}
                 className="absolute inset-0 w-full h-full"
@@ -938,7 +938,7 @@ function CourseDetailModal({
               />
             </div>
           ) : (
-            <div className="rounded-xl flex items-center justify-center mb-5" style={{ background: 'rgb(var(--c-primary))', height: 120 }}>
+            <div className="rounded-card flex items-center justify-center mb-5" style={{ background: 'rgb(var(--c-primary))', height: 120 }}>
               <div className="text-center">
                 <span className="material-symbols-outlined text-white/40" style={{ fontSize: 36, fontVariationSettings: `'FILL' 1` }}>school</span>
                 <p className="text-xs text-primary-200 mt-1 uppercase tracking-wide font-semibold">{course.category}</p>
@@ -1024,7 +1024,7 @@ function MemberAcademyView() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-8 sm:py-8">
+    <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-5xl">
       {playingEnrollment && <CoursePlayerModal enrollment={playingEnrollment} onClose={() => setPlayingEnrollment(null)} />}
       {previewCourse && (
         <CourseDetailModal
@@ -1045,7 +1045,7 @@ function MemberAcademyView() {
       {/* Tabs */}
       <div className="flex gap-1 bg-surface-alt rounded-lg p-1 mb-6 w-fit border border-border">
         {([['catalog', 'Course Catalog'], ['my-courses', 'My Learning']] as const).map(([t, label]) => (
-          <button key={t} onClick={() => setTab(t)} className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === t ? 'bg-white text-ink shadow-sm' : 'text-ink-subtle hover:text-ink'}`}>
+          <button key={t} onClick={() => setTab(t)} className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === t ? 'bg-surface text-ink shadow-card' : 'text-ink-subtle hover:text-ink'}`}>
             {label}
             {t === 'my-courses' && myEnrollments.length > 0 && (
               <span className="ml-1.5 rounded-full px-1.5 py-0.5 text-xs text-white font-bold" style={{ background: 'rgb(var(--c-primary))' }}>{myEnrollments.length}</span>
@@ -1066,7 +1066,7 @@ function MemberAcademyView() {
           {coursesLoading ? (
             <SkeletonCard />
           ) : filtered.length === 0 ? (
-            <div className="bg-white rounded-xl border border-border p-12 text-center">
+            <div className="bg-surface rounded-card border border-border p-12 text-center">
               <p className="text-sm text-ink-subtle">No courses available yet.</p>
             </div>
           ) : (
@@ -1076,7 +1076,7 @@ function MemberAcademyView() {
                 const isBusy = enrolling && enrollingId === course.id;
                 const lc = levelColor[course.level];
                 return (
-                  <div key={course.id} className="bg-white rounded-xl border border-border overflow-hidden hover:shadow-md transition-shadow flex flex-col">
+                  <div key={course.id} className="bg-surface rounded-card border border-border overflow-hidden hover:shadow-card-hover transition-shadow flex flex-col">
                     {/* Clickable banner → opens detail modal */}
                     <button
                       onClick={() => setPreviewCourse(course)}
@@ -1144,7 +1144,7 @@ function MemberAcademyView() {
           {enrollmentsLoading ? (
             <SkeletonCard />
           ) : myEnrollments.length === 0 ? (
-            <div className="bg-white rounded-xl border border-border p-12 text-center">
+            <div className="bg-surface rounded-card border border-border p-12 text-center">
               <p className="text-sm text-ink-subtle mb-4">You haven&apos;t enrolled in any courses yet.</p>
               <button onClick={() => setTab('catalog')} className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white" style={{ background: 'rgb(var(--c-primary))' }}>
                 Browse Catalog

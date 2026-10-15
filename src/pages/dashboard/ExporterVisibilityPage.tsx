@@ -235,9 +235,9 @@ function CreateProfileModal({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
+      <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
+      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-surface border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
           <h2 className="font-bold text-ink">Create Exporter Profile</h2>
           <button onClick={onClose} className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle"><span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span></button>
         </div>
@@ -285,9 +285,9 @@ function EditProfileModal({ profile, onClose }: { profile: ExporterProfile; onCl
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
+      <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
+      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-surface border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
           <h2 className="font-bold text-ink">Edit Exporter Profile</h2>
           <button onClick={onClose} className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle"><span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span></button>
         </div>
@@ -330,8 +330,8 @@ function UpgradeModal({ currentTier, onClose }: { currentTier: ExporterProfile['
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md">
+      <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
+      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-md">
         <div className="border-b border-border px-6 py-4 flex items-center justify-between">
           <h2 className="font-bold text-ink">Upgrade Visibility Plan</h2>
           <button onClick={onClose} className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle"><span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span></button>
@@ -341,7 +341,7 @@ function UpgradeModal({ currentTier, onClose }: { currentTier: ExporterProfile['
           {upgradeable.map((t) => {
             const tc = tierConfig[t];
             return (
-              <button key={t} onClick={() => setSelected(t)} className={`w-full rounded-xl border-2 p-4 text-left transition-all ${selected === t ? '' : 'border-border'}`} style={selected === t ? { borderColor: tc.accent, background: tc.bg + '40' } : {}}>
+              <button key={t} onClick={() => setSelected(t)} className={`w-full rounded-card border-2 p-4 text-left transition-all ${selected === t ? '' : 'border-border'}`} style={selected === t ? { borderColor: tc.accent, background: tc.bg + '40' } : {}}>
                 <div className="flex items-center justify-between mb-1">
                   <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ background: tc.bg, color: tc.text }}>{tc.label}</span>
                   <span className="font-bold text-ink">₦{tc.price.toLocaleString()}/yr</span>
@@ -378,9 +378,9 @@ function ExporterDetailModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
+      <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
+      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-surface border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
           <h2 className="font-bold text-ink">Business Profile Review</h2>
           <button onClick={onClose} className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle">
             <span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span>
@@ -429,20 +429,20 @@ function ExporterDetailModal({
           )}
 
           {profile.rejectionReason && (
-            <div className="rounded-xl border border-danger-bg bg-[#fff5f7] p-3">
+            <div className="rounded-card border border-danger-bg bg-[#fff5f7] p-3">
               <p className="text-xs font-semibold text-[#880e4f] mb-1">Previous rejection reason</p>
               <p className="text-sm text-ink-subtle">{profile.rejectionReason}</p>
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-3 p-4 rounded-xl" style={{ background: 'rgb(var(--c-surface-alt))' }}>
+          <div className="grid grid-cols-2 gap-3 p-4 rounded-card" style={{ background: 'rgb(var(--c-surface-alt))' }}>
             <div className="text-center"><p className="text-2xl font-bold text-ink">{profile.viewCount.toLocaleString()}</p><p className="text-xs text-ink-subtle">Profile Views</p></div>
             <div className="text-center"><p className="text-2xl font-bold text-ink">{profile.inquiryCount.toLocaleString()}</p><p className="text-xs text-ink-subtle">Inquiries</p></div>
           </div>
 
           {/* Reject form inline */}
           {showRejectForm && (
-            <div className="rounded-xl border border-danger-bg bg-[#fff5f5] p-4">
+            <div className="rounded-card border border-danger-bg bg-[#fff5f5] p-4">
               <label className="block text-xs font-semibold text-danger mb-2">Rejection reason (shown to the member)</label>
               <textarea
                 rows={3}
@@ -465,7 +465,7 @@ function ExporterDetailModal({
           )}
         </div>
 
-        <div className="sticky bottom-0 bg-white border-t border-border px-6 py-4 flex gap-2 flex-wrap">
+        <div className="sticky bottom-0 bg-surface border-t border-border px-6 py-4 flex gap-2 flex-wrap">
           <button onClick={onClose} className="rounded-lg border border-border px-4 py-2 text-sm font-semibold text-ink hover:bg-surface-alt">Close</button>
 
           {(profile.status === 'pending_review' || profile.status === 'suspended') && (
@@ -531,14 +531,14 @@ function MemberExporterView() {
   // Unexpected error (not 404)
   if (isError && !is404) {
     return (
-      <div className="mx-auto w-full max-w-4xl px-4 py-6 sm:px-8 sm:py-8">
+      <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-4xl">
         <ErrorBanner message="Failed to load your exporter profile. Please refresh." />
       </div>
     );
   }
 
   return (
-    <div className="mx-auto w-full max-w-4xl px-4 py-6 sm:px-8 sm:py-8">
+    <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-4xl">
       {showCreate && <CreateProfileModal onClose={() => setShowCreate(false)} />}
       {showEdit && profile && <EditProfileModal profile={profile} onClose={() => setShowEdit(false)} />}
       {showUpgrade && profile && <UpgradeModal currentTier={profile.tier} onClose={() => setShowUpgrade(false)} />}
@@ -553,7 +553,7 @@ function MemberExporterView() {
       {/* Upgrade payment result banner */}
       {(verifying || upgradeMsg) && !verifying && upgradeMsg && (
         <div
-          className="mb-4 flex items-center gap-3 rounded-xl border px-4 py-3 text-sm"
+          className="mb-4 flex items-center gap-3 rounded-card border px-4 py-3 text-sm"
           style={upgradeMsg.confirmed
             ? { borderColor: 'rgb(var(--c-success-bg))', background: '#f0fdf6', color: 'rgb(var(--c-success))' }
             : { borderColor: 'rgb(var(--c-warning-bg))', background: 'rgb(var(--c-warning-bg))', color: 'rgb(var(--c-warning))' }}
@@ -567,14 +567,14 @@ function MemberExporterView() {
         </div>
       )}
       {verifying && (
-        <div className="mb-4 flex items-center gap-3 rounded-xl border border-primary-soft bg-primary-soft px-4 py-3 text-sm text-primary">
+        <div className="mb-4 flex items-center gap-3 rounded-card border border-primary-soft bg-primary-soft px-4 py-3 text-sm text-primary">
           <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent flex-shrink-0" />
           Verifying your payment…
         </div>
       )}
 
       {!profile ? (
-        <div className="bg-white rounded-xl border border-border p-12 text-center">
+        <div className="bg-surface rounded-card border border-border p-12 text-center">
           <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: hasActiveConnection ? 'rgb(var(--c-primary-soft))' : 'rgb(var(--c-warning-bg))' }}>
             <span
               className="material-symbols-outlined"
@@ -604,7 +604,7 @@ function MemberExporterView() {
         </div>
       ) : (
         <>
-          <div className="bg-white rounded-xl border border-border p-6 mb-6">
+          <div className="bg-surface rounded-card border border-border p-6 mb-6">
             <div className="flex items-start justify-between mb-4">
               <div>
                 <h3 className="text-lg font-bold text-ink">{profile.companyName}</h3>
@@ -656,7 +656,7 @@ function MemberExporterView() {
           </div>
 
           {profile.tier !== 'premium' && (
-            <div className="bg-white rounded-xl border border-border p-6">
+            <div className="bg-surface rounded-card border border-border p-6">
               <h3 className="font-semibold text-ink mb-1">Boost Your Visibility</h3>
               <p className="text-sm text-ink-subtle mb-4">Upgrade to reach more international buyers and get priority placement in the directory.</p>
               <button onClick={() => setShowUpgrade(true)} className="flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold text-white" style={{ background: 'rgb(var(--c-primary))' }}>
@@ -716,7 +716,7 @@ function AdminExporterView() {
           { icon: 'star',              label: 'Featured',        value: allProfiles.filter((p) => p.tier === 'featured').length },
           { icon: 'pending',           label: 'Pending Review',  value: allProfiles.filter((p) => p.status === 'pending_review').length },
         ].map(({ icon, label, value, accent }) => (
-          <div key={label} className={`rounded-xl border p-4 ${accent ? '' : 'bg-white border-border'}`} style={accent ? { background: 'rgb(var(--c-primary))', borderColor: 'rgb(var(--c-primary))' } : {}}>
+          <div key={label} className={`rounded-card border p-4 ${accent ? '' : 'bg-surface border-border'}`} style={accent ? { background: 'rgb(var(--c-primary))', borderColor: 'rgb(var(--c-primary))' } : {}}>
             <div className="flex items-center gap-2 mb-2">
               <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`, color: accent ? 'rgb(var(--c-primary-200))' : 'rgb(var(--c-ink-subtle))' }}>{icon}</span>
               <p className={`text-xs font-semibold uppercase tracking-wide ${accent ? 'text-primary-200' : 'text-ink-subtle'}`}>{label}</p>
@@ -730,18 +730,18 @@ function AdminExporterView() {
         <input type="search" placeholder="Search by company or sector…" value={search} onChange={(e) => setSearch(e.target.value)} className="rounded-lg border border-border px-4 py-2 text-sm focus:outline-none focus:border-primary w-64" />
         <div className="flex gap-1 bg-surface-alt rounded-lg p-1 border border-border">
           {(['all', 'active', 'pending_review', 'suspended', 'rejected'] as const).map((s) => (
-            <button key={s} onClick={() => setStatusFilter(s)} className={`px-3 py-1 rounded-md text-xs font-medium capitalize transition-colors ${statusFilter === s ? 'bg-white shadow-sm text-ink' : 'text-ink-subtle'}`}>{s.replace('_', ' ')}</button>
+            <button key={s} onClick={() => setStatusFilter(s)} className={`px-3 py-1 rounded-md text-xs font-medium capitalize transition-colors ${statusFilter === s ? 'bg-surface shadow-card text-ink' : 'text-ink-subtle'}`}>{s.replace('_', ' ')}</button>
           ))}
         </div>
       </div>
 
       {isLoading ? <SkeletonCard /> : (
-        <div className="bg-white rounded-xl border border-border overflow-hidden">
+        <div className="bg-surface rounded-card border border-border overflow-hidden">
           {filtered.length === 0 ? (
             <div className="p-12 text-center"><p className="text-sm text-ink-subtle">No profiles match the current filter.</p></div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="data-table w-full text-sm">
                 <thead>
                   <tr className="bg-surface-alt border-b border-border">
                     {['Company', 'Member', 'Sector', 'Tier', 'Status', 'Views', 'Inquiries', 'Actions'].map((h) => (

@@ -81,7 +81,7 @@ export function ChamberSwitcher() {
           <img
             src={activeConnection.tenantLogoUrl}
             alt=""
-            className="h-6 w-6 rounded-full object-contain border border-border bg-white flex-shrink-0"
+            className="h-6 w-6 rounded-full object-contain border border-border bg-surface flex-shrink-0"
           />
         ) : (
           <span
@@ -103,7 +103,7 @@ export function ChamberSwitcher() {
       </button>
 
       {open && (
-        <div className="absolute right-0 z-30 mt-2 w-72 rounded-xl border border-border bg-white shadow-lg overflow-hidden">
+        <div className="absolute right-0 z-30 mt-2 w-72 rounded-card border border-border bg-surface shadow-pop overflow-hidden">
           <div className="px-4 py-3 border-b border-border">
             <p className="text-xs font-semibold uppercase tracking-wide text-ink-subtle">Your Chambers</p>
           </div>

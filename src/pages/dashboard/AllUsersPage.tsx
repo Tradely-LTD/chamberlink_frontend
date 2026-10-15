@@ -87,9 +87,9 @@ function EditUserModal({ user, tenants, onClose }: {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50" onClick={() => onClose()} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
+      <div className="absolute inset-0 bg-ink/50" onClick={() => onClose()} />
+      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-surface border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
           <div>
             <h2 className="font-bold text-ink">Edit User</h2>
             <p className="text-xs text-ink-subtle mt-0.5">{user.firstName} {user.lastName} · {user.email}</p>
@@ -188,8 +188,8 @@ function ResetPasswordModal({ user, onClose }: {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50" onClick={() => onClose()} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md">
+      <div className="absolute inset-0 bg-ink/50" onClick={() => onClose()} />
+      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-md">
         <div className="border-b border-border px-6 py-4 flex items-center justify-between">
           <div>
             <h2 className="font-bold text-ink">Reset Password</h2>
@@ -246,7 +246,7 @@ function RowActionsMenu({ onEdit, onResetPassword }: { onEdit: () => void; onRes
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
         <button
-          className="inline-flex items-center justify-center w-7 h-7 rounded-md text-ink-subtle hover:bg-surface-alt hover:text-ink outline-none focus:ring-2 focus:ring-primary/40"
+          className="inline-flex items-center justify-center w-7 h-7 rounded-md text-ink-subtle hover:bg-surface-alt hover:text-ink outline-none focus:border-primary focus:shadow-focus"
           aria-label="Row actions"
         >
           <span className="material-symbols-outlined" style={{ fontSize: 18 }}>more_vert</span>
@@ -256,7 +256,7 @@ function RowActionsMenu({ onEdit, onResetPassword }: { onEdit: () => void; onRes
         <DropdownMenu.Content
           align="end"
           sideOffset={4}
-          className="z-50 min-w-[10rem] overflow-hidden rounded-lg border border-border bg-white shadow-card-hover p-1"
+          className="z-50 min-w-[10rem] overflow-hidden rounded-lg border border-border bg-surface shadow-card-hover p-1"
         >
           <DropdownMenu.Item
             onSelect={onEdit}
@@ -367,7 +367,7 @@ function AllUsersView() {
       {isLoading ? (
         <SkeletonCard className="h-64" />
       ) : isError ? (
-        <div className="rounded-xl border border-danger/30 bg-danger-bg p-6">
+        <div className="rounded-card border border-danger/30 bg-danger-bg p-6">
           <p className="text-sm text-danger-text mb-2">Failed to load users.</p>
           <button onClick={refetch} className="text-sm text-primary hover:underline">Retry</button>
         </div>
@@ -378,7 +378,7 @@ function AllUsersView() {
       ) : (
         <Card padding="none">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="data-table w-full text-sm">
               <thead>
                 <tr className="border-b border-border bg-surface-alt">
                   {['Name / Email', 'Role', 'Chamber', 'Status', ''].map((h) => (

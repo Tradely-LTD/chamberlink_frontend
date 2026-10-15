@@ -52,7 +52,7 @@ export function AuthShell({
       {/* Brand row */}
       <div className="flex items-center justify-between max-w-[1180px] mx-auto mb-10 sm:mb-16">
         <a href={WEBSITE_URL} className="flex items-center gap-2.5" aria-label="Chamberlink home">
-          <span className="h-11 w-11 rounded-[10px] bg-white flex items-center justify-center flex-shrink-0 shadow-[0_7px_18px_rgba(0,71,171,0.12)]">
+          <span className="h-11 w-11 rounded-[10px] bg-surface flex items-center justify-center flex-shrink-0 shadow-[0_7px_18px_rgba(0,71,171,0.12)]">
             <img src="/naccima-seal.png" alt="" className="h-9 w-9 object-contain" />
           </span>
           <span className="leading-tight">
@@ -60,7 +60,7 @@ export function AuthShell({
           </span>
         </a>
         <span className="hidden sm:inline text-[10px] font-extrabold uppercase tracking-[0.1em] text-ink-subtle">
-          Solid Minerals Export Platform
+          Export certificate platform
         </span>
       </div>
 
@@ -91,8 +91,8 @@ export function AuthShell({
         </section>
 
         {/* Form card */}
-        <section className="bg-white border border-border p-7 sm:p-8 shadow-[0_22px_60px_rgba(19,34,56,0.1)] rounded-2xl">
-          <div className="h-11 w-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-5">
+        <section className="bg-surface border border-border p-7 sm:p-8 shadow-[0_22px_60px_rgba(19,34,56,0.1)] rounded-card">
+          <div className="h-11 w-11 rounded-card bg-primary/10 text-primary flex items-center justify-center mb-5">
             <span className="material-symbols-outlined" style={{ fontSize: 21, fontVariationSettings: `'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 21` }}>
               {cardIcon}
             </span>

@@ -82,7 +82,7 @@ export function MyConnectionsPage() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-4xl px-4 py-6 sm:px-8 sm:py-8">
+    <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-4xl">
       <div className="flex items-start justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl font-semibold text-ink mb-1">My Chambers</h1>
@@ -124,17 +124,17 @@ export function MyConnectionsPage() {
             const isBusy = busyTenantId === c.tenantId && (isSwitching || isRemoving);
             const needsAttention = c.status === 'pending_payment' || c.status === 'expired';
             return (
-              <li key={c.tenantId} className="bg-white rounded-xl border border-border/40 overflow-hidden">
+              <li key={c.tenantId} className="bg-surface rounded-card border border-border overflow-hidden">
                 <div className="flex flex-wrap items-start justify-between gap-4 px-6 py-4">
                   <div className="flex items-center gap-3 min-w-0">
                     {c.tenantLogoUrl ? (
                       <img
                         src={c.tenantLogoUrl}
                         alt=""
-                        className="h-10 w-10 rounded-lg object-contain border border-border/40 bg-white flex-shrink-0"
+                        className="h-10 w-10 rounded-lg object-contain border border-border bg-surface flex-shrink-0"
                       />
                     ) : (
-                      <div className="h-10 w-10 rounded-lg bg-surface-alt border border-border/40 flex items-center justify-center flex-shrink-0">
+                      <div className="h-10 w-10 rounded-lg bg-surface-alt border border-border flex items-center justify-center flex-shrink-0">
                         <span className="material-symbols-outlined text-ink-subtle" style={{ fontSize: 20 }}>
                           corporate_fare
                         </span>
@@ -161,7 +161,7 @@ export function MyConnectionsPage() {
                   </span>
                 </div>
 
-                <dl className="grid grid-cols-2 gap-4 px-6 py-3 border-t border-border/30 text-sm">
+                <dl className="grid grid-cols-2 gap-4 px-6 py-3 border-t border-border text-sm">
                   <div>
                     <dt className="text-xs text-ink-subtle">Member Since</dt>
                     <dd className="text-ink">{formatDate(c.memberSince)}</dd>
@@ -172,7 +172,7 @@ export function MyConnectionsPage() {
                   </div>
                 </dl>
 
-                <div className="flex flex-wrap items-center gap-2 px-6 py-3 border-t border-border/30">
+                <div className="flex flex-wrap items-center gap-2 px-6 py-3 border-t border-border">
                   {!c.isActive && (
                     <Button
                       variant="outline"

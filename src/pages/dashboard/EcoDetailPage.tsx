@@ -4,6 +4,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAppSelector } from '@shared/hooks/useAppDispatch';
 import {
   useGetEcoCertificateQuery,
+  useGetCertificateTypesQuery,
   useReIssueCertificateMutation,
   useRevokeEcoCertMutation,
   useResubmitRevokedEcoCertMutation,
@@ -13,20 +14,19 @@ import {
 } from '@features/eco/ecoApi';
 import { SkeletonCard } from '@shared/ui/SkeletonCard';
 import { ErrorBanner } from '@shared/ui/ErrorBanner';
-import { Badge } from '@shared/ui/Badge';
+import { PageHeader } from '@shared/ui/PageHeader';
+import { StatusBadge, type StatusTone } from '@shared/ui/StatusBadge';
 import { Button } from '@shared/ui/Button';
 
-const statusVariant: Record<ECertStatus, 'success' | 'warning' | 'error' | 'default'> = {
-  issued: 'success', approved: 'warning',
-  submitted: 'warning', under_review: 'warning', pending_payment: 'warning',
-  draft: 'default',
-  rejected: 'error', revision_requested: 'error', revoked: 'error',
+const statusTone: Record<ECertStatus, StatusTone> = {
+  draft: 'neutral', submitted: 'info', under_review: 'warning', revision_requested: 'warning',
+  approved: 'gold', pending_payment: 'gold', issued: 'success', rejected: 'danger', revoked: 'danger',
 };
 
 const statusLabel: Record<ECertStatus, string> = {
-  draft: 'Draft', submitted: 'Submitted', under_review: 'Under Review',
-  pending_payment: 'Awaiting Payment', approved: 'Approved, awaiting payment', issued: 'Issued',
-  rejected: 'Rejected', revision_requested: 'Revision Required', revoked: 'Revoked',
+  draft: 'Draft', submitted: 'Submitted', under_review: 'Under review',
+  pending_payment: 'Awaiting payment', approved: 'Approved, awaiting payment', issued: 'Issued',
+  rejected: 'Rejected', revision_requested: 'Changes requested', revoked: 'Revoked',
 };
 
 const MEANS_OF_TRANSPORT_LABEL: Record<string, string> = { sea: 'Sea', air: 'Air', land: 'Land' };
@@ -43,9 +43,9 @@ const TRANSPORT_DOC_LABEL: Record<string, string> = {
 const ADMIN_ROLES = ['super_admin', 'chamber_admin', 'staff_operator', 'chamber_executive'];
 
 const Row = ({ label, value }: { label: string; value: ReactNode }) => (
-  <div className="flex items-start py-3 border-b border-border/20 last:border-0">
-    <span className="w-56 shrink-0 text-sm text-ink-subtle">{label}</span>
-    <span className="text-sm text-ink font-medium">{value ?? '–'}</span>
+  <div className="min-w-0 border-b border-border-subtle py-3 sm:[&:nth-last-child(-n+2):nth-child(odd)]:border-0 last:border-0">
+    <dt className="text-xs text-ink-subtle">{label}</dt>
+    <dd className="mt-0.5 break-words text-sm text-ink">{value ?? '–'}</dd>
   </div>
 );
 
@@ -69,7 +69,7 @@ const DocRow = ({ label, certId, docType, attached }: {
   };
 
   return (
-    <div className="flex items-start py-3 border-b border-border/20 last:border-0">
+    <div className="flex items-start py-3 border-b border-border last:border-0">
       <span className="w-56 shrink-0 text-sm text-ink-subtle">{label}</span>
       {attached ? (
         <span className="flex items-center gap-2">
@@ -96,6 +96,7 @@ export function EcoDetailPage() {
   const isReadOnly = role === 'chamber_executive';
 
   const { data: cert, isLoading, isError, refetch } = useGetEcoCertificateQuery(id!);
+  const { data: certificateTypes } = useGetCertificateTypesQuery();
   const [reIssue, { isLoading: reIssuing }] = useReIssueCertificateMutation();
   const [revoke, { isLoading: revoking }] = useRevokeEcoCertMutation();
   const [resubmit, { isLoading: resubmitting }] = useResubmitRevokedEcoCertMutation();
@@ -111,9 +112,9 @@ export function EcoDetailPage() {
   const [revokeReason, setRevokeReason] = useState('');
   const [actionError, setActionError] = useState<string | null>(null);
 
-  if (isLoading) return <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 sm:py-8"><SkeletonCard /></div>;
+  if (isLoading) return <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8"><SkeletonCard /></div>;
   if (isError || !cert) return (
-    <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 sm:py-8">
+    <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8">
       <ErrorBanner message="Failed to load certificate details. You may not have permission to view this certificate." />
       <Link to="/dashboard/eco" className="inline-block mt-4 text-sm text-primary hover:underline">
         ← Back
@@ -205,52 +206,45 @@ export function EcoDetailPage() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 sm:py-8">
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2 mb-6">
-        <Link to="/dashboard/eco" className="text-sm text-ink-subtle hover:text-primary">
-          {isAdmin ? 'Certificate Queue' : 'Certificate Applications'}
-        </Link>
-        <span className="text-border">/</span>
-        <span className="text-sm text-ink font-medium">
-          {cert.certificateNumber ?? cert.id.slice(0, 8).toUpperCase()}
-        </span>
-      </div>
+    <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8">
+      <PageHeader
+        breadcrumbs={[
+          { label: isAdmin ? 'Certificate queue' : 'Certificate applications', to: '/dashboard/eco' },
+          { label: cert.certificateNumber ?? 'Application' },
+        ]}
+        title={cert.certificateNumber ?? 'Certificate application'}
+        description={[certificateTypes?.find((t) => t.code === cert.certificateTypeCode)?.name ?? 'Certificate of Origin', cert.solidMineralName, cert.destinationCountry && `to ${cert.destinationCountry}`].filter(Boolean).join(' · ')}
+      />
 
-      {/* Header */}
-      <div className="flex items-start justify-between mb-4 gap-4">
-        <div>
-          <h1 className="text-2xl font-semibold text-ink">
-            {cert.certificateNumber ?? 'Application Details'}
-          </h1>
-          <p className="text-sm text-ink-subtle mt-0.5">Certificate of Origin, Solid Minerals</p>
-        </div>
-        <Badge variant={statusVariant[cert.status]}>{statusLabel[cert.status]}</Badge>
-      </div>
-
-      {/* Badges row */}
-      <div className="flex flex-wrap gap-2 mb-4">
-        {cert.issuedRetrospectively && (
-          <Badge variant="warning">ISSUED RETROSPECTIVELY</Badge>
-        )}
-        {cert.membershipVerified && (
-          <Badge variant="success">Membership Verified</Badge>
-        )}
-      </div>
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <aside className="order-first space-y-4 lg:order-last lg:sticky lg:top-6 lg:self-start">
+          <section className="rounded-card border border-border bg-surface p-5">
+            <p className="text-2xs font-semibold uppercase text-ink-subtle">Status</p>
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <StatusBadge tone={statusTone[cert.status]}>{statusLabel[cert.status]}</StatusBadge>
+              {cert.issuedRetrospectively && <StatusBadge tone="warning">Issued retrospectively</StatusBadge>}
+              {cert.membershipVerified && <StatusBadge tone="success">Membership verified</StatusBadge>}
+            </div>
+            <dl className="mt-4 space-y-2 border-t border-border-subtle pt-4 text-[13px]">
+              <div className="flex justify-between gap-3"><dt className="text-ink-subtle">Applied</dt><dd className="num text-ink">{fmtDate(cert.createdAt)}</dd></div>
+              <div className="flex justify-between gap-3"><dt className="text-ink-subtle">Issued</dt><dd className="num text-ink">{cert.issuedAt ? fmtDate(cert.issuedAt) : '–'}</dd></div>
+              <div className="flex justify-between gap-3"><dt className="text-ink-subtle">Fee</dt><dd className="num font-medium text-ink">{cert.applicationFee ? `₦${cert.applicationFee.toLocaleString('en-NG', { maximumFractionDigits: 2 })}` : '–'}</dd></div>
+            </dl>
+          </section>
 
       {/* Status notices */}
       {cert.status === 'rejected' && cert.rejectionReason && (
-        <div className="mb-4 rounded-lg bg-danger-bg border border-danger-border px-4 py-3 text-sm text-danger">
+        <div className="rounded-card border border-danger-border bg-danger-bg px-4 py-3 text-[13px] text-danger">
           <strong>Rejection reason:</strong> {cert.rejectionReason}
         </div>
       )}
       {cert.status === 'revision_requested' && cert.revisionNotes && (
-        <div className="mb-4 rounded-lg bg-warning-bg border border-warning-border px-4 py-3 text-sm text-warning">
+        <div className="rounded-card border border-warning-border bg-warning-bg px-4 py-3 text-[13px] text-warning">
           <strong>Revision required:</strong> {cert.revisionNotes}
         </div>
       )}
       {cert.status === 'approved' && (
-        <div className="mb-4 rounded-lg bg-warning-bg border border-warning-border px-4 py-3 text-sm text-warning">
+        <div className="rounded-card border border-warning-border bg-warning-bg px-4 py-3 text-[13px] text-warning">
           Approved. Payment is required before the certificate is issued.
         </div>
       )}
@@ -258,7 +252,7 @@ export function EcoDetailPage() {
           carry the weight: without it a member sees a downloadable certificate
           and no indication it is no longer honoured. */}
       {isRevoked && (
-        <div className="mb-4 rounded-lg bg-danger-bg border border-danger-border px-4 py-3 text-sm text-danger">
+        <div className="rounded-card border border-danger-border bg-danger-bg px-4 py-3 text-[13px] text-danger">
           <strong>This certificate has been revoked</strong>
           {cert.revokedAt && <> on {fmtDate(cert.revokedAt)}</>}
           {' '}and is no longer valid. Anyone verifying it publicly will see it as revoked.
@@ -271,7 +265,7 @@ export function EcoDetailPage() {
         </div>
       )}
       {cert.resubmittedFromCertificateId && (
-        <div className="mb-4 rounded-lg bg-primary-soft border border-primary-200 px-4 py-3 text-sm text-primary">
+        <div className="rounded-card border border-primary-200 bg-primary-soft px-4 py-3 text-[13px] text-primary">
           This application replaces a revoked certificate.{' '}
           <Link
             to={`/dashboard/eco/${cert.resubmittedFromCertificateId}`}
@@ -282,7 +276,7 @@ export function EcoDetailPage() {
         </div>
       )}
       {isIssuedMissingDoc && (
-        <div className="mb-4 rounded-lg bg-warning-bg border border-warning-border px-4 py-3 text-sm text-warning">
+        <div className="rounded-card border border-warning-border bg-warning-bg px-4 py-3 text-[13px] text-warning">
           The certificate PDF is missing or could not be retrieved (possible storage error).
           {isAdmin && !isReadOnly && (
             <span> Use the button below to re-generate it.</span>
@@ -290,7 +284,7 @@ export function EcoDetailPage() {
         </div>
       )}
       {(reIssueErrorMsg || downloadError || actionError) && (
-        <div className="mb-4">
+        <div>
           <ErrorBanner message={reIssueErrorMsg ?? downloadError ?? actionError ?? 'An error occurred.'} />
         </div>
       )}
@@ -299,7 +293,7 @@ export function EcoDetailPage() {
           reason is mandatory, quoted to the applicant verbatim in the
           notification email, and kept in the audit log. */}
       {revokeOpen && (
-        <div className="mb-6 rounded-lg border border-danger-border bg-danger-bg/50 px-4 py-4">
+        <div className="rounded-card border border-danger-border bg-surface px-4 py-4">
           <h2 className="text-sm font-semibold text-ink mb-1">Revoke this certificate</h2>
           <p className="text-xs text-ink-subtle mb-3">
             The certificate stays on record and remains publicly verifiable, but will show as
@@ -312,14 +306,14 @@ export function EcoDetailPage() {
             rows={3}
             maxLength={1000}
             placeholder="Why is this certificate being revoked? The applicant will see this."
-            className="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-ink placeholder:text-ink-subtle focus:border-primary focus:outline-none"
+            className="w-full rounded-control border border-border-input bg-surface px-3 py-2 text-sm text-ink placeholder:text-ink-subtle/80 outline-none focus:border-primary focus:shadow-focus"
           />
-          <div className="mt-3 flex items-center gap-3">
+          <div className="mt-3 flex flex-wrap items-center gap-2">
             <Button
               loading={revoking}
               disabled={revokeReason.trim().length < 10}
               onClick={handleRevoke}
-              className="bg-danger hover:bg-danger text-white"
+              variant="danger"
             >
               Confirm revocation
             </Button>
@@ -337,28 +331,22 @@ export function EcoDetailPage() {
       )}
 
       {/* Action buttons */}
-      <div className="flex flex-wrap gap-3 mb-6">
+      <div className="flex flex-col gap-2 [&>button]:w-full">
         {/* Download — fetches a fresh signed URL from server */}
         {hasPdf && (
           <Button
             loading={downloadLoading}
             onClick={() => openSignedUrl('download')}
-            className="bg-primary hover:bg-primary-hover text-white"
           >
-            <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-            </svg>
-            Download Certificate
+            <span className="material-symbols-outlined" aria-hidden="true" style={{ fontSize: 18 }}>download</span>
+            Download certificate
           </Button>
         )}
 
         {/* Print — opens PDF in new tab via signed URL (user prints from browser) */}
         {hasPdf && (
           <Button variant="outline" loading={downloadLoading} onClick={() => openSignedUrl('print')}>
-            <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-            </svg>
-            Print Certificate
+            <span className="material-symbols-outlined" aria-hidden="true" style={{ fontSize: 18 }}>print</span>Print
           </Button>
         )}
 
@@ -366,56 +354,43 @@ export function EcoDetailPage() {
             super_admin only — a chamber_executive is read-only and a
             staff_operator's authority stops at reviewing applications. */}
         {canRevoke && !isReadOnly && !revokeOpen && (
-          <Button variant="outline" onClick={() => setRevokeOpen(true)} className="border-danger-border text-danger hover:bg-danger-bg">
-            <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14L21 3m-2 7v6a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h6" />
-            </svg>
-            Revoke Certificate
+          <Button variant="danger" onClick={() => setRevokeOpen(true)}>
+            Revoke certificate
           </Button>
         )}
 
         {/* Applicant: correct and resubmit after a revocation (RFP §4.1.12) */}
         {canResubmit && (
-          <Button loading={resubmitting} onClick={handleResubmit} className="bg-primary hover:bg-primary-hover text-white">
-            <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-            </svg>
-            Correct and Resubmit
+          <Button loading={resubmitting} onClick={handleResubmit}>
+            Correct and resubmit
           </Button>
         )}
 
         {/* Admin: re-generate PDF for issued certs missing a document (genuine failure) */}
         {isAdmin && !isReadOnly && isIssuedMissingDoc && (
-          <Button loading={reIssuing} onClick={handleReIssue} className="bg-gold hover:bg-gold-hover text-white">
-            <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-            Re-generate Certificate
+          <Button loading={reIssuing} onClick={handleReIssue}>
+            Re-generate certificate
           </Button>
         )}
 
         {/* Admin: re-issue replacement copy */}
         {isAdmin && !isReadOnly && isIssued && hasPdf && (
           <Button variant="outline" loading={reIssuing} onClick={handleReIssue}>
-            <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-            Re-issue (Replacement Copy)
+            Re-issue a replacement copy
           </Button>
         )}
       </div>
 
+        </aside>
+
+        <div className="min-w-0 space-y-4">
       {/* Certificate Info */}
-      <div className="bg-white rounded-xl border border-border/40 overflow-hidden mb-4">
-        <div className="px-6 py-3 border-b border-border/40">
-          <h2 className="text-xs font-semibold text-ink-subtle uppercase tracking-wide">Certificate Info</h2>
+      <div className="bg-surface rounded-card border border-border overflow-hidden">
+        <div className="px-5 py-3 border-b border-border bg-surface-alt">
+          <h2 className="text-2xs font-semibold text-ink-subtle uppercase">Certificate Info</h2>
         </div>
-        <div className="px-6">
+        <dl className="grid px-5 sm:grid-cols-2 sm:gap-x-8">
           <Row label="Certificate #" value={cert.certificateNumber ?? '–'} />
-          <Row label="Status" value={<Badge variant={statusVariant[cert.status]}>{statusLabel[cert.status]}</Badge>} />
-          <Row label="Applied" value={fmtDate(cert.createdAt)} />
-          <Row label="Issued" value={cert.issuedAt ? fmtDate(cert.issuedAt) : '–'} />
-          <Row label="Application Fee (estimate/confirmed)" value={cert.applicationFee ? `₦${cert.applicationFee.toLocaleString()}` : '–'} />
           {/* Only for a USD invoice — shows the exact rate the Naira fee came
               from, so the number can be checked rather than just trusted
               (RFP §8.5, §6.4). Absent entirely for an NGN invoice, which had
@@ -446,74 +421,74 @@ export function EcoDetailPage() {
           <Row label="Membership Verified" value={cert.membershipVerified ? 'Yes' : 'No'} />
           <Row label="Self-Declared Chamber Member" value={cert.selfDeclaredIsMember ? `Yes (${cert.selfDeclaredMembershipId ?? '–'})` : 'No'} />
           {cert.paymentRef && <Row label="Payment Ref" value={<span className="font-mono text-xs">{cert.paymentRef}</span>} />}
-        </div>
+        </dl>
       </div>
 
       {/* Product/Goods Details */}
-      <div className="bg-white rounded-xl border border-border/40 overflow-hidden mb-4">
-        <div className="px-6 py-3 border-b border-border/40">
-          <h2 className="text-xs font-semibold text-ink-subtle uppercase tracking-wide">Product / Goods Details</h2>
+      <div className="bg-surface rounded-card border border-border overflow-hidden">
+        <div className="px-5 py-3 border-b border-border bg-surface-alt">
+          <h2 className="text-2xs font-semibold text-ink-subtle uppercase">Product / Goods Details</h2>
         </div>
-        <div className="px-6">
+        <dl className="grid px-5 sm:grid-cols-2 sm:gap-x-8">
           <Row label="Solid Mineral" value={cert.solidMineralName} />
           <Row label="HS Code" value={cert.hsCode} />
           <Row label="Description of Goods" value={cert.descriptionOfGoods} />
           <Row label="Number & Kind of Packages" value={cert.numberAndKindOfPackages} />
           <Row label="Marks and Numbers" value={cert.marksAndNumbers} />
           <Row label="Quantity" value={cert.quantity != null ? `${cert.quantity} ${cert.quantityUnit ?? ''}` : null} />
-          <Row label="Origin States" value={cert.originStates?.length ? cert.originStates.join(', ') : null} />
+          <Row label="Origin of goods" value={cert.originStates?.length ? [cert.originLga && `${cert.originLga} LGA`, ...cert.originStates].filter(Boolean).join(', ') : null} />
           <Row label="Destination Country" value={cert.destinationCountry} />
           <Row label="Destination Port" value={cert.destinationPort} />
           <Row label="Batch/ID No." value={cert.batchIdNo} />
-        </div>
+        </dl>
       </div>
 
       {/* Exporter/Company Details */}
-      <div className="bg-white rounded-xl border border-border/40 overflow-hidden mb-4">
-        <div className="px-6 py-3 border-b border-border/40">
-          <h2 className="text-xs font-semibold text-ink-subtle uppercase tracking-wide">Exporter / Company Details</h2>
+      <div className="bg-surface rounded-card border border-border overflow-hidden">
+        <div className="px-5 py-3 border-b border-border bg-surface-alt">
+          <h2 className="text-2xs font-semibold text-ink-subtle uppercase">Exporter / Company Details</h2>
         </div>
-        <div className="px-6">
+        <dl className="grid px-5 sm:grid-cols-2 sm:gap-x-8">
           <Row label="License Owner" value={cert.isLicenseOwner ? `Yes (${cert.miningLicenseNo ?? '–'})` : 'No'} />
           <Row label="Company Name" value={cert.companyName} />
           <Row label="Company Address" value={cert.companyAddress} />
           <Row label="Company Country" value={cert.companyCountry} />
           <Row label="Company Email" value={cert.companyEmail} />
           <Row label="Company Phone" value={cert.companyPhone} />
-        </div>
+        </dl>
       </div>
 
       {/* Consignee Details */}
-      <div className="bg-white rounded-xl border border-border/40 overflow-hidden mb-4">
-        <div className="px-6 py-3 border-b border-border/40">
-          <h2 className="text-xs font-semibold text-ink-subtle uppercase tracking-wide">Consignee Details</h2>
+      <div className="bg-surface rounded-card border border-border overflow-hidden">
+        <div className="px-5 py-3 border-b border-border bg-surface-alt">
+          <h2 className="text-2xs font-semibold text-ink-subtle uppercase">Consignee Details</h2>
         </div>
-        <div className="px-6">
+        <dl className="grid px-5 sm:grid-cols-2 sm:gap-x-8">
           <Row label="Consignee Name" value={cert.consigneeName} />
           <Row label="Consignee Address" value={cert.consigneeAddress} />
-        </div>
+        </dl>
       </div>
 
       {/* Shipment & Transport */}
-      <div className="bg-white rounded-xl border border-border/40 overflow-hidden mb-4">
-        <div className="px-6 py-3 border-b border-border/40">
-          <h2 className="text-xs font-semibold text-ink-subtle uppercase tracking-wide">Shipment & Transport</h2>
+      <div className="bg-surface rounded-card border border-border overflow-hidden">
+        <div className="px-5 py-3 border-b border-border bg-surface-alt">
+          <h2 className="text-2xs font-semibold text-ink-subtle uppercase">Shipment & Transport</h2>
         </div>
-        <div className="px-6">
+        <dl className="grid px-5 sm:grid-cols-2 sm:gap-x-8">
           <Row label="Departure Date" value={cert.departureDate} />
           <Row label="Means of Transport" value={cert.meansOfTransport ? (MEANS_OF_TRANSPORT_LABEL[cert.meansOfTransport] ?? cert.meansOfTransport) : null} />
           <Row label="Vessel/Flight/Vehicle & Voyage No." value={cert.vesselFlightVehicleNameVoyageNo} />
           <Row label="Port of Loading" value={cert.portOfLoading} />
           <Row label="Port of Discharge" value={cert.portOfDischarge} />
-        </div>
+        </dl>
       </div>
 
       {/* Commercial Information */}
-      <div className="bg-white rounded-xl border border-border/40 overflow-hidden mb-4">
-        <div className="px-6 py-3 border-b border-border/40">
-          <h2 className="text-xs font-semibold text-ink-subtle uppercase tracking-wide">Commercial Information</h2>
+      <div className="bg-surface rounded-card border border-border overflow-hidden">
+        <div className="px-5 py-3 border-b border-border bg-surface-alt">
+          <h2 className="text-2xs font-semibold text-ink-subtle uppercase">Commercial Information</h2>
         </div>
-        <div className="px-6">
+        <dl className="grid px-5 sm:grid-cols-2 sm:gap-x-8">
           <Row label="Invoice Number" value={cert.invoiceNumber} />
           <Row label="Invoice Date" value={cert.invoiceDate} />
           {/* Was hardcoded to ₦ regardless of invoiceCurrency, so a USD invoice
@@ -527,13 +502,13 @@ export function EcoDetailPage() {
             }
           />
           <Row label="Customer Order / LC No." value={cert.customerOrderOrLcNo} />
-        </div>
+        </dl>
       </div>
 
       {/* Compliance / Declaration docs */}
-      <div className="bg-white rounded-xl border border-border/40 overflow-hidden mb-6">
-        <div className="px-6 py-3 border-b border-border/40">
-          <h2 className="text-xs font-semibold text-ink-subtle uppercase tracking-wide">Compliance / Declaration Documents</h2>
+      <div className="bg-surface rounded-card border border-border overflow-hidden">
+        <div className="px-5 py-3 border-b border-border bg-surface-alt">
+          <h2 className="text-2xs font-semibold text-ink-subtle uppercase">Compliance / Declaration Documents</h2>
         </div>
         <div className="px-6">
           <DocRow label="Invoice" certId={cert.id} docType="invoice" attached={!!cert.invoiceFileKey} />
@@ -555,9 +530,8 @@ export function EcoDetailPage() {
         </div>
       </div>
 
-      <Link to="/dashboard/eco" className="text-sm text-ink-subtle hover:text-primary">
-        ← Back to {isAdmin ? 'queue' : 'all applications'}
-      </Link>
+        </div>
+      </div>
     </div>
   );
 }

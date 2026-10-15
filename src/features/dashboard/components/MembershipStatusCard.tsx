@@ -40,7 +40,7 @@ export function MembershipStatusCard({
 
   if (noConnection) {
     return (
-      <div className="rounded-xl border border-dashed border-border/60 bg-surface-alt p-5">
+      <div className="rounded-card border border-dashed border-border bg-surface-alt p-5">
         <p className="text-xs font-medium text-ink-subtle uppercase tracking-wide mb-2">
           Membership Status
         </p>
@@ -54,7 +54,7 @@ export function MembershipStatusCard({
 
   if (error) {
     return (
-      <div className="rounded-xl border border-danger-border bg-danger-bg p-5 flex items-center justify-between">
+      <div className="rounded-card border border-danger-border bg-danger-bg p-5 flex items-center justify-between">
         <p className="text-sm text-danger">
           Failed to load membership status.
         </p>
@@ -73,7 +73,7 @@ export function MembershipStatusCard({
   const status = profile?.status ?? 'pending_payment';
 
   return (
-    <div className="rounded-xl border border-border/40 bg-white p-5">
+    <div className="rounded-card border border-border bg-surface p-5">
       <p className="text-xs font-medium text-ink-subtle uppercase tracking-wide mb-3">
         Membership Status
       </p>

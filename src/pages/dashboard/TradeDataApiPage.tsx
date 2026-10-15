@@ -131,8 +131,8 @@ function CreateKeyModal({ onClose, onCreated }: { onClose: () => void; onCreated
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md">
+      <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
+      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-md">
         <div className="border-b border-border px-6 py-4 flex items-center justify-between">
           <h2 className="font-bold text-ink">Create API Key</h2>
           <button onClick={onClose} className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle"><span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span></button>
@@ -181,7 +181,7 @@ function NewKeyBanner({ apiKey, onDismiss }: { apiKey: string; onDismiss: () => 
   };
 
   return (
-    <div className="rounded-xl border-2 p-5 mb-6" style={{ borderColor: 'rgb(var(--c-success))', background: '#a0f4ca30' }}>
+    <div className="rounded-card border-2 p-5 mb-6" style={{ borderColor: 'rgb(var(--c-success))', background: '#a0f4ca30' }}>
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2">
           <span className="material-symbols-outlined text-success" style={{ fontSize: 20, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20` }}>check_circle</span>
@@ -191,7 +191,7 @@ function NewKeyBanner({ apiKey, onDismiss }: { apiKey: string; onDismiss: () => 
       </div>
       <p className="text-xs text-success mb-3">This key will not be shown again. Copy and store it securely.</p>
       <div className="flex items-center gap-2">
-        <code className="flex-1 rounded-lg bg-white border border-success-bg px-3 py-2 text-sm font-mono text-ink overflow-x-auto">{apiKey}</code>
+        <code className="flex-1 rounded-lg bg-surface border border-success-bg px-3 py-2 text-sm font-mono text-ink overflow-x-auto">{apiKey}</code>
         <button onClick={handleCopy} className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold transition-colors" style={{ background: copied ? 'rgb(var(--c-success))' : 'rgb(var(--c-primary))', color: 'white' }}>
           <span className="material-symbols-outlined" style={{ fontSize: 16 }}>{copied ? 'check' : 'content_copy'}</span>
           {copied ? 'Copied!' : 'Copy'}
@@ -216,7 +216,7 @@ function InstitutionalApiView() {
   const totalRequests = allKeys.reduce((s, k) => s + k.requestsThisMonth, 0);
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-8 sm:py-8">
+    <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-5xl">
       {showCreate && <CreateKeyModal onClose={() => setShowCreate(false)} onCreated={(k) => setNewKey(k)} />}
 
       <div className="flex items-center justify-between mb-6">
@@ -234,7 +234,7 @@ function InstitutionalApiView() {
           { icon: 'api', label: 'Requests This Month', value: totalRequests.toLocaleString() },
           { icon: 'integration_instructions', label: 'Endpoints', value: stats.length },
         ].map(({ icon, label, value, accent }) => (
-          <div key={label} className={`rounded-xl border p-4 ${accent ? '' : 'bg-white border-border'}`} style={accent ? { background: 'rgb(var(--c-primary))', borderColor: 'rgb(var(--c-primary))' } : {}}>
+          <div key={label} className={`rounded-card border p-4 ${accent ? '' : 'bg-surface border-border'}`} style={accent ? { background: 'rgb(var(--c-primary))', borderColor: 'rgb(var(--c-primary))' } : {}}>
             <div className="flex items-center gap-2 mb-2">
               <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`, color: accent ? 'rgb(var(--c-primary-200))' : 'rgb(var(--c-ink-subtle))' }}>{icon}</span>
               <p className={`text-xs font-semibold uppercase tracking-wide ${accent ? 'text-primary-200' : 'text-ink-subtle'}`}>{label}</p>
@@ -246,7 +246,7 @@ function InstitutionalApiView() {
 
       <div className="flex gap-1 bg-surface-alt rounded-lg p-1 mb-6 w-fit border border-border">
         {([['keys', 'API Keys'], ['usage', 'Usage Stats'], ['docs', 'Documentation']] as const).map(([t, label]) => (
-          <button key={t} onClick={() => setTab(t)} className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === t ? 'bg-white text-ink shadow-sm' : 'text-ink-subtle hover:text-ink'}`}>{label}</button>
+          <button key={t} onClick={() => setTab(t)} className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === t ? 'bg-surface text-ink shadow-card' : 'text-ink-subtle hover:text-ink'}`}>{label}</button>
         ))}
       </div>
 
@@ -262,7 +262,7 @@ function InstitutionalApiView() {
               {allKeys.map((k) => {
                 const usagePct = Math.min(100, Math.round((k.requestsThisMonth / k.requestLimit) * 100));
                 return (
-                  <div key={k.id} className="bg-white rounded-xl border border-border p-5">
+                  <div key={k.id} className="bg-surface rounded-card border border-border p-5">
                     <div className="flex items-start justify-between mb-3">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
@@ -296,11 +296,11 @@ function InstitutionalApiView() {
       )}
 
       {tab === 'usage' && (
-        <div className="bg-white rounded-xl border border-border overflow-hidden">
+        <div className="bg-surface rounded-card border border-border overflow-hidden">
           <div className="p-4 border-b border-border">
             <p className="text-sm font-semibold text-ink">Endpoint usage this month</p>
           </div>
-          <table className="w-full text-sm">
+          <table className="data-table w-full text-sm">
             <thead>
               <tr className="bg-surface-alt border-b border-border">
                 {['Endpoint', 'Calls', 'P95 Latency'].map((h) => (
@@ -325,16 +325,16 @@ function InstitutionalApiView() {
 
       {tab === 'docs' && (
         <div className="space-y-4">
-          <div className="bg-white rounded-xl border border-border p-6">
+          <div className="bg-surface rounded-card border border-border p-6">
             <h3 className="font-bold text-ink mb-1">Base URL</h3>
             <code className="block rounded-lg px-4 py-3 text-sm font-mono text-ink" style={{ background: 'rgb(var(--c-surface-alt))', border: '1px solid #e0e3e5' }}>https://api.chamberlink.ng/v1</code>
           </div>
-          <div className="bg-white rounded-xl border border-border p-6">
+          <div className="bg-surface rounded-card border border-border p-6">
             <h3 className="font-bold text-ink mb-3">Authentication</h3>
             <p className="text-sm text-ink-subtle mb-3">Pass your API key in the <code className="font-mono text-xs bg-surface-alt px-1 py-0.5 rounded">Authorization</code> header:</p>
             <code className="block rounded-lg px-4 py-3 text-sm font-mono text-ink" style={{ background: 'rgb(var(--c-surface-alt))', border: '1px solid #e0e3e5' }}>{'Authorization: Bearer kac_live_your_key_here'}</code>
           </div>
-          <div className="bg-white rounded-xl border border-border p-6">
+          <div className="bg-surface rounded-card border border-border p-6">
             <h3 className="font-bold text-ink mb-3">Available Endpoints</h3>
             <div className="space-y-3">
               {[
@@ -369,7 +369,7 @@ function AdminApiView() {
   const totalRequests = allConsumers.reduce((s, c) => s + c.requestsThisMonth, 0);
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-8 sm:py-8">
+    <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-5xl">
       <div className="mb-6">
         <h2 className="text-xl font-semibold text-ink">Trade Data API consumers</h2>
         <p className="text-sm text-ink-subtle mt-0.5">Monitor institutional API consumers and their usage.</p>
@@ -382,7 +382,7 @@ function AdminApiView() {
           { icon: 'api', label: 'Total API Keys', value: allConsumers.reduce((s, c) => s + c.apiKeyCount, 0) },
           { icon: 'trending_up', label: 'Requests / Mo', value: totalRequests.toLocaleString() },
         ].map(({ icon, label, value, accent }) => (
-          <div key={label} className={`rounded-xl border p-4 ${accent ? '' : 'bg-white border-border'}`} style={accent ? { background: 'rgb(var(--c-primary))', borderColor: 'rgb(var(--c-primary))' } : {}}>
+          <div key={label} className={`rounded-card border p-4 ${accent ? '' : 'bg-surface border-border'}`} style={accent ? { background: 'rgb(var(--c-primary))', borderColor: 'rgb(var(--c-primary))' } : {}}>
             <div className="flex items-center gap-2 mb-2">
               <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`, color: accent ? 'rgb(var(--c-primary-200))' : 'rgb(var(--c-ink-subtle))' }}>{icon}</span>
               <p className={`text-xs font-semibold uppercase tracking-wide ${accent ? 'text-primary-200' : 'text-ink-subtle'}`}>{label}</p>
@@ -393,9 +393,9 @@ function AdminApiView() {
       </div>
 
       {isLoading ? <SkeletonCard /> : (
-        <div className="bg-white rounded-xl border border-border overflow-hidden">
+        <div className="bg-surface rounded-card border border-border overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="data-table w-full text-sm">
               <thead>
                 <tr className="bg-surface-alt border-b border-border">
                   {['Institution', 'API Keys', 'Requests / Month', 'Status', 'Onboarded', 'Actions'].map((h) => (

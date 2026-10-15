@@ -90,10 +90,10 @@ function BoothBookingModal({ event, onClose }: { event: TradeFairEvent; onClose:
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
+      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="sticky top-0 bg-white border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
+        <div className="sticky top-0 bg-surface border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
           <div>
             <h2 className="font-bold text-ink text-base">Select a Booth</h2>
             <p className="text-sm text-ink-subtle mt-0.5">{event.title}</p>
@@ -103,7 +103,7 @@ function BoothBookingModal({ event, onClose }: { event: TradeFairEvent; onClose:
           </button>
         </div>
 
-        <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8">
+        <div className="p-6">
           {error && <div className="mb-4"><ErrorBanner message={error} /></div>}
 
           {isLoading ? <SkeletonCard /> : (
@@ -123,11 +123,11 @@ function BoothBookingModal({ event, onClose }: { event: TradeFairEvent; onClose:
                           key={booth.id}
                           disabled={!isAvailable}
                           onClick={() => isAvailable && setSelected(booth.id)}
-                          className={`rounded-xl border p-4 text-left transition-all ${
+                          className={`rounded-card border p-4 text-left transition-all ${
                             isSelected
                               ? 'border-primary ring-2 ring-primary/20'
                               : isAvailable
-                              ? 'border-border hover:border-primary/40 bg-white'
+                              ? 'border-border hover:border-primary/40 bg-surface'
                               : 'border-border bg-surface-alt opacity-50 cursor-not-allowed'
                           }`}
                           style={isSelected ? { background: 'rgb(var(--c-primary-soft))' } : {}}
@@ -151,7 +151,7 @@ function BoothBookingModal({ event, onClose }: { event: TradeFairEvent; onClose:
 
               {/* Summary */}
               {selectedBooth && (
-                <div className="rounded-xl border border-primary/20 p-4 mb-6" style={{ background: 'rgb(var(--c-primary-soft))' }}>
+                <div className="rounded-card border border-primary/20 p-4 mb-6" style={{ background: 'rgb(var(--c-primary-soft))' }}>
                   <p className="text-xs font-semibold text-primary uppercase tracking-wide mb-3">Booking Summary</p>
                   <div className="grid grid-cols-2 gap-y-2 text-sm">
                     <span className="text-ink-subtle">Booth</span>
@@ -216,8 +216,8 @@ function AddBoothModal({ eventId: initialEventId, events, onClose }: { eventId: 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md">
+      <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
+      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-md">
         <div className="border-b border-border px-6 py-4 flex items-center justify-between">
           <h2 className="font-bold text-ink">Add New Booth</h2>
           <button onClick={onClose} className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle">
@@ -337,8 +337,8 @@ function CreateEventModal({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+      <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
+      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
         <div className="border-b border-border px-6 py-4 flex items-center justify-between">
           <h2 className="font-bold text-ink">Create New Event</h2>
           <button onClick={onClose} className="p-2 rounded-lg hover:bg-surface-alt text-ink-subtle">
@@ -498,7 +498,7 @@ function MemberTradeFairView() {
   const displayed = tab === 'upcoming' ? upcomingEvents : pastEvents;
 
   return (
-    <div className="mx-auto w-full max-w-4xl px-4 py-6 sm:px-8 sm:py-8">
+    <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8 [&>*]:max-w-4xl">
       {bookingEvent && <BoothBookingModal event={bookingEvent} onClose={() => setBookingEvent(null)} />}
 
       <div className="flex items-center justify-between mb-6">
@@ -507,7 +507,7 @@ function MemberTradeFairView() {
           <p className="text-sm text-ink-subtle mt-0.5">Upcoming events and booth registrations.</p>
         </div>
         <Link to="/dashboard/trade-fair/booths">
-          <button className="flex items-center gap-2 rounded-lg border border-border bg-white px-4 py-2 text-sm font-medium text-ink hover:border-primary hover:text-primary transition-colors">
+          <button className="flex items-center gap-2 rounded-lg border border-border bg-surface px-4 py-2 text-sm font-medium text-ink hover:border-primary hover:text-primary transition-colors">
             <span className="material-symbols-outlined" style={{ fontSize: 16, fontVariationSettings: `'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 16` }}>storefront</span>
             My Booths
           </button>
@@ -517,7 +517,7 @@ function MemberTradeFairView() {
       {/* Tabs */}
       <div className="flex gap-1 bg-surface-alt rounded-lg p-1 mb-6 w-fit border border-border">
         {(['upcoming', 'past'] as const).map((t) => (
-          <button key={t} onClick={() => setTab(t)} className={`px-4 py-1.5 rounded-md text-sm font-medium capitalize transition-colors ${tab === t ? 'bg-white text-ink shadow-sm' : 'text-ink-subtle hover:text-ink'}`}>
+          <button key={t} onClick={() => setTab(t)} className={`px-4 py-1.5 rounded-md text-sm font-medium capitalize transition-colors ${tab === t ? 'bg-surface text-ink shadow-card' : 'text-ink-subtle hover:text-ink'}`}>
             {t}
           </button>
         ))}
@@ -527,7 +527,7 @@ function MemberTradeFairView() {
 
       <div className="space-y-4">
         {!isLoading && displayed.length === 0 && (
-          <div className="bg-white rounded-xl border border-border p-12 text-center">
+          <div className="bg-surface rounded-card border border-border p-12 text-center">
             <p className="text-sm text-ink-subtle">No {tab} events at this time.</p>
           </div>
         )}
@@ -542,7 +542,7 @@ function MemberTradeFairView() {
             : null;
 
           return (
-            <div key={event.id} className="bg-white rounded-xl border border-border overflow-hidden">
+            <div key={event.id} className="bg-surface rounded-card border border-border overflow-hidden">
               {/* Event header */}
               <div className="px-6 pt-5 pb-4">
                 <div className="flex items-start justify-between gap-4 mb-2">
@@ -650,8 +650,8 @@ function EditBoothModal({ booth, events, onClose }: { booth: TradeFairBooth; eve
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md">
+      <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
+      <div className="relative bg-surface rounded-card shadow-2xl w-full max-w-md">
         <div className="border-b border-border px-6 py-4 flex items-center justify-between">
           <div>
             <h2 className="font-bold text-ink">Edit Booth</h2>
@@ -815,7 +815,7 @@ function AdminTradeFairView() {
           { icon: 'event_available', label: 'Available', value: availableCount, accent: false },
           { icon: 'payments', label: 'Revenue', value: `₦${(revenue / 1000).toFixed(0)}K`, accent: false },
         ].map(({ icon, label, value, accent }) => (
-          <div key={label} className={`rounded-xl border p-4 ${accent ? 'border-primary' : 'bg-white border-border'}`} style={accent ? { background: 'rgb(var(--c-primary))' } : {}}>
+          <div key={label} className={`rounded-card border p-4 ${accent ? 'border-primary' : 'bg-surface border-border'}`} style={accent ? { background: 'rgb(var(--c-primary))' } : {}}>
             <div className="flex items-center gap-2 mb-2">
               <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 18`, color: accent ? 'rgb(var(--c-primary-200))' : 'rgb(var(--c-ink-subtle))' }}>{icon}</span>
               <p className={`text-xs font-semibold uppercase tracking-wide ${accent ? 'text-primary-200' : 'text-ink-subtle'}`}>{label}</p>
@@ -828,7 +828,7 @@ function AdminTradeFairView() {
       {/* Tabs */}
       <div className="flex gap-1 bg-surface-alt rounded-lg p-1 mb-6 w-fit border border-border">
         {([['overview', 'Event Info'], ['booths', 'Booth Inventory'], ['bookings', 'All Bookings']] as const).map(([id, label]) => (
-          <button key={id} onClick={() => setTab(id)} className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === id ? 'bg-white text-ink shadow-sm' : 'text-ink-subtle hover:text-ink'}`}>
+          <button key={id} onClick={() => setTab(id)} className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === id ? 'bg-surface text-ink shadow-card' : 'text-ink-subtle hover:text-ink'}`}>
             {label}
           </button>
         ))}
@@ -838,7 +838,7 @@ function AdminTradeFairView() {
       {tab === 'overview' && (
         <div className="space-y-4">
           {!eventsLoading && allEvents.length === 0 && (
-            <div className="bg-white rounded-xl border border-border p-12 text-center">
+            <div className="bg-surface rounded-card border border-border p-12 text-center">
               <p className="text-sm text-ink-subtle">No events found. Create one to get started.</p>
             </div>
           )}
@@ -848,7 +848,7 @@ function AdminTradeFairView() {
             const start = new Date(event.startDate).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'long', year: 'numeric' });
             const end = new Date(event.endDate).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'long', year: 'numeric' });
             return (
-              <div key={event.id} className="bg-white rounded-xl border border-border p-6">
+              <div key={event.id} className="bg-surface rounded-card border border-border p-6">
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <h3 className="font-bold text-ink">{event.title}</h3>
@@ -913,7 +913,7 @@ function AdminTradeFairView() {
           <div className="flex items-center gap-3 mb-4">
             <div className="flex gap-1 bg-surface-alt rounded-lg p-1 border border-border">
               {(['all', 'available', 'reserved'] as const).map((f) => (
-                <button key={f} onClick={() => setBoothFilter(f)} className={`px-3 py-1 rounded-md text-xs font-medium capitalize transition-colors ${boothFilter === f ? 'bg-white shadow-sm text-ink' : 'text-ink-subtle'}`}>
+                <button key={f} onClick={() => setBoothFilter(f)} className={`px-3 py-1 rounded-md text-xs font-medium capitalize transition-colors ${boothFilter === f ? 'bg-surface shadow-card text-ink' : 'text-ink-subtle'}`}>
                   {f}
                 </button>
               ))}
@@ -928,7 +928,7 @@ function AdminTradeFairView() {
                 return (
                   <div
                     key={booth.id}
-                    className="bg-white rounded-xl border p-4"
+                    className="bg-surface rounded-card border p-4"
                     style={{ borderColor: booth.status === 'available' ? 'rgb(var(--c-border))' : booth.status === 'paid' ? 'rgb(var(--c-primary))' : '#ffc300' }}
                   >
                     <div className="flex items-start justify-between mb-2">
@@ -965,7 +965,7 @@ function AdminTradeFairView() {
               {/* Add new booth card */}
               <button
                 onClick={() => setShowAddBooth(true)}
-                className="rounded-xl border-2 border-dashed border-border p-4 flex flex-col items-center justify-center gap-2 text-ink-subtle hover:border-primary hover:text-primary transition-colors min-h-[120px]"
+                className="rounded-card border-2 border-dashed border-border p-4 flex flex-col items-center justify-center gap-2 text-ink-subtle hover:border-primary hover:text-primary transition-colors min-h-[120px]"
               >
                 <span className="material-symbols-outlined" style={{ fontSize: 24 }}>add</span>
                 <span className="text-xs font-medium">Add Booth</span>
@@ -977,10 +977,10 @@ function AdminTradeFairView() {
 
       {/* All Bookings tab */}
       {tab === 'bookings' && (
-        <div className="bg-white rounded-xl border border-border overflow-hidden">
-          {bookingsLoading ? <div className="mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-8 sm:py-8"><SkeletonCard /></div> : (
+        <div className="bg-surface rounded-card border border-border overflow-hidden">
+          {bookingsLoading ? <div className="p-6"><SkeletonCard /></div> : (
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="data-table w-full text-sm">
                 <thead>
                   <tr className="bg-surface-alt border-b border-border">
                     {['Booth', 'Member', 'Type / Zone', 'Amount', 'Status', 'Payment Ref'].map((h) => (
